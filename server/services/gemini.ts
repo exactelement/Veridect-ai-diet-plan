@@ -23,15 +23,42 @@ export interface GeminiAnalysisResult {
 
 export async function analyzeWithGemini(
   foodName?: string,
-  imageData?: string
+  imageData?: string,
+  userProfile?: {
+    healthGoals?: string[];
+    dietaryPreferences?: string[];
+    allergies?: string[];
+    fitnessLevel?: string;
+    subscriptionTier?: string;
+  }
 ): Promise<GeminiAnalysisResult> {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in food analysis. Your task is to analyze food and provide a clear verdict.
+  // Build personalized context based on user profile
+  let personalizedContext = "";
+  if (userProfile) {
+    personalizedContext = `
+
+PERSONALIZED ANALYSIS FOR THIS USER:
+- Health Goals: ${userProfile.healthGoals?.join(', ') || 'Not specified'}
+- Dietary Preferences: ${userProfile.dietaryPreferences?.join(', ') || 'Not specified'}
+- Allergies: ${userProfile.allergies?.join(', ') || 'None specified'}
+- Fitness Level: ${userProfile.fitnessLevel || 'Not specified'}
+- Subscription Tier: ${userProfile.subscriptionTier || 'Free'}
+
+IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, and restrictions. Consider:
+- If they have allergies, flag any potential allergens as NO verdict
+- If they have specific health goals (weight loss, muscle gain, etc.), tailor verdict accordingly
+- If they follow specific diets (keto, vegan, etc.), consider compatibility
+- Provide more detailed scientific analysis for Medical tier users
+- Use casual tone for Free tier, scientific tone for Medical tier`;
+  }
+
+  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze food and provide a clear verdict tailored to the specific user.${personalizedContext}
 
 For the given food${imageData ? ' image' : `: "${foodName}"`}, provide:
-1. A verdict: YES (healthy), NO (unhealthy), or OK (moderate)
-2. A brief, engaging explanation with personality
+1. A verdict: YES (healthy for this user), NO (unhealthy for this user), or OK (moderate for this user)
+2. A personalized explanation based on their health goals, dietary preferences, and restrictions
 3. Your best estimate of nutritional content including calories, protein, carbs, fat, fiber, sugar, sodium
 4. A confidence score
 5. A portion size estimate (e.g., "1 cup", "2 slices", "3 oz", "1 medium piece")

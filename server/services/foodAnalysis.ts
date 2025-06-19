@@ -251,10 +251,16 @@ function getFallbackAnalysis(foodName: string): GeminiAnalysisResult {
   };
 }
 
-function generateAlternatives(verdict: string, foodName: string): string[] {
+function generateAlternatives(verdict: string, foodName: string, userProfile?: {
+  healthGoals?: string[];
+  dietaryPreferences?: string[];
+  allergies?: string[];
+  fitnessLevel?: string;
+  subscriptionTier?: string;
+}): string[] {
   if (verdict === "YES") return [];
 
-  const healthyAlternatives = [
+  let healthyAlternatives = [
     "Grilled chicken breast",
     "Quinoa salad",
     "Greek yogurt with berries",
@@ -277,18 +283,54 @@ function generateAlternatives(verdict: string, foodName: string): string[] {
     "Oatmeal with nuts"
   ];
 
-  // Return 2-3 random alternatives
+  // Filter alternatives based on user preferences and allergies
+  if (userProfile?.dietaryPreferences?.includes('Vegan')) {
+    healthyAlternatives = healthyAlternatives.filter(food => 
+      !food.includes('chicken') && !food.includes('salmon') && 
+      !food.includes('Greek yogurt') && !food.includes('cottage cheese')
+    );
+    healthyAlternatives.push("Tofu stir-fry", "Almond milk smoothie", "Chia seed pudding", "Tempeh bowl");
+  }
+
+  if (userProfile?.dietaryPreferences?.includes('Vegetarian')) {
+    healthyAlternatives = healthyAlternatives.filter(food => 
+      !food.includes('chicken') && !food.includes('salmon')
+    );
+  }
+
+  if (userProfile?.allergies?.includes('Nuts')) {
+    healthyAlternatives = healthyAlternatives.filter(food => 
+      !food.includes('nuts') && !food.includes('Almonds')
+    );
+  }
+
+  if (userProfile?.healthGoals?.includes('Weight Loss')) {
+    healthyAlternatives.push("Cucumber salad", "Celery with hummus", "Zucchini noodles", "Cauliflower rice");
+  }
+
+  if (userProfile?.healthGoals?.includes('Muscle Gain')) {
+    healthyAlternatives.push("Protein smoothie", "Lean beef", "Egg whites", "Protein-rich legumes");
+  }
+
+  // Return 2-3 personalized alternatives
   const shuffled = healthyAlternatives.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, Math.floor(Math.random() * 2) + 2);
 }
 
 export async function analyzeFoodWithGemini(
   foodName?: string,
-  imageData?: string
+  imageData?: string,
+  userProfile?: {
+    healthGoals?: string[];
+    dietaryPreferences?: string[];
+    allergies?: string[];
+    fitnessLevel?: string;
+    subscriptionTier?: string;
+  }
 ): Promise<FoodAnalysisResult> {
   try {
-    // Try AI analysis first
-    const aiResult = await analyzeWithGemini(foodName, imageData);
+    // Try AI analysis first with user profile for personalization
+    const aiResult = await analyzeWithGemini(foodName, imageData, userProfile);
     
     const nutritionFacts = {
       calories: aiResult.calories || 0,
@@ -304,7 +346,7 @@ export async function analyzeFoodWithGemini(
       ...aiResult,
       method: "ai",
       nutritionFacts,
-      alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName),
+      alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, userProfile),
     };
   } catch (error) {
     console.warn("AI analysis failed, using fallback:", error);
@@ -313,20 +355,20 @@ export async function analyzeFoodWithGemini(
     const fallbackResult = getFallbackAnalysis(foodName || "Unknown Food");
     
     const nutritionFacts = {
-      calories: fallbackResult.calories,
-      protein: fallbackResult.protein,
-      carbohydrates: fallbackResult.carbohydrates,
-      fat: fallbackResult.fat,
-      fiber: fallbackResult.fiber,
-      sugar: fallbackResult.sugar,
-      sodium: fallbackResult.sodium,
+      calories: fallbackResult.calories || 0,
+      protein: fallbackResult.protein || 0,
+      carbohydrates: fallbackResult.carbohydrates || 0,
+      fat: fallbackResult.fat || 0,
+      fiber: fallbackResult.fiber || 0,
+      sugar: fallbackResult.sugar || 0,
+      sodium: fallbackResult.sodium || 0,
     };
 
     return {
       ...fallbackResult,
       method: "fallback",
       nutritionFacts,
-      alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName),
+      alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName, userProfile),
     };
   }
 }

@@ -80,10 +80,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Either foodName or imageData is required" });
       }
 
+      // Get user profile for personalized analysis
+      const user = await storage.getUser(userId);
+      const userProfile = {
+        healthGoals: Array.isArray(user?.healthGoals) ? user.healthGoals as string[] : [],
+        dietaryPreferences: Array.isArray(user?.dietaryPreferences) ? user.dietaryPreferences as string[] : [],
+        allergies: Array.isArray(user?.allergies) ? user.allergies as string[] : [],
+        fitnessLevel: 'Not specified',
+        subscriptionTier: user?.subscriptionTier || 'Free'
+      };
+
       // Import food analysis service
       const { analyzeFoodWithGemini } = await import('./services/foodAnalysis');
       
-      const analysis = await analyzeFoodWithGemini(foodName, imageData);
+      const analysis = await analyzeFoodWithGemini(foodName, imageData, userProfile);
       
       // Save to database
       const foodLog = await storage.createFoodLog({
