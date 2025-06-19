@@ -112,18 +112,19 @@ export const insertFoodLogSchema = createInsertSchema(foodLogs).omit({
   createdAt: true,
 });
 
-export const updateUserProfileSchema = createInsertSchema(users).pick({
-  firstName: true,
-  lastName: true,
-  dietaryPreferences: true,
-  healthGoals: true,
-  medicalConditions: true,
-  allergies: true,
-  privacySettings: true,
-}).extend({
+export const updateUserProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required").optional(),
   lastName: z.string().min(1, "Last name is required").optional(),
-}).partial();
+  dietaryPreferences: z.array(z.string()).optional(),
+  healthGoals: z.array(z.string()).optional(),
+  medicalConditions: z.array(z.string()).optional(),
+  allergies: z.array(z.string()).optional(),
+  privacySettings: z.object({
+    shareDataForResearch: z.boolean(),
+    allowMarketing: z.boolean(),
+    shareWithHealthProviders: z.boolean(),
+  }).optional(),
+});
 
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
