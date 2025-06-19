@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YesNoApp: Investor Booklet</title>
+    <style>
+        :root {
+            --primary: #007AFF;
+            --secondary: #5856D6;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --background: #FFFFFF;
+            --text: #1C1C1E;
+            --muted: #8E8E93;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--background);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-top: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #F8F9FA;
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .philosophy-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .metric {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(0,122,255,0.1) 0%, rgba(0,122,255,0.1) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+            transition: background-size 0.25s ease-in;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            border: 1px solid #E5E5EA;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #F8F9FA;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>YesNoApp</h1>
+        <p>Revolutionizing Personal Nutrition Through AI-Powered Food Analysis</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Design Philosophy</h2>
+        <p>YesNoApp is built on the fundamental belief that <span class="highlight">healthy food is tastier and cheaper in the long run</span>. Our design philosophy centers around making healthy choices not just easier, but more enjoyable and socially rewarding.</p>
+        
+        <div class="philosophy-grid">
+            <div class="philosophy-card">
+                <h3>Simplicity First</h3>
+                <p>Transform complex nutritional decisions into simple Yes/No/OK verdicts, eliminating decision paralysis while maintaining educational value.</p>
+            </div>
+            <div class="philosophy-card">
+                <h3>Social Empowerment</h3>
+                <p>Enable users to understand and articulate why certain foods are detrimental, helping them resist unhealthy social pressures.</p>
+            </div>
+            <div class="philosophy-card">
+                <h3>AI-Powered Precision</h3>
+                <p>Leverage advanced AI to provide instant, accurate analysis while maintaining complete transparency in the process.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Technical Excellence</h2>
+        <div class="tech-stack">
+            <div class="tech-item">
+                <h3>Processing Speed</h3>
+                <div class="metric">60% Faster</div>
+                <p>Compared to industry standards</p>
+            </div>
+            <div class="tech-item">
+                <h3>Accuracy Rate</h3>
+                <div class="metric">95%+</div>
+                <p>Food recognition accuracy</p>
+            </div>
+            <div class="tech-item">
+                <h3>System Uptime</h3>
+                <div class="metric">99.9%</div>
+                <p>Enterprise-grade reliability</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Design Criteria</h2>
+        <ul class="feature-list">
+            <li><strong>Instant Analysis:</strong> Real-time food analysis with immediate feedback</li>
+            <li><strong>Transparency:</strong> 100% transparency in data processing and AI decisions</li>
+            <li><strong>Privacy First:</strong> On-device processing where possible, with Apple-grade security</li>
+            <li><strong>Accessibility:</strong> Designed for all users, regardless of technical expertise</li>
+            <li><strong>Educational Value:</strong> Clear explanations that help users learn and improve</li>
+            <li><strong>Social Integration:</strong> Seamless sharing and community features</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Technical Architecture</h2>
+        <table class="comparison-table">
+            <tr>
+                <th>Component</th>
+                <th>Technology</th>
+                <th>Advantage</th>
+            </tr>
+            <tr>
+                <td>AI Engine</td>
+                <td>Google Gemini AI</td>
+                <td>State-of-the-art food recognition</td>
+            </tr>
+            <tr>
+                <td>Frontend</td>
+                <td>React/TypeScript</td>
+                <td>High performance, type safety</td>
+            </tr>
+            <tr>
+                <td>Backend</td>
+                <td>Node.js/Express</td>
+                <td>Scalable, real-time processing</td>
+            </tr>
+            <tr>
+                <td>Database</td>
+                <td>Firebase</td>
+                <td>Real-time sync, offline support</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>User Experience Principles</h2>
+        <div class="philosophy-grid">
+            <div class="philosophy-card">
+                <h3>Instant Gratification</h3>
+                <p>Immediate feedback and clear, actionable insights</p>
+            </div>
+            <div class="philosophy-card">
+                <h3>Progressive Disclosure</h3>
+                <p>Complex features revealed as users become more engaged</p>
+            </div>
+            <div class="philosophy-card">
+                <h3>Positive Reinforcement</h3>
+                <p>Celebrate healthy choices and progress</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Quality Standards</h2>
+        <ul class="feature-list">
+            <li><strong>Apple-Grade UI/UX:</strong> Polished, intuitive interface following iOS design guidelines</li>
+            <li><strong>Enterprise Security:</strong> HIPAA compliance and data protection</li>
+            <li><strong>Performance:</strong> 60% faster processing than competitors</li>
+            <li><strong>Reliability:</strong> 99.9% uptime with robust fallback systems</li>
+            <li><strong>Scalability:</strong> Architecture designed for millions of users</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Future Vision</h2>
+        <p>YesNoApp aims to become the ultimate nutrition platform, addressing all edge cases and serving everyone from casual users to professional nutritionists. Our vision extends beyond food analysis to create a comprehensive health ecosystem that includes:</p>
+        <ul class="feature-list">
+            <li>Advanced health data integration</li>
+            <li>Professional network of nutritionists</li>
+            <li>Corporate wellness programs</li>
+            <li>Research collaboration opportunities</li>
+            <li>Global health impact initiatives</li>
+        </ul>
+    </div>
+</body>
+</html> 
