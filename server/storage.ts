@@ -17,12 +17,17 @@ export interface IStorage {
   // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // Profile operations
   updateUserProfile(id: string, profile: UpdateUserProfile): Promise<User>;
   completeOnboarding(id: string): Promise<User>;
   updateGdprConsent(userId: string, consent: any): Promise<User>;
+  
+  // Password management
+  updatePasswordResetToken(userId: string, token: string, expires: Date): Promise<User>;
+  updatePassword(userId: string, passwordHash: string): Promise<User>;
   
   // Stripe operations
   updateStripeCustomerId(userId: string, customerId: string): Promise<User>;
@@ -102,6 +107,38 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({
         gdprConsent: consent,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.passwordResetToken, token));
+    return user;
+  }
+
+  async updatePasswordResetToken(userId: string, token: string, expires: Date): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updatePassword(userId: string, passwordHash: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        passwordHash: passwordHash,
+        passwordResetToken: null,
+        passwordResetExpires: null,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

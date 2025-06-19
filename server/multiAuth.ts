@@ -146,4 +146,66 @@ export async function setupMultiAuth(app: Express) {
       });
     })(req, res, next);
   });
+
+  // Password reset request
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if email exists for security
+        return res.json({ message: "If the email exists, a password reset link has been sent." });
+      }
+
+      // Generate reset token
+      const resetToken = Math.random().toString(36).substr(2, 32);
+      const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+      await storage.updatePasswordResetToken(user.id, resetToken, resetExpires);
+
+      // TODO: Send email with reset link
+      // For now, return the token (in production, this should be sent via email)
+      console.log(`Password reset token for ${email}: ${resetToken}`);
+      
+      res.json({ message: "If the email exists, a password reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Password reset
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      const user = await storage.getUserByResetToken(token);
+      if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Hash new password
+      const passwordHash = await bcrypt.hash(newPassword, 12);
+
+      await storage.updatePassword(user.id, passwordHash);
+
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 }

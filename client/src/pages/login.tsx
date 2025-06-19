@@ -27,15 +27,34 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
 type LoginForm = z.infer<typeof loginSchema>;
 type RegisterForm = z.infer<typeof registerSchema>;
+type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function Login() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  // Get reset token from URL if present
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetToken = urlParams.get('token');
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -45,6 +64,16 @@ export default function Login() {
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     defaultValues: { email: "", password: "", confirmPassword: "", firstName: "", lastName: "" },
+  });
+
+  const forgotForm = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
+
+  const resetForm = useForm<ResetPasswordForm>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: { token: resetToken || "", newPassword: "", confirmPassword: "" },
   });
 
   const handleLogin = async (data: LoginForm) => {
@@ -101,6 +130,64 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async (data: ForgotPasswordForm) => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/auth/forgot-password", data);
+      if (response.ok) {
+        toast({
+          title: "Reset Email Sent",
+          description: "If the email exists, a password reset link has been sent.",
+        });
+        setMode('login');
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to send reset email",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while sending reset email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (data: ResetPasswordForm) => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest("POST", "/api/auth/reset-password", data);
+      if (response.ok) {
+        toast({
+          title: "Password Reset Successful",
+          description: "Your password has been updated. Please log in.",
+        });
+        setMode('login');
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Reset Failed",
+          description: error.message || "Failed to reset password",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Reset Failed",
+        description: "An error occurred during password reset",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -109,10 +196,14 @@ export default function Login() {
             <span className="text-white font-bold text-2xl">Y</span>
           </div>
           <CardTitle className="text-2xl font-bold">
-            {isLogin ? "Welcome back" : "Create account"}
+            {mode === 'login' ? "Welcome back" : 
+             mode === 'register' ? "Create account" :
+             mode === 'forgot' ? "Reset password" : "Set new password"}
           </CardTitle>
           <p className="text-ios-secondary">
-            {isLogin ? "Sign in to your YesNoApp account" : "Join thousands making healthier choices"}
+            {mode === 'login' ? "Sign in to your YesNoApp account" : 
+             mode === 'register' ? "Join thousands making healthier choices" :
+             mode === 'forgot' ? "Enter your email to reset your password" : "Enter your new password"}
           </p>
         </CardHeader>
 

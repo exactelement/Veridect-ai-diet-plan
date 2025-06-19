@@ -36,6 +36,8 @@ export const users = pgTable("users", {
   // Authentication providers
   authProvider: varchar("auth_provider").default("replit"), // replit, google, apple, email
   passwordHash: varchar("password_hash"), // for email/password auth
+  passwordResetToken: varchar("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
   googleId: varchar("google_id"),
   appleId: varchar("apple_id"),
   
