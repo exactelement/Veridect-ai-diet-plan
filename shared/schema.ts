@@ -115,17 +115,15 @@ export const insertFoodLogSchema = createInsertSchema(foodLogs).omit({
 export const updateUserProfileSchema = createInsertSchema(users).pick({
   firstName: true,
   lastName: true,
-  email: true,
   dietaryPreferences: true,
   healthGoals: true,
   medicalConditions: true,
   allergies: true,
   privacySettings: true,
 }).extend({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-});
+  firstName: z.string().min(1, "First name is required").optional(),
+  lastName: z.string().min(1, "Last name is required").optional(),
+}).partial();
 
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
