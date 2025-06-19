@@ -32,16 +32,30 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  
+  // Authentication providers
+  authProvider: varchar("auth_provider").default("replit"), // replit, google, apple, email
+  passwordHash: varchar("password_hash"), // for email/password auth
+  googleId: varchar("google_id"),
+  appleId: varchar("apple_id"),
+  
+  // Subscription
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionTier: varchar("subscription_tier").default("free"), // free, pro, medical
   subscriptionStatus: varchar("subscription_status").default("inactive"), // active, inactive, cancelled
+  
+  // User preferences and onboarding
   onboardingCompleted: boolean("onboarding_completed").default(false),
   dietaryPreferences: jsonb("dietary_preferences"),
   healthGoals: jsonb("health_goals"),
   medicalConditions: jsonb("medical_conditions"),
   allergies: jsonb("allergies"),
+  
+  // GDPR and Privacy
+  gdprConsent: jsonb("gdpr_consent"), // stores consent details and timestamps
   privacySettings: jsonb("privacy_settings"),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

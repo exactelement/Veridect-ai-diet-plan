@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import Login from "@/pages/login";
 import Home from "@/pages/home";
 import Onboarding from "@/pages/onboarding";
 import Profile from "@/pages/profile";
@@ -38,6 +39,7 @@ function Router() {
         {!isAuthenticated ? (
           <>
             <Route path="/" component={Landing} />
+            <Route path="/login" component={Login} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route path="/how-to-use" component={HowToUse} />

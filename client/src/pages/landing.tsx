@@ -20,7 +20,7 @@ export default function Landing() {
               <a href="#features" className="text-ios-secondary hover:text-ios-text transition-colors">Features</a>
               <a href="#pricing" className="text-ios-secondary hover:text-ios-text transition-colors">Pricing</a>
               <a href="#how-it-works" className="text-ios-secondary hover:text-ios-text transition-colors">How It Works</a>
-              <Button onClick={() => window.location.href = "/api/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
                 Get Started
               </Button>
             </div>
@@ -40,7 +40,7 @@ export default function Landing() {
               Get instant health guidance that adapts to your goals and lifestyle.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button onClick={() => window.location.href = "/api/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
                 Try It Free
               </Button>
               <Button variant="outline" className="border-2 border-ios-blue text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button">

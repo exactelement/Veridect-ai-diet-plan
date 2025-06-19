@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupMultiAuth } from "./multiAuth";
 import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -17,6 +18,7 @@ if (process.env.STRIPE_SECRET_KEY) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+  await setupMultiAuth(app);
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
@@ -51,6 +53,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error completing onboarding:", error);
       res.status(500).json({ message: "Failed to complete onboarding" });
+    }
+  });
+
+  // GDPR Consent route
+  app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const consentData = req.body;
+      
+      const updatedUser = await storage.updateGdprConsent(userId, consentData);
+      res.json({ success: true, user: updatedUser });
+    } catch (error: any) {
+      console.error("Error updating GDPR consent:", error);
+      res.status(500).json({ message: "Failed to update consent preferences" });
     }
   });
 
