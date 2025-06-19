@@ -81,12 +81,16 @@ export default function Login() {
     try {
       const response = await apiRequest("POST", "/api/auth/login", data);
       if (response.ok) {
+        toast({
+          title: "Welcome back!",
+          description: "You've been signed in successfully.",
+        });
         window.location.href = "/";
       } else {
         const error = await response.json();
         toast({
           title: "Login Failed",
-          description: error.message || "Invalid credentials",
+          description: error.message || "Invalid email or password",
           variant: "destructive",
         });
       }
@@ -188,8 +192,20 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google";
+  };
+
+  const handleAppleLogin = () => {
+    window.location.href = "/api/auth/apple";
+  };
+
+  const handleReplitLogin = () => {
+    window.location.href = "/api/login";
+  };
+
   return (
-    <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ios-bg to-ios-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -208,49 +224,51 @@ export default function Login() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Social Login Options */}
-          <div className="space-y-3">
-            <Button
-              variant="outline"
-              className="w-full flex items-center gap-3 h-12"
-              onClick={() => window.location.href = "/api/auth/google"}
-            >
-              <Chrome className="w-5 h-5" />
-              Continue with Google
-            </Button>
-            
-            <Button
-              variant="outline"
-              className="w-full flex items-center gap-3 h-12"
-              onClick={() => window.location.href = "/api/auth/apple"}
-            >
-              <Apple className="w-5 h-5" />
-              Continue with Apple
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full flex items-center gap-3 h-12"
-              onClick={() => window.location.href = "/api/login"}
-            >
-              <div className="w-5 h-5 bg-gradient-to-br from-ios-blue to-health-green rounded flex items-center justify-center">
-                <span className="text-white font-bold text-xs">R</span>
+          {/* OAuth Buttons */}
+          {(mode === 'login' || mode === 'register') && (
+            <>
+              <div className="space-y-3">
+                <Button
+                  onClick={handleGoogleLogin}
+                  variant="outline"
+                  className="w-full h-12 text-base font-medium"
+                  disabled={isLoading}
+                >
+                  <Chrome className="mr-2 h-5 w-5" />
+                  Continue with Google
+                </Button>
+                <Button
+                  onClick={handleAppleLogin}
+                  variant="outline"
+                  className="w-full h-12 text-base font-medium"
+                  disabled={isLoading}
+                >
+                  <Apple className="mr-2 h-5 w-5" />
+                  Continue with Apple
+                </Button>
+                <Button
+                  onClick={handleReplitLogin}
+                  variant="outline"
+                  className="w-full h-12 text-base font-medium"
+                  disabled={isLoading}
+                >
+                  Continue with Replit
+                </Button>
               </div>
-              Continue with Replit
-            </Button>
-          </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-ios-secondary">Or continue with email</span>
-            </div>
-          </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-ios-secondary">Or continue with email</span>
+                </div>
+              </div>
+            </>
+          )}
 
-          {/* Email/Password Form */}
-          {isLogin ? (
+          {/* Login Form */}
+          {mode === 'login' && (
             <Form {...loginForm}>
               <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
                 <FormField
@@ -296,7 +314,11 @@ export default function Login() {
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                           >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </FormControl>
@@ -305,16 +327,25 @@ export default function Login() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full bg-ios-blue text-white h-12"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Sign in"}
                 </Button>
+
+                <div className="text-center">
+                  <Button
+                    variant="link"
+                    onClick={() => setMode('forgot')}
+                    className="text-ios-blue text-sm"
+                  >
+                    Forgot password?
+                  </Button>
+                </div>
               </form>
             </Form>
-          ) : (
+          )}
+
+          {/* Register Form */}
+          {mode === 'register' && (
             <Form {...registerForm}>
               <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -331,7 +362,6 @@ export default function Login() {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={registerForm.control}
                     name="lastName"
@@ -390,7 +420,11 @@ export default function Login() {
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                           >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </FormControl>
@@ -420,7 +454,11 @@ export default function Login() {
                             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           >
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </FormControl>
@@ -429,27 +467,147 @@ export default function Login() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full bg-ios-blue text-white h-12"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Creating account..." : "Create account"}
                 </Button>
               </form>
             </Form>
           )}
 
+          {/* Forgot Password Form */}
+          {mode === 'forgot' && (
+            <Form {...forgotForm}>
+              <form onSubmit={forgotForm.handleSubmit(handleForgotPassword)} className="space-y-4">
+                <FormField
+                  control={forgotForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-ios-secondary" />
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="Enter your email"
+                            className="pl-10"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Sending..." : "Send reset link"}
+                </Button>
+
+                <div className="text-center">
+                  <Button
+                    variant="link"
+                    onClick={() => setMode('login')}
+                    className="text-ios-blue text-sm"
+                  >
+                    Back to login
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
+
+          {/* Reset Password Form */}
+          {mode === 'reset' && (
+            <Form {...resetForm}>
+              <form onSubmit={resetForm.handleSubmit(handleResetPassword)} className="space-y-4">
+                <FormField
+                  control={resetForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter new password"
+                            className="pr-10"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={resetForm.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm new password"
+                            className="pr-10"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Updating..." : "Update password"}
+                </Button>
+              </form>
+            </Form>
+          )}
+
           {/* Switch between login/register */}
-          <div className="text-center">
-            <Button
-              variant="link"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-ios-blue"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-            </Button>
-          </div>
+          {(mode === 'login' || mode === 'register') && (
+            <div className="text-center">
+              <Button
+                variant="link"
+                onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                className="text-ios-blue"
+              >
+                {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

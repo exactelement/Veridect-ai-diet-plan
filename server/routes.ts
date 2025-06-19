@@ -110,6 +110,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Food logging endpoint for "Yum" button
+  app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const logData = insertFoodLogSchema.parse({
+        userId,
+        ...req.body
+      });
+      
+      const foodLog = await storage.createFoodLog(logData);
+      
+      // Update weekly score based on verdict
+      await storage.updateWeeklyScore(userId, req.body.verdict);
+      
+      res.json({ success: true, log: foodLog });
+    } catch (error: any) {
+      console.error("Error creating food log:", error);
+      res.status(400).json({ message: error.message || "Failed to log food" });
+    }
+  });
+
   app.get('/api/food/logs', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

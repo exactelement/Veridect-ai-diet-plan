@@ -124,6 +124,53 @@ export default function FoodAnalysis() {
     setFoodDescription("");
   };
 
+  const handleYum = async () => {
+    if (!analysisResult) return;
+    
+    try {
+      const points = analysisResult.verdict === "YES" ? 10 : 
+                   analysisResult.verdict === "OK" ? 5 : 2;
+      
+      const response = await apiRequest("POST", "/api/food-logs", {
+        foodName: analysisResult.foodName,
+        verdict: analysisResult.verdict,
+        explanation: analysisResult.explanation,
+        calories: analysisResult.calories,
+        protein: analysisResult.protein,
+        confidence: analysisResult.confidence,
+        portion: analysisResult.portion,
+        action: "yum",
+        points: points
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Food Logged!",
+          description: `+${points} points added to your score!`,
+        });
+        
+        // Navigate to home page to show updated progress
+        window.location.href = "/";
+      } else {
+        throw new Error("Failed to log food");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log food. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNah = () => {
+    toast({
+      title: "Analysis Discarded",
+      description: "No worries, let's find something better!",
+    });
+    resetAnalysis();
+  };
+
   const getVerdictColor = (verdict: string) => {
     switch (verdict) {
       case "YES": return "text-health-green";
@@ -228,10 +275,26 @@ export default function FoodAnalysis() {
               )}
 
               <div className="flex justify-center space-x-4">
-                <Button onClick={resetAnalysis} variant="outline">
+                <Button 
+                  onClick={handleYum} 
+                  className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold"
+                >
+                  😋 Yum
+                </Button>
+                <Button 
+                  onClick={handleNah} 
+                  variant="outline"
+                  className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold"
+                >
+                  😝 Nah
+                </Button>
+              </div>
+              
+              <div className="flex justify-center space-x-4 pt-4">
+                <Button onClick={resetAnalysis} variant="outline" size="sm">
                   Analyze Another Food
                 </Button>
-                <Button onClick={() => window.history.back()} className="bg-ios-blue text-white">
+                <Button onClick={() => window.history.back()} variant="ghost" size="sm">
                   Back to Dashboard
                 </Button>
               </div>
