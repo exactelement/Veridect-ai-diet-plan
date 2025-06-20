@@ -236,12 +236,14 @@ export default function FoodAnalysis() {
 
             <CardContent className="space-y-6">
               {imagePreview && (
-                <div className="text-center">
-                  <img 
-                    src={imagePreview} 
-                    alt="Analyzed food" 
-                    className="max-w-sm mx-auto rounded-lg shadow-lg"
-                  />
+                <div className="flex justify-center">
+                  <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
+                    <img 
+                      src={imagePreview} 
+                      alt="Analyzed food" 
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
                 </div>
               )}
 
