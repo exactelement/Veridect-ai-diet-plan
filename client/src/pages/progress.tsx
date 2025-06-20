@@ -120,6 +120,125 @@ export default function Progress() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Achievement Challenge Section */}
+        <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Achievement Challenges</h2>
+            
+            <div className="space-y-4">
+              {/* Daily Challenges */}
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <h3 className="font-semibold text-lg mb-3 text-gray-800">Daily Challenges</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Analyze 3 foods today</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((totalStats.total / 3) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600">{Math.min(totalStats.total, 3)}/3</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Make 2 excellent choices</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((totalStats.yes / 2) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600">{Math.min(totalStats.yes, 2)}/2</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Weekly Challenges */}
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <h3 className="font-semibold text-lg mb-3 text-gray-800">Weekly Challenges</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Analyze 20 foods this week</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((totalStats.total / 20) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600">{Math.min(totalStats.total, 20)}/20</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700">Maintain 80% excellent/moderate ratio</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                          style={{ 
+                            width: `${totalStats.total > 0 ? Math.min(((totalStats.yes + totalStats.ok) / totalStats.total) * 125, 100) : 0}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {totalStats.total > 0 ? Math.round(((totalStats.yes + totalStats.ok) / totalStats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Milestone Achievements */}
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <h3 className="font-semibold text-lg mb-3 text-gray-800">Milestone Achievements</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className={`p-3 rounded-lg border-2 ${totalStats.total >= 10 ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${totalStats.total >= 10 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                      <span className={`text-sm font-medium ${totalStats.total >= 10 ? 'text-green-700' : 'text-gray-600'}`}>
+                        First 10 Foods
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg border-2 ${totalStats.total >= 50 ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${totalStats.total >= 50 ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
+                      <span className={`text-sm font-medium ${totalStats.total >= 50 ? 'text-blue-700' : 'text-gray-600'}`}>
+                        Health Explorer (50)
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg border-2 ${totalStats.yes >= 25 ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${totalStats.yes >= 25 ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
+                      <span className={`text-sm font-medium ${totalStats.yes >= 25 ? 'text-yellow-700' : 'text-gray-600'}`}>
+                        Excellence Master (25)
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className={`p-3 rounded-lg border-2 ${totalStats.total >= 100 ? 'bg-purple-50 border-purple-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${totalStats.total >= 100 ? 'bg-purple-500' : 'bg-gray-300'}`}></div>
+                      <span className={`text-sm font-medium ${totalStats.total >= 100 ? 'text-purple-700' : 'text-gray-600'}`}>
+                        Century Club (100)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
