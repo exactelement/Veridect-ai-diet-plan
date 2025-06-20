@@ -14,18 +14,28 @@ export default function Leaderboard() {
     queryKey: ["/api/leaderboard/my-score"],
   });
 
-  // Calculate weekly challenge progress
+  // Calculate weekly challenge progress based on Madrid timezone (Monday 00:00 reset)
   const getCurrentWeekProgress = () => {
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
-    const daysPassed = Math.floor((now.getTime() - startOfWeek.getTime()) / (1000 * 60 * 60 * 24));
+    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
+    
+    // Find the most recent Monday 00:00 Madrid time
+    const startOfWeek = new Date(madridTime);
+    const dayOfWeek = startOfWeek.getDay(); // 0 = Sunday, 1 = Monday
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
+    startOfWeek.setDate(startOfWeek.getDate() - daysToSubtract);
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const timeElapsed = madridTime.getTime() - startOfWeek.getTime();
+    const daysPassed = Math.floor(timeElapsed / (1000 * 60 * 60 * 24));
     const daysRemaining = Math.max(0, 7 - daysPassed);
     const progressPercentage = Math.round((daysPassed / 7) * 100);
+    
     return { daysRemaining, progressPercentage };
   };
 
   const { daysRemaining, progressPercentage } = getCurrentWeekProgress();
+  const participantCount = leaderboard.length;
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -62,7 +72,7 @@ export default function Leaderboard() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent mb-4">
               Weekly Leaderboard
             </h1>
-            <p className="text-xl text-ios-secondary">See how you stack up against other health champions</p>
+
           </div>
 
           {/* Weekly Challenge Card */}
@@ -77,7 +87,7 @@ export default function Leaderboard() {
                     <h3 className="text-xl font-bold text-orange-800">No Junk Food Week</h3>
                     <div className="flex items-center gap-2 text-orange-700">
                       <Users className="w-4 h-4" />
-                      <span className="font-semibold">7</span>
+                      <span className="font-semibold">{participantCount}</span>
                       <span className="text-sm">participants</span>
                     </div>
                   </div>
@@ -237,32 +247,13 @@ export default function Leaderboard() {
               
               <div className="mt-6 p-4 bg-white/50 rounded-lg">
                 <p className="text-sm text-ios-secondary text-center">
-                  Rankings reset every Sunday. Only foods you choose to log (click "Yum") count toward your score.
+                  Rankings reset every Monday at 00:00 Madrid time. Only foods you choose to log (click "Yum") count toward your score.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Weekly Challenge */}
-          <Card className="bg-gradient-to-r from-purple-500/5 to-pink-500/5 border-purple-500/20">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Crown className="w-5 h-5 mr-3 text-purple-500" />
-                This Week's Challenge
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold mb-2">🥗 Veggie Victory Week</h3>
-                <p className="text-ios-secondary mb-4">
-                  Focus on vegetables and plant-based foods to earn bonus points and climb the leaderboard!
-                </p>
-                <Badge className="bg-purple-500/10 text-purple-500 border-purple-500/20">
-                  Challenge Active
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
       </div>
     </div>
