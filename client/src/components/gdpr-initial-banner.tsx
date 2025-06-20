@@ -93,18 +93,18 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
 
 
 
-          <div className="space-y-2 mb-3">
+          <div className="space-y-1 mb-2">
             <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
             <p className="text-sm text-ios-secondary">
               Essential data is required for app functionality. Optional settings can be changed anytime in your profile.
             </p>
 
-            <div className="space-y-1">
-              <div className="flex items-center justify-between p-3 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text/70">Essential App Data Collection</h4>
                   <p className="text-sm text-ios-secondary/70">
-                    Food analysis, progress tracking, and authentication - required for app functionality
+                    Required for app functionality
                   </p>
                 </div>
                 <Switch
@@ -113,11 +113,11 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                   className="opacity-50"
                 />
               </div>
-              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Improve AI Food Analysis</h4>
                   <p className="text-sm text-ios-secondary">
-                    Help train our AI to give better "Yes/No/OK" verdicts by sharing anonymized food analysis results
+                    Share anonymized data to improve AI verdicts
                   </p>
                 </div>
                 <Switch
@@ -128,11 +128,11 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Weekly Nutrition Insights</h4>
                   <p className="text-sm text-ios-secondary">
-                    Receive personalized emails with your progress summary, streak tips, and healthy food suggestions
+                    Weekly progress emails and nutrition tips
                   </p>
                 </div>
                 <Switch
@@ -143,11 +143,11 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Anonymous Usage Analytics</h4>
                   <p className="text-sm text-ios-secondary">
-                    Share how you use the app (button clicks, feature usage) to help us improve the experience
+                    Help improve app experience with usage data
                   </p>
                 </div>
                 <Switch
