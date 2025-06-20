@@ -309,7 +309,7 @@ export class DatabaseStorage implements IStorage {
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    // Get all users with their weekly scores, or default values if no score exists
+    // Get only users who are participating in weekly challenges
     const allUsers = await db
       .select({
         id: sql<number>`COALESCE(${weeklyScores.id}, 0)`.as('id'),
@@ -331,6 +331,9 @@ export class DatabaseStorage implements IStorage {
           eq(weeklyScores.weekStart, startOfWeek)
         )
       )
+      .where(
+        sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
+      )
       .orderBy(
         desc(sql`CAST(COALESCE(${weeklyScores.totalScore}, '0') AS INTEGER)`),
         users.createdAt
@@ -350,6 +353,19 @@ export class DatabaseStorage implements IStorage {
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
+
+    // First check if user is participating in weekly challenges
+    const [user] = await db
+      .select({ privacySettings: users.privacySettings })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    if (!user) return undefined;
+
+    const privacySettings = user.privacySettings as any;
+    const isParticipating = privacySettings?.participateInWeeklyChallenge !== false;
+    
+    if (!isParticipating) return undefined;
 
     const [score] = await db
       .select()
@@ -441,7 +457,10 @@ export class DatabaseStorage implements IStorage {
   async getUserCount(): Promise<number> {
     const result = await db
       .select({ count: sql<number>`count(*)` })
-      .from(users);
+      .from(users)
+      .where(
+        sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
+      );
     return Number(result[0].count);
   }
 }
