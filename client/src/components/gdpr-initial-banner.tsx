@@ -16,9 +16,9 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
   const queryClient = useQueryClient();
 
   const [preferences, setPreferences] = useState({
-    improveAIRecommendations: false,
-    nutritionInsightsEmails: false,
-    anonymousUsageAnalytics: false,
+    improveAIRecommendations: true,
+    nutritionInsightsEmails: true,
+    anonymousUsageAnalytics: true,
   });
 
   const updateConsentMutation = useMutation({
@@ -97,21 +97,32 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
               <div className="text-sm">
                 <p className="font-medium text-orange-800 mb-2">Essential Data Collection Notice</p>
                 <p className="text-orange-700">
-                  Continuing to use YesNoApp means agreeing to our Terms of Service, which include 
-                  collecting essential data for app functionality (food analysis, progress tracking, 
-                  user authentication). This data is required for the app to work properly.
+                  Using YesNoApp requires collecting essential data for app functionality. This includes food analysis, progress tracking, and user authentication - required for the app to work.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="space-y-4 mb-6">
-            <h3 className="font-semibold text-ios-text">Optional Data Sharing Preferences</h3>
+            <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
             <p className="text-sm text-ios-secondary">
-              These settings are optional and can be changed anytime in your profile privacy settings.
+              Essential data is required for app functionality. Optional settings can be changed anytime in your profile.
             </p>
 
             <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text/70">Essential App Data Collection</h4>
+                  <p className="text-sm text-ios-secondary/70">
+                    Food analysis, progress tracking, and authentication - required for app functionality
+                  </p>
+                </div>
+                <Switch
+                  checked={true}
+                  disabled={true}
+                  className="opacity-50"
+                />
+              </div>
               <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Improve AI Food Analysis</h4>
