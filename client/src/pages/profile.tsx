@@ -66,6 +66,7 @@ export default function Profile() {
   // App interface preferences (sync with user data)
   const [showCalories, setShowCalories] = useState(true);
   const [participateInChallenge, setParticipateInChallenge] = useState(true);
+  const [showFoodStats, setShowFoodStats] = useState(true);
 
   // Update state when user data changes
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function Profile() {
       const privacySettings = (user as any)?.privacySettings;
       setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
       setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
+      setShowFoodStats(privacySettings?.showFoodStats === undefined ? true : privacySettings.showFoodStats);
     }
   }, [user]);
 
@@ -169,7 +171,7 @@ export default function Profile() {
   });
 
   const updateInterfaceMutation = useMutation({
-    mutationFn: async (preferences: { showCalorieCounter: boolean; participateInWeeklyChallenge: boolean }) => {
+    mutationFn: async (preferences: { showCalorieCounter: boolean; participateInWeeklyChallenge: boolean; showFoodStats: boolean }) => {
       const updatedSettings = {
         privacySettings: {
           ...((user as any)?.privacySettings || {}),
@@ -578,6 +580,7 @@ export default function Profile() {
                         updateInterfaceMutation.mutate({
                           showCalorieCounter: checked,
                           participateInWeeklyChallenge: participateInChallenge,
+                          showFoodStats: showFoodStats,
                         });
                       }}
                       disabled={updateInterfaceMutation.isPending}
@@ -596,6 +599,26 @@ export default function Profile() {
                         updateInterfaceMutation.mutate({
                           showCalorieCounter: showCalories,
                           participateInWeeklyChallenge: checked,
+                          showFoodStats: showFoodStats,
+                        });
+                      }}
+                      disabled={updateInterfaceMutation.isPending}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium">Show Food Statistics</h3>
+                      <p className="text-sm text-ios-secondary">Display Yes/OK/No food counts and health score</p>
+                    </div>
+                    <Switch
+                      checked={showFoodStats}
+                      onCheckedChange={(checked) => {
+                        // Don't update local state immediately - wait for server response
+                        updateInterfaceMutation.mutate({
+                          showCalorieCounter: showCalories,
+                          participateInWeeklyChallenge: participateInChallenge,
+                          showFoodStats: checked,
                         });
                       }}
                       disabled={updateInterfaceMutation.isPending}

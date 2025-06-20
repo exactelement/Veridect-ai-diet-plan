@@ -85,6 +85,7 @@ export default function Home() {
   const privacySettings = (activeUser as any)?.privacySettings || {};
   const showCalorieCounter = privacySettings.showCalorieCounter !== false;
   const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false;
+  const showFoodStats = privacySettings.showFoodStats !== false;
 
 
 
@@ -193,39 +194,41 @@ export default function Home() {
             )}
 
             {/* Daily Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                <CardContent className="p-4 text-center">
-                  <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-green-700">{todaysStats.yes}</div>
-                  <div className="text-sm text-green-600">Yes Foods</div>
-                </CardContent>
-              </Card>
+            {showFoodStats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                  <CardContent className="p-4 text-center">
+                    <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-green-700">{todaysStats.yes}</div>
+                    <div className="text-sm text-green-600">Yes Foods</div>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-                <CardContent className="p-4 text-center">
-                  <AlertCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-yellow-700">{todaysStats.ok}</div>
-                  <div className="text-sm text-yellow-600">OK Foods</div>
-                </CardContent>
-              </Card>
+                <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+                  <CardContent className="p-4 text-center">
+                    <AlertCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-yellow-700">{todaysStats.ok}</div>
+                    <div className="text-sm text-yellow-600">OK Foods</div>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-                <CardContent className="p-4 text-center">
-                  <XCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-red-700">{todaysStats.no}</div>
-                  <div className="text-sm text-red-600">No Foods</div>
-                </CardContent>
-              </Card>
+                <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+                  <CardContent className="p-4 text-center">
+                    <XCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-red-700">{todaysStats.no}</div>
+                    <div className="text-sm text-red-600">No Foods</div>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                <CardContent className="p-4 text-center">
-                  <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-blue-700">{healthScore}%</div>
-                  <div className="text-sm text-blue-600">Health Score</div>
-                </CardContent>
-              </Card>
-            </div>
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                  <CardContent className="p-4 text-center">
+                    <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-blue-700">{healthScore}%</div>
+                    <div className="text-sm text-blue-600">Health Score</div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Streak & Level Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
