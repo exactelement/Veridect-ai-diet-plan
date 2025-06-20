@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Food analysis routes
   app.post('/api/food/analyze', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { foodName, imageData } = req.body;
 
       if (!foodName && !imageData) {
@@ -124,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Food logging endpoint for "Yum" button
   app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const logData = insertFoodLogSchema.parse({
         userId,
         ...req.body
@@ -144,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { limit = 50, offset = 0 } = req.query;
       const logs = await storage.getFoodLogs(userId, parseInt(limit), parseInt(offset));
       res.json(logs);
@@ -156,7 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs/today', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const logs = await storage.getTodaysFoodLogs(userId);
       res.json(logs);
     } catch (error) {
@@ -178,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/leaderboard/my-score', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const score = await storage.getUserWeeklyScore(userId);
       res.json(score);
     } catch (error) {
@@ -194,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { tier } = req.body;
 
       if (!['pro', 'medical'].includes(tier)) {
@@ -258,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user?.stripeSubscriptionId) {
