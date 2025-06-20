@@ -198,9 +198,76 @@ export default function Login() {
     window.location.href = "/api/auth/google";
   };
 
-  const handleAppleLogin = () => {
-    window.location.href = "/api/auth/apple";
+  const handleAppleLogin = async () => {
+    try {
+      // Check if AppleID is available
+      if (typeof (window as any).AppleID === 'undefined') {
+        toast({
+          title: "Apple Sign-In Not Available",
+          description: "Apple Sign-In requires proper Apple Developer configuration",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setIsLoading(true);
+
+      // Configure Apple Sign-In
+      await (window as any).AppleID.auth.init({
+        clientId: 'com.yesnoapp.signin', // This would be your Apple Developer service ID
+        scope: 'name email',
+        redirectURI: window.location.origin,
+        state: 'signin',
+        usePopup: true
+      });
+
+      // Perform Apple Sign-In
+      const data = await (window as any).AppleID.auth.signIn();
+      
+      if (data.authorization && data.authorization.id_token) {
+        // Send the identity token to your backend
+        const response = await apiRequest("POST", "/api/auth/apple", {
+          identityToken: data.authorization.id_token,
+          user: data.user
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          toast({
+            title: "Apple Sign-In Successful",
+            description: "Welcome to YesNoApp!",
+          });
+          
+          // Redirect based on onboarding status
+          window.location.href = result.redirect || "/";
+        } else {
+          const error = await response.json();
+          toast({
+            title: "Apple Sign-In Failed",
+            description: error.message || "Authentication failed",
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error("Apple Sign-In error:", error);
+      
+      if (error.error === 'popup_closed_by_user') {
+        // User cancelled - don't show error
+        return;
+      }
+      
+      toast({
+        title: "Apple Sign-In Failed",
+        description: "Unable to complete Apple Sign-In",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
 
   const handleReplitLogin = () => {
     window.location.href = "/api/login";
