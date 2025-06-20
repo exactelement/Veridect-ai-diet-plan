@@ -50,17 +50,7 @@ export default function TopHeader() {
               </SheetTrigger>
               <SheetContent side="right" className="w-80">
                 <SheetHeader>
-                  <SheetTitle className="flex items-center justify-between">
-                    Menu
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="p-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </SheetTitle>
+                  <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
                 
                 <div className="mt-8 space-y-6">

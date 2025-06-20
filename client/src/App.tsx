@@ -38,7 +38,7 @@ function Router() {
 
   return (
     <div className="min-h-screen bg-ios-bg">
-      {isAuthenticated && <Navigation />}
+      {isAuthenticated && user && (user as any).onboardingCompleted && <TopHeader />}
       
       <Switch>
         {!isAuthenticated ? (
@@ -49,10 +49,11 @@ function Router() {
             <Route path="/terms" component={Terms} />
             <Route path="/how-to-use" component={HowToUse} />
             <Route path="/about" component={About} />
+            <Route path="/investor" component={Investor} />
+            <Route path="/disclaimer" component={Disclaimer} />
           </>
         ) : user && (user as any).onboardingCompleted ? (
           <>
-            <TopHeader />
             <Route path="/" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />
             <Route path="/progress" component={Progress} />
@@ -65,14 +66,14 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/investor" component={Investor} />
             <Route path="/disclaimer" component={Disclaimer} />
-            <Navigation />
           </>
         ) : (
           <Route path="*" component={Onboarding} />
         )}
         <Route component={NotFound} />
       </Switch>
-
+      
+      {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
       {isAuthenticated && <GDPRBanner />}
     </div>
   );

@@ -209,3 +209,11 @@ export async function setupMultiAuth(app: Express) {
     }
   });
 }
+
+// Authentication middleware
+export function isAuthenticated(req: any, res: any, next: any) {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+}
