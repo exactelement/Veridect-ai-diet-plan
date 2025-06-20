@@ -93,13 +93,13 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
 
 
 
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 mb-5">
             <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
             <p className="text-sm text-ios-secondary">
               Essential data is required for app functionality. Optional settings can be changed anytime in your profile.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center justify-between p-4 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text/70">Essential App Data Collection</h4>
