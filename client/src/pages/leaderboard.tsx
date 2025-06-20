@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Medal, Award, Crown, TrendingUp, Users, Calendar, Target } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
+  const { user } = useAuth();
   const { data: leaderboard = [] } = useQuery<WeeklyScore[]>({
     queryKey: ["/api/leaderboard/weekly"],
   });
@@ -169,11 +171,17 @@ export default function Leaderboard() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <Link href="/profile">
-                                <h3 className="font-semibold text-lg hover:text-ios-blue cursor-pointer transition-colors">
+                              {entry.userId === (user as any)?.id ? (
+                                <Link href="/profile">
+                                  <h3 className="font-semibold text-lg hover:text-ios-blue cursor-pointer transition-colors">
+                                    {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''} <span className="text-ios-secondary font-normal">(you)</span>
+                                  </h3>
+                                </Link>
+                              ) : (
+                                <h3 className="font-semibold text-lg">
                                   {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
                                 </h3>
-                              </Link>
+                              )}
                               {entry.rank === 1 && <span className="text-yellow-500 text-lg">🏆</span>}
                               {entry.rank === 2 && <span className="text-gray-400 text-lg">🥈</span>}
                               {entry.rank === 3 && <span className="text-amber-600 text-lg">🥉</span>}
