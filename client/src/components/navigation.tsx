@@ -12,6 +12,12 @@ export default function Navigation() {
     { id: "profile", icon: User, label: "Profile", path: "/profile" },
   ];
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    // Scroll to top of page when navigating
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const isActive = (path: string) => {
     if (path === "/" && location === "/") return true;
     if (path !== "/" && location.startsWith(path)) return true;
@@ -29,7 +35,7 @@ export default function Navigation() {
             return (
               <button
                 key={item.id}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleNavigation(item.path)}
                 className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-all duration-200 ${
                   active
                     ? "text-ios-blue"
