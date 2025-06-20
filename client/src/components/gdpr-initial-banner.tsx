@@ -19,7 +19,6 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
     improveAIRecommendations: false,
     nutritionInsightsEmails: false,
     anonymousUsageAnalytics: false,
-    communityFoodDatabase: false,
   });
 
   const updateConsentMutation = useMutation({
@@ -51,7 +50,6 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
       improveAIRecommendations: true,
       nutritionInsightsEmails: true,
       anonymousUsageAnalytics: true,
-      communityFoodDatabase: true,
     };
     updateConsentMutation.mutate(allConsent);
   };
@@ -66,7 +64,6 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
       improveAIRecommendations: false,
       nutritionInsightsEmails: false,
       anonymousUsageAnalytics: false,
-      communityFoodDatabase: false,
     });
   };
 
@@ -160,20 +157,7 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
-                <div className="flex-1">
-                  <h4 className="font-medium text-ios-text">Community Food Database</h4>
-                  <p className="text-sm text-ios-secondary">
-                    Add your analyzed foods to our community database to help other users get faster results
-                  </p>
-                </div>
-                <Switch
-                  checked={preferences.communityFoodDatabase}
-                  onCheckedChange={(checked) =>
-                    setPreferences(prev => ({ ...prev, communityFoodDatabase: checked }))
-                  }
-                />
-              </div>
+
             </div>
           </div>
 
