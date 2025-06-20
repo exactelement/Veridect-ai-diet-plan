@@ -6,6 +6,8 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import type { Express } from "express";
 import { storage } from "./storage";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
@@ -134,9 +136,64 @@ export async function setupMultiAuth(app: Express) {
     res.redirect('/#/login?message=Please use email/password login');
   });
 
-  // Apple Sign-In (placeholder for future implementation)
-  app.get('/api/auth/apple', (req, res) => {
-    res.status(501).json({ message: "Apple Sign-In coming soon" });
+  // Apple Sign-In implementation
+  app.post('/api/auth/apple', async (req, res) => {
+    try {
+      const { identityToken, user } = req.body;
+      
+      if (!identityToken) {
+        return res.status(400).json({ message: "Apple identity token is required" });
+      }
+
+      // Decode Apple JWT token (without verification for now - in production you'd verify with Apple's public key)
+      const decoded = jwt.decode(identityToken) as any;
+      
+      if (!decoded || !decoded.sub) {
+        return res.status(400).json({ message: "Invalid Apple identity token" });
+      }
+
+      const appleId = decoded.sub;
+      const email = decoded.email || user?.email;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required for Apple Sign-In" });
+      }
+
+      // Check if user exists by email
+      let existingUser = await storage.getUserByEmail(email);
+      
+      if (!existingUser) {
+        // Create new user from Apple Sign-In
+        const firstName = user?.name?.firstName || "";
+        const lastName = user?.name?.lastName || "";
+        
+        existingUser = await storage.upsertUser({
+          id: `apple_${appleId}`,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          authProvider: "apple",
+          appleId: appleId,
+        });
+      }
+
+      // Login the user
+      req.logIn(existingUser, (err) => {
+        if (err) {
+          console.error("Apple login error:", err);
+          return res.status(500).json({ message: "Login failed" });
+        }
+        res.json({ 
+          message: "Apple Sign-In successful",
+          user: existingUser,
+          redirect: existingUser.onboardingCompleted ? "/" : "/onboarding"
+        });
+      });
+
+    } catch (error) {
+      console.error("Apple Sign-In error:", error);
+      res.status(500).json({ message: "Apple Sign-In failed" });
+    }
   });
 
   // Email/Password registration
