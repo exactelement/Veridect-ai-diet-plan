@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Camera, Trophy, Target, TrendingUp, Zap, Star, Award, Calendar, Heart, Brain, Shield, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Camera, Trophy, Target, TrendingUp, Zap, Star, Award, Calendar, Clock, Heart, Brain, Shield, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -46,6 +46,10 @@ export default function Home() {
     queryKey: ["/api/leaderboard/my-score"],
   });
 
+  const { data: leaderboard = [] } = useQuery({
+    queryKey: ["/api/leaderboard/weekly"],
+  });
+
   // Calculate today's stats
   const todaysStats = todaysLogs.reduce(
     (acc: any, log: FoodLog) => {
@@ -53,6 +57,11 @@ export default function Home() {
       return acc;
     },
     { yes: 0, ok: 0, no: 0 }
+  );
+
+  const totalCalories = todaysLogs.reduce(
+    (acc: number, log: FoodLog) => acc + (log.calories || 0),
+    0
   );
 
   const healthScore = todaysLogs.length > 0 
