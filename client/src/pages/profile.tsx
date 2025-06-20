@@ -183,10 +183,17 @@ export default function Profile() {
       toast({
         title: "Interface Updated",
         description: "Your display preferences have been saved.",
+        duration: 3000, // Auto-dismiss after 3 seconds
       });
-      // Force refresh user data and wait for it
+      // Force refresh user data across all components
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Also invalidate any other queries that might cache user data
+      queryClient.invalidateQueries();
+      
+      // Force a page-wide refresh of user context
+      window.dispatchEvent(new CustomEvent('userDataUpdated'));
       
       // Update local state to match what was saved
       setShowCalories(variables.showCalorieCounter);

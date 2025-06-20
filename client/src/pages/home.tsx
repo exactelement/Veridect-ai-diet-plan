@@ -46,6 +46,12 @@ export default function Home() {
     queryKey: ["/api/leaderboard/my-score"],
   });
 
+  // Force refresh user data to get latest privacy settings
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/user"],
+    staleTime: 0, // Always fetch fresh data
+  });
+
   // Calculate today's stats
   const todaysStats = todaysLogs.reduce(
     (acc: any, log: FoodLog) => {
@@ -74,10 +80,11 @@ export default function Home() {
   const pointsToNextLevel = ((currentLevel * 100) - totalPoints);
   const levelProgress = ((totalPoints % 100) / 100) * 100;
 
-  // User interface preferences - properly check for explicit false values
-  const privacySettings = (user as any)?.privacySettings;
-  const showCalorieCounter = privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter;
-  const participateInWeeklyChallenge = privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge;
+  // User interface preferences - use fresh user data directly
+  const activeUser = currentUser || user;
+  const privacySettings = (activeUser as any)?.privacySettings || {};
+  const showCalorieCounter = privacySettings.showCalorieCounter !== false;
+  const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false;
 
   // Debug logging
   console.log('Home page - Privacy settings:', privacySettings);
