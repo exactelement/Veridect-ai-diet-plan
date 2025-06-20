@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/user/complete-onboarding', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const updatedUser = await storage.completeOnboarding(userId);
       res.json(updatedUser);
     } catch (error) {
@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Consent route
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const consentData = req.body;
       
       const updatedUser = await storage.updateGdprConsent(userId, consentData);
