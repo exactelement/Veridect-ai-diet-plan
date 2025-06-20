@@ -91,17 +91,7 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
             </Button>
           </div>
 
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start space-x-3">
-              <Info className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium text-orange-800 mb-2">Essential Data Collection Notice</p>
-                <p className="text-orange-700">
-                  Using YesNoApp requires collecting essential data for app functionality. This includes food analysis, progress tracking, and user authentication - required for the app to work.
-                </p>
-              </div>
-            </div>
-          </div>
+
 
           <div className="space-y-4 mb-6">
             <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
