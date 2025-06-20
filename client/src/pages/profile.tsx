@@ -187,7 +187,13 @@ export default function Profile() {
         description: "Your display preferences have been saved.",
         duration: 3000, // Auto-dismiss after 3 seconds
       });
-      // Simply invalidate the user data query to refresh
+      
+      // Update local state to reflect the saved changes
+      setShowCalories(variables.showCalorieCounter);
+      setParticipateInChallenge(variables.participateInWeeklyChallenge);
+      setShowFoodStats(variables.showFoodStats);
+      
+      // Invalidate the user data query to refresh
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: Error, variables) => {
@@ -195,6 +201,7 @@ export default function Profile() {
       const privacySettings = (user as any)?.privacySettings;
       setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
       setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
+      setShowFoodStats(privacySettings?.showFoodStats === undefined ? true : privacySettings.showFoodStats);
       
       toast({
         title: "Update Failed",
