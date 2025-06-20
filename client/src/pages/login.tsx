@@ -119,7 +119,9 @@ export default function Login() {
         const error = await response.json();
         toast({
           title: "Registration Failed",
-          description: error.message || "Failed to create account",
+          description: error.message === "User already exists with this email" 
+            ? "This email is already registered. Try logging in instead or use a different email."
+            : error.message || "Failed to create account",
           variant: "destructive",
         });
       }
