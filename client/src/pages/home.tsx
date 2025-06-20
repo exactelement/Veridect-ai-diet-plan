@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -89,8 +90,41 @@ export default function Home() {
 
 
 
-  const currentHour = new Date().getHours();
-  const timeGreeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
+  // Dynamic greeting based on user's local device time
+  const [timeGreeting, setTimeGreeting] = useState(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    if (currentHour < 12) {
+      return "Good morning";
+    } else if (currentHour < 18) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  });
+
+  // Update greeting every minute to ensure accuracy
+  useEffect(() => {
+    const updateGreeting = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      
+      const newGreeting = currentHour < 12 
+        ? "Good morning" 
+        : currentHour < 18 
+        ? "Good afternoon" 
+        : "Good evening";
+      
+      setTimeGreeting(newGreeting);
+    };
+
+    // Update immediately and then every minute
+    updateGreeting();
+    const interval = setInterval(updateGreeting, 60000); // 60 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Subscription tiers
   const subscriptionTiers: SubscriptionTier[] = [
