@@ -53,6 +53,9 @@ export interface IStorage {
   updateWeeklyScore(userId: string, verdict: string): Promise<void>;
   getWeeklyLeaderboard(): Promise<WeeklyScore[]>;
   getUserWeeklyScore(userId: string): Promise<WeeklyScore | undefined>;
+  
+  // User count
+  getUserCount(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -305,23 +308,40 @@ export class DatabaseStorage implements IStorage {
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    return await db
+    // Get all users with their weekly scores, or default values if no score exists
+    const allUsers = await db
       .select({
-        id: weeklyScores.id,
-        userId: weeklyScores.userId,
-        weekStart: weeklyScores.weekStart,
-        yesCount: weeklyScores.yesCount,
-        noCount: weeklyScores.noCount,
-        okCount: weeklyScores.okCount,
-        totalScore: weeklyScores.totalScore,
-        rank: weeklyScores.rank,
+        id: sql<number>`COALESCE(${weeklyScores.id}, 0)`.as('id'),
+        userId: users.id,
+        weekStart: sql<Date>`COALESCE(${weeklyScores.weekStart}, ${startOfWeek})`.as('weekStart'),
+        yesCount: sql<number>`COALESCE(${weeklyScores.yesCount}, 0)`.as('yesCount'),
+        noCount: sql<number>`COALESCE(${weeklyScores.noCount}, 0)`.as('noCount'),
+        okCount: sql<number>`COALESCE(${weeklyScores.okCount}, 0)`.as('okCount'),
+        totalScore: sql<string>`COALESCE(${weeklyScores.totalScore}, '0')`.as('totalScore'),
+        rank: sql<number>`999`.as('rank'), // Will be assigned below
         firstName: users.firstName,
         lastName: users.lastName,
+        createdAt: users.createdAt,
       })
-      .from(weeklyScores)
-      .leftJoin(users, eq(weeklyScores.userId, users.id))
-      .where(eq(weeklyScores.weekStart, startOfWeek))
-      .orderBy(weeklyScores.rank);
+      .from(users)
+      .leftJoin(weeklyScores, 
+        and(
+          eq(weeklyScores.userId, users.id),
+          eq(weeklyScores.weekStart, startOfWeek)
+        )
+      )
+      .orderBy(
+        desc(sql`CAST(COALESCE(${weeklyScores.totalScore}, '0') AS INTEGER)`),
+        users.createdAt
+      );
+
+    // Assign ranks properly - users with same score get same rank, then by join time
+    const rankedUsers = allUsers.map((user, index) => {
+      user.rank = index + 1;
+      return user;
+    });
+
+    return rankedUsers;
   }
 
   async getUserWeeklyScore(userId: string): Promise<WeeklyScore | undefined> {
@@ -415,6 +435,13 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updatedUser;
+  }
+
+  async getUserCount(): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users);
+    return Number(result[0].count);
   }
 }
 

@@ -15,6 +15,32 @@ if (process.env.STRIPE_SECRET_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Public API endpoints (no authentication required)
+  
+  // Get user count
+  app.get('/api/users/count', async (req, res) => {
+    try {
+      const count = await storage.getUserCount();
+      res.json({ count });
+    } catch (error) {
+      console.error('Error fetching user count:', error);
+      res.status(500).json({ message: 'Failed to fetch user count' });
+    }
+  });
+
+  // Get weekly leaderboard - shows all users (public endpoint)
+  app.get('/api/leaderboard/weekly', async (req, res) => {
+    try {
+      console.log('Fetching weekly leaderboard...');
+      const leaderboard = await storage.getWeeklyLeaderboard();
+      console.log('Leaderboard data:', leaderboard.length, 'users');
+      res.json(leaderboard);
+    } catch (error) {
+      console.error('Error fetching weekly leaderboard:', error);
+      res.status(500).json({ message: 'Failed to fetch weekly leaderboard' });
+    }
+  });
+
   // Auth middleware
   await setupMultiAuth(app);
 

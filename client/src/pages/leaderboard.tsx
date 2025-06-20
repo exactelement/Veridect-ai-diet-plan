@@ -35,7 +35,13 @@ export default function Leaderboard() {
   };
 
   const { daysRemaining, progressPercentage } = getCurrentWeekProgress();
-  const participantCount = leaderboard.length;
+  
+  // Get total user count for participants
+  const { data: allUsers } = useQuery<{count: number}>({
+    queryKey: ["/api/users/count"],
+  });
+  
+  const participantCount = allUsers?.count || leaderboard.length;
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
