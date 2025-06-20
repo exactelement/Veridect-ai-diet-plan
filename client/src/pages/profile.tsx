@@ -63,9 +63,9 @@ export default function Profile() {
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   
-  // App interface preferences (local state for now)
-  const [showCalories, setShowCalories] = useState(true);
-  const [participateInChallenge, setParticipateInChallenge] = useState(true);
+  // App interface preferences (sync with user data)
+  const [showCalories, setShowCalories] = useState((user as any)?.privacySettings?.showCalorieCounter !== false);
+  const [participateInChallenge, setParticipateInChallenge] = useState((user as any)?.privacySettings?.participateInWeeklyChallenge !== false);
 
   const { data: foodLogs = [], isLoading: logsLoading } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],
@@ -147,6 +147,31 @@ export default function Profile() {
       toast({
         title: "Preferences Updated",
         description: "Your health goals and preferences have been saved.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateInterfaceMutation = useMutation({
+    mutationFn: async (preferences: { showCalorieCounter: boolean; participateInWeeklyChallenge: boolean }) => {
+      await apiRequest("PUT", "/api/user/profile", {
+        privacySettings: {
+          ...((user as any)?.privacySettings || {}),
+          ...preferences,
+        },
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Interface Updated",
+        description: "Your display preferences have been saved.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
@@ -530,7 +555,13 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={showCalories}
-                      onCheckedChange={setShowCalories}
+                      onCheckedChange={(checked) => {
+                        setShowCalories(checked);
+                        updateInterfaceMutation.mutate({
+                          showCalorieCounter: checked,
+                          participateInWeeklyChallenge: participateInChallenge,
+                        });
+                      }}
                     />
                   </div>
 
@@ -541,7 +572,13 @@ export default function Profile() {
                     </div>
                     <Switch
                       checked={participateInChallenge}
-                      onCheckedChange={setParticipateInChallenge}
+                      onCheckedChange={(checked) => {
+                        setParticipateInChallenge(checked);
+                        updateInterfaceMutation.mutate({
+                          showCalorieCounter: showCalories,
+                          participateInWeeklyChallenge: checked,
+                        });
+                      }}
                     />
                   </div>
 

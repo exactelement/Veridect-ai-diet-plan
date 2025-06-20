@@ -17,6 +17,9 @@ export default function Leaderboard() {
     queryKey: ["/api/leaderboard/my-score"],
   });
 
+  // User interface preferences
+  const participateInWeeklyChallenge = (user as any)?.privacySettings?.participateInWeeklyChallenge !== false;
+
   // Calculate weekly challenge progress based on Madrid timezone (Monday 00:00 reset)
   const getCurrentWeekProgress = () => {
     const now = new Date();

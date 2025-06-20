@@ -74,6 +74,10 @@ export default function Home() {
   const pointsToNextLevel = ((currentLevel * 100) - totalPoints);
   const levelProgress = ((totalPoints % 100) / 100) * 100;
 
+  // User interface preferences
+  const showCalorieCounter = (user as any)?.privacySettings?.showCalorieCounter !== false;
+  const participateInWeeklyChallenge = (user as any)?.privacySettings?.participateInWeeklyChallenge !== false;
+
   const currentHour = new Date().getHours();
   const timeGreeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
 
@@ -142,39 +146,41 @@ export default function Home() {
               <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
-            {/* Calorie Counter Bar */}
-            <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-6 h-6 text-orange-600" />
-                    <span className="text-lg font-semibold text-gray-800">Daily Calories</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-orange-700">
-                      {totalCalories} / {calorieGoal}
+            {/* Calorie Counter Bar - Only show if user hasn't disabled it */}
+            {showCalorieCounter && (
+              <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Target className="w-6 h-6 text-orange-600" />
+                      <span className="text-lg font-semibold text-gray-800">Daily Calories</span>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {isOverGoal 
-                        ? `${Math.round((totalCalories - calorieGoal))} over goal` 
-                        : `${Math.round(calorieGoal - totalCalories)} remaining`
-                      }
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-orange-700">
+                        {totalCalories} / {calorieGoal}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {isOverGoal 
+                          ? `${Math.round((totalCalories - calorieGoal))} over goal` 
+                          : `${Math.round(calorieGoal - totalCalories)} remaining`
+                        }
+                      </div>
                     </div>
                   </div>
-                </div>
-                <Progress 
-                  value={Math.min(calorieProgress, 100)} 
-                  className={`h-3 ${isOverGoal ? 'bg-red-100' : 'bg-orange-100'}`}
-                />
-                <div className="flex justify-between mt-2 text-sm text-gray-600">
-                  <span>0</span>
-                  <span className={isOverGoal ? 'text-red-600 font-semibold' : 'text-orange-600'}>
-                    {Math.round(calorieProgress)}% {isOverGoal ? '(Over Goal)' : 'of goal'}
-                  </span>
-                  <span>{calorieGoal}</span>
-                </div>
-              </CardContent>
-            </Card>
+                  <Progress 
+                    value={Math.min(calorieProgress, 100)} 
+                    className={`h-3 ${isOverGoal ? 'bg-red-100' : 'bg-orange-100'}`}
+                  />
+                  <div className="flex justify-between mt-2 text-sm text-gray-600">
+                    <span>0</span>
+                    <span className={isOverGoal ? 'text-red-600 font-semibold' : 'text-orange-600'}>
+                      {Math.round(calorieProgress)}% {isOverGoal ? '(Over Goal)' : 'of goal'}
+                    </span>
+                    <span>{calorieGoal}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Daily Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
