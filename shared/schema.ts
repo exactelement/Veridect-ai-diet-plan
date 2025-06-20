@@ -149,6 +149,9 @@ export const updateUserProfileSchema = z.object({
     shareDataForResearch: z.boolean(),
     allowMarketing: z.boolean(),
     shareWithHealthProviders: z.boolean(),
+    showCalorieCounter: z.boolean(),
+    participateInWeeklyChallenge: z.boolean(),
+    showFoodStats: z.boolean(),
   }).optional(),
 });
 
