@@ -8,14 +8,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Settings, History, Shield } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock } from "lucide-react";
 import { updateUserProfileSchema } from "@shared/schema";
-import type { UpdateUserProfile } from "@shared/schema";
+import type { UpdateUserProfile, FoodLog } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { z } from "zod";
 
 const DIETARY_PREFERENCES = [
   "Vegetarian", "Vegan", "Keto", "Paleo", "Mediterranean", 
@@ -31,43 +33,101 @@ const COMMON_ALLERGIES = [
   "Nuts", "Shellfish", "Dairy", "Eggs", "Soy", "Gluten", "Fish"
 ];
 
+const personalInfoSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email format"),
+  currentPassword: z.string().optional(),
+  newPassword: z.string().min(8, "Password must be at least 8 characters").optional(),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  if (data.newPassword && data.newPassword !== data.confirmPassword) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
+
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("profile");
+  
+  // Collapsible section states
+  const [personalOpen, setPersonalOpen] = useState(false);
+  const [personalizationOpen, setPersonalizationOpen] = useState(false);
+  const [interfaceOpen, setInterfaceOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  
+  // App interface preferences (local state for now)
+  const [showCalories, setShowCalories] = useState(true);
+  const [participateInChallenge, setParticipateInChallenge] = useState(true);
 
-  const { data: foodLogs = [], isLoading: logsLoading } = useQuery({
+  const { data: foodLogs = [], isLoading: logsLoading } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],
   });
 
-  const form = useForm<UpdateUserProfile>({
-    resolver: zodResolver(updateUserProfileSchema),
+  // Personal information form
+  const personalForm = useForm<PersonalInfoForm>({
+    resolver: zodResolver(personalInfoSchema),
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
-      dietaryPreferences: user?.dietaryPreferences || [],
-      healthGoals: user?.healthGoals || [],
-      allergies: user?.allergies || [],
-      privacySettings: user?.privacySettings || {
-        shareDataForResearch: false,
-        allowMarketing: false,
-        shareWithHealthProviders: false
-      },
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: UpdateUserProfile) => {
-      await apiRequest("PUT", "/api/user/profile", data);
+  // Personalization form
+  const personalizationForm = useForm<UpdateUserProfile>({
+    resolver: zodResolver(updateUserProfileSchema),
+    defaultValues: {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      dietaryPreferences: user?.dietaryPreferences || [],
+      healthGoals: user?.healthGoals || [],
+      allergies: user?.allergies || [],
+    },
+  });
+
+  const updatePersonalMutation = useMutation({
+    mutationFn: async (data: PersonalInfoForm) => {
+      // Update basic info
+      await apiRequest("PUT", "/api/user/profile", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
+      
+      // Change password if provided
+      if (data.newPassword && data.currentPassword) {
+        await apiRequest("POST", "/api/auth/change-password", {
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        });
+      }
+      
+      // Update email if changed (future feature)
+      if (data.email !== user?.email) {
+        // This would trigger email verification in real implementation
+        toast({
+          title: "Email Change Requested",
+          description: "Email verification feature coming soon",
+        });
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
+        title: "Personal Information Updated",
+        description: "Your changes have been saved successfully.",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      personalForm.reset();
     },
     onError: (error: Error) => {
       toast({
@@ -78,355 +138,471 @@ export default function Profile() {
     },
   });
 
-  const onSubmit = (data: UpdateUserProfile) => {
-    updateProfileMutation.mutate(data);
+  const updatePersonalizationMutation = useMutation({
+    mutationFn: async (data: UpdateUserProfile) => {
+      await apiRequest("PUT", "/api/user/profile", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Preferences Updated",
+        description: "Your health goals and preferences have been saved.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onPersonalSubmit = (data: PersonalInfoForm) => {
+    updatePersonalMutation.mutate(data);
   };
 
+  const onPersonalizationSubmit = (data: UpdateUserProfile) => {
+    updatePersonalizationMutation.mutate(data);
+  };
+
+  // Group food logs by date
+  const groupedLogs = foodLogs.reduce((acc: Record<string, FoodLog[]>, log) => {
+    const date = new Date(log.createdAt).toDateString();
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(log);
+    return acc;
+  }, {});
+
+  const sortedDates = Object.keys(groupedLogs).sort((a, b) => 
+    new Date(b).getTime() - new Date(a).getTime()
+  );
+
+  if (!user) return null;
+
   return (
-    <div className="pt-20 pb-8 container-padding">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Profile Header */}
-        <Card>
-          <CardContent className="p-8">
-            <div className="flex items-center space-x-6">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={user?.profileImageUrl} alt={user?.firstName || "User"} />
-                <AvatarFallback className="bg-ios-blue text-white text-2xl">
-                  {user?.firstName?.[0] || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold">{user?.firstName} {user?.lastName}</h1>
-                <p className="text-ios-secondary">{user?.email}</p>
-                <Badge 
-                  variant={user?.subscriptionTier === 'free' ? 'secondary' : 'default'}
-                  className="mt-2 capitalize"
-                >
-                  {user?.subscriptionTier} Plan
-                </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
+      <div className="container-padding">
+        <div className="max-w-4xl mx-auto space-y-6">
+          
+          {/* Profile Header */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <Avatar className="w-20 h-20">
+                  <AvatarImage src={user.profileImageUrl || ""} />
+                  <AvatarFallback className="bg-ios-blue text-white text-xl">
+                    {user.firstName?.[0]}{user.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-ios-text">
+                    {user.firstName} {user.lastName}
+                  </h1>
+                  <p className="text-ios-secondary">{user.email}</p>
+                  {user.subscriptionTier && (
+                    <Badge className="mt-2 bg-ios-blue text-white">
+                      {user.subscriptionTier.toUpperCase()} Plan
+                    </Badge>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Profile Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile" className="flex items-center space-x-2">
-              <User className="w-4 h-4" />
-              <span>Profile</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center space-x-2">
-              <History className="w-4 h-4" />
-              <span>Food History</span>
-            </TabsTrigger>
-            <TabsTrigger value="privacy" className="flex items-center space-x-2">
-              <Shield className="w-4 h-4" />
-              <span>Privacy</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Profile Tab */}
-          <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+          {/* Personal Information Dropdown */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={personalOpen} onOpenChange={setPersonalOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <User className="w-5 h-5 text-ios-blue" />
+                      <span>Personal Information</span>
                     </div>
+                    {personalOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <Form {...personalForm}>
+                    <form onSubmit={personalForm.handleSubmit(onPersonalSubmit)} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={personalForm.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>First Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={personalForm.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Last Name</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={personalForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="email" />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-sm text-ios-secondary">
+                              Email verification will be required for changes
+                            </p>
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Health Goals */}
-                    <div>
-                      <FormLabel className="text-base font-medium">Health Goals</FormLabel>
-                      <div className="grid grid-cols-2 gap-3 mt-3">
-                        {HEALTH_GOALS.map((goal) => (
+                      <div className="border-t pt-4 mt-6">
+                        <h3 className="text-lg font-semibold mb-4 flex items-center">
+                          <Lock className="w-4 h-4 mr-2" />
+                          Change Password
+                        </h3>
+                        <div className="space-y-4">
                           <FormField
-                            key={goal}
-                            control={form.control}
-                            name="healthGoals"
+                            control={personalForm.control}
+                            name="currentPassword"
                             render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormItem>
+                                <FormLabel>Current Password</FormLabel>
                                 <FormControl>
+                                  <Input {...field} type="password" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={personalForm.control}
+                              name="newPassword"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>New Password</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} type="password" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={personalForm.control}
+                              name="confirmPassword"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Confirm New Password</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} type="password" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-ios-blue hover:bg-ios-blue/90"
+                        disabled={updatePersonalMutation.isPending}
+                      >
+                        {updatePersonalMutation.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Personalization Dropdown */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={personalizationOpen} onOpenChange={setPersonalizationOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Heart className="w-5 h-5 text-ios-blue" />
+                      <span>Personalization</span>
+                    </div>
+                    {personalizationOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <Form {...personalizationForm}>
+                    <form onSubmit={personalizationForm.handleSubmit(onPersonalizationSubmit)} className="space-y-6">
+                      
+                      {/* Health Goals */}
+                      <FormField
+                        control={personalizationForm.control}
+                        name="healthGoals"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Health Goals</FormLabel>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                              {HEALTH_GOALS.map((goal) => (
+                                <div key={goal} className="flex items-center space-x-2">
                                   <Checkbox
+                                    id={`goal-${goal}`}
                                     checked={field.value?.includes(goal)}
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, goal])
-                                        : field.onChange(field.value?.filter((value) => value !== goal));
+                                      if (checked) {
+                                        field.onChange([...(field.value || []), goal]);
+                                      } else {
+                                        field.onChange(field.value?.filter((g) => g !== goal));
+                                      }
                                     }}
                                   />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  {goal}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                                  <label htmlFor={`goal-${goal}`} className="text-sm">
+                                    {goal}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    {/* Dietary Preferences */}
-                    <div>
-                      <FormLabel className="text-base font-medium">Dietary Preferences</FormLabel>
-                      <div className="grid grid-cols-2 gap-3 mt-3">
-                        {DIETARY_PREFERENCES.map((pref) => (
-                          <FormField
-                            key={pref}
-                            control={form.control}
-                            name="dietaryPreferences"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                <FormControl>
+                      {/* Dietary Preferences */}
+                      <FormField
+                        control={personalizationForm.control}
+                        name="dietaryPreferences"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Dietary Preferences</FormLabel>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                              {DIETARY_PREFERENCES.map((pref) => (
+                                <div key={pref} className="flex items-center space-x-2">
                                   <Checkbox
+                                    id={`pref-${pref}`}
                                     checked={field.value?.includes(pref)}
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, pref])
-                                        : field.onChange(field.value?.filter((value) => value !== pref));
+                                      if (checked) {
+                                        field.onChange([...(field.value || []), pref]);
+                                      } else {
+                                        field.onChange(field.value?.filter((p) => p !== pref));
+                                      }
                                     }}
                                   />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  {pref}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                                  <label htmlFor={`pref-${pref}`} className="text-sm">
+                                    {pref}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    {/* Allergies */}
-                    <div>
-                      <FormLabel className="text-base font-medium">Allergies</FormLabel>
-                      <div className="grid grid-cols-2 gap-3 mt-3">
-                        {COMMON_ALLERGIES.map((allergy) => (
-                          <FormField
-                            key={allergy}
-                            control={form.control}
-                            name="allergies"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                <FormControl>
+                      {/* Allergies */}
+                      <FormField
+                        control={personalizationForm.control}
+                        name="allergies"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Allergies & Restrictions</FormLabel>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                              {COMMON_ALLERGIES.map((allergy) => (
+                                <div key={allergy} className="flex items-center space-x-2">
                                   <Checkbox
+                                    id={`allergy-${allergy}`}
                                     checked={field.value?.includes(allergy)}
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, allergy])
-                                        : field.onChange(field.value?.filter((value) => value !== allergy));
+                                      if (checked) {
+                                        field.onChange([...(field.value || []), allergy]);
+                                      } else {
+                                        field.onChange(field.value?.filter((a) => a !== allergy));
+                                      }
                                     }}
                                   />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  {allergy}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="bg-ios-blue text-white"
-                      disabled={updateProfileMutation.isPending}
-                    >
-                      {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Food History Tab */}
-          <TabsContent value="history">
-            <Card>
-              <CardHeader>
-                <CardTitle>Food Analysis History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {logsLoading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin w-8 h-8 border-4 border-ios-blue border-t-transparent rounded-full mx-auto" />
-                  </div>
-                ) : foodLogs.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-ios-secondary">No food logs yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {foodLogs.map((log: any) => (
-                      <div key={log.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                            log.verdict === 'YES' ? 'bg-health-green' :
-                            log.verdict === 'OK' ? 'bg-warning-orange' :
-                            'bg-danger-red'
-                          }`}>
-                            {log.verdict === 'YES' ? '✓' : log.verdict === 'OK' ? '~' : '✗'}
-                          </div>
-                          <div>
-                            <div className="font-medium">{log.foodName}</div>
-                            <div className="text-sm text-ios-secondary">
-                              {log.calories ? `${log.calories} cal` : 'No calorie info'} • 
-                              {log.protein ? ` ${log.protein}g protein • ` : ' '}
-                              Confidence: {log.confidence}%
+                                  <label htmlFor={`allergy-${allergy}`} className="text-sm">
+                                    {allergy}
+                                  </label>
+                                </div>
+                              ))}
                             </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-ios-blue hover:bg-ios-blue/90"
+                        disabled={updatePersonalizationMutation.isPending}
+                      >
+                        {updatePersonalizationMutation.isPending ? "Saving..." : "Save Preferences"}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* App Interface Dropdown */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={interfaceOpen} onOpenChange={setInterfaceOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Monitor className="w-5 h-5 text-ios-blue" />
+                      <span>App Interface</span>
+                    </div>
+                    {interfaceOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0 space-y-6">
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium">Show Calorie Counter</h3>
+                      <p className="text-sm text-ios-secondary">Display calorie numbers in home tab</p>
+                    </div>
+                    <Switch
+                      checked={showCalories}
+                      onCheckedChange={setShowCalories}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium">Weekly Challenge Participation</h3>
+                      <p className="text-sm text-ios-secondary">Include me in leaderboard competitions</p>
+                    </div>
+                    <Switch
+                      checked={participateInChallenge}
+                      onCheckedChange={setParticipateInChallenge}
+                    />
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <p className="text-sm text-ios-secondary">
+                      More interface customization options coming soon
+                    </p>
+                  </div>
+
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Food History Dropdown */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <History className="w-5 h-5 text-ios-blue" />
+                      <span>Food History</span>
+                    </div>
+                    {historyOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  {logsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin w-8 h-8 border-4 border-ios-blue border-t-transparent rounded-full mx-auto mb-4" />
+                      <p className="text-ios-secondary">Loading food history...</p>
+                    </div>
+                  ) : foodLogs.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Calendar className="w-12 h-12 text-ios-secondary/50 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No Food History</h3>
+                      <p className="text-ios-secondary">
+                        Start analyzing foods to see your history here
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6 max-h-96 overflow-y-auto">
+                      {sortedDates.map((date) => (
+                        <div key={date} className="border-l-2 border-ios-blue pl-4">
+                          <h3 className="font-semibold text-ios-text mb-3">{date}</h3>
+                          <div className="space-y-2">
+                            {groupedLogs[date].map((log) => (
+                              <div key={log.id} className="bg-ios-gray-50 rounded-lg p-3">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-medium">{log.foodName}</h4>
+                                  <Badge 
+                                    className={
+                                      log.verdict === "YES" ? "bg-health-green text-white" :
+                                      log.verdict === "OK" ? "bg-warning-orange text-white" :
+                                      "bg-danger-red text-white"
+                                    }
+                                  >
+                                    {log.verdict}
+                                  </Badge>
+                                </div>
+                                {log.calories && (
+                                  <p className="text-sm text-ios-secondary mt-1">
+                                    {log.calories} calories
+                                  </p>
+                                )}
+                                <p className="text-xs text-ios-secondary mt-1">
+                                  {new Date(log.createdAt).toLocaleTimeString()}
+                                </p>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm text-ios-secondary">
-                            {new Date(log.createdAt).toLocaleDateString()}
-                          </div>
-                          <div className="text-xs text-ios-secondary">
-                            {new Date(log.createdAt).toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Privacy Tab */}
-          <TabsContent value="privacy">
-            <Card>
-              <CardHeader>
-                <CardTitle>Privacy Settings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="privacySettings.shareDataForResearch"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Share data for research</FormLabel>
-                              <p className="text-sm text-ios-secondary">
-                                Help improve our AI by sharing anonymized food analysis data for research purposes.
-                              </p>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="privacySettings.allowMarketing"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Marketing communications</FormLabel>
-                              <p className="text-sm text-ios-secondary">
-                                Receive emails about new features, health tips, and promotional offers.
-                              </p>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="privacySettings.shareWithHealthProviders"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>Share with health providers</FormLabel>
-                              <p className="text-sm text-ios-secondary">
-                                Allow sharing of your nutrition data with authorized healthcare providers (Medical tier only).
-                              </p>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
+                      ))}
                     </div>
+                  )}
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
 
-                    <Button
-                      type="submit"
-                      className="bg-ios-blue text-white"
-                      disabled={updateProfileMutation.isPending}
-                    >
-                      {updateProfileMutation.isPending ? "Updating..." : "Update Privacy Settings"}
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        </div>
       </div>
     </div>
   );
