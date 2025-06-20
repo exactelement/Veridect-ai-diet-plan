@@ -63,20 +63,11 @@ export default function Profile() {
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   
-  // App interface preferences (sync with user data)
-  const [showCalories, setShowCalories] = useState(true);
-  const [participateInChallenge, setParticipateInChallenge] = useState(true);
-  const [showFoodStats, setShowFoodStats] = useState(true);
-
-  // Update state when user data changes
-  useEffect(() => {
-    if (user) {
-      const privacySettings = (user as any)?.privacySettings;
-      setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
-      setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
-      setShowFoodStats(privacySettings?.showFoodStats === undefined ? true : privacySettings.showFoodStats);
-    }
-  }, [user]);
+  // App interface preferences - derive directly from user data instead of local state
+  const privacySettings = (user as any)?.privacySettings;
+  const showCalories = privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter;
+  const participateInChallenge = privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge;
+  const showFoodStats = privacySettings?.showFoodStats === undefined ? true : privacySettings.showFoodStats;
 
   const { data: foodLogs = [], isLoading: logsLoading } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],
@@ -188,21 +179,11 @@ export default function Profile() {
         duration: 3000, // Auto-dismiss after 3 seconds
       });
       
-      // Update local state to reflect the saved changes
-      setShowCalories(variables.showCalorieCounter);
-      setParticipateInChallenge(variables.participateInWeeklyChallenge);
-      setShowFoodStats(variables.showFoodStats);
-      
+      // Don't update local state here - let it be updated by the useEffect when fresh user data arrives
       // Invalidate the user data query to refresh
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: Error, variables) => {
-      // Revert local state on error
-      const privacySettings = (user as any)?.privacySettings;
-      setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
-      setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
-      setShowFoodStats(privacySettings?.showFoodStats === undefined ? true : privacySettings.showFoodStats);
-      
       toast({
         title: "Update Failed",
         description: error.message,
