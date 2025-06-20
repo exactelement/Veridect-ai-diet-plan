@@ -27,7 +27,10 @@ export default function Landing() {
         <div className="page-container">
           <div className="flex justify-between items-center h-16">
             {/* Logo/Brand - Always visible */}
-            <div className="flex items-center space-x-2">
+            <div 
+              className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => window.location.reload()}
+            >
               <div className="w-8 h-8 bg-gradient-to-br from-ios-blue to-health-green rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">Y</span>
               </div>

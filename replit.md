@@ -111,6 +111,12 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 20, 2025: Responsive navigation implemented on landing page
+  - Desktop (large screens): Full navigation menu visible in header
+  - Medium screens: Menu items moved to dropdown with "Menu" button  
+  - Mobile screens: Menu items moved to slide-out panel with hamburger menu
+  - Login button always visible and stays in header at all screen sizes
+  - Logo/name clickable to refresh page with hover effects
 - June 20, 2025: Food analysis page layout fixed
   - Added proper bottom padding (pb-24) to prevent content from hiding behind sticky footer navigation
   - Ensures all buttons and text are fully visible and accessible on mobile devices
