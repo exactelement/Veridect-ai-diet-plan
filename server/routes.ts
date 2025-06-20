@@ -47,12 +47,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // For multiAuth system, user is directly in req.user
-      const user = req.user;
-      if (!user) {
+      // Always fetch fresh user data from database instead of cached session data
+      const userId = req.user.id;
+      const freshUser = await storage.getUser(userId);
+      if (!freshUser) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      res.json(user);
+      res.json(freshUser);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

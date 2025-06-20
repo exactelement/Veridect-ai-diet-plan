@@ -86,9 +86,7 @@ export default function Home() {
   const showCalorieCounter = privacySettings.showCalorieCounter !== false;
   const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false;
 
-  // Debug logging
-  console.log('Home page - Privacy settings:', privacySettings);
-  console.log('Home page - showCalorieCounter:', showCalorieCounter);
+
 
   const currentHour = new Date().getHours();
   const timeGreeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";

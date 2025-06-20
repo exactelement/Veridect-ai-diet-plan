@@ -176,7 +176,7 @@ export default function Profile() {
           ...preferences,
         },
       };
-      console.log('Profile page - Saving privacy settings:', updatedSettings);
+
       await apiRequest("PUT", "/api/user/profile", updatedSettings);
     },
     onSuccess: async (data, variables) => {
