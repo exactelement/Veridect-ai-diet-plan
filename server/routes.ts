@@ -400,6 +400,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update GDPR consent
+  app.post("/api/user/gdpr-consent", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { gdprConsent, gdprBannerShown } = req.body;
+      
+      const updatedUser = await storage.updateGdprConsent(userId, {
+        gdprConsent,
+        gdprBannerShown
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating GDPR consent:", error);
+      res.status(500).json({ message: "Failed to update consent preferences" });
+    }
+  });
+
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {

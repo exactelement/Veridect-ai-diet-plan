@@ -82,6 +82,44 @@ export default function Privacy() {
             </p>
           </div>
 
+          {/* Essential Data Collection Notice */}
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-orange-800">
+                <AlertCircle className="w-5 h-5 mr-3" />
+                Essential Data Collection Notice
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-orange-700 mb-4">
+                By continuing to use YesNoApp, you agree to our Terms of Service, which include 
+                collecting essential data required for app functionality. This includes:
+              </p>
+              <ul className="space-y-2 text-orange-700 text-sm">
+                <li className="flex items-start">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>Food analysis data and results for personalized recommendations</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>Progress tracking and gamification data (streaks, points, levels)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>User authentication and account management information</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>Weekly challenge participation and leaderboard rankings</span>
+                </li>
+              </ul>
+              <p className="text-orange-700 mt-4 text-sm">
+                This essential data collection is necessary for the app to function properly. 
+                Additional optional data sharing preferences can be managed in your profile settings.
+              </p>
+            </CardContent>
+          </Card>
+
           {/* GDPR Rights */}
           <Card className="border-ios-blue/20 bg-ios-blue/5">
             <CardHeader>

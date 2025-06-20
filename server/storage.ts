@@ -110,11 +110,12 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateGdprConsent(userId: string, consent: any): Promise<User> {
+  async updateGdprConsent(userId: string, consentData: any): Promise<User> {
     const [user] = await db
       .update(users)
       .set({
-        gdprConsent: consent,
+        gdprConsent: consentData.gdprConsent,
+        gdprBannerShown: consentData.gdprBannerShown,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
