@@ -90,7 +90,7 @@ export default function Home() {
 
 
 
-  // Dynamic greeting based on user's local device time
+  // Dynamic greeting based on user's local device time - updates on every page load/visit
   const [timeGreeting, setTimeGreeting] = useState(() => {
     const now = new Date();
     const currentHour = now.getHours();
@@ -104,27 +104,19 @@ export default function Home() {
     }
   });
 
-  // Update greeting every minute to ensure accuracy
+  // Update greeting every time the user visits/opens the home page
   useEffect(() => {
-    const updateGreeting = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      const newGreeting = currentHour < 12 
-        ? "Good morning" 
-        : currentHour < 18 
-        ? "Good afternoon" 
-        : "Good evening";
-      
-      setTimeGreeting(newGreeting);
-    };
-
-    // Update immediately and then every minute
-    updateGreeting();
-    const interval = setInterval(updateGreeting, 60000); // 60 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    const newGreeting = currentHour < 12 
+      ? "Good morning" 
+      : currentHour < 18 
+      ? "Good afternoon" 
+      : "Good evening";
+    
+    setTimeGreeting(newGreeting);
+  }, []); // Runs once when component mounts (user opens/visits the page)
 
   // Subscription tiers
   const subscriptionTiers: SubscriptionTier[] = [
