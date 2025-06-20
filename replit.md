@@ -111,6 +111,9 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 20, 2025: Food analysis page layout fixed
+  - Added proper bottom padding (pb-24) to prevent content from hiding behind sticky footer navigation
+  - Ensures all buttons and text are fully visible and accessible on mobile devices
 - June 20, 2025: GDPR compliance system implemented
   - First-time GDPR banner appears only once after registration login
   - Personalized data sharing options specific to YesNoApp features

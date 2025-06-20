@@ -306,7 +306,7 @@ export default function FoodAnalysis() {
   }
 
   return (
-    <div className="pt-20 pb-8 container-padding">
+    <div className="pt-20 pb-24 container-padding">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Food Analysis</h1>
