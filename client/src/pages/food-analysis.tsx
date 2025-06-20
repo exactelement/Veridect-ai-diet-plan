@@ -362,11 +362,15 @@ export default function FoodAnalysis() {
                 />
                 {imagePreview ? (
                   <div className="space-y-4">
-                    <img 
-                      src={imagePreview} 
-                      alt="Captured food" 
-                      className="max-w-md mx-auto rounded-lg shadow-lg"
-                    />
+                    <div className="flex justify-center">
+                      <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
+                        <img 
+                          src={imagePreview} 
+                          alt="Captured food" 
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
+                    </div>
                     <Button
                       onClick={() => cameraInputRef.current?.click()}
                       variant="outline"
@@ -397,11 +401,15 @@ export default function FoodAnalysis() {
                 />
                 {imagePreview ? (
                   <div className="space-y-4">
-                    <img 
-                      src={imagePreview} 
-                      alt="Uploaded food" 
-                      className="max-w-md mx-auto rounded-lg shadow-lg"
-                    />
+                    <div className="flex justify-center">
+                      <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
+                        <img 
+                          src={imagePreview} 
+                          alt="Uploaded food" 
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
+                    </div>
                     <Button
                       onClick={() => fileInputRef.current?.click()}
                       variant="outline"
