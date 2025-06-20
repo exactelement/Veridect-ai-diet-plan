@@ -76,8 +76,8 @@ export default function FoodAnalysis() {
       const img = new Image();
       
       img.onload = () => {
-        // Calculate new dimensions (max 1024px on longest side)
-        const maxSize = 1024;
+        // Calculate new dimensions (max 512px on longest side for faster uploads)
+        const maxSize = 512;
         let { width, height } = img;
         
         if (width > height) {
@@ -95,9 +95,9 @@ export default function FoodAnalysis() {
         canvas.width = width;
         canvas.height = height;
         
-        // Draw and compress image
+        // Draw and compress image (higher compression for smaller files)
         ctx?.drawImage(img, 0, 0, width, height);
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
         resolve(compressedDataUrl.split(',')[1]); // Remove prefix
       };
       
