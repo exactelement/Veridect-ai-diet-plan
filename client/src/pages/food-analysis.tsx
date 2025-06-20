@@ -44,6 +44,7 @@ export default function FoodAnalysis() {
       toast({
         title: "Analysis Complete!",
         description: `Food analyzed: ${data.analysis.foodName}`,
+        duration: 3000,
       });
     },
     onError: (error: Error) => {
@@ -51,6 +52,7 @@ export default function FoodAnalysis() {
         title: "Analysis Failed",
         description: error.message,
         variant: "destructive",
+        duration: 4000,
       });
     },
   });
@@ -110,6 +112,7 @@ export default function FoodAnalysis() {
         title: "Missing Information",
         description: "Please describe the food you want to analyze.",
         variant: "destructive",
+        duration: 3000,
       });
       return;
     }
@@ -119,6 +122,7 @@ export default function FoodAnalysis() {
         title: "Missing Image",
         description: "Please select an image to analyze.",
         variant: "destructive",
+        duration: 3000,
       });
       return;
     }
@@ -138,6 +142,7 @@ export default function FoodAnalysis() {
         title: "Error",
         description: "Failed to process image",
         variant: "destructive",
+        duration: 3000,
       });
     }
   };
