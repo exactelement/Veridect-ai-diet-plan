@@ -17,6 +17,7 @@ import { useLocation } from "wouter";
 const onboardingSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
+  calorieGoal: z.number().min(800, "Minimum 800 calories").max(5000, "Maximum 5000 calories").default(2000),
   dietaryPreferences: z.array(z.string()).default([]),
   healthGoals: z.array(z.string()).default([]),
   allergies: z.array(z.string()).default([]),
@@ -49,6 +50,7 @@ export default function Onboarding() {
     defaultValues: {
       firstName: "",
       lastName: "",
+      calorieGoal: 2000,
       dietaryPreferences: [],
       healthGoals: [],
       allergies: [],
@@ -165,6 +167,31 @@ export default function Onboarding() {
                       )}
                     />
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="calorieGoal"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Daily Calorie Goal</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="800"
+                            max="5000"
+                            step="50"
+                            placeholder="2000"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 2000)}
+                          />
+                        </FormControl>
+                        <p className="text-sm text-ios-secondary">
+                          Set your daily calorie target based on your goals
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               )}
 

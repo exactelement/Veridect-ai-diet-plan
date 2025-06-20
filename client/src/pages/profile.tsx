@@ -93,6 +93,7 @@ export default function Profile() {
       dietaryPreferences: user?.dietaryPreferences || [],
       healthGoals: user?.healthGoals || [],
       allergies: user?.allergies || [],
+      calorieGoal: user?.calorieGoal || 2000,
     },
   });
 
@@ -365,6 +366,32 @@ export default function Profile() {
                   <Form {...personalizationForm}>
                     <form onSubmit={personalizationForm.handleSubmit(onPersonalizationSubmit)} className="space-y-6">
                       
+                      {/* Calorie Goal */}
+                      <FormField
+                        control={personalizationForm.control}
+                        name="calorieGoal"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">Daily Calorie Goal</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="800"
+                                max="5000"
+                                step="50"
+                                placeholder="2000"
+                                {...field}
+                                onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                              />
+                            </FormControl>
+                            <p className="text-sm text-ios-secondary">
+                              Recommended range: 1200-3000 calories per day
+                            </p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                       {/* Health Goals */}
                       <FormField
                         control={personalizationForm.control}

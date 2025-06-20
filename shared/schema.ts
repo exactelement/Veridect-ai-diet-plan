@@ -143,6 +143,7 @@ export const updateUserProfileSchema = z.object({
   healthGoals: z.array(z.string()).optional(),
   medicalConditions: z.array(z.string()).optional(),
   allergies: z.array(z.string()).optional(),
+  calorieGoal: z.number().min(800, "Minimum 800 calories").max(5000, "Maximum 5000 calories").optional(),
   privacySettings: z.object({
     shareDataForResearch: z.boolean(),
     allowMarketing: z.boolean(),
