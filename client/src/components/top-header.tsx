@@ -35,9 +35,11 @@ export default function TopHeader() {
             {isAuthenticated && user && (
               <div className="hidden sm:block">
                 <span className="text-sm text-ios-secondary">Welcome, </span>
-                <span className="text-sm font-medium text-ios-text">
-                  {(user as any).firstName || 'User'}
-                </span>
+                <Link href="/profile">
+                  <span className="text-sm font-medium text-ios-text hover:text-ios-blue cursor-pointer transition-colors">
+                    {(user as any).firstName || 'User'}
+                  </span>
+                </Link>
               </div>
             )}
 
@@ -57,19 +59,21 @@ export default function TopHeader() {
                   {/* User info in menu */}
                   {isAuthenticated && user && (
                     <div className="p-4 bg-health-green/5 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-health-green/10 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-health-green" />
-                        </div>
-                        <div>
-                          <div className="font-medium">
-                            {(user as any).firstName} {(user as any).lastName}
+                      <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                        <div className="flex items-center space-x-3 hover:bg-health-green/10 p-2 rounded-lg transition-colors cursor-pointer">
+                          <div className="w-10 h-10 bg-health-green/10 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-health-green" />
                           </div>
-                          <div className="text-sm text-ios-secondary">
-                            {(user as any).email}
+                          <div>
+                            <div className="font-medium">
+                              {(user as any).firstName} {(user as any).lastName}
+                            </div>
+                            <div className="text-sm text-ios-secondary">
+                              {(user as any).email}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   )}
 

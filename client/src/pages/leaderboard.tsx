@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Medal, Award, Crown, TrendingUp, Users, Calendar, Target } from "lucide-react";
+import { Link } from "wouter";
 import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
@@ -168,9 +169,11 @@ export default function Leaderboard() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-lg">
-                                {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
-                              </h3>
+                              <Link href="/profile">
+                                <h3 className="font-semibold text-lg hover:text-ios-blue cursor-pointer transition-colors">
+                                  {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
+                                </h3>
+                              </Link>
                               {entry.rank === 1 && <span className="text-yellow-500 text-lg">🏆</span>}
                               {entry.rank === 2 && <span className="text-gray-400 text-lg">🥈</span>}
                               {entry.rank === 3 && <span className="text-amber-600 text-lg">🥉</span>}
