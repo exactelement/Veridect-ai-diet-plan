@@ -111,6 +111,12 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 20, 2025: Weekly leaderboard competition system completed
+  - Real participant counts from database instead of hardcoded values
+  - Madrid timezone Monday 00:00 challenge reset timing implemented
+  - Trophy icons added for top 3 positions (🏆🥈🥉)
+  - Live ranking updates when users earn points through food analysis
+  - Weekly scoring system with automatic rank recalculation
 - June 20, 2025: Complete authentication system and enhanced navigation implemented
   - Fixed double X button issue in retractable menu
   - Enhanced top header with YesNoApp branding and smooth menu functionality

@@ -161,9 +161,14 @@ export default function Leaderboard() {
                             {getRankIcon(entry.rank)}
                           </div>
                           <div>
-                            <h3 className="font-semibold text-lg">
-                              {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-lg">
+                                {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
+                              </h3>
+                              {entry.rank === 1 && <span className="text-yellow-500 text-lg">🏆</span>}
+                              {entry.rank === 2 && <span className="text-gray-400 text-lg">🥈</span>}
+                              {entry.rank === 3 && <span className="text-amber-600 text-lg">🥉</span>}
+                            </div>
                             <div className="flex items-center space-x-2">
                               <Badge className="bg-health-green/10 text-health-green border-health-green/20">
                                 {entry.yesCount} YES
