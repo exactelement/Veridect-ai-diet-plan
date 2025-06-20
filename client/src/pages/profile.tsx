@@ -185,19 +185,8 @@ export default function Profile() {
         description: "Your display preferences have been saved.",
         duration: 3000, // Auto-dismiss after 3 seconds
       });
-      // Force refresh user data across all components
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
-      
-      // Also invalidate any other queries that might cache user data
-      queryClient.invalidateQueries();
-      
-      // Force a page-wide refresh of user context
-      window.dispatchEvent(new CustomEvent('userDataUpdated'));
-      
-      // Update local state to match what was saved
-      setShowCalories(variables.showCalorieCounter);
-      setParticipateInChallenge(variables.participateInWeeklyChallenge);
+      // Simply invalidate the user data query to refresh
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
     onError: (error: Error, variables) => {
       // Revert local state on error
@@ -585,7 +574,7 @@ export default function Profile() {
                     <Switch
                       checked={showCalories}
                       onCheckedChange={(checked) => {
-                        setShowCalories(checked);
+                        // Don't update local state immediately - wait for server response
                         updateInterfaceMutation.mutate({
                           showCalorieCounter: checked,
                           participateInWeeklyChallenge: participateInChallenge,
@@ -603,7 +592,7 @@ export default function Profile() {
                     <Switch
                       checked={participateInChallenge}
                       onCheckedChange={(checked) => {
-                        setParticipateInChallenge(checked);
+                        // Don't update local state immediately - wait for server response
                         updateInterfaceMutation.mutate({
                           showCalorieCounter: showCalories,
                           participateInWeeklyChallenge: checked,

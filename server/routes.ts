@@ -53,6 +53,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!freshUser) {
         return res.status(401).json({ message: "Unauthorized" });
       }
+      
+      // Prevent caching to ensure fresh user data on every request
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
       res.json(freshUser);
     } catch (error) {
       console.error("Error fetching user:", error);
