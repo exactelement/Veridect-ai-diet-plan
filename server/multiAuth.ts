@@ -102,13 +102,17 @@ export async function setupMultiAuth(app: Express) {
 
   passport.deserializeUser(async (id: string, done) => {
     try {
+      if (!id) {
+        return done(null, false);
+      }
+      
       const user = await storage.getUser(id);
       if (!user) {
         return done(null, false);
       }
       done(null, user);
     } catch (error) {
-      console.error("Deserialize user error:", error);
+      // Silently handle deserialization errors to avoid log spam
       done(null, false);
     }
   });
