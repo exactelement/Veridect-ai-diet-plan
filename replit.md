@@ -111,6 +111,15 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 20, 2025: Enhanced navigation system completed and authentication issues resolved
+  - Fixed double X button issue in retractable menu
+  - Enhanced top header with YesNoApp branding and smooth menu functionality
+  - Sticky footer navigation with Home, Analyse, Progress, Leaderboard, Profile tabs
+  - Investor presentation page with comprehensive metrics and roadmap
+  - GDPR privacy page with functional account deletion and data export
+  - AI disclaimer page explaining educational limitations and professional guidance
+  - Resolved Replit Auth callback 404 error by switching to multi-auth system
+  - Authentication now working with Google OAuth and email/password login
 - June 19, 2025: Authentication system completed and verified working
   - Multi-provider authentication (Google, Apple, Replit, email/password)
   - Password recovery with secure reset tokens

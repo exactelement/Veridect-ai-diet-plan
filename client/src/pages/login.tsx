@@ -246,14 +246,6 @@ export default function Login() {
                   <Apple className="mr-2 h-5 w-5" />
                   Continue with Apple
                 </Button>
-                <Button
-                  onClick={handleReplitLogin}
-                  variant="outline"
-                  className="w-full h-12 text-base font-medium"
-                  disabled={isLoading}
-                >
-                  Continue with Replit
-                </Button>
               </div>
 
               <div className="relative">

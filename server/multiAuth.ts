@@ -77,6 +77,17 @@ export async function setupMultiAuth(app: Express) {
     }
   );
 
+  // Replit Auth redirect
+  app.get('/api/login', (req, res) => {
+    // Redirect to email/password login page
+    res.redirect('/#/login');
+  });
+
+  app.get('/api/callback', (req, res) => {
+    // Handle Replit Auth callback by redirecting to login
+    res.redirect('/#/login?message=Please use email/password login');
+  });
+
   // Apple Sign-In (placeholder for future implementation)
   app.get('/api/auth/apple', (req, res) => {
     res.status(501).json({ message: "Apple Sign-In coming soon" });
