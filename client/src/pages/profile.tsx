@@ -179,14 +179,25 @@ export default function Profile() {
       console.log('Profile page - Saving privacy settings:', updatedSettings);
       await apiRequest("PUT", "/api/user/profile", updatedSettings);
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
       toast({
         title: "Interface Updated",
         description: "Your display preferences have been saved.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Force refresh user data and wait for it
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Update local state to match what was saved
+      setShowCalories(variables.showCalorieCounter);
+      setParticipateInChallenge(variables.participateInWeeklyChallenge);
     },
-    onError: (error: Error) => {
+    onError: (error: Error, variables) => {
+      // Revert local state on error
+      const privacySettings = (user as any)?.privacySettings;
+      setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
+      setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
+      
       toast({
         title: "Update Failed",
         description: error.message,
@@ -573,6 +584,7 @@ export default function Profile() {
                           participateInWeeklyChallenge: participateInChallenge,
                         });
                       }}
+                      disabled={updateInterfaceMutation.isPending}
                     />
                   </div>
 
@@ -590,6 +602,7 @@ export default function Profile() {
                           participateInWeeklyChallenge: checked,
                         });
                       }}
+                      disabled={updateInterfaceMutation.isPending}
                     />
                   </div>
 
