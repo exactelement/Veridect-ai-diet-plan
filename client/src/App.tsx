@@ -12,6 +12,8 @@ import Home from "@/pages/home";
 import Onboarding from "@/pages/onboarding";
 import Profile from "@/pages/profile";
 import FoodAnalysis from "@/pages/food-analysis";
+import Progress from "@/pages/progress";
+import Leaderboard from "@/pages/leaderboard";
 import Subscription from "@/pages/subscription";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
@@ -48,13 +50,16 @@ function Router() {
         ) : user && (user as any).onboardingCompleted ? (
           <>
             <Route path="/" component={Home} />
-            <Route path="/analyze" component={FoodAnalysis} />
+            <Route path="/food-analysis" component={FoodAnalysis} />
+            <Route path="/progress" component={Progress} />
+            <Route path="/leaderboard" component={Leaderboard} />
             <Route path="/profile" component={Profile} />
             <Route path="/subscription" component={Subscription} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
             <Route path="/how-to-use" component={HowToUse} />
             <Route path="/about" component={About} />
+            <Navigation />
           </>
         ) : (
           <Route path="*" component={Onboarding} />
