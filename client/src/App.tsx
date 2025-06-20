@@ -19,7 +19,10 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import HowToUse from "@/pages/how-to-use";
 import About from "@/pages/about";
+import Investor from "@/pages/investor";
+import Disclaimer from "@/pages/disclaimer";
 import Navigation from "@/components/navigation";
+import TopHeader from "@/components/top-header";
 import GDPRBanner from "@/components/gdpr-banner";
 
 function Router() {
@@ -49,6 +52,7 @@ function Router() {
           </>
         ) : user && (user as any).onboardingCompleted ? (
           <>
+            <TopHeader />
             <Route path="/" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />
             <Route path="/progress" component={Progress} />
@@ -59,6 +63,8 @@ function Router() {
             <Route path="/terms" component={Terms} />
             <Route path="/how-to-use" component={HowToUse} />
             <Route path="/about" component={About} />
+            <Route path="/investor" component={Investor} />
+            <Route path="/disclaimer" component={Disclaimer} />
             <Navigation />
           </>
         ) : (

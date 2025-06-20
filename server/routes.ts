@@ -333,6 +333,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
+  // GDPR Data Export
+  app.get('/api/auth/export-data', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const foodLogs = await storage.getFoodLogs(userId, 1000, 0);
+      const weeklyScore = await storage.getUserWeeklyScore(userId);
+
+      const exportData = {
+        user: {
+          id: user?.id,
+          email: user?.email,
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          createdAt: user?.createdAt,
+          healthGoals: user?.healthGoals,
+          dietaryPreferences: user?.dietaryPreferences,
+          allergies: user?.allergies,
+          subscriptionTier: user?.subscriptionTier,
+        },
+        foodLogs: foodLogs,
+        weeklyScore: weeklyScore,
+        exportDate: new Date().toISOString(),
+        exportedBy: 'YesNoApp GDPR Export'
+      };
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="yesnoapp-data-export.json"');
+      res.json(exportData);
+    } catch (error) {
+      console.error("Error exporting user data:", error);
+      res.status(500).json({ message: "Failed to export data" });
+    }
+  });
+
+  // GDPR Account Deletion
+  app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Mark user as deleted (anonymize data)
+      await storage.updateUserProfile(userId, {
+        email: `deleted-${Date.now()}@deleted.com`,
+        firstName: 'DELETED',
+        lastName: 'USER',
+        profileImageUrl: null,
+      });
+
+      // Destroy session
+      req.logout(() => {
+        res.json({ message: "Account deleted successfully" });
+      });
+    } catch (error) {
+      console.error("Error deleting user account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
