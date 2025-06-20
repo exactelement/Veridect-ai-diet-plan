@@ -315,41 +315,6 @@ export default function FoodAnalysis() {
           </p>
         </div>
 
-        {/* Analysis Mode Selection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How would you like to analyze your food?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button
-                variant={analysisMode === "camera" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("camera")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Camera className="w-6 h-6" />
-                <span>Take Photo</span>
-              </Button>
-              <Button
-                variant={analysisMode === "upload" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("upload")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Upload className="w-6 h-6" />
-                <span>Upload Image</span>
-              </Button>
-              <Button
-                variant={analysisMode === "text" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("text")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Type className="w-6 h-6" />
-                <span>Describe Food</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Analysis Interface */}
         <Card>
           <CardContent className="p-8">
@@ -456,6 +421,41 @@ export default function FoodAnalysis() {
                 ) : (
                   "Analyze Food"
                 )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Analysis Mode Selection */}
+        <Card>
+          <CardHeader>
+            <CardTitle>How would you like to analyze your food?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Button
+                variant={analysisMode === "camera" ? "default" : "outline"}
+                onClick={() => setAnalysisMode("camera")}
+                className="h-20 flex flex-col space-y-2"
+              >
+                <Camera className="w-6 h-6" />
+                <span>Take Photo</span>
+              </Button>
+              <Button
+                variant={analysisMode === "upload" ? "default" : "outline"}
+                onClick={() => setAnalysisMode("upload")}
+                className="h-20 flex flex-col space-y-2"
+              >
+                <Upload className="w-6 h-6" />
+                <span>Upload Image</span>
+              </Button>
+              <Button
+                variant={analysisMode === "text" ? "default" : "outline"}
+                onClick={() => setAnalysisMode("text")}
+                className="h-20 flex flex-col space-y-2"
+              >
+                <Type className="w-6 h-6" />
+                <span>Describe Food</span>
               </Button>
             </div>
           </CardContent>
