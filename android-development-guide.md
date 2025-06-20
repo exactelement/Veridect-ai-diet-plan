@@ -12,6 +12,8 @@ This guide will help you build a complete native Android app for YesNoApp with G
 - Basic Kotlin knowledge
 - Google Cloud Platform account (for APIs)
 - YesNoApp backend API running
+- Google Sign-In credentials configured
+- Firebase project setup for authentication
 
 ## Project Setup
 
@@ -132,6 +134,14 @@ dependencies {
     // Google Fit & Auth
     implementation("com.google.android.gms:play-services-fitness:21.1.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    
+    // Firebase Authentication
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    
+    // JWT Decoding for Apple Sign-In
+    implementation("com.auth0.android:jwtdecode:2.0.2")
     
     // Camera
     implementation("androidx.camera:camera-camera2:1.3.1")

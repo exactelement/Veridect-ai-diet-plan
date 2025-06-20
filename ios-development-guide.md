@@ -11,6 +11,8 @@ This guide will help you build a complete native iOS app for YesNoApp with Apple
 - Apple Developer Account ($99/year)
 - Basic Swift and SwiftUI knowledge
 - YesNoApp backend API running
+- Google Sign-In SDK for iOS
+- Apple Developer credentials configured in backend
 
 ## Project Setup
 
@@ -26,7 +28,21 @@ This guide will help you build a complete native iOS app for YesNoApp with Apple
    - **Interface**: SwiftUI
    - **Use Core Data**: No (we'll use API + UserDefaults)
 
-### 2. Project Structure
+### 2. Add Dependencies
+
+Add these packages via Swift Package Manager (File → Add Package Dependencies):
+
+1. **Google Sign-In**:
+   ```
+   https://github.com/google/GoogleSignIn-iOS
+   ```
+
+2. **Keychain Swift** (for secure token storage):
+   ```
+   https://github.com/evgenyneu/keychain-swift
+   ```
+
+### 3. Project Structure
 
 ```
 YesNoApp/
@@ -60,12 +76,15 @@ YesNoApp/
 
 ## Capabilities and Permissions
 
-### 1. Enable HealthKit Capability
+### 1. Enable Required Capabilities
 
 1. Select your project in Xcode
 2. Go to "Signing & Capabilities"
-3. Click "+" and add "HealthKit"
-4. Ensure "Use with CloudKit" is unchecked (unless you want cloud sync)
+3. Add the following capabilities:
+   - **HealthKit**: For health data integration
+   - **Sign In with Apple**: For Apple authentication
+   - **Keychain Sharing**: For secure token storage
+4. For HealthKit, ensure "Use with CloudKit" is unchecked (unless you want cloud sync)
 
 ### 2. Configure Info.plist
 
@@ -152,6 +171,21 @@ struct RegisterRequest: Codable {
     let password: String
     let firstName: String
     let lastName: String
+}
+
+struct AppleAuthRequest: Codable {
+    let identityToken: String
+    let authorizationCode: String
+    let user: AppleUser?
+}
+
+struct AppleUser: Codable {
+    let name: PersonNameComponents?
+    let email: String?
+}
+
+struct GoogleAuthRequest: Codable {
+    let idToken: String
 }
 ```
 
@@ -550,6 +584,26 @@ class APIService: ObservableObject {
     func register(email: String, password: String, firstName: String, lastName: String) async throws -> User {
         let request = RegisterRequest(email: email, password: password, firstName: firstName, lastName: lastName)
         let response: AuthResponse = try await post(endpoint: "/auth/register", body: request, requiresAuth: false)
+        
+        authToken = response.token
+        return response.user
+    }
+    
+    func authenticateWithApple(identityToken: String, authorizationCode: String, user: ASAuthorizationAppleIDCredential.User?) async throws -> User {
+        let request = AppleAuthRequest(
+            identityToken: identityToken,
+            authorizationCode: authorizationCode,
+            user: user
+        )
+        let response: AuthResponse = try await post(endpoint: "/auth/apple", body: request, requiresAuth: false)
+        
+        authToken = response.token
+        return response.user
+    }
+    
+    func authenticateWithGoogle(idToken: String) async throws -> User {
+        let request = GoogleAuthRequest(idToken: idToken)
+        let response: AuthResponse = try await post(endpoint: "/auth/google", body: request, requiresAuth: false)
         
         authToken = response.token
         return response.user

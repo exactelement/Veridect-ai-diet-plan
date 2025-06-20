@@ -111,13 +111,13 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 20, 2025: Apple Sign-In authentication completed and deployment guides updated
-  - Added Apple Sign-In JavaScript SDK integration to frontend
-  - Complete Apple authentication flow with JWT token processing 
-  - Backend Apple ID validation and user account creation
-  - Updated all deployment guides with Apple Developer credentials
-  - Added Apple secrets configuration to GCP, GitHub Actions, and Docker deployment scripts
-  - Production-ready Apple authentication requiring only Apple Developer account setup
+- June 20, 2025: Complete multi-provider authentication system and deployment guides updated
+  - Apple Sign-In JavaScript SDK integration with frontend authentication flow
+  - Complete Apple authentication with JWT token processing and user account creation
+  - Updated all deployment guides with Apple Developer and Google OAuth credentials
+  - Added authentication secrets to GCP, GitHub Actions, and Docker deployment configurations
+  - Updated iOS and Android development guides with multi-provider authentication
+  - Production-ready authentication system supporting Email/Password, Apple Sign-In, and Google OAuth
 - June 20, 2025: Responsive navigation implemented on landing page
   - Desktop (large screens): Full navigation menu visible in header
   - Medium screens: Menu items moved to dropdown with "Menu" button  
