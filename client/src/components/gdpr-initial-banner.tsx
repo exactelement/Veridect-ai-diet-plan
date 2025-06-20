@@ -16,9 +16,10 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
   const queryClient = useQueryClient();
 
   const [preferences, setPreferences] = useState({
-    shareDataForResearch: false,
-    allowMarketing: false,
-    shareWithHealthProviders: false,
+    improveAIRecommendations: false,
+    nutritionInsightsEmails: false,
+    anonymousUsageAnalytics: false,
+    communityFoodDatabase: false,
   });
 
   const updateConsentMutation = useMutation({
@@ -47,9 +48,10 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
 
   const handleAcceptAll = () => {
     const allConsent = {
-      shareDataForResearch: true,
-      allowMarketing: true,
-      shareWithHealthProviders: true,
+      improveAIRecommendations: true,
+      nutritionInsightsEmails: true,
+      anonymousUsageAnalytics: true,
+      communityFoodDatabase: true,
     };
     updateConsentMutation.mutate(allConsent);
   };
@@ -61,9 +63,10 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
   const handleDismiss = () => {
     // Mark banner as shown but with minimal consent
     updateConsentMutation.mutate({
-      shareDataForResearch: false,
-      allowMarketing: false,
-      shareWithHealthProviders: false,
+      improveAIRecommendations: false,
+      nutritionInsightsEmails: false,
+      anonymousUsageAnalytics: false,
+      communityFoodDatabase: false,
     });
   };
 
@@ -114,45 +117,60 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-ios-text">Research Data Sharing</h4>
+                  <h4 className="font-medium text-ios-text">Improve AI Food Analysis</h4>
                   <p className="text-sm text-ios-secondary">
-                    Share anonymized nutrition data to help improve food recommendations
+                    Help train our AI to give better "Yes/No/OK" verdicts by sharing anonymized food analysis results
                   </p>
                 </div>
                 <Switch
-                  checked={preferences.shareDataForResearch}
+                  checked={preferences.improveAIRecommendations}
                   onCheckedChange={(checked) =>
-                    setPreferences(prev => ({ ...prev, shareDataForResearch: checked }))
+                    setPreferences(prev => ({ ...prev, improveAIRecommendations: checked }))
                   }
                 />
               </div>
 
               <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-ios-text">Marketing Communications</h4>
+                  <h4 className="font-medium text-ios-text">Weekly Nutrition Insights</h4>
                   <p className="text-sm text-ios-secondary">
-                    Receive emails about new features, tips, and health insights
+                    Receive personalized emails with your progress summary, streak tips, and healthy food suggestions
                   </p>
                 </div>
                 <Switch
-                  checked={preferences.allowMarketing}
+                  checked={preferences.nutritionInsightsEmails}
                   onCheckedChange={(checked) =>
-                    setPreferences(prev => ({ ...prev, allowMarketing: checked }))
+                    setPreferences(prev => ({ ...prev, nutritionInsightsEmails: checked }))
                   }
                 />
               </div>
 
               <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
-                  <h4 className="font-medium text-ios-text">Health Provider Integration</h4>
+                  <h4 className="font-medium text-ios-text">Anonymous Usage Analytics</h4>
                   <p className="text-sm text-ios-secondary">
-                    Allow sharing nutrition data with healthcare providers (future feature)
+                    Share how you use the app (button clicks, feature usage) to help us improve the experience
                   </p>
                 </div>
                 <Switch
-                  checked={preferences.shareWithHealthProviders}
+                  checked={preferences.anonymousUsageAnalytics}
                   onCheckedChange={(checked) =>
-                    setPreferences(prev => ({ ...prev, shareWithHealthProviders: checked }))
+                    setPreferences(prev => ({ ...prev, anonymousUsageAnalytics: checked }))
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text">Community Food Database</h4>
+                  <p className="text-sm text-ios-secondary">
+                    Add your analyzed foods to our community database to help other users get faster results
+                  </p>
+                </div>
+                <Switch
+                  checked={preferences.communityFoodDatabase}
+                  onCheckedChange={(checked) =>
+                    setPreferences(prev => ({ ...prev, communityFoodDatabase: checked }))
                   }
                 />
               </div>

@@ -111,6 +111,12 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 20, 2025: GDPR compliance system implemented
+  - First-time GDPR banner appears only once after registration login
+  - Personalized data sharing options specific to YesNoApp features
+  - Essential data collection notice in privacy page with Terms of Service reference
+  - Four targeted consent options: AI training, nutrition emails, usage analytics, community database
+  - Database tracking prevents banner from showing again after initial consent
 - June 20, 2025: Weekly leaderboard competition system completed
   - Real participant counts from database instead of hardcoded values
   - Madrid timezone Monday 00:00 challenge reset timing implemented
