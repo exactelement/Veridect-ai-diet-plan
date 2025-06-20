@@ -1,16 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Medal, Award, Crown, TrendingUp } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Trophy, Medal, Award, Crown, TrendingUp, Users, Calendar, Target } from "lucide-react";
+import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
-  const { data: leaderboard = [] } = useQuery({
+  const { data: leaderboard = [] } = useQuery<WeeklyScore[]>({
     queryKey: ["/api/leaderboard/weekly"],
   });
 
-  const { data: myScore } = useQuery({
+  const { data: myScore } = useQuery<WeeklyScore>({
     queryKey: ["/api/leaderboard/my-score"],
   });
+
+  // Calculate weekly challenge progress
+  const getCurrentWeekProgress = () => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
+    const daysPassed = Math.floor((now.getTime() - startOfWeek.getTime()) / (1000 * 60 * 60 * 24));
+    const daysRemaining = Math.max(0, 7 - daysPassed);
+    const progressPercentage = Math.round((daysPassed / 7) * 100);
+    return { daysRemaining, progressPercentage };
+  };
+
+  const { daysRemaining, progressPercentage } = getCurrentWeekProgress();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -50,6 +65,43 @@ export default function Leaderboard() {
             <p className="text-xl text-ios-secondary">See how you stack up against other health champions</p>
           </div>
 
+          {/* Weekly Challenge Card */}
+          <Card className="bg-gradient-to-br from-orange-50 to-red-100 border-2 border-orange-200 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-bold text-orange-800">No Junk Food Week</h3>
+                    <div className="flex items-center gap-2 text-orange-700">
+                      <Users className="w-4 h-4" />
+                      <span className="font-semibold">7</span>
+                      <span className="text-sm">participants</span>
+                    </div>
+                  </div>
+                  <p className="text-orange-700 mb-4">Avoid junk food for 7 consecutive days</p>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-orange-600" />
+                        <span className="font-medium text-orange-800">{daysRemaining} days remaining</span>
+                      </div>
+                      <span className="text-lg font-bold text-orange-800">{progressPercentage}%</span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Progress value={progressPercentage} className="h-3 bg-orange-200" />
+                      <p className="text-sm text-orange-600">You're {progressPercentage}% through!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* My Position */}
           {myScore && (
             <Card className="bg-gradient-to-r from-ios-blue/5 to-health-green/5 border-ios-blue/20">
@@ -69,7 +121,7 @@ export default function Leaderboard() {
                       #{myScore.rank || '-'}
                     </div>
                     <div className="text-sm text-ios-secondary">
-                      {myScore.score || 0} points
+                      {myScore.totalScore || 0} weekly points
                     </div>
                   </div>
                 </div>
@@ -122,9 +174,9 @@ export default function Leaderboard() {
                             entry.rank === 3 ? 'text-amber-600' :
                             'text-ios-text'
                           }`}>
-                            {entry.score}
+                            {entry.totalScore || 0}
                           </div>
-                          <div className="text-sm text-ios-secondary">points</div>
+                          <div className="text-sm text-ios-secondary">weekly points</div>
                         </div>
                       </div>
                     </div>
