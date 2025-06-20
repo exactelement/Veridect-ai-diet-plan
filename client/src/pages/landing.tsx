@@ -1,28 +1,127 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Check, Heart, Shield, Zap, Users } from "lucide-react";
+import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Landing() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigationItems = [
+    { label: "Features", href: "#features" },
+    { label: "Pricing", href: "#pricing" },
+    { label: "How It Works", href: "#how-it-works" },
+  ];
+
   return (
     <div className="min-h-screen bg-ios-bg text-ios-text">
-      {/* Navigation */}
+      {/* Responsive Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
         <div className="page-container">
           <div className="flex justify-between items-center h-16">
+            {/* Logo/Brand - Always visible */}
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-ios-blue to-health-green rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">Y</span>
               </div>
               <span className="font-semibold text-xl">YesNoApp</span>
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-ios-secondary hover:text-ios-text transition-colors">Features</a>
-              <a href="#pricing" className="text-ios-secondary hover:text-ios-text transition-colors">Pricing</a>
-              <a href="#how-it-works" className="text-ios-secondary hover:text-ios-text transition-colors">How It Works</a>
+
+            {/* Desktop Navigation - visible on large screens */}
+            <div className="hidden lg:flex items-center space-x-8">
+              {navigationItems.map((item) => (
+                <a 
+                  key={item.href}
+                  href={item.href} 
+                  className="text-ios-secondary hover:text-ios-text transition-colors"
+                >
+                  {item.label}
+                </a>
+              ))}
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
                 Get Started
               </Button>
+            </div>
+
+            {/* Right side controls */}
+            <div className="flex items-center space-x-4">
+              {/* Login button - always visible */}
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
+                Login
+              </Button>
+
+              {/* Dropdown menu for medium screens */}
+              <div className="hidden md:block lg:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center space-x-1">
+                      <span className="text-sm">Menu</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    {navigationItems.map((item) => (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <a href={item.href} className="w-full">
+                          {item.label}
+                        </a>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Mobile menu - visible on small screens */}
+              <div className="md:hidden">
+                <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <Menu className="w-5 h-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-80">
+                    <SheetHeader>
+                      <SheetTitle>Menu</SheetTitle>
+                    </SheetHeader>
+                    
+                    <div className="mt-8 space-y-6">
+                      {/* Navigation items */}
+                      <nav className="space-y-2">
+                        {navigationItems.map((item) => (
+                          <a
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block p-3 rounded-lg hover:bg-ios-gray-50 text-ios-text transition-colors"
+                          >
+                            <span className="font-medium">{item.label}</span>
+                          </a>
+                        ))}
+                      </nav>
+
+                      {/* Get Started button in mobile menu */}
+                      <div className="pt-6 border-t border-ios-gray-200">
+                        <Button 
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            window.location.href = "/login";
+                          }}
+                          className="w-full bg-ios-blue text-white rounded-lg ios-button ios-shadow"
+                        >
+                          Get Started
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
         </div>
