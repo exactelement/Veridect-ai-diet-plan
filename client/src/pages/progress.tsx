@@ -88,7 +88,7 @@ export default function Progress() {
               </div>
 
               {/* Stats Below Circle */}
-              <div className="w-full space-y-6">
+              <div className="w-full grid grid-cols-3 gap-6">
                 {/* Excellent */}
                 <div className="text-center">
                   <div className="text-4xl font-bold text-green-600 mb-1">{totalStats.yes}</div>
