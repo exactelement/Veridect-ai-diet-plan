@@ -93,14 +93,14 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
 
 
 
-          <div className="space-y-3 mb-5">
+          <div className="space-y-2 mb-3">
             <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
             <p className="text-sm text-ios-secondary">
               Essential data is required for app functionality. Optional settings can be changed anytime in your profile.
             </p>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-4 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between p-3 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text/70">Essential App Data Collection</h4>
                   <p className="text-sm text-ios-secondary/70">
@@ -113,7 +113,7 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                   className="opacity-50"
                 />
               </div>
-              <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Improve AI Food Analysis</h4>
                   <p className="text-sm text-ios-secondary">
@@ -128,7 +128,7 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Weekly Nutrition Insights</h4>
                   <p className="text-sm text-ios-secondary">
@@ -143,7 +143,7 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-ios-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-ios-gray-50 rounded-lg">
                 <div className="flex-1">
                   <h4 className="font-medium text-ios-text">Anonymous Usage Analytics</h4>
                   <p className="text-sm text-ios-secondary">
