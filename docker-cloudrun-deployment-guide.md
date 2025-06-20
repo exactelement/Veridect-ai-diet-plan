@@ -417,6 +417,16 @@ echo "your_google_gemini_api_key" | gcloud secrets create GOOGLE_GEMINI_API_KEY 
 echo "your_stripe_secret_key" | gcloud secrets create STRIPE_SECRET_KEY --data-file=-
 echo "your_stripe_public_key" | gcloud secrets create VITE_STRIPE_PUBLIC_KEY --data-file=-
 
+# Google OAuth credentials
+echo "your_google_client_id" | gcloud secrets create GOOGLE_CLIENT_ID --data-file=-
+echo "your_google_client_secret" | gcloud secrets create GOOGLE_CLIENT_SECRET --data-file=-
+
+# Apple Sign-In credentials
+echo "com.yesnoapp.signin" | gcloud secrets create APPLE_SERVICE_ID --data-file=-
+echo "your_apple_team_id" | gcloud secrets create APPLE_TEAM_ID --data-file=-
+echo "your_apple_key_id" | gcloud secrets create APPLE_KEY_ID --data-file=-
+echo "your_apple_private_key" | gcloud secrets create APPLE_PRIVATE_KEY --data-file=-
+
 # Optional: SendGrid for emails
 echo "your_sendgrid_api_key" | gcloud secrets create SENDGRID_API_KEY --data-file=-
 ```
@@ -492,6 +502,12 @@ gcloud run deploy $SERVICE_NAME \
   --set-secrets=GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest \
   --set-secrets=STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest \
   --set-secrets=VITE_STRIPE_PUBLIC_KEY=VITE_STRIPE_PUBLIC_KEY:latest \
+  --set-secrets=GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest \
+  --set-secrets=GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest \
+  --set-secrets=APPLE_SERVICE_ID=APPLE_SERVICE_ID:latest \
+  --set-secrets=APPLE_TEAM_ID=APPLE_TEAM_ID:latest \
+  --set-secrets=APPLE_KEY_ID=APPLE_KEY_ID:latest \
+  --set-secrets=APPLE_PRIVATE_KEY=APPLE_PRIVATE_KEY:latest \
   --port=8080
 
 # Get service URL

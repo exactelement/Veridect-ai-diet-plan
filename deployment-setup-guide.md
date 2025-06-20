@@ -158,6 +158,12 @@ jobs:
             GOOGLE_GEMINI_API_KEY=${{ secrets.GOOGLE_GEMINI_API_KEY }}
             STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
             VITE_STRIPE_PUBLIC_KEY=${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            APPLE_SERVICE_ID=${{ secrets.APPLE_SERVICE_ID }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
+            APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
 
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}

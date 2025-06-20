@@ -66,6 +66,26 @@ gcloud config set project yesnoapp-production
    - Secret key (starts with `sk_`)
    - Publishable key (starts with `pk_`)
 
+### Apple Developer Credentials (Optional)
+
+1. Go to [Apple Developer Console](https://developer.apple.com/account/)
+2. Create a Service ID:
+   - Navigate to "Certificates, Identifiers & Profiles"
+   - Click "Identifiers" → "+" → "Services IDs"
+   - Register a new Service ID (e.g., `com.yesnoapp.signin`)
+3. Configure Sign In with Apple:
+   - Enable "Sign In with Apple" for your Service ID
+   - Add your domains (both development and production)
+4. Create a Key:
+   - Go to "Keys" → "+" 
+   - Enable "Sign In with Apple"
+   - Download the private key (.p8 file)
+5. Collect required values:
+   - Service ID (e.g., `com.yesnoapp.signin`)
+   - Team ID (found in membership details)
+   - Key ID (from the key you created)
+   - Private Key (contents of the .p8 file)
+
 ## Step 3: Deploy to GCP
 
 ### Option A: Automated Deployment (Recommended)
@@ -124,6 +144,18 @@ gcloud run deploy yesnoapp \
 echo "your_actual_gemini_api_key" | gcloud secrets create GOOGLE_GEMINI_API_KEY --data-file=-
 echo "your_stripe_secret_key" | gcloud secrets create STRIPE_SECRET_KEY --data-file=-
 echo "your_stripe_public_key" | gcloud secrets create VITE_STRIPE_PUBLIC_KEY --data-file=-
+
+# Add Google OAuth credentials
+echo "your_google_client_id" | gcloud secrets create GOOGLE_CLIENT_ID --data-file=-
+echo "your_google_client_secret" | gcloud secrets create GOOGLE_CLIENT_SECRET --data-file=-
+
+# Add Apple Sign-In credentials (if using Apple authentication)
+echo "com.yesnoapp.signin" | gcloud secrets create APPLE_SERVICE_ID --data-file=-
+echo "your_team_id" | gcloud secrets create APPLE_TEAM_ID --data-file=-
+echo "your_key_id" | gcloud secrets create APPLE_KEY_ID --data-file=-
+echo "-----BEGIN PRIVATE KEY-----
+your_private_key_contents
+-----END PRIVATE KEY-----" | gcloud secrets create APPLE_PRIVATE_KEY --data-file=-
 
 # Generate session secret
 openssl rand -base64 32 | gcloud secrets create SESSION_SECRET --data-file=-

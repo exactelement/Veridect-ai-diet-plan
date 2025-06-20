@@ -315,7 +315,13 @@ jobs:
           --set-secrets SESSION_SECRET=SESSION_SECRET:latest \
           --set-secrets GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest \
           --set-secrets STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest \
-          --set-secrets VITE_STRIPE_PUBLIC_KEY=VITE_STRIPE_PUBLIC_KEY:latest
+          --set-secrets VITE_STRIPE_PUBLIC_KEY=VITE_STRIPE_PUBLIC_KEY:latest \
+          --set-secrets GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest \
+          --set-secrets GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest \
+          --set-secrets APPLE_SERVICE_ID=APPLE_SERVICE_ID:latest \
+          --set-secrets APPLE_TEAM_ID=APPLE_TEAM_ID:latest \
+          --set-secrets APPLE_KEY_ID=APPLE_KEY_ID:latest \
+          --set-secrets APPLE_PRIVATE_KEY=APPLE_PRIVATE_KEY:latest
 
     - name: Get deployment URL
       run: |
