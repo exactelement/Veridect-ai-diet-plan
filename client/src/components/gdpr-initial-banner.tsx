@@ -68,8 +68,8 @@ export default function GDPRInitialBanner({ onDismiss }: GDPRInitialBannerProps)
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-white border-2 border-ios-blue shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl bg-white border-2 border-ios-blue shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
