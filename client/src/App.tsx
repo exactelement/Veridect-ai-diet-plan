@@ -52,7 +52,7 @@ function Router() {
             <Route path="/investor" component={Investor} />
             <Route path="/disclaimer" component={Disclaimer} />
           </>
-        ) : user && (user as any).onboardingCompleted ? (
+        ) : user && user.onboardingCompleted ? (
           <>
             <Route path="/" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />

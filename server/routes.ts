@@ -21,8 +21,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      // For multiAuth system, user is directly in req.user
+      const user = req.user;
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -33,7 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const profileData = updateUserProfileSchema.parse(req.body);
       const updatedUser = await storage.updateUserProfile(userId, profileData);
       res.json(updatedUser);
@@ -334,7 +337,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Data Export
   app.get('/api/auth/export-data', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       const foodLogs = await storage.getFoodLogs(userId, 1000, 0);
       const weeklyScore = await storage.getUserWeeklyScore(userId);
@@ -369,7 +372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Mark user as deleted (anonymize data)
       await storage.updateUserProfile(userId, {
