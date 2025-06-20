@@ -19,6 +19,14 @@ GOOGLE_GEMINI_API_KEY=your_gemini_api_key
 # Authentication (Required)
 SESSION_SECRET=your_random_session_secret_key
 
+# Multi-Provider Authentication (Optional - enables Google/Apple sign-in)
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+APPLE_SERVICE_ID=your_apple_service_id
+APPLE_TEAM_ID=your_apple_team_id
+APPLE_KEY_ID=your_apple_key_id
+APPLE_PRIVATE_KEY=your_apple_private_key_content
+
 # Optional: Payment Processing
 STRIPE_SECRET_KEY=your_stripe_secret_key
 VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
@@ -83,6 +91,26 @@ Generate a random string for session security:
 # Generate random secret
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
+
+### Multi-Provider Authentication Setup (Optional)
+
+**Google OAuth Setup:**
+1. Go to https://console.cloud.google.com/apis/credentials
+2. Create OAuth 2.0 Client ID for Web application
+3. Add authorized redirect URI: `https://yourdomain.com/api/auth/google/callback`
+4. Copy Client ID → GOOGLE_CLIENT_ID
+5. Copy Client Secret → GOOGLE_CLIENT_SECRET
+
+**Apple Sign-In Setup:**
+1. Go to https://developer.apple.com/account/resources/identifiers/list/serviceId
+2. Create new Services ID with your domain
+3. Configure Sign In with Apple for your Service ID
+4. Generate private key in Keys section
+5. Set the environment variables:
+   - APPLE_SERVICE_ID: Your Services ID
+   - APPLE_TEAM_ID: Your Team ID (from membership details)
+   - APPLE_KEY_ID: Your private key ID
+   - APPLE_PRIVATE_KEY: Private key content (including headers)
 
 ### Optional: Stripe Setup (for subscriptions)
 1. Go to https://dashboard.stripe.com/apikeys

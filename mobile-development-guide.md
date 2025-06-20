@@ -59,6 +59,10 @@ dependencies {
     // Authentication
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     
+    // Multi-Provider Authentication
+    implementation 'com.google.firebase:firebase-auth-ktx:22.3.1'
+    implementation 'com.auth0.android:jwtdecode:2.0.2'
+    
     // Navigation
     implementation 'androidx.navigation:navigation-compose:2.7.6'
     
