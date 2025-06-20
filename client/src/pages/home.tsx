@@ -74,9 +74,14 @@ export default function Home() {
   const pointsToNextLevel = ((currentLevel * 100) - totalPoints);
   const levelProgress = ((totalPoints % 100) / 100) * 100;
 
-  // User interface preferences
-  const showCalorieCounter = (user as any)?.privacySettings?.showCalorieCounter !== false;
-  const participateInWeeklyChallenge = (user as any)?.privacySettings?.participateInWeeklyChallenge !== false;
+  // User interface preferences - properly check for explicit false values
+  const privacySettings = (user as any)?.privacySettings;
+  const showCalorieCounter = privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter;
+  const participateInWeeklyChallenge = privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge;
+
+  // Debug logging
+  console.log('Home page - Privacy settings:', privacySettings);
+  console.log('Home page - showCalorieCounter:', showCalorieCounter);
 
   const currentHour = new Date().getHours();
   const timeGreeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";

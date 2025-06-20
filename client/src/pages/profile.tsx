@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -64,8 +64,17 @@ export default function Profile() {
   const [historyOpen, setHistoryOpen] = useState(false);
   
   // App interface preferences (sync with user data)
-  const [showCalories, setShowCalories] = useState((user as any)?.privacySettings?.showCalorieCounter !== false);
-  const [participateInChallenge, setParticipateInChallenge] = useState((user as any)?.privacySettings?.participateInWeeklyChallenge !== false);
+  const [showCalories, setShowCalories] = useState(true);
+  const [participateInChallenge, setParticipateInChallenge] = useState(true);
+
+  // Update state when user data changes
+  useEffect(() => {
+    if (user) {
+      const privacySettings = (user as any)?.privacySettings;
+      setShowCalories(privacySettings?.showCalorieCounter === undefined ? true : privacySettings.showCalorieCounter);
+      setParticipateInChallenge(privacySettings?.participateInWeeklyChallenge === undefined ? true : privacySettings.participateInWeeklyChallenge);
+    }
+  }, [user]);
 
   const { data: foodLogs = [], isLoading: logsLoading } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],
@@ -161,12 +170,14 @@ export default function Profile() {
 
   const updateInterfaceMutation = useMutation({
     mutationFn: async (preferences: { showCalorieCounter: boolean; participateInWeeklyChallenge: boolean }) => {
-      await apiRequest("PUT", "/api/user/profile", {
+      const updatedSettings = {
         privacySettings: {
           ...((user as any)?.privacySettings || {}),
           ...preferences,
         },
-      });
+      };
+      console.log('Profile page - Saving privacy settings:', updatedSettings);
+      await apiRequest("PUT", "/api/user/profile", updatedSettings);
     },
     onSuccess: () => {
       toast({
