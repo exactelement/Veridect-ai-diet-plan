@@ -54,6 +54,14 @@ export const users = pgTable("users", {
   medicalConditions: jsonb("medical_conditions"),
   allergies: jsonb("allergies"),
   
+  // Gamification and Progress
+  calorieGoal: integer("calorie_goal").default(2000), // Daily calorie goal
+  currentStreak: integer("current_streak").default(0), // Days without "NO" food
+  longestStreak: integer("longest_streak").default(0), // Best streak record
+  totalPoints: integer("total_points").default(0), // Total points earned
+  currentLevel: integer("current_level").default(1), // User level (100 points per level)
+  lastStreakDate: timestamp("last_streak_date"), // Last date streak was updated
+  
   // GDPR and Privacy
   gdprConsent: jsonb("gdpr_consent"), // stores consent details and timestamps
   privacySettings: jsonb("privacy_settings"),

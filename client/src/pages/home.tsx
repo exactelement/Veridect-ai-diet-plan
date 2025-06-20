@@ -55,9 +55,24 @@ export default function Home() {
     { yes: 0, ok: 0, no: 0 }
   );
 
+  const totalCalories = todaysLogs.reduce(
+    (acc: number, log: FoodLog) => acc + (log.calories || 0),
+    0
+  );
+
+  const calorieGoal = (user as any)?.calorieGoal || 2000;
+  const calorieProgress = (totalCalories / calorieGoal) * 100;
+  const isOverGoal = totalCalories > calorieGoal;
+
   const healthScore = todaysLogs.length > 0 
     ? Math.round(((todaysStats.yes * 10 + todaysStats.ok * 5 + todaysStats.no * 2) / (todaysLogs.length * 10)) * 100)
     : 0;
+
+  const currentStreak = (user as any)?.currentStreak || 0;
+  const currentLevel = (user as any)?.currentLevel || 1;
+  const totalPoints = (user as any)?.totalPoints || 0;
+  const pointsToNextLevel = ((currentLevel * 100) - totalPoints);
+  const levelProgress = ((totalPoints % 100) / 100) * 100;
 
   const currentHour = new Date().getHours();
   const timeGreeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
@@ -127,8 +142,42 @@ export default function Home() {
               <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
+            {/* Calorie Counter Bar */}
+            <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-6 h-6 text-orange-600" />
+                    <span className="text-lg font-semibold text-gray-800">Daily Calories</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-orange-700">
+                      {totalCalories} / {calorieGoal}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {isOverGoal 
+                        ? `${Math.round((totalCalories - calorieGoal))} over goal` 
+                        : `${Math.round(calorieGoal - totalCalories)} remaining`
+                      }
+                    </div>
+                  </div>
+                </div>
+                <Progress 
+                  value={Math.min(calorieProgress, 100)} 
+                  className={`h-3 ${isOverGoal ? 'bg-red-100' : 'bg-orange-100'}`}
+                />
+                <div className="flex justify-between mt-2 text-sm text-gray-600">
+                  <span>0</span>
+                  <span className={isOverGoal ? 'text-red-600 font-semibold' : 'text-orange-600'}>
+                    {Math.round(calorieProgress)}% {isOverGoal ? '(Over Goal)' : 'of goal'}
+                  </span>
+                  <span>{calorieGoal}</span>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Daily Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
                 <CardContent className="p-4 text-center">
                   <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
@@ -158,6 +207,46 @@ export default function Home() {
                   <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-blue-700">{healthScore}%</div>
                   <div className="text-sm text-blue-600">Health Score</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Streak & Level Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Award className="w-8 h-8 text-purple-600" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">Day Streak</h3>
+                      <p className="text-sm text-gray-600">Days without "No" foods</p>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-purple-700 mb-2">{currentStreak}</div>
+                    <div className="text-sm text-purple-600">
+                      {currentStreak === 0 ? 'Start your streak today!' : `${currentStreak} day${currentStreak > 1 ? 's' : ''} strong!`}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Star className="w-8 h-8 text-amber-600" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">Level {currentLevel}</h3>
+                      <p className="text-sm text-gray-600">{totalPoints} total points</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Progress to Level {currentLevel + 1}</span>
+                      <span>{pointsToNextLevel > 0 ? pointsToNextLevel : 0} points to go</span>
+                    </div>
+                    <Progress value={levelProgress} className="h-2 bg-amber-100" />
+                  </div>
                 </CardContent>
               </Card>
             </div>

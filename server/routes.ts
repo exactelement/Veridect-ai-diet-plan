@@ -114,6 +114,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update weekly score
       await storage.updateWeeklyScore(userId, analysis.verdict);
 
+      // Update user points and streak based on verdict
+      const points = analysis.verdict === "YES" ? 10 : analysis.verdict === "OK" ? 5 : 2;
+      await storage.updateUserPoints(userId, points);
+      await storage.updateStreak(userId, analysis.verdict);
+
       res.json({ analysis, logId: foodLog.id });
     } catch (error: any) {
       console.error("Error analyzing food:", error);

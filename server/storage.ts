@@ -25,6 +25,11 @@ export interface IStorage {
   completeOnboarding(id: string): Promise<User>;
   updateGdprConsent(userId: string, consent: any): Promise<User>;
   
+  // Gamification operations
+  updateUserPoints(userId: string, pointsToAdd: number): Promise<User>;
+  updateStreak(userId: string, verdict: string): Promise<User>;
+  updateCalorieGoal(userId: string, goal: number): Promise<User>;
+  
   // Password management
   updatePasswordResetToken(userId: string, token: string, expires: Date): Promise<User>;
   updatePassword(userId: string, passwordHash: string): Promise<User>;
@@ -336,6 +341,80 @@ export class DatabaseStorage implements IStorage {
       );
 
     return score;
+  }
+
+  // Gamification operations
+  async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error("User not found");
+    
+    const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
+    const newLevel = Math.floor(newTotalPoints / 100) + 1;
+    
+    const [updatedUser] = await db
+      .update(users)
+      .set({ 
+        totalPoints: newTotalPoints,
+        currentLevel: newLevel,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return updatedUser;
+  }
+
+  async updateStreak(userId: string, verdict: string): Promise<User> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error("User not found");
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const lastStreakDate = user.lastStreakDate ? new Date(user.lastStreakDate) : null;
+    let newStreak = user.currentStreak || 0;
+    
+    // Check if we need to update streak
+    if (!lastStreakDate || lastStreakDate < today) {
+      if (verdict === "NO") {
+        // Reset streak to 0 if user logs a "NO" food
+        newStreak = 0;
+      } else {
+        // Increment streak if it's a new day and not a "NO" verdict
+        newStreak = (user.currentStreak || 0) + 1;
+      }
+    } else if (verdict === "NO") {
+      // Reset streak even on same day if "NO" verdict
+      newStreak = 0;
+    }
+    
+    const newLongestStreak = Math.max(user.longestStreak || 0, newStreak);
+    
+    const [updatedUser] = await db
+      .update(users)
+      .set({ 
+        currentStreak: newStreak,
+        longestStreak: newLongestStreak,
+        lastStreakDate: today,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return updatedUser;
+  }
+
+  async updateCalorieGoal(userId: string, goal: number): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ 
+        calorieGoal: goal,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return updatedUser;
   }
 }
 
