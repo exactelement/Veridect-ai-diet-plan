@@ -103,19 +103,12 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   };
 
   const translatePage = async (targetLang: string) => {
-    if (targetLang === 'en') {
-      setCurrentLanguage('en');
-      localStorage.setItem('veridect-language', 'en');
-      // Trigger re-render of all components
-      window.location.reload();
-      return;
-    }
-
     setCurrentLanguage(targetLang);
     localStorage.setItem('veridect-language', targetLang);
-    // Trigger immediate re-render
-    window.location.reload();
-    return;
+    
+    if (targetLang === 'en') {
+      return;
+    }
     
     // Find all text nodes and translate them
     const walker = document.createTreeWalker(
@@ -176,38 +169,13 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsTranslating(false);
   };
 
-  // Pre-populate essential translations immediately when language changes
+  // Remove auto-translation effects to prevent refresh loops
   useEffect(() => {
-    if (currentLanguage !== 'en') {
-      const essentialTexts = [
-        'Home', 'Analyze', 'Rankings', 'Premium', 'Profile',
-        'Smart Food Analysis with AI', 'Start Analyzing Food',
-        'Get instant YES/NO/OK verdicts on your food choices',
-        'Most Popular', 'Current Plan', 'Choose', 'Free',
-        'Basic nutrition analysis', 'Advanced AI insights', 'Medical-grade analysis',
-        '5 analyses per day', 'Unlimited food scans', 'Detailed nutrition reports',
-        'Community leaderboard', 'Priority support', 'Healthcare integration'
-      ];
-      
-      // Pre-load translations synchronously from cache or fetch async
-      essentialTexts.forEach(async (text) => {
-        const cacheKey = `${text}:${currentLanguage}`;
-        if (!translations[cacheKey]) {
-          try {
-            await translateText(text, currentLanguage);
-          } catch (error) {
-            console.warn(`Failed to translate: ${text}`);
-          }
-        }
-      });
-      
-      // DOM fallback for any missed content
-      const timer = setTimeout(() => {
-        translatePage(currentLanguage);
-      }, 4000);
-      return () => clearTimeout(timer);
+    // Only save translations to localStorage when they change
+    if (Object.keys(translations).length > 0) {
+      localStorage.setItem('veridect-translations', JSON.stringify(translations));
     }
-  }, [currentLanguage, translateText]);
+  }, [translations]);
 
   // Save translations to localStorage whenever they change
   useEffect(() => {

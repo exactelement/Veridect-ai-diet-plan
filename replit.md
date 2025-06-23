@@ -124,16 +124,15 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Enhanced component-level translation system for zero-flash multi-language support
-  - Immediate translation using cached content (no English flash on component render)
-  - Pre-populated translations for common UI text for instant display
-  - Component-level translation using useTranslatedText hook and T wrapper
-  - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
-  - Uses MyMemory translation API with intelligent caching for performance
-  - Floating widget with minimize/maximize functionality positioned bottom-right
-  - Global language persistence: selected language maintained across all pages
-  - LocalStorage caching for translations and language preference
-  - Backwards compatible DOM-based fallback for uncached content
+- June 23, 2025: Fixed instant translation system with zero-flash synchronous rendering
+  - Direct localStorage language reading prevents English flash completely
+  - Synchronous t() function for immediate translation during component render
+  - Pre-loaded translations for Spanish, French, German in instantTranslation.ts
+  - Removed page refresh loops that were causing infinite reloading
+  - Component-level translation using simple t() function calls
+  - Navigation, landing page, and subscription components updated with instant translation
+  - Zero async delays - translations happen during initial component render
+  - Language preference persisted in localStorage without triggering refreshes
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers
