@@ -111,13 +111,14 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Complete authentication and food logging system fixes
+- June 23, 2025: Complete system optimization with caching and UX improvements
   - Fixed database schema validation with proper privacy settings defaults for all users
   - Added functional "Skip for now" exit button to onboarding process that properly completes onboarding
-  - Updated existing user records to include required privacy settings defaults
+  - Implemented comprehensive food analysis caching system for faster repeated queries
+  - Fixed double-click prevention in food logging with server-side duplicate detection (30s window)
   - Added auto-dismiss functionality to all error messages (4 second duration)
-  - Fixed double-click issue in food logging with anti-duplicate protection and loading states
-  - Enhanced profile update logic to merge privacy settings with existing user data
+  - Enhanced navigation with scroll-to-top on all tab clicks and page refreshes
+  - Analysis result cards now clear immediately when clicking "Yum" regardless of success/failure
   - Authentication system fully working with new database URL and proper session management
 - June 23, 2025: Fixed white text visibility issues on landing page and about page CTA sections
   - Replaced problematic gradient backgrounds with solid blue backgrounds

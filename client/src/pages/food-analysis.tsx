@@ -28,6 +28,11 @@ export default function FoodAnalysis() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+
+  // Always scroll to top when component mounts or refreshes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
