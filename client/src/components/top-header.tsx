@@ -29,9 +29,11 @@ export default function TopHeader() {
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-health-green to-ios-blue rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">V</span>
-            </div>
+            <img 
+              src="/attached_assets/veridect_logo_1750694541716.PNG" 
+              alt="Veridect Logo" 
+              className="w-8 h-8 object-contain"
+            />
             <div className="text-2xl font-bold text-health-green">
               Veridect
             </div>

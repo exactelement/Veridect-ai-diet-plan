@@ -132,11 +132,12 @@ Changelog:
   - Enhanced navigation with instant scroll-to-top on all tab clicks
   - Cache system maintains 500 entries with personalized verdicts per user profile
   - Authentication system fully working with proper session management
-- June 23, 2025: Updated logo icons and messaging throughout the app
-  - Fixed broken logo images by using gradient V icons across all pages
+- June 23, 2025: Updated logo and messaging throughout the app
+  - Implemented new Veridect logo (veridect_logo_1750694541716.PNG) across all pages
   - Changed all subscription pricing from $ to € (Free, €19.99 Pro, €49.99 Medical)
   - Updated messaging: "bring awareness to healthier nutrition and provide advanced nutrition guidance"
   - Removed "Yes/No" simplification messaging in favor of comprehensive nutrition guidance
+  - Updated "Health First" value text to remove "above profit" reference
 - June 23, 2025: Fixed white text visibility issues on landing page and about page CTA sections
   - Replaced problematic gradient backgrounds with solid blue backgrounds
   - Ensured proper text contrast for "Ready to Transform Your Health?" sections

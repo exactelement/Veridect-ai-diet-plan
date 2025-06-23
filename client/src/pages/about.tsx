@@ -57,7 +57,7 @@ const VALUES = [
   {
     icon: <Heart className="w-8 h-8" />,
     title: "Health First",
-    description: "Every decision we make prioritizes user health and wellbeing above profit.",
+    description: "Every decision we make prioritizes user health and wellbeing.",
     color: "text-danger-red"
   },
   {
@@ -87,9 +87,11 @@ export default function About() {
         {/* Header */}
         <div className="text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-health-green to-ios-blue rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">V</span>
-            </div>
+            <img 
+              src="/attached_assets/veridect_logo_1750694541716.PNG" 
+              alt="Veridect Logo" 
+              className="w-12 h-12 object-contain"
+            />
             <h1 className="text-4xl font-bold text-health-green">About Veridect</h1>
           </div>
           <p className="text-xl text-ios-secondary max-w-3xl mx-auto">
