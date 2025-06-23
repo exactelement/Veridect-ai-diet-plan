@@ -42,61 +42,85 @@ export default function GoogleTranslate() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // Check if script already exists
+    const existingScript = document.querySelector('script[src*="translate.google.com"]');
+    if (existingScript) {
+      setIsLoaded(true);
+      return;
+    }
+
+    // Initialize Google Translate callback
+    window.googleTranslateElementInit = () => {
+      if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: 'en',
+            includedLanguages: LANGUAGES.map(lang => lang.code).join(','),
+            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+          },
+          'google_translate_element'
+        );
+        setIsLoaded(true);
+      }
+    };
+
     // Load Google Translate script
     const script = document.createElement('script');
     script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
     script.async = true;
-    document.head.appendChild(script);
-
-    // Initialize Google Translate
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: 'en',
-          includedLanguages: LANGUAGES.map(lang => lang.code).join(','),
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false
-        },
-        'google_translate_element'
-      );
-      setIsLoaded(true);
+    script.onerror = () => {
+      console.warn('Failed to load Google Translate script');
+      setIsLoaded(false);
     };
+    document.head.appendChild(script);
 
     return () => {
       // Cleanup
-      const existingScript = document.querySelector('script[src*="translate.google.com"]');
-      if (existingScript) {
-        existingScript.remove();
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
       }
     };
   }, []);
 
   const translatePage = (languageCode: string) => {
-    if (!window.google || !window.google.translate) return;
-    
-    // Hide default Google Translate widget
-    const googleWidget = document.getElementById('google_translate_element');
-    if (googleWidget) {
-      googleWidget.style.display = 'none';
+    if (!window.google || !window.google.translate) {
+      console.warn('Google Translate not available');
+      return;
     }
-
-    // Find and click the appropriate language option
-    const frame = document.querySelector('.goog-te-menu-frame');
-    if (frame) {
-      const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-      if (frameDoc) {
-        const languageLink = frameDoc.querySelector(`a[lang="${languageCode}"]`);
-        if (languageLink) {
-          languageLink.click();
-        }
+    
+    try {
+      // Hide default Google Translate widget
+      const googleWidget = document.getElementById('google_translate_element');
+      if (googleWidget) {
+        googleWidget.style.display = 'none';
       }
-    } else {
-      // Fallback: trigger translation programmatically
+
+      // Method 1: Try using the combo select element
       const selectElement = document.querySelector('.goog-te-combo') as HTMLSelectElement;
       if (selectElement) {
         selectElement.value = languageCode;
         selectElement.dispatchEvent(new Event('change'));
+        return;
       }
+
+      // Method 2: Try accessing the translate element instance
+      const translateElement = window.google.translate.TranslateElement?.getInstance?.();
+      if (translateElement && translateElement.translate) {
+        translateElement.translate(languageCode);
+        return;
+      }
+
+      // Method 3: Create a new translate element if needed
+      setTimeout(() => {
+        const selectElement = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+        if (selectElement) {
+          selectElement.value = languageCode;
+          selectElement.dispatchEvent(new Event('change'));
+        }
+      }, 1000);
+    } catch (error) {
+      console.warn('Translation failed:', error);
     }
   };
 
