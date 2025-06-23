@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Camera, Trophy, Target, TrendingUp, Zap, Star, Award, Calendar, Heart, Brain, Shield, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface FoodLog {
   id: number;
@@ -197,9 +198,9 @@ export default function Home() {
             {/* Greeting Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {timeGreeting}, {(user as any)?.firstName || 'there'}!
+                {timeGreeting}, {(user as any)?.firstName || (language === 'es' ? 'hola' : 'there')}!
               </h1>
-              <p className="text-gray-600">Ready to make healthy food choices today?</p>
+              <p className="text-gray-600">{language === 'es' ? '¿Listo para tomar decisiones alimentarias saludables hoy?' : 'Ready to make healthy food choices today?'}</p>
             </div>
 
             {/* Calorie Counter Bar - Only show if user hasn't disabled it */}
