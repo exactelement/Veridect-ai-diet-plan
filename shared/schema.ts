@@ -100,7 +100,7 @@ export const foodLogs = pgTable("food_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Weekly leaderboard
+// Weekly leaderboard - tracks points earned THIS WEEK only
 export const weeklyScores = pgTable("weekly_scores", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id).notNull(),
@@ -108,7 +108,7 @@ export const weeklyScores = pgTable("weekly_scores", {
   yesCount: integer("yes_count").default(0),
   noCount: integer("no_count").default(0),
   okCount: integer("ok_count").default(0),
-  totalScore: decimal("total_score").default("0"),
+  weeklyPoints: integer("weekly_points").default(0), // Points earned THIS WEEK (food + bonuses)
   rank: integer("rank"),
 });
 

@@ -117,15 +117,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Point System Architecture
 
-**Unified Point Tracking:**
-- All points (food logging + bonus points) accumulate to `totalPoints` field for lifetime tracking
-- Weekly points: ALL points earned this week (food + bonus), resets every Monday
-- Level calculation: 1000 points per level using lifetime totalPoints
+**Dual Point Tracking System:**
+- **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression
+- **Weekly Points**: RESET every Monday - used for leaderboard competition and weekly progress bar
+- Both systems track the same activities: food logging + bonus points from challenges/achievements
+- Level calculation: 1000 points per level using lifetime totalPoints (never affected by weekly resets)
 - Consistent scoring: YES=10, OK=5, NO=2 points across all systems
 
 **Point Sources:**
-1. Food Analysis: Automatic when user clicks "Yum" button
-2. Bonus Points: Achievements, streaks, challenges (via updateUserPoints function)
+1. Food Analysis: Points added to both lifetime and weekly when user clicks "Yum" button
+2. Bonus Points: Challenges, streaks, achievements (via updateUserPoints function) - added to both systems
 3. Future: Daily challenges, referral bonuses, subscription perks
 
 ## Deployment Ready Status
