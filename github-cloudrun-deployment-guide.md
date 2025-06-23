@@ -1,286 +1,84 @@
-# YesNoApp GitHub + Google Cloud Run Deployment Guide
+# GitHub to Cloud Run Deployment Guide
 
 ## Overview
 
-This guide covers deploying YesNoApp using GitHub for version control and Google Cloud Run for enterprise-grade hosting with automatic scaling and CI/CD.
+This guide sets up automated deployment from GitHub to Google Cloud Run using GitHub Actions.
 
 ## Prerequisites
 
-- GitHub account
-- Google Cloud Platform account with billing enabled
-- Domain name (optional)
-- YesNoApp codebase ready for deployment
+- Google Cloud Project with billing enabled
+- GitHub repository for Veridect
+- Service account with appropriate permissions
 
-## Step 1: Repository Setup
-
-### Push Code to GitHub
+## Step 1: Create Service Account
 
 ```bash
-# Initialize git repository (if not already done)
-git init
+# Set your project ID
+export PROJECT_ID=your-project-id
 
-# Add all files
-git add .
-
-# Commit changes
-git commit -m "Initial YesNoApp deployment setup"
-
-# Create GitHub repository and add remote
-git remote add origin https://github.com/yourusername/yesnoapp.git
-
-# Push to GitHub
-git push -u origin main
-```
-
-### Create Dockerfile
-
-Create `Dockerfile` in project root:
-
-```dockerfile
-# Use official Node.js runtime as base image
-FROM node:20-alpine
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S yesnoapp -u 1001
-
-# Change ownership of app directory
-RUN chown -R yesnoapp:nodejs /app
-USER yesnoapp
-
-# Expose port
-EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5000/api/health || exit 1
-
-# Start application
-CMD ["npm", "start"]
-```
-
-### Create .dockerignore
-
-```
-node_modules
-npm-debug.log
-.git
-.gitignore
-README.md
-.env
-.env.local
-.env.production
-.env.staging
-.nyc_output
-coverage
-.coverage
-dist
-.DS_Store
-*.log
-.vscode
-```
-
-### Add Production Scripts
-
-Update `package.json`:
-
-```json
-{
-  "scripts": {
-    "start": "NODE_ENV=production node dist/server/index.js",
-    "build": "npm run build:server && npm run build:client",
-    "build:server": "esbuild server/index.ts --bundle --platform=node --outfile=dist/server/index.js --external:pg-native",
-    "build:client": "vite build",
-    "health": "echo 'OK'"
-  }
-}
-```
-
-## Step 2: Google Cloud Setup
-
-### Install Google Cloud CLI
-
-```bash
-# macOS
-brew install google-cloud-sdk
-
-# Ubuntu/Debian
-curl https://sdk.cloud.google.com | bash
-exec -l $SHELL
-
-# Initialize gcloud
-gcloud init
-```
-
-### Create Google Cloud Project
-
-```bash
-# Create new project
-gcloud projects create yesnoapp-production --name="YesNoApp Production"
-
-# Set as default project
-gcloud config set project yesnoapp-production
-
-# Enable required APIs
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable run.googleapis.com
-gcloud services enable sqladmin.googleapis.com
-gcloud services enable secretmanager.googleapis.com
-```
-
-### Set up Cloud SQL Database
-
-```bash
-# Create PostgreSQL instance
-gcloud sql instances create yesnoapp-db \
-    --database-version=POSTGRES_15 \
-    --tier=db-f1-micro \
-    --region=us-central1 \
-    --storage-type=SSD \
-    --storage-size=10GB \
-    --backup \
-    --maintenance-window-day=SUN \
-    --maintenance-window-hour=09
-
-# Create database
-gcloud sql databases create yesnoapp --instance=yesnoapp-db
-
-# Create database user
-gcloud sql users create yesnoapp-user \
-    --instance=yesnoapp-db \
-    --password=YOUR_SECURE_PASSWORD
-
-# Get connection name
-gcloud sql instances describe yesnoapp-db --format="value(connectionName)"
-```
-
-### Configure Secret Manager
-
-```bash
-# Store database URL
-echo "postgresql://yesnoapp-user:YOUR_PASSWORD@/yesnoapp?host=/cloudsql/PROJECT_ID:us-central1:yesnoapp-db" | \
-gcloud secrets create DATABASE_URL --data-file=-
-
-# Store session secret
-openssl rand -base64 32 | gcloud secrets create SESSION_SECRET --data-file=-
-
-# Store API keys (you'll add these after getting them)
-echo "your_gemini_api_key" | gcloud secrets create GOOGLE_GEMINI_API_KEY --data-file=-
-echo "your_stripe_secret_key" | gcloud secrets create STRIPE_SECRET_KEY --data-file=-
-echo "your_stripe_public_key" | gcloud secrets create VITE_STRIPE_PUBLIC_KEY --data-file=-
-```
-
-## Step 3: GitHub Actions CI/CD
-
-### Create Service Account
-
-```bash
-# Create service account for GitHub Actions
+# Create service account
 gcloud iam service-accounts create github-actions \
-    --display-name="GitHub Actions Service Account"
+    --display-name="GitHub Actions Service Account" \
+    --project=$PROJECT_ID
 
 # Grant necessary permissions
-gcloud projects add-iam-policy-binding yesnoapp-production \
-    --member="serviceAccount:github-actions@yesnoapp-production.iam.gserviceaccount.com" \
-    --role="roles/cloudbuild.builds.builder"
-
-gcloud projects add-iam-policy-binding yesnoapp-production \
-    --member="serviceAccount:github-actions@yesnoapp-production.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:github-actions@$PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/run.admin"
 
-gcloud projects add-iam-policy-binding yesnoapp-production \
-    --member="serviceAccount:github-actions@yesnoapp-production.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:github-actions@$PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/storage.admin"
 
-gcloud projects add-iam-policy-binding yesnoapp-production \
-    --member="serviceAccount:github-actions@yesnoapp-production.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:github-actions@$PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/iam.serviceAccountUser"
 
 # Create and download service account key
 gcloud iam service-accounts keys create github-actions-key.json \
-    --iam-account=github-actions@yesnoapp-production.iam.gserviceaccount.com
+    --iam-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com
 ```
 
-### Configure GitHub Secrets
+## Step 2: Configure GitHub Secrets
 
-1. Go to your GitHub repository
-2. Navigate to Settings → Secrets and variables → Actions
-3. Add these secrets:
+Add these secrets to your GitHub repository settings:
 
-```
-GCP_PROJECT_ID=yesnoapp-production
-GCP_SA_KEY=<contents of github-actions-key.json file>
-GCP_REGION=us-central1
-CLOUD_RUN_SERVICE=yesnoapp
-```
+1. **GCP_PROJECT_ID**: Your Google Cloud project ID
+2. **GCP_SA_KEY**: Content of the `github-actions-key.json` file
+3. **DATABASE_URL**: Your production database connection string
+4. **SESSION_SECRET**: Secure session secret (32+ characters)
+5. **GOOGLE_GEMINI_API_KEY**: Your Gemini AI API key
+6. **REPL_ID**: Your Replit application ID
+7. **REPLIT_DOMAINS**: Your Cloud Run service domain
 
-### Create GitHub Actions Workflow
+## Step 3: GitHub Actions Workflow
 
 Create `.github/workflows/deploy.yml`:
 
 ```yaml
-name: Deploy to Google Cloud Run
+name: Deploy to Cloud Run
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: ${{ secrets.GCP_REGION }}
-  SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
+  SERVICE_NAME: veridect-app
+  REGION: europe-west1
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Run tests
-      run: npm test || echo "No tests configured yet"
-
-    - name: Run linting
-      run: npm run lint || echo "No linting configured yet"
-
   deploy:
-    needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Setup Google Cloud CLI
-      uses: google-github-actions/setup-gcloud@v2
+      uses: google-github-actions/setup-gcloud@v1
       with:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -290,357 +88,280 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/$PROJECT_ID/$SERVICE:$GITHUB_SHA .
-        docker build -t gcr.io/$PROJECT_ID/$SERVICE:latest .
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA \
+                     -t gcr.io/$PROJECT_ID/$SERVICE_NAME:latest .
 
     - name: Push Docker image
       run: |
-        docker push gcr.io/$PROJECT_ID/$SERVICE:$GITHUB_SHA
-        docker push gcr.io/$PROJECT_ID/$SERVICE:latest
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:latest
 
     - name: Deploy to Cloud Run
       run: |
-        gcloud run deploy $SERVICE \
-          --image gcr.io/$PROJECT_ID/$SERVICE:$GITHUB_SHA \
-          --platform managed \
+        gcloud run deploy $SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA \
           --region $REGION \
+          --platform managed \
           --allow-unauthenticated \
+          --port 8080 \
           --memory 1Gi \
           --cpu 1 \
+          --max-instances 10 \
           --min-instances 0 \
-          --max-instances 100 \
-          --set-env-vars NODE_ENV=production \
-          --set-cloudsql-instances $PROJECT_ID:$REGION:yesnoapp-db \
-          --set-secrets DATABASE_URL=DATABASE_URL:latest \
-          --set-secrets SESSION_SECRET=SESSION_SECRET:latest \
-          --set-secrets GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest \
-          --set-secrets STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest \
-          --set-secrets VITE_STRIPE_PUBLIC_KEY=VITE_STRIPE_PUBLIC_KEY:latest \
-          --set-secrets GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest \
-          --set-secrets GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest \
-          --set-secrets APPLE_SERVICE_ID=APPLE_SERVICE_ID:latest \
-          --set-secrets APPLE_TEAM_ID=APPLE_TEAM_ID:latest \
-          --set-secrets APPLE_KEY_ID=APPLE_KEY_ID:latest \
-          --set-secrets APPLE_PRIVATE_KEY=APPLE_PRIVATE_KEY:latest
+          --concurrency 80 \
+          --timeout 300 \
+          --set-env-vars NODE_ENV=production,PORT=8080 \
+          --update-env-vars \
+            DATABASE_URL="${{ secrets.DATABASE_URL }}",\
+            SESSION_SECRET="${{ secrets.SESSION_SECRET }}",\
+            GOOGLE_GEMINI_API_KEY="${{ secrets.GOOGLE_GEMINI_API_KEY }}",\
+            REPL_ID="${{ secrets.REPL_ID }}",\
+            REPLIT_DOMAINS="${{ secrets.REPLIT_DOMAINS }}"
 
-    - name: Get deployment URL
+    - name: Get service URL
       run: |
-        echo "Deployment URL:"
-        gcloud run services describe $SERVICE --region $REGION --format="value(status.url)"
+        SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+          --region=$REGION --format="value(status.url)")
+        echo "Service deployed at: $SERVICE_URL"
 ```
 
-## Step 4: Environment Configuration
+## Step 4: Advanced Deployment Workflow
 
-### Add Health Check Endpoint
+For more sophisticated deployments, create `.github/workflows/deploy-advanced.yml`:
 
-Add to `server/routes.ts`:
+```yaml
+name: Advanced Deploy to Cloud Run
 
-```javascript
-// Health check endpoint for Cloud Run
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  SERVICE_NAME: veridect-app
+  REGION: europe-west1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run check
+    # Add your test commands here
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+
+    - name: Set image tag
+      id: image
+      run: |
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        else
+          echo "tag=$GITHUB_SHA" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ steps.image.outputs.tag }} .
+        docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ steps.image.outputs.tag }}
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy $SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ steps.image.outputs.tag }} \
+          --region $REGION \
+          --platform managed \
+          --allow-unauthenticated \
+          --port 8080 \
+          --memory 1Gi \
+          --cpu 1 \
+          --max-instances 10 \
+          --min-instances 1 \
+          --concurrency 80 \
+          --timeout 300 \
+          --set-env-vars NODE_ENV=production,PORT=8080
+
+    - name: Update environment variables
+      run: |
+        gcloud run services update $SERVICE_NAME \
+          --region $REGION \
+          --update-env-vars \
+            DATABASE_URL="${{ secrets.DATABASE_URL }}",\
+            SESSION_SECRET="${{ secrets.SESSION_SECRET }}",\
+            GOOGLE_GEMINI_API_KEY="${{ secrets.GOOGLE_GEMINI_API_KEY }}",\
+            REPL_ID="${{ secrets.REPL_ID }}",\
+            REPLIT_DOMAINS="${{ secrets.REPLIT_DOMAINS }}"
+
+    - name: Run database migrations
+      run: |
+        # Install gcloud SQL proxy if using Cloud SQL
+        # curl -o cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64
+        # chmod +x cloud_sql_proxy
+        # ./cloud_sql_proxy -instances=$PROJECT_ID:$REGION:veridect-db=tcp:5432 &
+        
+        # Run migrations (adjust based on your setup)
+        # npm run db:push
+
+    - name: Test deployment
+      run: |
+        SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+          --region=$REGION --format="value(status.url)")
+        
+        # Wait for service to be ready
+        sleep 30
+        
+        # Test health endpoint
+        curl -f "$SERVICE_URL/health" || exit 1
+        
+        echo "Deployment successful: $SERVICE_URL"
 ```
 
-### Configure Database Migrations
+## Step 5: Environment-Specific Deployments
 
-Create `scripts/migrate.js`:
+For staging and production environments:
 
-```javascript
-const { spawn } = require('child_process');
+```yaml
+name: Multi-Environment Deploy
 
-async function runMigrations() {
-  console.log('Running database migrations...');
-  
-  const migrate = spawn('npm', ['run', 'db:push'], {
-    stdio: 'inherit',
-    env: { ...process.env }
-  });
+on:
+  push:
+    branches: [main, staging]
 
-  return new Promise((resolve, reject) => {
-    migrate.on('close', (code) => {
-      if (code === 0) {
-        console.log('Migrations completed successfully');
-        resolve();
-      } else {
-        console.error('Migration failed');
-        reject(new Error(`Migration failed with code ${code}`));
-      }
-    });
-  });
-}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [staging, production]
+        exclude:
+          - environment: production
+            # Only deploy to production from main branch
+            if: github.ref != 'refs/heads/main'
+          - environment: staging
+            # Only deploy to staging from staging branch
+            if: github.ref != 'refs/heads/staging'
 
-if (require.main === module) {
-  runMigrations().catch(console.error);
-}
-
-module.exports = runMigrations;
+    environment: ${{ matrix.environment }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to ${{ matrix.environment }}
+      run: |
+        SERVICE_NAME="veridect-${{ matrix.environment }}"
+        
+        gcloud run deploy $SERVICE_NAME \
+          --image gcr.io/$PROJECT_ID/veridect:$GITHUB_SHA \
+          --region $REGION \
+          --set-env-vars NODE_ENV=${{ matrix.environment }}
 ```
 
-Update `package.json`:
+## Step 6: Monitoring and Notifications
 
-```json
-{
-  "scripts": {
-    "start": "npm run migrate && NODE_ENV=production node dist/server/index.js",
-    "migrate": "node scripts/migrate.js"
-  }
-}
+Add Slack notifications:
+
+```yaml
+    - name: Notify Slack on success
+      if: success()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: "Veridect deployed successfully to Cloud Run"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: Notify Slack on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: "Veridect deployment failed"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 ```
 
-## Step 5: API Keys Setup
+## Security Best Practices
 
-### Google Gemini AI
+1. **Use Workload Identity** (recommended over service account keys):
+```bash
+# Configure workload identity pool
+gcloud iam workload-identity-pools create "github-pool" \
+  --location="global" \
+  --display-name="GitHub Actions Pool"
+```
 
-1. Go to [Google AI Studio](https://ai.google.dev)
-2. Create API key
-3. Add to Secret Manager:
+2. **Limit service account permissions**:
+   - Only grant minimum required roles
+   - Use condition-based IAM policies
+   - Regularly audit permissions
+
+3. **Secure secrets management**:
+   - Use Google Secret Manager for sensitive data
+   - Rotate secrets regularly
+   - Monitor secret access
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Authentication failures**:
+   - Verify service account key is valid
+   - Check IAM permissions
+   - Ensure APIs are enabled
+
+2. **Build failures**:
+   - Check Dockerfile syntax
+   - Verify all dependencies are available
+   - Review build logs
+
+3. **Deployment timeouts**:
+   - Increase deployment timeout
+   - Check application startup time
+   - Verify health check endpoint
+
+### Debug Commands
 
 ```bash
-echo "your_actual_gemini_api_key" | \
-gcloud secrets versions add GOOGLE_GEMINI_API_KEY --data-file=-
-```
+# Check service account permissions
+gcloud projects get-iam-policy $PROJECT_ID \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:github-actions@$PROJECT_ID.iam.gserviceaccount.com"
 
-### Stripe Integration
+# View Cloud Run service details
+gcloud run services describe veridect-app --region=europe-west1
 
-1. Go to [Stripe Dashboard](https://dashboard.stripe.com)
-2. Get API keys from Developers → API keys
-3. Add to Secret Manager:
-
-```bash
-# Secret key
-echo "sk_live_your_stripe_secret_key" | \
-gcloud secrets versions add STRIPE_SECRET_KEY --data-file=-
-
-# Publishable key
-echo "pk_live_your_stripe_public_key" | \
-gcloud secrets versions add VITE_STRIPE_PUBLIC_KEY --data-file=-
-```
-
-## Step 6: Custom Domain Setup
-
-### Configure Domain Mapping
-
-```bash
-# Map custom domain to Cloud Run service
-gcloud run domain-mappings create \
-    --service yesnoapp \
-    --domain yesnoapp.com \
-    --region us-central1
-
-# Get DNS records to configure
-gcloud run domain-mappings describe \
-    --domain yesnoapp.com \
-    --region us-central1
-```
-
-### Update DNS Records
-
-Add these records to your domain provider:
-
-```
-Type: A
-Name: @
-Value: 216.239.32.21
-
-Type: A
-Name: @
-Value: 216.239.34.21
-
-Type: A
-Name: @
-Value: 216.239.36.21
-
-Type: A
-Name: @
-Value: 216.239.38.21
-
-Type: AAAA
-Name: @
-Value: 2001:4860:4802:32::15
-
-Type: AAAA
-Name: @
-Value: 2001:4860:4802:34::15
-
-Type: AAAA
-Name: @
-Value: 2001:4860:4802:36::15
-
-Type: AAAA
-Name: @
-Value: 2001:4860:4802:38::15
-```
-
-## Step 7: Monitoring and Logging
-
-### Set up Cloud Monitoring
-
-```bash
-# Enable monitoring
-gcloud services enable monitoring.googleapis.com
-
-# Create uptime check
-gcloud alpha monitoring uptime create-http \
-    --display-name="YesNoApp Uptime Check" \
-    --hostname=yesnoapp.com \
-    --path=/api/health \
-    --port=443 \
-    --use-ssl
-```
-
-### Configure Log-based Metrics
-
-```bash
-# Create log-based metric for errors
-gcloud logging metrics create error_rate \
-    --description="Rate of application errors" \
-    --log-filter='resource.type="cloud_run_revision" AND severity>=ERROR'
-```
-
-## Step 8: Deployment and Testing
-
-### Deploy Initial Version
-
-```bash
-# Push to GitHub to trigger deployment
-git add .
-git commit -m "Add Cloud Run deployment configuration"
-git push origin main
-```
-
-### Verify Deployment
-
-```bash
-# Check deployment status
-gcloud run services describe yesnoapp --region us-central1
-
-# Test health endpoint
-curl https://your-service-url.run.app/api/health
-
-# Check logs
-gcloud run services logs read yesnoapp --region us-central1
-```
-
-### Load Testing
-
-```bash
-# Install Apache Bench for load testing
-sudo apt install apache2-utils
-
-# Test with 100 concurrent requests
-ab -n 1000 -c 100 https://your-domain.com/api/health
-```
-
-## Step 9: Production Optimization
-
-### Database Connection Pooling
-
-Update database configuration:
-
-```javascript
-// server/db.ts
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 20, // Maximum pool size
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
-```
-
-### Caching Strategy
-
-Add Redis for caching (optional):
-
-```bash
-# Create Redis instance
-gcloud redis instances create yesnoapp-cache \
-    --size=1 \
-    --region=us-central1 \
-    --redis-version=redis_6_x
-```
-
-### Auto-scaling Configuration
-
-```bash
-# Update Cloud Run service with optimized scaling
-gcloud run services update yesnoapp \
-    --region us-central1 \
-    --min-instances 1 \
-    --max-instances 100 \
-    --concurrency 80 \
-    --cpu-throttling \
-    --memory 2Gi \
-    --cpu 2
-```
-
-## Step 10: Security Hardening
-
-### Enable VPC Connector (Optional)
-
-```bash
-# Create VPC connector for private database access
-gcloud compute networks vpc-access connectors create yesnoapp-connector \
-    --region us-central1 \
-    --subnet yesnoapp-subnet \
-    --subnet-project yesnoapp-production \
-    --min-instances 2 \
-    --max-instances 3
-```
-
-### Configure WAF (Web Application Firewall)
-
-```bash
-# Enable Cloud Armor for DDoS protection
-gcloud compute security-policies create yesnoapp-security-policy \
-    --description "YesNoApp security policy"
-
-# Add rate limiting rule
-gcloud compute security-policies rules create 1000 \
-    --security-policy yesnoapp-security-policy \
-    --expression "true" \
-    --action "rate-based-ban" \
-    --rate-limit-threshold-count 100 \
-    --rate-limit-threshold-interval-sec 60 \
-    --ban-duration-sec 600
+# Check recent deployments
+gcloud run revisions list --service=veridect-app --region=europe-west1
 ```
 
 ## Cost Optimization
 
-### Resource Allocation
+1. **Use Cloud Build triggers** for automatic builds
+2. **Implement proper caching** in Dockerfile
+3. **Set appropriate resource limits**
+4. **Use minimum instances = 0** for development
 
-**Recommended Cloud Run configuration:**
-- **CPU**: 1-2 vCPU
-- **Memory**: 1-2 GiB  
-- **Min instances**: 0-1 (cost vs. cold start trade-off)
-- **Max instances**: 10-100 (based on expected traffic)
+---
 
-### Database Sizing
-
-**Development/Small Scale:**
-- Instance: db-f1-micro (1 vCPU, 0.6 GB RAM)
-- Storage: 10 GB SSD
-
-**Production/Medium Scale:**
-- Instance: db-n1-standard-1 (1 vCPU, 3.75 GB RAM)
-- Storage: 50 GB SSD with automatic backups
-
-### Estimated Monthly Costs
-
-**Small Scale (1000+ users):**
-- Cloud Run: $20-50
-- Cloud SQL: $25-40
-- Bandwidth: $5-15
-- **Total**: $50-105/month
-
-**Medium Scale (10,000+ users):**
-- Cloud Run: $100-200
-- Cloud SQL: $75-150
-- Bandwidth: $20-50
-- **Total**: $195-400/month
-
-This setup provides enterprise-grade deployment with automatic scaling, monitoring, security, and CI/CD - perfect for growing from startup to scale.
+This setup provides automated, secure, and scalable deployment from GitHub to Google Cloud Run with proper monitoring and error handling.

@@ -1,212 +1,120 @@
 #!/bin/bash
 
-# YesNoApp GCP Deployment Script
-# This script deploys your app to Google Cloud Run
-
+# Enhanced Veridect GCP Deployment Script
 set -e
 
-# Configuration
-PROJECT_ID="yesnoapp-production"
-REGION="us-central1"
-SERVICE_NAME="yesnoapp"
-IMAGE_NAME="yesnoapp"
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
 
-echo "🚀 Starting YesNoApp deployment to Google Cloud Platform..."
+echo -e "${BLUE}🚀 Veridect Google Cloud Platform Deployment${NC}"
+echo "=============================================="
 
-# Check if gcloud is installed
-if ! command -v gcloud &> /dev/null; then
-    echo "❌ Google Cloud SDK not found. Please install it first:"
-    echo "   curl https://sdk.cloud.google.com | bash"
-    echo "   exec -l \$SHELL"
+# Configuration with defaults
+PROJECT_ID=${PROJECT_ID:-""}
+REGION=${REGION:-"europe-west1"}
+SERVICE_NAME=${SERVICE_NAME:-"veridect-app"}
+IMAGE_NAME="gcr.io/$PROJECT_ID/veridect"
+
+# Check if PROJECT_ID is set
+if [ -z "$PROJECT_ID" ]; then
+    echo -e "${RED}❌ Error: PROJECT_ID environment variable is not set${NC}"
+    echo "Please set it with: export PROJECT_ID=your-project-id"
     exit 1
 fi
 
-# Step 1: Set up project
-echo "📋 Setting up Google Cloud project..."
+echo -e "${YELLOW}📋 Deployment Configuration:${NC}"
+echo "  Project ID: $PROJECT_ID"
+echo "  Region: $REGION"
+echo "  Service Name: $SERVICE_NAME"
+echo "  Image: $IMAGE_NAME"
+echo ""
+
+# Verify required tools
+echo -e "${BLUE}🔧 Checking prerequisites...${NC}"
+command -v gcloud >/dev/null 2>&1 || { echo -e "${RED}❌ gcloud CLI required${NC}" >&2; exit 1; }
+command -v docker >/dev/null 2>&1 || { echo -e "${RED}❌ Docker required${NC}" >&2; exit 1; }
+
+# Configure GCloud
+echo -e "${BLUE}⚙️  Configuring Google Cloud...${NC}"
 gcloud config set project $PROJECT_ID
 
 # Enable required APIs
-echo "🔧 Enabling required APIs..."
+echo -e "${BLUE}🔌 Enabling required APIs...${NC}"
 gcloud services enable cloudbuild.googleapis.com
 gcloud services enable run.googleapis.com
-gcloud services enable artifactregistry.googleapis.com
-gcloud services enable sqladmin.googleapis.com
-gcloud services enable secretmanager.googleapis.com
-
-# Step 2: Create Artifact Registry repository
-echo "📦 Creating Artifact Registry repository..."
-gcloud artifacts repositories create $IMAGE_NAME-repo \
-    --repository-format=docker \
-    --location=$REGION \
-    --description="YesNoApp Docker repository" || true
+gcloud services enable containerregistry.googleapis.com
 
 # Configure Docker authentication
-gcloud auth configure-docker $REGION-docker.pkg.dev
+echo -e "${BLUE}🐳 Configuring Docker authentication...${NC}"
+gcloud auth configure-docker
 
-# Step 3: Build and push Docker image
-IMAGE_URL="$REGION-docker.pkg.dev/$PROJECT_ID/$IMAGE_NAME-repo/$IMAGE_NAME:latest"
+# Build application
+echo -e "${BLUE}🏗️  Building Veridect application...${NC}"
+npm run build
 
-echo "🏗️  Building Docker image..."
-docker build -t $IMAGE_URL .
+# Build Docker image
+echo -e "${BLUE}📦 Building Docker image...${NC}"
+docker build -t $IMAGE_NAME:latest .
 
-echo "📤 Pushing Docker image to Artifact Registry..."
-docker push $IMAGE_URL
+# Tag with timestamp
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP
 
-# Step 4: Create Cloud SQL database (if needed)
-echo "🗄️  Setting up Cloud SQL database..."
-DB_INSTANCE="yesnoapp-db"
-DB_NAME="yesnoapp"
-DB_USER="yesnoapp-user"
+# Push to Container Registry
+echo -e "${BLUE}📤 Pushing to Google Container Registry...${NC}"
+docker push $IMAGE_NAME:latest
+docker push $IMAGE_NAME:$TIMESTAMP
 
-# Check if instance exists
-if ! gcloud sql instances describe $DB_INSTANCE --quiet &>/dev/null; then
-    echo "Creating Cloud SQL instance..."
-    gcloud sql instances create $DB_INSTANCE \
-        --database-version=POSTGRES_15 \
-        --tier=db-f1-micro \
-        --region=$REGION \
-        --storage-type=SSD \
-        --storage-size=20GB \
-        --backup \
-        --maintenance-window-day=SUN \
-        --maintenance-window-hour=09
-    
-    # Create database
-    gcloud sql databases create $DB_NAME --instance=$DB_INSTANCE
-    
-    # Create user (you'll need to set password manually)
-    echo "⚠️  Please create database user manually:"
-    echo "   gcloud sql users create $DB_USER --instance=$DB_INSTANCE --password=YOUR_PASSWORD"
-else
-    echo "Cloud SQL instance already exists"
-fi
-
-# Get connection name for database URL
-CONNECTION_NAME=$(gcloud sql instances describe $DB_INSTANCE --format="value(connectionName)")
-echo "Database connection name: $CONNECTION_NAME"
-
-# Step 5: Auto-deploy secrets from Replit environment
-echo "🔐 Setting up secrets from Replit environment..."
-
-# Function to create secret if environment variable exists
-create_secret_if_exists() {
-    local env_var=$1
-    local secret_name=$2
-    
-    if [ -n "${!env_var}" ]; then
-        echo "Creating secret: $secret_name"
-        echo "${!env_var}" | gcloud secrets create "$secret_name" --data-file=- --quiet || \
-        echo "${!env_var}" | gcloud secrets versions add "$secret_name" --data-file=- --quiet
-    else
-        echo "⚠️  Environment variable $env_var not found, skipping $secret_name"
-    fi
-}
-
-# Deploy all available environment variables as secrets
-create_secret_if_exists "DATABASE_URL" "DATABASE_URL"
-create_secret_if_exists "SESSION_SECRET" "SESSION_SECRET"
-create_secret_if_exists "GOOGLE_GEMINI_API_KEY" "GOOGLE_GEMINI_API_KEY"
-create_secret_if_exists "STRIPE_SECRET_KEY" "STRIPE_SECRET_KEY"
-create_secret_if_exists "VITE_STRIPE_PUBLIC_KEY" "VITE_STRIPE_PUBLIC_KEY"
-create_secret_if_exists "GOOGLE_CLIENT_ID" "GOOGLE_CLIENT_ID"
-create_secret_if_exists "GOOGLE_CLIENT_SECRET" "GOOGLE_CLIENT_SECRET"
-create_secret_if_exists "APPLE_SERVICE_ID" "APPLE_SERVICE_ID"
-create_secret_if_exists "APPLE_TEAM_ID" "APPLE_TEAM_ID"
-create_secret_if_exists "APPLE_KEY_ID" "APPLE_KEY_ID"
-create_secret_if_exists "APPLE_PRIVATE_KEY" "APPLE_PRIVATE_KEY"
-
-# Generate session secret if not provided
-if [ -z "$SESSION_SECRET" ]; then
-    echo "Generating random session secret..."
-    openssl rand -base64 32 | gcloud secrets create SESSION_SECRET --data-file=- --quiet || \
-    openssl rand -base64 32 | gcloud secrets versions add SESSION_SECRET --data-file=- --quiet
-fi
-
-# Step 6: Create service account
-echo "👤 Creating service account..."
-SERVICE_ACCOUNT="yesnoapp-runner@$PROJECT_ID.iam.gserviceaccount.com"
-
-gcloud iam service-accounts create yesnoapp-runner \
-    --display-name="YesNoApp Cloud Run Service Account" || true
-
-# Grant permissions
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SERVICE_ACCOUNT" \
-    --role="roles/secretmanager.secretAccessor"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SERVICE_ACCOUNT" \
-    --role="roles/cloudsql.client"
-
-# Step 7: Deploy to Cloud Run with secrets
-echo "🚀 Deploying to Cloud Run with environment variables..."
-
-# Build secrets flags for Cloud Run
-SECRETS_FLAGS=""
-if gcloud secrets describe DATABASE_URL --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=DATABASE_URL=DATABASE_URL:latest"
-fi
-if gcloud secrets describe SESSION_SECRET --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=SESSION_SECRET=SESSION_SECRET:latest"
-fi
-if gcloud secrets describe GOOGLE_GEMINI_API_KEY --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest"
-fi
-if gcloud secrets describe STRIPE_SECRET_KEY --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest"
-fi
-if gcloud secrets describe GOOGLE_CLIENT_ID --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest"
-fi
-if gcloud secrets describe GOOGLE_CLIENT_SECRET --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest"
-fi
-if gcloud secrets describe APPLE_SERVICE_ID --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_SERVICE_ID=APPLE_SERVICE_ID:latest"
-fi
-if gcloud secrets describe APPLE_TEAM_ID --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_TEAM_ID=APPLE_TEAM_ID:latest"
-fi
-if gcloud secrets describe APPLE_KEY_ID --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_KEY_ID=APPLE_KEY_ID:latest"
-fi
-if gcloud secrets describe APPLE_PRIVATE_KEY --quiet &>/dev/null; then
-    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_PRIVATE_KEY=APPLE_PRIVATE_KEY:latest"
-fi
-
+# Deploy to Cloud Run
+echo -e "${BLUE}🚀 Deploying to Cloud Run...${NC}"
 gcloud run deploy $SERVICE_NAME \
-    --image=$IMAGE_URL \
-    --platform=managed \
-    --region=$REGION \
+    --image $IMAGE_NAME:latest \
+    --region $REGION \
+    --platform managed \
     --allow-unauthenticated \
-    --service-account=$SERVICE_ACCOUNT \
-    --add-cloudsql-instances=$PROJECT_ID:$REGION:$DB_INSTANCE \
-    --memory=2Gi \
-    --cpu=2 \
-    --min-instances=0 \
-    --max-instances=100 \
-    --concurrency=80 \
-    --timeout=300 \
-    --port=8080 \
-    --set-env-vars=NODE_ENV=production \
-    $SECRETS_FLAGS
+    --port 8080 \
+    --memory 1Gi \
+    --cpu 1 \
+    --max-instances 10 \
+    --min-instances 0 \
+    --concurrency 80 \
+    --timeout 300 \
+    --set-env-vars NODE_ENV=production,PORT=8080
 
 # Get service URL
-SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
-    --region=$REGION --format="value(status.url)")
+SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format="value(status.url)")
 
 echo ""
-echo "🎉 Deployment complete!"
-echo "📍 Service URL: $SERVICE_URL"
-echo "📊 Monitor at: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME"
+echo -e "${GREEN}✅ Deployment completed successfully!${NC}"
+echo "=============================================="
+echo -e "${GREEN}🌐 Service URL: $SERVICE_URL${NC}"
+echo -e "${GREEN}🔍 Health Check: $SERVICE_URL/health${NC}"
 echo ""
-echo "✅ Environment variables automatically deployed from Replit secrets!"
+
+# Test health endpoint
+echo -e "${BLUE}🏥 Testing health endpoint...${NC}"
+if curl -s "$SERVICE_URL/health" > /dev/null; then
+    echo -e "${GREEN}✅ Health check passed${NC}"
+else
+    echo -e "${YELLOW}⚠️  Health check failed - service may still be starting${NC}"
+fi
+
 echo ""
-echo "⚠️  Next steps:"
-echo "1. Update OAuth redirect URIs with the new service URL: $SERVICE_URL"
-echo "2. Test your deployment"
-echo "3. Configure custom domain if needed"
+echo -e "${YELLOW}📝 Next steps:${NC}"
+echo "  1. Set environment variables:"
+echo "     gcloud run services update $SERVICE_NAME --region=$REGION \\"
+echo "       --set-env-vars DATABASE_URL=your_db_url,SESSION_SECRET=your_secret"
 echo ""
-echo "OAuth Configuration:"
-echo "- Google OAuth Console: Add $SERVICE_URL/api/auth/google/callback"
-echo "- Apple Developer Portal: Add $SERVICE_URL/api/auth/apple/callback"
+echo "  2. Configure custom domain (optional):"
+echo "     gcloud run domain-mappings create --service=$SERVICE_NAME \\"
+echo "       --domain=your-domain.com --region=$REGION"
+echo ""
+echo "  3. View logs:"
+echo "     gcloud logs tail $SERVICE_NAME --region=$REGION"
+echo ""
+echo -e "${BLUE}📊 Monitor your deployment:${NC}"
+echo "  Console: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME"

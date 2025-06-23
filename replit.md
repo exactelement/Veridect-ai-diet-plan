@@ -101,12 +101,15 @@ Veridect is a health-focused web application that provides instant AI-powered fo
 - **Frontend**: Vite production build with asset optimization
 - **Backend**: ESBuild bundling for Node.js deployment
 - **Static Assets**: Served from Express with proper caching headers
-- **Environment**: Replit autoscale deployment target
+- **Container**: Multi-stage Docker build for optimized production images
+- **Deployment**: Google Cloud Run with autoscaling and health checks
 
 ### Configuration Management
 - **Environment Variables**: Centralized configuration for API keys and database URLs
 - **Build Scripts**: Automated build process with dependency installation
-- **Port Configuration**: Port 5000 for development, port 80 for production
+- **Port Configuration**: Port 5000 for development, port 8080 for Cloud Run production
+- **Container Configuration**: Docker multi-stage builds with security hardening
+- **Cloud Deployment**: Automated Cloud Run deployment with CI/CD integration
 
 ## User Preferences
 
@@ -151,6 +154,15 @@ Preferred communication style: Simple, everyday language.
 - **API Rate Limiting**: Built-in delays and batch processing for translation requests
 - **Performance Optimization**: Debounced retranslation and intelligent cache management
 - **Error Handling**: Comprehensive fallback mechanisms for translation failures
+
+### Production Deployment Infrastructure (June 23, 2025)
+- **Docker Containerization**: Multi-stage Docker builds with Alpine Linux base
+- **Google Cloud Run**: Serverless container deployment with autoscaling
+- **Health Monitoring**: Built-in health check endpoints for container orchestration
+- **Graceful Shutdown**: Proper signal handling for SIGTERM/SIGINT in containers
+- **Security Hardening**: Non-root user execution and minimal container footprint
+- **CI/CD Pipeline**: Automated Cloud Build integration with GitHub triggers
+- **Port Configuration**: Updated to use Cloud Run standard port 8080
 
 ## Historical Changelog
 - June 23, 2025: Implemented in-app live translation system for multi-language support

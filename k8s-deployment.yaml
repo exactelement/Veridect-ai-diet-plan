@@ -1,0 +1,86 @@
+# Kubernetes deployment configuration for Veridect
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veridect-deployment
+  labels:
+    app: veridect
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: veridect
+  template:
+    metadata:
+      labels:
+        app: veridect
+    spec:
+      containers:
+      - name: veridect
+        image: gcr.io/YOUR_PROJECT_ID/veridect:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8080"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: veridect-secrets
+              key: database-url
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: veridect-secrets
+              key: session-secret
+        - name: GOOGLE_GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: veridect-secrets
+              key: gemini-api-key
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veridect-service
+spec:
+  selector:
+    app: veridect
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: veridect-secrets
+type: Opaque
+stringData:
+  database-url: "your-database-url"
+  session-secret: "your-session-secret"
+  gemini-api-key: "your-gemini-api-key"

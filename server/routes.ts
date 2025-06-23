@@ -15,6 +15,16 @@ if (process.env.STRIPE_SECRET_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for Cloud Run
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      service: 'veridect',
+      version: process.env.npm_package_version || '1.0.0'
+    });
+  });
+
   // Public API endpoints (no authentication required)
   
   // Get user count
