@@ -69,11 +69,8 @@ export default function FoodAnalysis() {
     setTimeGreeting(newGreeting);
   }, []);
 
-  // Get user interface preferences
-  const { data: currentUser } = useQuery({
-    queryKey: ["/api/auth/user"],
-    staleTime: 0, // Always get fresh preferences
-  });
+  // Get user interface preferences - use the same data from useAuth to avoid duplicate requests
+  const currentUser = user;
 
   const activeUser = currentUser || user;
   const privacySettings = (activeUser as any)?.privacySettings || {};

@@ -13,14 +13,15 @@ const translations = {
     // Navigation
     'nav.home': 'Home',
     'nav.analyze': 'Analyze',
+    'nav.progress': 'Progress',
     'nav.leaderboard': 'Leaderboard',
     'nav.profile': 'Profile',
     'nav.about': 'About',
     'nav.howToUse': 'How to Use',
     'nav.privacy': 'Privacy',
     'nav.disclaimer': 'Disclaimer',
-    'nav.logout': 'Logout',
     'nav.login': 'Login',
+    'nav.logout': 'Logout',
     
     // Home page
     'home.greeting.morning': 'Good morning',
@@ -130,14 +131,15 @@ const translations = {
     // Navigation
     'nav.home': 'Inicio',
     'nav.analyze': 'Analizar',
+    'nav.progress': 'Progreso',
     'nav.leaderboard': 'Clasificación',
     'nav.profile': 'Perfil',
     'nav.about': 'Acerca de',
     'nav.howToUse': 'Cómo Usar',
     'nav.privacy': 'Privacidad',
     'nav.disclaimer': 'Aviso Legal',
-    'nav.logout': 'Cerrar Sesión',
     'nav.login': 'Iniciar Sesión',
+    'nav.logout': 'Cerrar Sesión',
     
     // Home page
     'home.greeting.morning': 'Buenos días',

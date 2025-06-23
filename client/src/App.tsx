@@ -48,7 +48,8 @@ function Router() {
 
   return (
     <div className="min-h-screen bg-ios-bg">
-      {isAuthenticated && user && (user as any).onboardingCompleted && <TopHeader />}
+      {/* Top Header - Always visible */}
+      <TopHeader />
       
       <Switch>
         {!isAuthenticated ? (
@@ -84,6 +85,7 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       
+      {/* Bottom Navigation - Only for authenticated users */}
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
       {isAuthenticated && <GDPRBanner />}
       {showGDPRInitialBanner && (
