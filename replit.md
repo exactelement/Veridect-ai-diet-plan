@@ -145,6 +145,9 @@ Preferred communication style: Simple, everyday language.
 - **JSON Parsing Fix**: Corrected Gemini API errors by enforcing whole number format requirements
 - **Creative Variety System**: Added 20+ different opening phrases to prevent repetitive responses
 - **Dynamic Response Generation**: Implemented randomized creative openings for both AI and fallback responses
+- **Non-Food Detection**: Added critical NOT_FOOD verdict to reject non-edible items (electronics, text, objects)
+- **Food-Only Analysis**: System now strictly analyzes only actual edible food items
+- **Enhanced User Protection**: Prevents logging of non-food items with appropriate error messages
 - **Tone Guidelines Update**: Removed rigid example phrases, added variety requirements for spontaneous creativity
 - **User Experience Improvement**: Food analysis provides entertaining, supportive feedback that motivates rather than scares
 

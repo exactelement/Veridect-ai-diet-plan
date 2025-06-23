@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
 export interface GeminiAnalysisResult {
   foodName: string;
-  verdict: "YES" | "NO" | "OK";
+  verdict: "YES" | "NO" | "OK" | "NOT_FOOD";
   explanation: string;
   calories?: number;
   protein?: number;
@@ -75,14 +75,28 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
   
   const deterministicSeed = simpleHash(seedInput);
 
-  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze food and provide a clear verdict tailored to the specific user.
+  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze ONLY FOOD ITEMS and provide a clear verdict tailored to the specific user.
+
+CRITICAL FOOD DETECTION RULE: 
+- If the image/description is NOT FOOD (electronics, objects, text, screenshots, etc.), you MUST return a special "NOT_FOOD" verdict
+- ONLY analyze actual edible food items
+- Be strict about what constitutes food vs non-food items
 
 CONSISTENCY REQUIREMENT: Use this deterministic seed for reproducible results: ${deterministicSeed}
 IMPORTANT: Always provide identical verdicts for the same food + user profile combination.
 
 ${personalizedContext}
 
-For the given food${imageData ? ' image' : `: "${foodName}"`}, provide:
+For the given ${imageData ? ' image' : `food: "${foodName}"`}, first determine if this is actually food:
+
+IF NOT FOOD (digital screens, electronics, text, objects, etc.):
+- Set verdict to "NOT_FOOD"
+- Set foodName to "Non-Food Item Detected"
+- Set explanation to a witty rejection message
+- Set all nutrition values to 0
+- Set confidence to 99
+
+IF IT IS FOOD, provide:
 1. A verdict: YES (healthy for this user), NO (unhealthy for this user), or OK (moderate for this user)
 2. A SHORT, witty explanation (MAX 6 lines) with humor and personality - be a fun nutritionist friend
 3. Your best estimate of nutritional content including calories, protein, carbs, fat, fiber, sugar, sodium
@@ -99,8 +113,8 @@ TONE GUIDELINES: Keep explanations CONCISE (max 6 lines) with witty, varied open
 
 Respond with JSON in this exact format:
 {
-  "foodName": "The actual name of the food item",
-  "verdict": "YES/NO/OK",
+  "foodName": "The actual name of the food item OR 'Non-Food Item Detected'",
+  "verdict": "YES/NO/OK/NOT_FOOD",
   "explanation": "Fun, witty explanation with humor and personality",
   "calories": 250,
   "protein": 20,

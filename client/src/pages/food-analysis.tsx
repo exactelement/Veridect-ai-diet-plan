@@ -13,7 +13,7 @@ import { useLocation } from "wouter";
 
 interface AnalysisResult {
   foodName: string;
-  verdict: "YES" | "NO" | "OK";
+  verdict: "YES" | "NO" | "OK" | "NOT_FOOD";
   explanation: string;
   calories?: number;
   protein?: number;
@@ -209,6 +209,17 @@ export default function FoodAnalysis() {
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
     
+    // Don't allow logging non-food items
+    if (analysisResult.verdict === "NOT_FOOD") {
+      toast({
+        title: "Cannot Log Non-Food Item",
+        description: "This isn't food! Please analyze an actual food item.",
+        variant: "destructive",
+        duration: 4000,
+      });
+      return;
+    }
+    
     setIsLogging(true);
     
     // Keep analysis result visible during API call
@@ -268,6 +279,7 @@ export default function FoodAnalysis() {
       case "YES": return "text-health-green";
       case "NO": return "text-danger-red";
       case "OK": return "text-warning-orange";
+      case "NOT_FOOD": return "text-gray-500";
       default: return "text-ios-secondary";
     }
   };
@@ -277,6 +289,7 @@ export default function FoodAnalysis() {
       case "YES": return <CheckCircle className="w-8 h-8" />;
       case "NO": return <XCircle className="w-8 h-8" />;
       case "OK": return <AlertTriangle className="w-8 h-8" />;
+      case "NOT_FOOD": return <XCircle className="w-8 h-8" />;
       default: return null;
     }
   };
