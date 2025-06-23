@@ -481,12 +481,12 @@ export default function Home() {
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r ${tier.color} text-white mb-4 mx-auto`}>
                     {tier.icon}
                   </div>
-                  <CardTitle className="text-xl font-bold text-gray-800">{tier.name}</CardTitle>
-                  <div className="text-3xl font-bold text-gray-800">
+                  <CardTitle className="text-xl font-bold text-gray-900">{tier.name}</CardTitle>
+                  <div className="text-3xl font-bold text-gray-900">
                     ${tier.price}
-                    {tier.price > 0 && <span className="text-base font-normal text-gray-600">/month</span>}
+                    {tier.price > 0 && <span className="text-base font-normal text-gray-700">/month</span>}
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">{tier.description}</p>
+                  <p className="text-sm text-gray-700 mt-2">{tier.description}</p>
                 </CardHeader>
                 
                 <CardContent className="pt-0">
@@ -494,7 +494,7 @@ export default function Home() {
                     {tier.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{feature}</span>
+                        <span className="text-sm text-gray-800">{feature}</span>
                       </li>
                     ))}
                   </ul>
