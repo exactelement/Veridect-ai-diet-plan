@@ -95,19 +95,33 @@ export default function Home() {
 
 
 
-  // Dynamic greeting based on user's local device time - updates on every page load/visit
-  const [timeGreeting, setTimeGreeting] = useState(() => {
+  // Dynamic greeting based on user's local device time - updates on every page load/visit  
+  const [timeGreeting, setTimeGreeting] = useState("");
+  
+  useEffect(() => {
     const now = new Date();
     const currentHour = now.getHours();
     
-    if (currentHour < 12) {
-      return "Good morning";
-    } else if (currentHour < 18) {
-      return "Good afternoon";
+    let greeting;
+    if (language === 'es') {
+      if (currentHour < 12) {
+        greeting = "Buenos días";
+      } else if (currentHour < 18) {
+        greeting = "Buenas tardes";
+      } else {
+        greeting = "Buenas noches";
+      }
     } else {
-      return "Good evening";
+      if (currentHour < 12) {
+        greeting = "Good morning";
+      } else if (currentHour < 18) {
+        greeting = "Good afternoon";
+      } else {
+        greeting = "Good evening";
+      }
     }
-  });
+    setTimeGreeting(greeting);
+  }, [language]);
 
   // Update greeting every time the user visits/opens the home page
   useEffect(() => {

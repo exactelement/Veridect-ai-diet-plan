@@ -314,7 +314,7 @@ export default function FoodAnalysis() {
                 "border-warning-orange bg-warning-orange/5"
               }`}>
                 <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3">Analysis Explanation</h3>
+                  <h3 className="font-semibold mb-3">{t('analysis.explanation')}</h3>
                   <p className="text-ios-text leading-relaxed">{analysisResult.explanation}</p>
                 </CardContent>
               </Card>
@@ -349,7 +349,7 @@ export default function FoodAnalysis() {
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-ios-secondary">{analysisResult.confidence}%</div>
-                      <div className="text-sm text-ios-secondary">Confidence</div>
+                      <div className="text-sm text-ios-secondary">{t('analysis.confidence')}</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -358,7 +358,7 @@ export default function FoodAnalysis() {
               {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="font-semibold mb-3">Healthier Alternatives</h3>
+                    <h3 className="font-semibold mb-3">{language === 'es' ? 'Alternativas más Saludables' : 'Healthier Alternatives'}</h3>
                     <div className="flex flex-wrap gap-2">
                       {analysisResult.alternatives.map((alternative, index) => (
                         <Badge key={index} variant="secondary" className="bg-health-green/10 text-health-green">
@@ -376,7 +376,7 @@ export default function FoodAnalysis() {
                   disabled={isLogging}
                   className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
                 >
-                  {isLogging ? "Logging..." : "😋 Yum"}
+                  {isLogging ? (language === 'es' ? 'Registrando...' : 'Logging...') : (language === 'es' ? '😋 ¡Delicioso!' : '😋 Yum')}
                 </Button>
                 <Button 
                   onClick={handleNah}
@@ -408,10 +408,10 @@ export default function FoodAnalysis() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">
-            {timeGreeting}, {(activeUser as any)?.firstName || 'there'}!
+            {timeGreeting}, {(activeUser as any)?.firstName || (language === 'es' ? 'hola' : 'there')}!
           </h1>
           <p className="text-xl text-ios-secondary">
-            Ready to analyze your food? Get instant health verdicts on your choices
+            {language === 'es' ? '¿Listo para analizar tu comida? Obtén veredictos instantáneos sobre tus elecciones' : 'Ready to analyze your food? Get instant health verdicts on your choices'}
           </p>
         </div>
 
@@ -452,7 +452,7 @@ export default function FoodAnalysis() {
                     className="border-2 border-dashed border-gray-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
                   >
                     <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-ios-secondary">Tap to take a photo of your food</p>
+                    <p className="text-ios-secondary">{language === 'es' ? 'Toca para tomar una foto de tu comida' : 'Tap to take a photo of your food'}</p>
                   </div>
                 )}
               </div>
@@ -500,17 +500,17 @@ export default function FoodAnalysis() {
             {analysisMode === "text" && (
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-ios-text">
-                  Describe your food
+                  {t('analysis.enterFoodName')}
                 </label>
                 <Textarea
-                  placeholder="E.g., Grilled chicken breast with steamed broccoli and brown rice"
+                  placeholder={language === 'es' ? 'Ej: Pechuga de pollo a la plancha con brócoli al vapor y arroz integral' : 'E.g., Grilled chicken breast with steamed broccoli and brown rice'}
                   value={foodDescription}
                   onChange={(e) => setFoodDescription(e.target.value)}
                   rows={4}
                   className="w-full"
                 />
                 <p className="text-sm text-ios-secondary">
-                  Be as specific as possible for the most accurate analysis
+                  {language === 'es' ? 'Sé lo más específico posible para un análisis más preciso' : 'Be as specific as possible for the most accurate analysis'}
                 </p>
               </div>
             )}
@@ -524,10 +524,10 @@ export default function FoodAnalysis() {
                 {analyzeMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Analyzing...
+                    {t('analysis.analyzing')}
                   </>
                 ) : (
-                  "Analyze Food"
+                  t('analysis.analyze')
                 )}
               </Button>
             </div>
@@ -537,7 +537,7 @@ export default function FoodAnalysis() {
         {/* Analysis Mode Selection */}
         <Card>
           <CardHeader>
-            <CardTitle>How would you like to analyze your food?</CardTitle>
+            <CardTitle>{language === 'es' ? '¿Cómo te gustaría analizar tu comida?' : 'How would you like to analyze your food?'}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
@@ -547,7 +547,7 @@ export default function FoodAnalysis() {
                 className="h-20 flex flex-col space-y-2"
               >
                 <Camera className="w-6 h-6" />
-                <span>Take Photo</span>
+                <span>{t('analysis.takePhoto')}</span>
               </Button>
               <Button
                 variant={analysisMode === "upload" ? "default" : "outline"}
@@ -555,7 +555,7 @@ export default function FoodAnalysis() {
                 className="h-20 flex flex-col space-y-2"
               >
                 <Upload className="w-6 h-6" />
-                <span>Upload Image</span>
+                <span>{t('analysis.uploadImage')}</span>
               </Button>
               <Button
                 variant={analysisMode === "text" ? "default" : "outline"}
@@ -563,7 +563,7 @@ export default function FoodAnalysis() {
                 className="h-20 flex flex-col space-y-2"
               >
                 <Type className="w-6 h-6" />
-                <span>Describe Food</span>
+                <span>{t('analysis.describeFood')}</span>
               </Button>
             </div>
           </CardContent>
@@ -572,12 +572,23 @@ export default function FoodAnalysis() {
         {/* Tips */}
         <Card className="bg-ios-blue/5 border-ios-blue/20">
           <CardContent className="p-6">
-            <h3 className="font-semibold mb-3">💡 Tips for Better Analysis</h3>
+            <h3 className="font-semibold mb-3">💡 {language === 'es' ? 'Consejos para un Mejor Análisis' : 'Tips for Better Analysis'}</h3>
             <ul className="space-y-2 text-sm text-ios-secondary">
-              <li>• Make sure the food is well-lit and clearly visible</li>
-              <li>• Include any sauces, seasonings, or cooking methods in descriptions</li>
-              <li>• For packaged foods, try to include the brand name</li>
-              <li>• Multiple angles or close-up shots can improve accuracy</li>
+              {language === 'es' ? (
+                <>
+                  <li>• Asegúrate de que la comida esté bien iluminada y claramente visible</li>
+                  <li>• Incluye cualquier salsa, condimento o método de cocción en las descripciones</li>
+                  <li>• Para alimentos empaquetados, trata de incluir el nombre de la marca</li>
+                  <li>• Múltiples ángulos o fotos de cerca pueden mejorar la precisión</li>
+                </>
+              ) : (
+                <>
+                  <li>• Make sure the food is well-lit and clearly visible</li>
+                  <li>• Include any sauces, seasonings, or cooking methods in descriptions</li>
+                  <li>• For packaged foods, try to include the brand name</li>
+                  <li>• Multiple angles or close-up shots can improve accuracy</li>
+                </>
+              )}
             </ul>
           </CardContent>
         </Card>

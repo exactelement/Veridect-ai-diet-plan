@@ -50,11 +50,13 @@ const translations = {
     
     // Food Analysis
     'analysis.title': 'Food Analysis',
+    'analysis.subtitle': 'What are you eating today?',
     'analysis.enterFoodName': 'Enter food name or description',
     'analysis.analyzing': 'Analyzing your food...',
     'analysis.analyze': 'Analyze',
     'analysis.takePhoto': 'Take Photo',
     'analysis.uploadImage': 'Upload Image',
+    'analysis.describeFood': 'Describe Food',
     'analysis.verdict': 'Verdict',
     'analysis.explanation': 'Explanation',
     'analysis.nutritionFacts': 'Nutrition Facts',
