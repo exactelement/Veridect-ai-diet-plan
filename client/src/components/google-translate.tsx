@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Languages, X, Minimize2, Maximize2 } from 'lucide-react';
-
-// Declare global Google Translate types
-declare global {
-  interface Window {
-    google: any;
-    googleTranslateElementInit: () => void;
-  }
-}
+import { Languages, X, Minimize2, Maximize2, ExternalLink } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -39,99 +31,26 @@ export default function GoogleTranslate() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    // Check if script already exists
-    const existingScript = document.querySelector('script[src*="translate.google.com"]');
-    if (existingScript) {
-      setIsLoaded(true);
-      return;
-    }
-
-    // Initialize Google Translate callback
-    window.googleTranslateElementInit = () => {
-      if (window.google && window.google.translate && window.google.translate.TranslateElement) {
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: 'en',
-            includedLanguages: LANGUAGES.map(lang => lang.code).join(','),
-            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: false
-          },
-          'google_translate_element'
-        );
-        setIsLoaded(true);
-      }
-    };
-
-    // Load Google Translate script
-    const script = document.createElement('script');
-    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    script.async = true;
-    script.onerror = () => {
-      console.warn('Failed to load Google Translate script');
-      setIsLoaded(false);
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
 
   const translatePage = (languageCode: string) => {
-    if (!window.google || !window.google.translate) {
-      console.warn('Google Translate not available');
+    if (languageCode === 'en') {
+      // Reset to original page by reloading
+      window.location.reload();
       return;
     }
-    
-    try {
-      // Hide default Google Translate widget
-      const googleWidget = document.getElementById('google_translate_element');
-      if (googleWidget) {
-        googleWidget.style.display = 'none';
-      }
 
-      // Method 1: Try using the combo select element
-      const selectElement = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-      if (selectElement) {
-        selectElement.value = languageCode;
-        selectElement.dispatchEvent(new Event('change'));
-        return;
-      }
-
-      // Method 2: Try accessing the translate element instance
-      const translateElement = window.google.translate.TranslateElement?.getInstance?.();
-      if (translateElement && translateElement.translate) {
-        translateElement.translate(languageCode);
-        return;
-      }
-
-      // Method 3: Create a new translate element if needed
-      setTimeout(() => {
-        const selectElement = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-        if (selectElement) {
-          selectElement.value = languageCode;
-          selectElement.dispatchEvent(new Event('change'));
-        }
-      }, 1000);
-    } catch (error) {
-      console.warn('Translation failed:', error);
-    }
+    // Open Google Translate in new tab with current URL
+    const currentUrl = encodeURIComponent(window.location.href);
+    const translateUrl = `https://translate.google.com/translate?hl=${languageCode}&sl=en&tl=${languageCode}&u=${currentUrl}`;
+    window.open(translateUrl, '_blank');
   };
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode);
-    translatePage(languageCode);
   };
 
-  const resetTranslation = () => {
-    setSelectedLanguage('en');
-    translatePage('en');
+  const handleTranslate = () => {
+    translatePage(selectedLanguage);
   };
 
   if (!isVisible) {
@@ -148,9 +67,6 @@ export default function GoogleTranslate() {
 
   return (
     <>
-      {/* Hidden Google Translate Element */}
-      <div id="google_translate_element" style={{ display: 'none' }}></div>
-      
       {/* Floating Translation Widget */}
       <Card className="fixed bottom-6 right-6 z-50 bg-white border shadow-xl max-w-sm">
         {isMinimized ? (
@@ -224,31 +140,19 @@ export default function GoogleTranslate() {
                 </Select>
               </div>
 
-              <div className="flex gap-2">
-                <Button
-                  onClick={resetTranslation}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                  disabled={!isLoaded}
-                >
-                  Original
-                </Button>
-                <Button
-                  onClick={() => handleLanguageChange(selectedLanguage)}
-                  size="sm"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  disabled={!isLoaded}
-                >
-                  Translate
-                </Button>
-              </div>
+              <Button
+                onClick={handleTranslate}
+                size="sm"
+                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                disabled={selectedLanguage === 'en'}
+              >
+                <ExternalLink className="w-4 h-4" />
+                Translate Page
+              </Button>
 
-              {!isLoaded && (
-                <p className="text-xs text-gray-500 text-center">
-                  Loading translator...
-                </p>
-              )}
+              <p className="text-xs text-gray-500 text-center">
+                Opens translated page in new tab
+              </p>
             </div>
           </div>
         )}
