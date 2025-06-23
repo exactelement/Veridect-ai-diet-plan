@@ -342,7 +342,7 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .where(
-        sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
+        sql`${users.privacySettings}->>'participateInWeeklyChallenge' = 'true'`
       )
       .orderBy(
         desc(sql`COALESCE(${weeklyScores.weeklyPoints}, 0)`),
@@ -376,7 +376,7 @@ export class DatabaseStorage implements IStorage {
     if (!user) return undefined;
 
     const privacySettings = user.privacySettings as any;
-    const isParticipating = privacySettings?.participateInWeeklyChallenge !== false;
+    const isParticipating = privacySettings?.participateInWeeklyChallenge === true;
     
     if (!isParticipating) return undefined;
 
