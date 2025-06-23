@@ -244,7 +244,10 @@ export class DatabaseStorage implements IStorage {
   async updateWeeklyScore(userId: string, verdict: string): Promise<void> {
     const now = new Date();
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    // Set Monday as first day of week (getDay() returns 0=Sunday, 1=Monday, etc.)
+    const dayOfWeek = now.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
+    startOfWeek.setDate(now.getDate() - daysToSubtract);
     startOfWeek.setHours(0, 0, 0, 0);
 
     const existingScore = await db
@@ -316,7 +319,10 @@ export class DatabaseStorage implements IStorage {
   async getWeeklyLeaderboard(): Promise<WeeklyScore[]> {
     const now = new Date();
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    // Set Monday as first day of week (getDay() returns 0=Sunday, 1=Monday, etc.)
+    const dayOfWeek = now.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
+    startOfWeek.setDate(now.getDate() - daysToSubtract);
     startOfWeek.setHours(0, 0, 0, 0);
 
     // Get only users who are participating in weekly challenges
@@ -361,7 +367,10 @@ export class DatabaseStorage implements IStorage {
   async getUserWeeklyScore(userId: string): Promise<WeeklyScore | undefined> {
     const now = new Date();
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    // Set Monday as first day of week (getDay() returns 0=Sunday, 1=Monday, etc.)
+    const dayOfWeek = now.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
+    startOfWeek.setDate(now.getDate() - daysToSubtract);
     startOfWeek.setHours(0, 0, 0, 0);
 
     // First check if user is participating in weekly challenges
