@@ -31,16 +31,16 @@ export default function Leaderboard() {
     const now = new Date();
     const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
     
-    // Find the most recent Monday 00:00 Madrid time
-    const startOfWeek = new Date(madridTime);
-    const dayOfWeek = startOfWeek.getDay(); // 0 = Sunday, 1 = Monday
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
-    startOfWeek.setDate(startOfWeek.getDate() - daysToSubtract);
-    startOfWeek.setHours(0, 0, 0, 0);
+    // Find the next Monday 00:00 Madrid time for countdown
+    const nextMonday = new Date(madridTime);
+    const dayOfWeek = nextMonday.getDay(); // 0 = Sunday, 1 = Monday
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek); // Days until next Monday
+    nextMonday.setDate(nextMonday.getDate() + daysUntilMonday);
+    nextMonday.setHours(0, 0, 0, 0);
     
-    const timeElapsed = madridTime.getTime() - startOfWeek.getTime();
-    const daysPassed = Math.floor(timeElapsed / (1000 * 60 * 60 * 24));
-    const daysRemaining = Math.max(0, 7 - daysPassed);
+    const timeRemaining = nextMonday.getTime() - madridTime.getTime();
+    const daysRemaining = Math.max(1, Math.ceil(timeRemaining / (1000 * 60 * 60 * 24)));
+    const daysPassed = 7 - daysRemaining;
     const progressPercentage = Math.round((daysPassed / 7) * 100);
     
     return { daysRemaining, progressPercentage };
