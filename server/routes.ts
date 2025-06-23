@@ -186,6 +186,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: savedLog.userId 
       });
       
+      // Check for daily challenge completion bonus (5 analyses = 25 bonus points)
+      const todaysAnalyses = await storage.getTodaysAnalyzedFoods(userId);
+      if (todaysAnalyses.length === 5) {
+        console.log("User completed 5 analyses challenge, awarding 25 bonus points");
+        await storage.updateUserPoints(userId, 25);
+        await storage.updateWeeklyScore(userId, "YES"); // Add 10 points to weekly for bonus
+        await storage.updateWeeklyScore(userId, "YES"); // Add 10 more points
+        await storage.updateWeeklyScore(userId, "YES"); // Add 5 more points (total 25)
+      }
+      
       res.json({ analysis });
     } catch (error: any) {
       console.error("Error analyzing food:", error);
