@@ -247,6 +247,27 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(foodLogs.createdAt));
   }
 
+  // Get ALL analyzed foods today (for challenges) - both logged and not logged
+  async getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return await db
+      .select()
+      .from(foodLogs)
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          // No isLogged filter - return ALL analyzed foods
+          gte(foodLogs.createdAt, today),
+          lte(foodLogs.createdAt, tomorrow)
+        )
+      )
+      .orderBy(desc(foodLogs.createdAt));
+  }
+
   // Leaderboard operations
   // Daily reset - only resets daily views, preserves all historical data
   async clearPreviousDayFoodLogs(): Promise<void> {

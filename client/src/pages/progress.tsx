@@ -26,6 +26,16 @@ export default function Progress() {
     { yes: 0, ok: 0, no: 0, total: 0 }
   );
 
+  // Calculate TODAY'S challenge stats from ALL analyzed foods (not just logged)
+  const todaysStats = todaysAnalyzedFoods.reduce(
+    (acc: any, log: FoodLog) => {
+      acc[log.verdict.toLowerCase()]++;
+      acc.total++;
+      return acc;
+    },
+    { yes: 0, ok: 0, no: 0, total: 0 }
+  );
+
   // Calculate percentages
   const excellentPercentage = totalStats.total > 0 ? Math.round((totalStats.yes / totalStats.total) * 100) : 0;
   const moderatePercentage = totalStats.total > 0 ? Math.round((totalStats.ok / totalStats.total) * 100) : 0;
@@ -141,20 +151,20 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-green-700 font-medium">3 YES foods in a row</span>
-                      {totalStats.yes >= 3 ? (
+                      {todaysStats.yes >= 3 ? (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{totalStats.yes}/3</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.yes}/3</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-16 bg-green-200 rounded-full h-3">
                         <div 
                           className="bg-green-500 h-3 rounded-full transition-all duration-500 shadow-sm"
-                          style={{ width: `${Math.min((totalStats.yes / 3) * 100, 100)}%` }}
+                          style={{ width: `${Math.min((todaysStats.yes / 3) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-semibold text-green-700">{Math.min(totalStats.yes, 3)}/3</span>
+                      <span className="text-sm font-semibold text-green-700">{Math.min(todaysStats.yes, 3)}/3</span>
                     </div>
                   </div>
                   
@@ -205,34 +215,34 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-blue-700 font-medium">Analyze 5 foods today</span>
-                      {totalStats.total >= 5 ? (
+                      {todaysStats.total >= 5 ? (
                         <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{totalStats.total}/5</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/5</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-16 bg-blue-200 rounded-full h-3">
                         <div 
                           className="bg-blue-500 h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min((totalStats.total / 5) * 100, 100)}%` }}
+                          style={{ width: `${Math.min((todaysStats.total / 5) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-semibold text-blue-700">{Math.min(totalStats.total, 5)}/5</span>
+                      <span className="text-sm font-semibold text-blue-700">{Math.min(todaysStats.total, 5)}/5</span>
                     </div>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-blue-700 font-medium">Zero BAD foods today</span>
-                      {totalStats.no === 0 && totalStats.total > 0 && (
+                      {todaysStats.no === 0 && todaysStats.total > 0 && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">PERFECT DAY!</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full ${totalStats.no === 0 && totalStats.total > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                      <div className={`w-4 h-4 rounded-full ${todaysStats.no === 0 && todaysStats.total > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                       <span className="text-sm font-semibold text-blue-700">
-                        {totalStats.no === 0 && totalStats.total > 0 ? '✓' : '✗'}
+                        {todaysStats.no === 0 && todaysStats.total > 0 ? '✓' : '✗'}
                       </span>
                     </div>
                   </div>
@@ -364,7 +374,7 @@ export default function Progress() {
               </div>
 
               {/* Actual Bonus Points Earned Today */}
-              {(totalStats.yes >= 3 || totalStats.yes >= 5 || totalStats.yes >= 10 || totalStats.total >= 5 || totalStats.total >= 10) && (
+              {(todaysStats.yes >= 3 || todaysStats.yes >= 5 || todaysStats.yes >= 10 || todaysStats.total >= 5 || todaysStats.total >= 10) && (
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-100 rounded-lg p-4 shadow-sm border border-indigo-200">
                   <h3 className="font-semibold text-lg mb-3 text-indigo-800">🎁 Today's Rewards Earned</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -373,11 +383,11 @@ export default function Progress() {
                         {(() => {
                           let bonusPoints = 0;
                           // Only award bonus if challenges are actually completed
-                          if (totalStats.yes >= 3) bonusPoints += 50;  // 3 YES streak
-                          if (totalStats.yes >= 5) bonusPoints += 100; // 5 YES milestone  
-                          if (totalStats.yes >= 10) bonusPoints += 200; // 10 YES milestone
-                          if (totalStats.total >= 5) bonusPoints += 25; // 5 analyses
-                          if (totalStats.total >= 10) bonusPoints += 50; // 10 analyses
+                          if (todaysStats.yes >= 3) bonusPoints += 50;  // 3 YES streak
+                          if (todaysStats.yes >= 5) bonusPoints += 100; // 5 YES milestone  
+                          if (todaysStats.yes >= 10) bonusPoints += 200; // 10 YES milestone
+                          if (todaysStats.total >= 5) bonusPoints += 25; // 5 analyses
+                          if (todaysStats.total >= 10) bonusPoints += 50; // 10 analyses
                           return bonusPoints;
                         })()}
                       </div>
@@ -387,9 +397,9 @@ export default function Progress() {
                       <div className="text-2xl font-bold text-purple-700">
                         {(() => {
                           let badges = 0;
-                          if (totalStats.yes >= 3) badges += 1;  // Streak badge
-                          if (totalStats.yes >= 5) badges += 1;  // Health Rookie badge
-                          if (totalStats.yes >= 10) badges += 1; // Health Champion badge
+                          if (todaysStats.yes >= 3) badges += 1;  // Streak badge
+                          if (todaysStats.yes >= 5) badges += 1;  // Health Rookie badge
+                          if (todaysStats.yes >= 10) badges += 1; // Health Champion badge
                           return badges;
                         })()}
                       </div>
