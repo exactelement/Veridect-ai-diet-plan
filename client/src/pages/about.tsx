@@ -347,13 +347,13 @@ export default function About() {
         </Card>
 
         {/* CTA */}
-        <Card className="bg-gradient-to-br from-health-green to-ios-blue text-white">
+        <Card className="bg-gradient-to-br from-health-green to-ios-blue" style={{color: 'white'}}>
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">Ready to Transform Your Health?</h3>
-            <p className="text-white/90 mb-6">
+            <h3 className="text-2xl font-bold mb-4" style={{color: 'white'}}>Ready to Transform Your Health?</h3>
+            <p className="mb-6" style={{color: 'white'}}>
               Join thousands of users who are already making smarter food choices with YesNoApp.
             </p>
-            <Button className="bg-white text-ios-blue hover:bg-white/90 px-8 py-3 text-lg">
+            <Button className="bg-white text-ios-blue hover:bg-white/90 px-8 py-3 text-lg" style={{backgroundColor: 'white', color: '#007AFF'}}>
               Get Started Today
             </Button>
           </CardContent>

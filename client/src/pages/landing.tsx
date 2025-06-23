@@ -429,32 +429,32 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-ios-blue to-health-green">
+      <section className="py-16 bg-gradient-to-br from-ios-blue to-health-green" style={{color: 'white'}}>
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to Transform Your Health?</h2>
-          <p className="text-xl mb-8 text-white">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{color: 'white'}}>Ready to Transform Your Health?</h2>
+          <p className="text-xl mb-8" style={{color: 'white'}}>
             Join thousands of users who are already making smarter food choices with AI-powered guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button onClick={() => window.location.href = "/api/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow hover:bg-gray-100">
+            <Button onClick={() => window.location.href = "/api/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow hover:bg-gray-100" style={{backgroundColor: 'white', color: '#007AFF'}}>
               Start Free Trial
             </Button>
-            <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium ios-button hover:bg-white/10">
+            <Button variant="outline" className="border-2 border-white px-8 py-4 rounded-full text-lg font-medium ios-button hover:bg-white/10" style={{borderColor: 'white', color: 'white'}}>
               Download App
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto text-white">
+          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">95%</div>
-              <div className="text-sm text-white">Accuracy</div>
+              <div className="text-2xl font-bold" style={{color: 'white'}}>95%</div>
+              <div className="text-sm" style={{color: 'white'}}>Accuracy</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">&lt; 1s</div>
-              <div className="text-sm text-white">Analysis Time</div>
+              <div className="text-2xl font-bold" style={{color: 'white'}}>&lt; 1s</div>
+              <div className="text-sm" style={{color: 'white'}}>Analysis Time</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">10K+</div>
-              <div className="text-sm text-white">Happy Users</div>
+              <div className="text-2xl font-bold" style={{color: 'white'}}>10K+</div>
+              <div className="text-sm" style={{color: 'white'}}>Happy Users</div>
             </div>
           </div>
         </div>
