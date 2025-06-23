@@ -257,48 +257,38 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weekly score management - tracks ALL points earned this week (food + bonus)
-  async updateWeeklyScore(userId: string, pointsToAdd: number): Promise<void> {
-    const now = new Date();
-    const madridTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
-    const dayOfWeek = madridTime.getDay(); // 0 = Sunday, 1 = Monday
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Adjust for Monday start
-    const weekStart = new Date(madridTime);
-    weekStart.setDate(weekStart.getDate() - daysToMonday);
+  async updateWeeklyScore(userId: string, verdict: "YES" | "NO" | "OK"): Promise<void> {
+    const now = this.getMadridTime();
+    const weekStart = new Date(now);
+    const day = weekStart.getDay();
+    const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart.setDate(diff);
     weekStart.setHours(0, 0, 0, 0);
 
-    const existingScore = await db
-      .select()
-      .from(weeklyScores)
-      .where(
-        and(
-          eq(weeklyScores.userId, userId),
-          eq(weeklyScores.weekStart, weekStart)
-        )
-      );
-
-    if (existingScore.length > 0) {
-      // Update existing score by adding points
-      const score = existingScore[0];
-      const currentTotal = parseInt(score.totalScore || "0");
-      const newTotal = currentTotal + pointsToAdd;
-
-      await db
-        .update(weeklyScores)
-        .set({ 
-          totalScore: String(newTotal),
-          updatedAt: new Date()
-        })
-        .where(eq(weeklyScores.id, score.id));
-    } else {
-      // Create new score entry
+    try {
+      const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
+      
       await db
         .insert(weeklyScores)
         .values({
           userId,
           weekStart,
-          totalScore: String(pointsToAdd),
-          rank: 1 // Will be recalculated
+          yesCount: verdict === "YES" ? 1 : 0,
+          noCount: verdict === "NO" ? 1 : 0,
+          okCount: verdict === "OK" ? 1 : 0,
+          weeklyPoints: verdictPoints
+        })
+        .onConflictDoUpdate({
+          target: [weeklyScores.userId, weeklyScores.weekStart],
+          set: {
+            yesCount: sql`${weeklyScores.yesCount} + ${verdict === "YES" ? 1 : 0}`,
+            noCount: sql`${weeklyScores.noCount} + ${verdict === "NO" ? 1 : 0}`,
+            okCount: sql`${weeklyScores.okCount} + ${verdict === "OK" ? 1 : 0}`,
+            weeklyPoints: sql`${weeklyScores.weeklyPoints} + ${verdictPoints}`
+          }
         });
+    } catch (error) {
+      console.error('Error updating weekly score:', error);
     }
 
     // Update ranks for all users this week
@@ -310,7 +300,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(weeklyScores)
       .where(eq(weeklyScores.weekStart, weekStart))
-      .orderBy(desc(weeklyScores.totalScore));
+      .orderBy(desc(weeklyScores.weeklyPoints));
 
     for (let i = 0; i < scores.length; i++) {
       await db
@@ -338,7 +328,7 @@ export class DatabaseStorage implements IStorage {
         yesCount: sql<number>`COALESCE(${weeklyScores.yesCount}, 0)`.as('yesCount'),
         noCount: sql<number>`COALESCE(${weeklyScores.noCount}, 0)`.as('noCount'),
         okCount: sql<number>`COALESCE(${weeklyScores.okCount}, 0)`.as('okCount'),
-        totalScore: sql<string>`COALESCE(${weeklyScores.totalScore}, '0')`.as('totalScore'),
+        weeklyPoints: sql<number>`COALESCE(${weeklyScores.weeklyPoints}, 0)`.as('weeklyPoints'),
         rank: sql<number>`999`.as('rank'), // Will be assigned below
         firstName: users.firstName,
         lastName: users.lastName,
@@ -355,7 +345,7 @@ export class DatabaseStorage implements IStorage {
         sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
       )
       .orderBy(
-        desc(sql`CAST(COALESCE(${weeklyScores.totalScore}, '0') AS INTEGER)`),
+        desc(sql`COALESCE(${weeklyScores.weeklyPoints}, 0)`),
         users.createdAt
       );
 
