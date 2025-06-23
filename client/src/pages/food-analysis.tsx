@@ -320,22 +320,22 @@ export default function FoodAnalysis() {
               {/* Nutritional details - only show if user hasn't disabled them */}
               {showNutritionDetails && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {analysisResult.calories && (
-                    <Card>
-                      <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-ios-blue">{analysisResult.calories}</div>
-                        <div className="text-sm text-ios-secondary">Calories</div>
-                      </CardContent>
-                    </Card>
-                  )}
-                  {analysisResult.protein && (
-                    <Card>
-                      <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-health-green">{analysisResult.protein}g</div>
-                        <div className="text-sm text-ios-secondary">Protein</div>
-                      </CardContent>
-                    </Card>
-                  )}
+                  <Card>
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-ios-blue">
+                        {analysisResult.calories && analysisResult.calories > 0 ? analysisResult.calories : "N/A"}
+                      </div>
+                      <div className="text-sm text-ios-secondary">Calories</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-health-green">
+                        {analysisResult.protein && analysisResult.protein > 0 ? `${analysisResult.protein}g` : "N/A"}
+                      </div>
+                      <div className="text-sm text-ios-secondary">Protein</div>
+                    </CardContent>
+                  </Card>
                   {analysisResult.portion && (
                     <Card>
                       <CardContent className="p-4 text-center">

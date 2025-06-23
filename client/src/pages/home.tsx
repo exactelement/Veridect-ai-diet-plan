@@ -335,9 +335,9 @@ export default function Home() {
                         <div>
                           <div className="font-medium text-gray-800">{log.foodName}</div>
                           <div className="text-sm text-gray-600">
-                            {log.calories && `${log.calories} cal`}
-                            {log.calories && log.protein && ' • '}
-                            {log.protein && `${log.protein}g protein`}
+                            {log.calories && log.calories > 0 ? `${log.calories} cal` : "N/A cal"}
+                            {' • '}
+                            {log.protein && log.protein > 0 ? `${log.protein}g protein` : "N/A protein"}
                           </div>
                         </div>
                       </div>
