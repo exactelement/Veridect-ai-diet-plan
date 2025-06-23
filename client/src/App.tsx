@@ -18,7 +18,7 @@ import Subscription from "@/pages/subscription";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import HowToUse from "@/pages/how-to-use";
-import GoogleTranslate from "@/components/google-translate";
+import TranslateWidget, { TranslationProvider } from "@/components/google-translate";
 import About from "@/pages/about";
 import Investor from "@/pages/investor";
 import Disclaimer from "@/pages/disclaimer";
@@ -90,8 +90,8 @@ function Router() {
         <GDPRInitialBanner onDismiss={() => setShowGDPRInitialBanner(false)} />
       )}
       
-      {/* Google Translate Widget */}
-      <GoogleTranslate />
+      {/* Translation Widget */}
+      <TranslateWidget />
     </div>
   );
 }
@@ -100,8 +100,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router />
-        <Toaster />
+        <TranslationProvider>
+          <Router />
+          <Toaster />
+        </TranslationProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

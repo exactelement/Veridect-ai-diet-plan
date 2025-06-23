@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Languages, X, Minimize2, Maximize2, ExternalLink } from 'lucide-react';
+import { Languages, X, Minimize2, Maximize2, Loader2 } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -27,30 +27,155 @@ const LANGUAGES = [
   { code: 'el', name: 'Ελληνικά' }
 ];
 
-export default function GoogleTranslate() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+// Translation Context
+interface TranslationContextType {
+  currentLanguage: string;
+  translations: Record<string, string>;
+  translateText: (text: string) => string;
+  setLanguage: (language: string) => void;
+  isTranslating: boolean;
+}
 
-  const translatePage = (languageCode: string) => {
-    if (languageCode === 'en') {
-      // Reset to original page by reloading
-      window.location.reload();
+const TranslationContext = createContext<TranslationContextType>({
+  currentLanguage: 'en',
+  translations: {},
+  translateText: (text) => text,
+  setLanguage: () => {},
+  isTranslating: false,
+});
+
+export const useTranslation = () => useContext(TranslationContext);
+
+// Translation Provider Component
+export function TranslationProvider({ children }: { children: React.ReactNode }) {
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const translateText = async (text: string, targetLang: string): Promise<string> => {
+    if (targetLang === 'en' || !text.trim()) return text;
+    
+    const cacheKey = `${text}:${targetLang}`;
+    if (translations[cacheKey]) {
+      return translations[cacheKey];
+    }
+
+    try {
+      // Use a free translation API (MyMemory)
+      const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
+      const data = await response.json();
+      
+      if (data.responseStatus === 200 && data.responseData?.translatedText) {
+        const translatedText = data.responseData.translatedText;
+        setTranslations(prev => ({ ...prev, [cacheKey]: translatedText }));
+        return translatedText;
+      }
+    } catch (error) {
+      console.warn('Translation failed:', error);
+    }
+    
+    return text; // Fallback to original text
+  };
+
+  const translatePage = async (targetLang: string) => {
+    if (targetLang === 'en') {
+      setCurrentLanguage('en');
+      setTranslations({});
       return;
     }
 
-    // Open Google Translate in new tab with current URL
-    const currentUrl = encodeURIComponent(window.location.href);
-    const translateUrl = `https://translate.google.com/translate?hl=${languageCode}&sl=en&tl=${languageCode}&u=${currentUrl}`;
-    window.open(translateUrl, '_blank');
+    setIsTranslating(true);
+    
+    // Find all text nodes and translate them
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) => {
+          const parent = node.parentElement;
+          if (!parent) return NodeFilter.FILTER_REJECT;
+          
+          // Skip script, style, and other non-visible elements
+          const tagName = parent.tagName.toLowerCase();
+          if (['script', 'style', 'noscript', 'code'].includes(tagName)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          
+          // Skip if parent has data-no-translate attribute
+          if (parent.hasAttribute('data-no-translate')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          
+          // Only translate nodes with meaningful text
+          const text = node.textContent?.trim();
+          if (!text || text.length < 2 || /^[\d\s\W]+$/.test(text)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+
+    const textNodes: Text[] = [];
+    let node;
+    while (node = walker.nextNode()) {
+      textNodes.push(node as Text);
+    }
+
+    // Translate in batches to avoid overwhelming the API
+    const batchSize = 10;
+    for (let i = 0; i < textNodes.length; i += batchSize) {
+      const batch = textNodes.slice(i, i + batchSize);
+      
+      await Promise.all(batch.map(async (textNode) => {
+        const originalText = textNode.textContent || '';
+        if (originalText.trim()) {
+          const translatedText = await translateText(originalText, targetLang);
+          if (translatedText !== originalText) {
+            textNode.textContent = translatedText;
+          }
+        }
+      }));
+      
+      // Small delay between batches
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    setCurrentLanguage(targetLang);
+    setIsTranslating(false);
   };
+
+  const contextValue: TranslationContextType = {
+    currentLanguage,
+    translations,
+    translateText: (text) => {
+      const cacheKey = `${text}:${currentLanguage}`;
+      return translations[cacheKey] || text;
+    },
+    setLanguage: translatePage,
+    isTranslating,
+  };
+
+  return (
+    <TranslationContext.Provider value={contextValue}>
+      {children}
+    </TranslationContext.Provider>
+  );
+}
+
+export default function TranslateWidget() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const { setLanguage, isTranslating, currentLanguage } = useTranslation();
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode);
   };
 
   const handleTranslate = () => {
-    translatePage(selectedLanguage);
+    setLanguage(selectedLanguage);
   };
 
   if (!isVisible) {
@@ -140,19 +265,41 @@ export default function GoogleTranslate() {
                 </Select>
               </div>
 
-              <Button
-                onClick={handleTranslate}
-                size="sm"
-                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-                disabled={selectedLanguage === 'en'}
-              >
-                <ExternalLink className="w-4 h-4" />
-                Translate Page
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setLanguage('en')}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  disabled={currentLanguage === 'en' || isTranslating}
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={handleTranslate}
+                  size="sm"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  disabled={selectedLanguage === 'en' || isTranslating}
+                >
+                  {isTranslating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Translate'
+                  )}
+                </Button>
+              </div>
 
-              <p className="text-xs text-gray-500 text-center">
-                Opens translated page in new tab
-              </p>
+              {currentLanguage !== 'en' && (
+                <p className="text-xs text-green-600 text-center">
+                  Page translated to {LANGUAGES.find(l => l.code === currentLanguage)?.name}
+                </p>
+              )}
+              
+              {isTranslating && (
+                <p className="text-xs text-blue-600 text-center">
+                  Translating page content...
+                </p>
+              )}
             </div>
           </div>
         )}

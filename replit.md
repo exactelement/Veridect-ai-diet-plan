@@ -124,13 +124,15 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Added floating translation widget for multi-language support
-  - Opens translated page in new tab using Google Translate web service (no script errors)
+- June 23, 2025: Implemented in-app live translation system for multi-language support
+  - Real-time text replacement within the app (no new tabs or page reloads)
   - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
+  - Uses MyMemory translation API with intelligent caching for performance
   - Floating widget with minimize/maximize functionality positioned bottom-right
-  - Clean language selection dropdown with instant translation
-  - Widget appears for all users (authenticated and unauthenticated)  
-  - Reliable solution without external script dependencies
+  - Translation preserves app functionality while changing all visible text
+  - Smart text node detection that skips code, scripts, and non-translatable content
+  - Reset functionality to return to original English content
+  - Widget appears for all users with translation context provider
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers
