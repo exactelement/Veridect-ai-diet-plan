@@ -9,6 +9,7 @@ import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } fr
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 interface AnalysisResult {
   foodName: string;
@@ -200,15 +201,15 @@ export default function FoodAnalysis() {
   };
 
   const [isLogging, setIsLogging] = useState(false);
+  const [, setLocation] = useLocation();
 
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
     
     setIsLogging(true);
     
-    // Always clear analysis result immediately when user clicks Yum
+    // Keep analysis result visible during API call
     const currentAnalysis = analysisResult;
-    setAnalysisResult(null);
     
     try {
       const points = currentAnalysis.verdict === "YES" ? 10 : 
@@ -233,10 +234,9 @@ export default function FoodAnalysis() {
           description: `+${points} points added to your score!`,
         });
         
-        // Navigate to home page to show updated progress
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
+        // Clear analysis result and navigate smoothly
+        setAnalysisResult(null);
+        setLocation("/");
       } else {
         throw new Error("Failed to log food");
       }

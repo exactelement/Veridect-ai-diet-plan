@@ -377,7 +377,9 @@ export default function TranslateWidget() {
             </div>
           </div>
         )}
-      </Card>
+          </Card>
+        </div>
+      )}
     </>
   );
 }
