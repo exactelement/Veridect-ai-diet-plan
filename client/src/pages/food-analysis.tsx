@@ -223,18 +223,32 @@ export default function FoodAnalysis() {
           description: `+${points} points added to your score!`,
         });
         
+        // Clear analysis result to prevent re-logging
+        setAnalysisResult(null);
+        
         // Navigate to home page to show updated progress
-        window.location.href = "/";
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
       } else {
         throw new Error("Failed to log food");
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log food. Please try again.",
-        variant: "destructive",
-        duration: 4000,
-      });
+    } catch (error: any) {
+      if (error.message?.includes("409") || error.message?.includes("duplicate")) {
+        toast({
+          title: "Already Logged",
+          description: "You just logged this food recently!",
+          variant: "destructive",
+          duration: 4000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to log food. Please try again.",
+          variant: "destructive",
+          duration: 4000,
+        });
+      }
     } finally {
       setIsLogging(false);
     }

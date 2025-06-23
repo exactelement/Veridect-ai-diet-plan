@@ -185,9 +185,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
+      
+      // Check for recent duplicate logs (same food within last 30 seconds)
+      const recentLogs = await storage.getTodaysFoodLogs(userId);
+      const thirtySecondsAgo = new Date(Date.now() - 30000);
+      const isDuplicate = recentLogs.some(log => 
+        log.foodName === req.body.foodName && 
+        new Date(log.createdAt) > thirtySecondsAgo
+      );
+      
+      if (isDuplicate) {
+        return res.status(409).json({ 
+          message: "Food already logged recently", 
+          duplicate: true 
+        });
+      }
+      
       const logData = insertFoodLogSchema.parse({
         userId,
-        analysisMethod: req.body.analysisMethod || "ai", // Default to "ai" if not provided
+        analysisMethod: req.body.analysisMethod || "ai",
         ...req.body
       });
       

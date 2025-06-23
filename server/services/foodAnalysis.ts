@@ -16,6 +16,22 @@ export interface FoodAnalysisResult extends GeminiAnalysisResult {
   alternatives?: string[];
 }
 
+// Simple in-memory cache for food analysis results
+const analysisCache = new Map<string, FoodAnalysisResult>();
+
+// Generate cache key from input parameters
+function getCacheKey(foodName?: string, imageData?: string): string {
+  if (imageData) {
+    // Use first 50 chars of base64 as cache key for images
+    return `img:${imageData.substring(0, 50)}`;
+  }
+  if (foodName) {
+    // Use lowercase food name as cache key
+    return `text:${foodName.toLowerCase().trim()}`;
+  }
+  return "";
+}
+
 // Fallback food database for when AI fails
 const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "apple": {
@@ -328,6 +344,13 @@ export async function analyzeFoodWithGemini(
     subscriptionTier?: string;
   }
 ): Promise<FoodAnalysisResult> {
+  // Check cache first
+  const cacheKey = getCacheKey(foodName, imageData);
+  if (cacheKey && analysisCache.has(cacheKey)) {
+    console.log("Returning cached analysis for:", cacheKey.substring(0, 20));
+    return analysisCache.get(cacheKey)!;
+  }
+
   try {
     // Try AI analysis first with user profile for personalization
     const aiResult = await analyzeWithGemini(foodName, imageData, userProfile);
@@ -342,12 +365,24 @@ export async function analyzeFoodWithGemini(
       sodium: aiResult.sodium || 0,
     };
 
-    return {
+    const result = {
       ...aiResult,
       method: "ai",
       nutritionFacts,
       alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, userProfile),
     };
+
+    // Cache AI analysis result
+    if (cacheKey) {
+      analysisCache.set(cacheKey, result);
+      // Limit cache size to prevent memory issues
+      if (analysisCache.size > 100) {
+        const firstKey = analysisCache.keys().next().value;
+        analysisCache.delete(firstKey);
+      }
+    }
+
+    return result;
   } catch (error) {
     console.warn("AI analysis failed, using fallback:", error);
     
@@ -364,11 +399,18 @@ export async function analyzeFoodWithGemini(
       sodium: fallbackResult.sodium || 0,
     };
 
-    return {
+    const result = {
       ...fallbackResult,
       method: "fallback",
       nutritionFacts,
       alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName, userProfile),
     };
+
+    // Cache fallback result
+    if (cacheKey) {
+      analysisCache.set(cacheKey, result);
+    }
+
+    return result;
   }
 }
