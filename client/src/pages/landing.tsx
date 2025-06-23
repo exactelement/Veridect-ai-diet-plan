@@ -52,7 +52,7 @@ export default function Landing() {
                 </a>
               ))}
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
-                Get Started
+                {t('Get Started')}
               </Button>
             </div>
 
@@ -60,7 +60,7 @@ export default function Landing() {
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
-                Login
+                {t('Login')}
               </Button>
 
               {/* Dropdown menu for medium screens */}
@@ -121,7 +121,7 @@ export default function Landing() {
                           }}
                           className="w-full bg-ios-blue text-white rounded-lg ios-button ios-shadow"
                         >
-                          Get Started
+                          {t('Get Started')}
                         </Button>
                       </div>
                     </div>
@@ -146,10 +146,10 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
-                Try It Free
+                {t('Try It Free')}
               </Button>
               <Button variant="outline" className="border-2 border-ios-blue text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button">
-                Watch Demo
+                {t('Watch Demo')}
               </Button>
             </div>
           </div>
