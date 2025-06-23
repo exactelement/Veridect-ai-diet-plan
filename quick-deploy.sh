@@ -19,9 +19,14 @@ fi
 
 # Get or set project ID
 if [ -z "$PROJECT_ID" ]; then
-    echo "Enter your Google Cloud Project ID:"
-    read PROJECT_ID
+    echo "📝 Enter your Google Cloud Project ID:"
+    read -p "Project ID: " PROJECT_ID
     export PROJECT_ID
+fi
+
+if [ -z "$PROJECT_ID" ]; then
+    echo "❌ Project ID is required"
+    exit 1
 fi
 
 echo "Using Project ID: $PROJECT_ID"

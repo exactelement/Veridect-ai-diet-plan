@@ -7,13 +7,13 @@ import { Check, Crown, Shield, Zap, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+// Stripe temporarily disabled for deployment compatibility
+// import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
 
-// Stripe setup - optional for core functionality
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-  : null;
+// const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+//   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+//   : null;
 
 interface SubscriptionTier {
   id: string;
