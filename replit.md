@@ -124,16 +124,16 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Implemented component-level translation system for seamless multi-language support
-  - Component-level translation using useTranslatedText hook (no DOM manipulation)
-  - Text translates during React rendering preventing English flash
+- June 23, 2025: Enhanced component-level translation system for zero-flash multi-language support
+  - Immediate translation using cached content (no English flash on component render)
+  - Pre-populated translations for common UI text for instant display
+  - Component-level translation using useTranslatedText hook and T wrapper
   - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
   - Uses MyMemory translation API with intelligent caching for performance
   - Floating widget with minimize/maximize functionality positioned bottom-right
   - Global language persistence: selected language maintained across all pages
   - LocalStorage caching for translations and language preference
-  - T component wrapper for inline text translation
-  - Backwards compatible with existing DOM-based fallback translation
+  - Backwards compatible DOM-based fallback for uncached content
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers

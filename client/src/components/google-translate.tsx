@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useEffect } from 'react';
+import { PRELOADED_TRANSLATIONS } from '@/lib/translationCache';
 
 // Declare global types for window
 declare global {
@@ -62,7 +63,17 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   });
   const [translations, setTranslations] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('veridect-translations');
-    return saved ? JSON.parse(saved) : {};
+    const savedTranslations = saved ? JSON.parse(saved) : {};
+    
+    // Merge with preloaded translations
+    const preloaded: Record<string, string> = {};
+    Object.entries(PRELOADED_TRANSLATIONS).forEach(([lang, texts]) => {
+      Object.entries(texts).forEach(([original, translated]) => {
+        preloaded[`${original}:${lang}`] = translated;
+      });
+    });
+    
+    return { ...preloaded, ...savedTranslations };
   });
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -164,16 +175,38 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsTranslating(false);
   };
 
-  // Simplified auto-translate for fallback content only
+  // Pre-populate essential translations immediately when language changes
   useEffect(() => {
     if (currentLanguage !== 'en') {
-      // Only translate content that hasn't been translated by components
+      const essentialTexts = [
+        'Home', 'Analyze', 'Rankings', 'Premium', 'Profile',
+        'Smart Food Analysis with AI', 'Start Analyzing Food',
+        'Get instant YES/NO/OK verdicts on your food choices',
+        'Most Popular', 'Current Plan', 'Choose', 'Free',
+        'Basic nutrition analysis', 'Advanced AI insights', 'Medical-grade analysis',
+        '5 analyses per day', 'Unlimited food scans', 'Detailed nutrition reports',
+        'Community leaderboard', 'Priority support', 'Healthcare integration'
+      ];
+      
+      // Pre-load translations synchronously from cache or fetch async
+      essentialTexts.forEach(async (text) => {
+        const cacheKey = `${text}:${currentLanguage}`;
+        if (!translations[cacheKey]) {
+          try {
+            await translateText(text, currentLanguage);
+          } catch (error) {
+            console.warn(`Failed to translate: ${text}`);
+          }
+        }
+      });
+      
+      // DOM fallback for any missed content
       const timer = setTimeout(() => {
         translatePage(currentLanguage);
-      }, 2000);
+      }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [currentLanguage]);
+  }, [currentLanguage, translateText]);
 
   // Save translations to localStorage whenever they change
   useEffect(() => {

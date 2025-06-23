@@ -1,32 +1,28 @@
 import { useTranslation } from '@/components/google-translate';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 export function useTranslatedText(text: string): string {
-  const { translateText, currentLanguage, getTranslation } = useTranslation();
-  const [translatedText, setTranslatedText] = useState(text);
+  const { translateText, currentLanguage, translations } = useTranslation();
   
-  useEffect(() => {
+  return useMemo(() => {
     if (currentLanguage === 'en' || !text) {
-      setTranslatedText(text);
-      return;
+      return text;
     }
     
-    // Check cache first
-    const cached = translateText(text);
-    if (cached !== text) {
-      setTranslatedText(cached);
-    } else {
-      // Fetch translation if not cached
-      getTranslation(text, currentLanguage).then(translated => {
-        setTranslatedText(translated);
-      });
+    // Check for exact cached translation first
+    const cacheKey = `${text}:${currentLanguage}`;
+    const cached = translations[cacheKey];
+    
+    if (cached) {
+      return cached;
     }
-  }, [text, currentLanguage, translateText, getTranslation]);
-  
-  return translatedText;
+    
+    // Return original text if no translation available
+    return text;
+  }, [text, currentLanguage, translations]);
 }
 
-// Simple component for translating text
+// Enhanced T component with better caching
 export function T({ children }: { children: string }) {
   const translatedText = useTranslatedText(children);
   return translatedText;
