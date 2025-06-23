@@ -105,7 +105,7 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
               </div>
               <CardTitle className="text-2xl">{tier.name}</CardTitle>
               <div className="text-4xl font-bold">
-                {tier.price === 0 ? 'Free' : `€${tier.price}`}
+                €{tier.price}
                 {tier.price > 0 && <span className="text-lg font-normal text-ios-secondary">/month</span>}
               </div>
               <p className="text-ios-secondary">{tier.description}</p>
