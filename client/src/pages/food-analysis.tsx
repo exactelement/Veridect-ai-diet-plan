@@ -200,19 +200,24 @@ export default function FoodAnalysis() {
     if (!analysisResult || isLogging) return;
     
     setIsLogging(true);
+    
+    // Always clear analysis result immediately when user clicks Yum
+    const currentAnalysis = analysisResult;
+    setAnalysisResult(null);
+    
     try {
-      const points = analysisResult.verdict === "YES" ? 10 : 
-                   analysisResult.verdict === "OK" ? 5 : 2;
+      const points = currentAnalysis.verdict === "YES" ? 10 : 
+                   currentAnalysis.verdict === "OK" ? 5 : 2;
       
       const response = await apiRequest("POST", "/api/food-logs", {
-        foodName: analysisResult.foodName,
-        verdict: analysisResult.verdict,
-        explanation: analysisResult.explanation,
-        calories: analysisResult.calories,
-        protein: analysisResult.protein,
-        confidence: analysisResult.confidence,
-        portion: analysisResult.portion,
-        analysisMethod: analysisResult.method || "ai",
+        foodName: currentAnalysis.foodName,
+        verdict: currentAnalysis.verdict,
+        explanation: currentAnalysis.explanation,
+        calories: currentAnalysis.calories,
+        protein: currentAnalysis.protein,
+        confidence: currentAnalysis.confidence,
+        portion: currentAnalysis.portion,
+        analysisMethod: currentAnalysis.method || "ai",
         action: "yum",
         points: points
       });
@@ -223,15 +228,22 @@ export default function FoodAnalysis() {
           description: `+${points} points added to your score!`,
         });
         
-        // Clear analysis result to prevent re-logging
-        setAnalysisResult(null);
-        
         // Navigate to home page to show updated progress
         setTimeout(() => {
           window.location.href = "/";
         }, 1000);
       } else {
-        throw new Error("Failed to log food");
+        const errorData = await response.json();
+        if (errorData.duplicate) {
+          toast({
+            title: "Already Logged",
+            description: "You just logged this food recently!",
+            variant: "destructive",
+            duration: 4000,
+          });
+        } else {
+          throw new Error("Failed to log food");
+        }
       }
     } catch (error: any) {
       if (error.message?.includes("409") || error.message?.includes("duplicate")) {
