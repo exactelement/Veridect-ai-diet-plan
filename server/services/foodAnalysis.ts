@@ -364,7 +364,7 @@ export async function analyzeFoodWithGemini(
   }
 ): Promise<FoodAnalysisResult> {
   // Check smart cache for consistent verdicts per user profile
-  const cacheKey = getCacheKey(foodName, imageData, userProfile);
+  const cacheKey = getCacheKey(foodName, imageData, userProfile) + `_${language}`;
   if (cacheKey && analysisCache.has(cacheKey)) {
     console.log(`Returning consistent cached analysis for: ${foodName || 'image'}`);
     return analysisCache.get(cacheKey)!;
@@ -375,7 +375,7 @@ export async function analyzeFoodWithGemini(
 
   try {
     // Try AI analysis first with user profile for personalization
-    const aiResult = await analyzeWithGemini(foodName, imageData, userProfile);
+    const aiResult = await analyzeWithGemini(foodName, imageData, userProfile, language);
     
     const nutritionFacts = {
       calories: aiResult.calories || 0,

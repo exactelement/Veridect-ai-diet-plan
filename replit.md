@@ -124,6 +124,12 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Added multilingual support for English and Spanish languages
+  - Language selector in top header allows users to switch between English and Spanish
+  - AI food analysis verdicts and explanations provided in chosen language
+  - Complete UI translation for navigation, buttons, and interface elements
+  - Language preference stored in localStorage and applied throughout app
+  - Consistent caching system includes language parameter for personalized responses
 - June 23, 2025: Fixed weekly challenge countdown to properly handle Madrid timezone reset schedule
   - Monday shows 7 days remaining (week just reset at 00:00 Madrid time)
   - Sunday shows 1 day remaining (last day before Monday reset)

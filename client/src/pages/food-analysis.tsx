@@ -9,6 +9,7 @@ import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } fr
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AnalysisResult {
   foodName: string;
@@ -38,6 +39,7 @@ export default function FoodAnalysis() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { language, t } = useLanguage();
 
   // Dynamic greeting based on device time - updates on each app visit
   const [timeGreeting, setTimeGreeting] = useState(() => {
@@ -79,7 +81,10 @@ export default function FoodAnalysis() {
 
   const analyzeMutation = useMutation({
     mutationFn: async (data: { foodName?: string; imageData?: string }) => {
-      const response = await apiRequest("POST", "/api/food/analyze", data);
+      const response = await apiRequest("POST", "/api/food/analyze", {
+        ...data,
+        language
+      });
       return response.json();
     },
     onSuccess: (data) => {
