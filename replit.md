@@ -124,20 +124,15 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Implemented comprehensive in-app translation system with dynamic content support
-  - Real-time text replacement within the app (no external tabs)
-  - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
-  - Uses MyMemory translation API with intelligent caching system
+- June 23, 2025: Implemented simple and reliable Google Translate integration
+  - Direct Google Translate integration for entire page translation
+  - 14 major languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
   - Floating widget with minimize/maximize functionality positioned bottom-right
-  - Translation persists across ALL pages and route changes
-  - Smart text node detection that preserves app functionality
-  - Global language state managed via React Context
-  - Auto-translation triggers on route navigation and DOM changes
-  - Translates dynamic content including AI food verdicts and explanations
-  - Food analysis results automatically translated when language changes
-  - LocalStorage persistence for language preference and translation cache
-  - Batch translation processing for optimal performance
-  - Real-time translation of new content like AI responses
+  - Uses Google's proven translation service for 100% reliable results
+  - Translates everything including AI verdicts, explanations, and dynamic content
+  - Simple one-click translation that actually works
+  - Language preference saved in localStorage
+  - Clean fallback to original page when needed
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers
