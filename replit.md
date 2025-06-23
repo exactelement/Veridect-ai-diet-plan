@@ -141,9 +141,11 @@ Preferred communication style: Simple, everyday language.
 ### AI Personality Enhancement (June 23, 2025)
 - **Humorous Food Analysis**: Enhanced Gemini AI prompts to include humor and personality in food verdicts
 - **Concise Witty Responses**: Limited explanations to maximum 6 lines with punchy, memorable phrases
+- **Eliminated Scary Language**: Replaced frightening "Red flag" responses with encouraging, playful alternatives
+- **JSON Parsing Fix**: Corrected Gemini API errors by enforcing whole number format requirements
 - **Tone Guidelines**: Added specific humor instructions like "Winner winner, chicken dinner" and "Holy guacamole"
-- **Fallback Response Updates**: Updated local food database responses with brief, playful language
-- **User Experience Improvement**: Food analysis now provides entertaining explanations without overwhelming users
+- **Fallback Response Updates**: All fallback responses now use witty, encouraging language instead of negative warnings
+- **User Experience Improvement**: Food analysis provides entertaining, supportive feedback that motivates rather than scares
 
 ### Translation System Implementation (June 23, 2025)
 - **Global Multi-Language Support**: Implemented comprehensive in-app translation system

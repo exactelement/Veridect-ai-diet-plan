@@ -114,9 +114,10 @@ Respond with JSON in this exact format:
 }
 
 IMPORTANT:
-- All numeric values must be whole numbers
+- All numeric values must be WHOLE NUMBERS (no decimals, no "<1" or similar)
 - confidence must be between 80 and 99
 - portion should be a clear measurement
+- Use only whole numbers like: "sugar": 8 (not "sugar": "<1" or "sugar": 8.5)
 - Provide your best nutritional estimates based on what you can see/analyze
 - Consider portion sizes, ingredients, and typical nutritional values
 - Be specific about the food item and provide accurate nutritional estimates

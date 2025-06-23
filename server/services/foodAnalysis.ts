@@ -224,25 +224,25 @@ function getFallbackAnalysis(foodName: string): GeminiAnalysisResult {
   
   const responses = {
     "YES": [
-      "This looks like a healthy choice! Rich in nutrients and aligned with your wellness goals.",
-      "Great pick! This food appears to be nutrient-dense and beneficial for your health.",
-      "Excellent choice! This seems to be a wholesome, natural food option.",
-      "Smart selection! This food fits well with a balanced, healthy diet.",
-      "Good call! This appears to be minimally processed and nutritious."
+      "Now that's what I call a power move! This nutrient-packed superstar is ready to fuel your day.",
+      "Winner winner, healthy dinner! Your body is about to throw a celebration party.",
+      "Look at you making smart choices! This wholesome gem is packed with good-for-you nutrients.",
+      "Boom! This food is basically a high-five to your health goals. Well played!",
+      "Chef's kiss! This natural goodness is exactly what your body ordered."
     ],
     "NO": [
-      "Think twice about this one! Appears to be highly processed with questionable ingredients.",
-      "Skip it! This food seems loaded with sugar, unhealthy fats, or artificial additives.",
-      "Not recommended! This choice could derail your health progress.",
-      "Red flag! This food appears to be high in calories and low in nutrients.",
-      "Proceed with caution! This doesn't align with your health goals."
+      "Oops, this one's a sneaky calorie bomb! Maybe save it for your epic cheat day celebration?",
+      "This tasty troublemaker is packed with calories and sugar. Your future self might thank you for skipping it!",
+      "Whoa there, food adventurer! This choice is more of a treat than a daily staple.",
+      "This looks deliciously dangerous! High in calories but low in the good stuff your body craves.",
+      "Plot twist: this food is playing hard to get with nutrition. Better options are calling your name!"
     ],
     "OK": [
-      "This is an okay choice in moderation. Not the healthiest, but not the worst either.",
-      "Moderate option. Could be better, but acceptable occasionally as part of a balanced diet.",
-      "Average choice. Consider pairing with healthier options or enjoying in smaller portions.",
-      "Neutral territory. Fine occasionally, but there are better options available.",
-      "Middle ground food. Won't hurt your progress if consumed mindfully."
+      "This one's playing it neutral! Not a superhero, not a villain - just hanging out in the middle.",
+      "Ah, the Switzerland of foods! Totally fine in moderation, but your body might appreciate some variety.",
+      "This food is giving me 'decent friend' vibes. Not bad, but you could probably do better!",
+      "Moderate choice alert! This won't make or break your health journey - it's just along for the ride.",
+      "This food is perfectly... fine! Like a reliable friend who's not super exciting but gets the job done."
     ]
   };
 
