@@ -94,11 +94,11 @@ export default function About() {
         </div>
 
         {/* Mission Statement */}
-        <Card className="bg-gradient-to-br from-ios-blue to-health-green text-white">
+        <Card className="bg-ios-blue">
           <CardContent className="p-8 text-center">
-            <Lightbulb className="w-16 h-16 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-            <p className="text-xl text-white/90 leading-relaxed max-w-4xl mx-auto">
+            <Lightbulb className="w-16 h-16 mx-auto mb-6 text-white" />
+            <h2 className="text-3xl font-bold mb-4 text-white">Our Mission</h2>
+            <p className="text-xl leading-relaxed max-w-4xl mx-auto text-white">
               To democratize nutrition knowledge by providing instant, AI-powered food analysis 
               that helps people make healthier choices without the complexity of traditional 
               calorie counting or nutrition label reading.

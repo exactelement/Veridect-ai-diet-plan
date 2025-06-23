@@ -116,6 +116,7 @@ Changelog:
   - Added dynamic time-based greetings that update on each app visit (Good morning/afternoon/evening)
   - Enhanced interface preference toggles to hide/show nutritional details based on privacy settings
   - Users can control visibility of calorie counter, food statistics, and weekly challenge participation
+  - Fixed "Our Mission" section text visibility on about page with white text on blue background
 - June 23, 2025: Fixed white text visibility issues on landing page and about page CTA sections
   - Replaced problematic gradient backgrounds with solid blue backgrounds
   - Ensured proper text contrast for "Ready to Transform Your Health?" sections
