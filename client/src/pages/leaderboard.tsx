@@ -154,7 +154,7 @@ export default function Leaderboard() {
                       #{myScore.rank || '-'}
                     </div>
                     <div className="text-sm text-ios-secondary">
-                      {myScore.totalScore || 0} weekly points
+                      {myScore.weeklyPoints || 0} weekly points
                     </div>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default function Leaderboard() {
                             entry.rank === 3 ? 'text-amber-600' :
                             'text-ios-text'
                           }`}>
-                            {entry.totalScore || 0}
+                            {entry.weeklyPoints || 0}
                           </div>
                           <div className="text-sm text-ios-secondary">weekly points</div>
                         </div>
