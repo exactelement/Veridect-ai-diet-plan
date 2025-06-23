@@ -400,7 +400,7 @@ export class DatabaseStorage implements IStorage {
     return score;
   }
 
-  // Gamification operations
+  // Gamification operations - accumulates ALL points (food logging + bonus points)
   async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
@@ -411,7 +411,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedUser] = await db
       .update(users)
       .set({ 
-        totalPoints: newTotalPoints, // Lifetime accumulation for level calculation
+        totalPoints: newTotalPoints, // Lifetime accumulation: food logging + bonus points
         currentLevel: newLevel,
         updatedAt: new Date()
       })

@@ -108,6 +108,19 @@ Veridect is a health-focused web application that provides instant AI-powered fo
 
 Preferred communication style: Simple, everyday language.
 
+## Point System Architecture
+
+**Unified Point Tracking:**
+- All points (food logging + bonus points) accumulate to `totalPoints` field
+- Level calculation: 1000 points per level using totalPoints
+- Weekly leaderboard: Calculated from weekly food logs only
+- Consistent scoring: YES=10, OK=5, NO=2 points across all systems
+
+**Point Sources:**
+1. Food Analysis: Automatic when user clicks "Yum" button
+2. Bonus Points: Achievements, streaks, challenges (via updateUserPoints function)
+3. Future: Daily challenges, referral bonuses, subscription perks
+
 ## Changelog
 
 Changelog:

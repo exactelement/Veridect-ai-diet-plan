@@ -179,9 +179,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update weekly score based on verdict
       await storage.updateWeeklyScore(userId, req.body.verdict);
       
-      // Update user points and streak based on verdict
-      const points = req.body.verdict === "YES" ? 10 : req.body.verdict === "OK" ? 5 : 2;
-      await storage.updateUserPoints(userId, points);
+      // Award food logging points and update streak
+      const foodPoints = req.body.verdict === "YES" ? 10 : req.body.verdict === "OK" ? 5 : 2;
+      await storage.updateUserPoints(userId, foodPoints); // Adds to lifetime totalPoints
       await storage.updateStreak(userId, req.body.verdict);
       
       res.json({ success: true, log: foodLog });
