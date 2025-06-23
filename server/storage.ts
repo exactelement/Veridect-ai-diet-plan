@@ -270,11 +270,11 @@ export class DatabaseStorage implements IStorage {
       else if (verdict === "NO") updates.noCount = (score.noCount || 0) + 1;
       else if (verdict === "OK") updates.okCount = (score.okCount || 0) + 1;
 
-      // Calculate new total score (YES=100, OK=50, NO=0)
+      // Calculate new total score (YES=10, OK=5, NO=2) - same as user points
       const newYes = updates.yesCount || score.yesCount || 0;
       const newOk = updates.okCount || score.okCount || 0;
       const newNo = updates.noCount || score.noCount || 0;
-      updates.totalScore = String(newYes * 100 + newOk * 50);
+      updates.totalScore = String(newYes * 10 + newOk * 5 + newNo * 2);
 
       await db
         .update(weeklyScores)
@@ -294,7 +294,7 @@ export class DatabaseStorage implements IStorage {
           userId,
           weekStart: startOfWeek,
           ...initialScore,
-          totalScore: String(initialScore.yesCount * 100 + initialScore.okCount * 50),
+          totalScore: String(initialScore.yesCount * 10 + initialScore.okCount * 5 + initialScore.noCount * 2),
         });
     }
 
@@ -406,14 +406,12 @@ export class DatabaseStorage implements IStorage {
     if (!user) throw new Error("User not found");
     
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
-    const newWeeklyPoints = (user.weeklyPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 100) + 1;
     
     const [updatedUser] = await db
       .update(users)
       .set({ 
-        totalPoints: newTotalPoints, // Lifetime accumulation
-        weeklyPoints: newWeeklyPoints, // This week's points
+        totalPoints: newTotalPoints, // Lifetime accumulation for level calculation
         currentLevel: newLevel,
         updatedAt: new Date()
       })
