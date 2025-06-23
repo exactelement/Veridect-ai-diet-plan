@@ -355,36 +355,38 @@ export default function Landing() {
             </Card>
             
             {/* Pro Tier */}
-            <Card className="p-8 bg-gradient-to-br from-ios-blue to-health-green text-white tier-card transform scale-105">
-              <div className="text-center mb-6">
-                <Badge className="bg-white/20 text-white mb-4">Most Popular</Badge>
-                <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                <div className="text-4xl font-bold mb-2">$19.99</div>
-                <p className="text-white/80">per month</p>
+            <Card className="p-8 border-2 border-ios-blue bg-white tier-card transform scale-105 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-ios-blue text-white px-4 py-1">Most Popular</Badge>
               </div>
-              <ul className="space-y-4 mb-8 text-white/90">
+              <div className="text-center mb-6 mt-4">
+                <h3 className="text-2xl font-bold mb-2 text-gray-900">Pro</h3>
+                <div className="text-4xl font-bold mb-2 text-gray-900">$19.99</div>
+                <p className="text-gray-600">per month</p>
+              </div>
+              <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-white" />
-                  <span>Unlimited analyses</span>
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Unlimited analyses</span>
                 </li>
                 <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-white" />
-                  <span>Detailed nutrition tracking</span>
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Detailed nutrition tracking</span>
                 </li>
                 <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-white" />
-                  <span>Goal-based recommendations</span>
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Goal-based recommendations</span>
                 </li>
                 <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-white" />
-                  <span>Wearables integration</span>
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Wearables integration</span>
                 </li>
                 <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-white" />
-                  <span>Priority support</span>
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Priority support</span>
                 </li>
               </ul>
-              <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-white text-ios-blue py-3 rounded-xl font-medium ios-button">
+              <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-ios-blue text-white py-3 rounded-xl font-medium ios-button hover:bg-blue-600">
                 Start Pro Trial
               </Button>
             </Card>
@@ -427,32 +429,32 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-ios-blue to-health-green text-white">
+      <section className="py-16 bg-gradient-to-br from-ios-blue to-health-green">
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Health?</h2>
-          <p className="text-xl mb-8 text-white/90">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to Transform Your Health?</h2>
+          <p className="text-xl mb-8 text-white">
             Join thousands of users who are already making smarter food choices with AI-powered guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button onClick={() => window.location.href = "/api/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
+            <Button onClick={() => window.location.href = "/api/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow hover:bg-gray-100">
               Start Free Trial
             </Button>
-            <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium ios-button">
+            <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium ios-button hover:bg-white/10">
               Download App
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto">
+          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto text-white">
             <div className="text-center">
-              <div className="text-2xl font-bold">95%</div>
-              <div className="text-sm text-white/80">Accuracy</div>
+              <div className="text-2xl font-bold text-white">95%</div>
+              <div className="text-sm text-white">Accuracy</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold">&lt; 1s</div>
-              <div className="text-sm text-white/80">Analysis Time</div>
+              <div className="text-2xl font-bold text-white">&lt; 1s</div>
+              <div className="text-sm text-white">Analysis Time</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold">10K+</div>
-              <div className="text-sm text-white/80">Happy Users</div>
+              <div className="text-2xl font-bold text-white">10K+</div>
+              <div className="text-sm text-white">Happy Users</div>
             </div>
           </div>
         </div>
