@@ -88,7 +88,7 @@ export default function About() {
         <div className="text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <img 
-              src="/attached_assets/veridect_logo_1750694541716.PNG" 
+              src="/veridect-logo.png" 
               alt="Veridect Logo" 
               className="w-12 h-12 object-contain"
             />

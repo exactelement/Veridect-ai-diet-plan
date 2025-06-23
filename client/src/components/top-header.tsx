@@ -30,7 +30,7 @@ export default function TopHeader() {
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-2">
             <img 
-              src="/attached_assets/veridect_logo_1750694541716.PNG" 
+              src="/veridect-logo.png" 
               alt="Veridect Logo" 
               className="w-8 h-8 object-contain"
             />
