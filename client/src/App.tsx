@@ -19,6 +19,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import HowToUse from "@/pages/how-to-use";
 import TranslateWidget, { TranslationProvider, useTranslation } from "@/components/google-translate";
+import { I18nProvider } from "@/components/i18n-provider";
 import About from "@/pages/about";
 import Investor from "@/pages/investor";
 import Disclaimer from "@/pages/disclaimer";
@@ -112,10 +113,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <TranslationProvider>
-          <Router />
-          <Toaster />
-        </TranslationProvider>
+        <I18nProvider>
+          <TranslationProvider>
+            <Router />
+            <Toaster />
+          </TranslationProvider>
+        </I18nProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

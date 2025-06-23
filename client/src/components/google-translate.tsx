@@ -1,5 +1,6 @@
 import { useState, createContext, useContext, useEffect } from 'react';
 import { PRELOADED_TRANSLATIONS } from '@/lib/translationCache';
+import { useTranslation as useI18n } from '@/lib/i18n';
 
 // Declare global types for window
 declare global {
