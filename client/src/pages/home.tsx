@@ -282,7 +282,7 @@ export default function Home() {
                     <Star className="w-8 h-8 text-amber-600" />
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">Level {currentLevel}</h3>
-                      <p className="text-sm text-gray-600">{totalPoints} total points</p>
+                      <p className="text-sm text-gray-600">{totalLifetimePoints} total points</p>
                     </div>
                   </div>
                   <div className="space-y-2">

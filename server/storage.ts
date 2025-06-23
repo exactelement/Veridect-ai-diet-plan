@@ -29,6 +29,7 @@ export interface IStorage {
   updateUserPoints(userId: string, pointsToAdd: number): Promise<User>;
   updateStreak(userId: string, verdict: string): Promise<User>;
   updateCalorieGoal(userId: string, goal: number): Promise<User>;
+  resetWeeklyPoints(): Promise<void>;
   
   // Password management
   updatePasswordResetToken(userId: string, token: string, expires: Date): Promise<User>;
@@ -405,12 +406,14 @@ export class DatabaseStorage implements IStorage {
     if (!user) throw new Error("User not found");
     
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
+    const newWeeklyPoints = (user.weeklyPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 100) + 1;
     
     const [updatedUser] = await db
       .update(users)
       .set({ 
-        totalPoints: newTotalPoints,
+        totalPoints: newTotalPoints, // Lifetime accumulation
+        weeklyPoints: newWeeklyPoints, // This week's points
         currentLevel: newLevel,
         updatedAt: new Date()
       })
