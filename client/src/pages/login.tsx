@@ -92,6 +92,7 @@ export default function Login() {
           title: "Login Failed",
           description: error.message || "Invalid email or password",
           variant: "destructive",
+          duration: 4000,
         });
       }
     } catch (error) {
@@ -99,6 +100,7 @@ export default function Login() {
         title: "Login Failed",
         description: "An error occurred during login",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
@@ -123,6 +125,7 @@ export default function Login() {
             ? "This email is already registered. Try logging in instead or use a different email."
             : error.message || "Failed to create account",
           variant: "destructive",
+          duration: 4000,
         });
       }
     } catch (error) {
@@ -130,6 +133,7 @@ export default function Login() {
         title: "Registration Failed",
         description: "An error occurred during registration",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
@@ -152,6 +156,7 @@ export default function Login() {
           title: "Error",
           description: error.message || "Failed to send reset email",
           variant: "destructive",
+          duration: 4000,
         });
       }
     } catch (error) {
@@ -159,6 +164,7 @@ export default function Login() {
         title: "Error",
         description: "An error occurred while sending reset email",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
@@ -181,6 +187,7 @@ export default function Login() {
           title: "Reset Failed",
           description: error.message || "Failed to reset password",
           variant: "destructive",
+          duration: 4000,
         });
       }
     } catch (error) {
@@ -188,6 +195,7 @@ export default function Login() {
         title: "Reset Failed",
         description: "An error occurred during password reset",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);

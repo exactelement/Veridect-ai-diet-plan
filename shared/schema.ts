@@ -65,7 +65,12 @@ export const users = pgTable("users", {
   // GDPR and Privacy
   gdprConsent: jsonb("gdpr_consent"), // stores consent details and timestamps
   gdprBannerShown: boolean("gdpr_banner_shown").default(false), // tracks if initial GDPR banner was shown
-  privacySettings: jsonb("privacy_settings"),
+  privacySettings: jsonb("privacy_settings").default({
+    showCalorieCounter: true,
+    participateInWeeklyChallenge: true,
+    showFoodStats: true,
+    showNutritionDetails: true
+  }),
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

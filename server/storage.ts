@@ -71,13 +71,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    const userDataWithDefaults = {
+      ...userData,
+      privacySettings: userData.privacySettings || {
+        showCalorieCounter: true,
+        participateInWeeklyChallenge: true,
+        showFoodStats: true,
+        showNutritionDetails: true
+      }
+    };
+    
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values(userDataWithDefaults)
       .onConflictDoUpdate({
         target: users.id,
         set: {
-          ...userData,
+          ...userDataWithDefaults,
           updatedAt: new Date(),
         },
       })

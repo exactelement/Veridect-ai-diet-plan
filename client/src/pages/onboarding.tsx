@@ -79,6 +79,7 @@ export default function Onboarding() {
         title: "Error updating profile",
         description: error.message,
         variant: "destructive",
+        duration: 4000,
       });
     },
   });
@@ -100,6 +101,7 @@ export default function Onboarding() {
         title: "Error completing onboarding",
         description: error.message,
         variant: "destructive",
+        duration: 4000,
       });
     },
   });
