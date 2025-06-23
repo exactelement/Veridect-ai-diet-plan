@@ -197,14 +197,17 @@ export default function FoodAnalysis() {
     setSelectedImage(null);
     setImagePreview(null);
     setFoodDescription("");
+    setHasLogged(false);
   };
 
   const [isLogging, setIsLogging] = useState(false);
+  const [hasLogged, setHasLogged] = useState(false);
 
   const handleYum = async () => {
-    if (!analysisResult || isLogging) return;
+    if (!analysisResult || isLogging || hasLogged) return;
     
     setIsLogging(true);
+    setHasLogged(true);
     
     // Always clear analysis result immediately when user clicks Yum
     const currentAnalysis = analysisResult;
@@ -371,10 +374,10 @@ export default function FoodAnalysis() {
               <div className="flex justify-center space-x-4">
                 <Button 
                   onClick={handleYum}
-                  disabled={isLogging}
+                  disabled={isLogging || hasLogged}
                   className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
                 >
-                  {isLogging ? "Logging..." : "😋 Yum"}
+                  {isLogging ? "Logging..." : hasLogged ? "Logged!" : "😋 Yum"}
                 </Button>
                 <Button 
                   onClick={handleNah}
