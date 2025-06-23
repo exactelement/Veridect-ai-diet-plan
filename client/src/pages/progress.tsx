@@ -36,6 +36,27 @@ export default function Progress() {
     { yes: 0, ok: 0, no: 0, total: 0 }
   );
 
+  // Calculate THIS WEEK'S stats from all logged food (for weekly challenges)
+  const weeklyStats = (() => {
+    const now = new Date();
+    const currentWeekStart = new Date(now);
+    const day = currentWeekStart.getDay();
+    const diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1);
+    currentWeekStart.setDate(diff);
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    return allLogs
+      .filter(log => new Date(log.createdAt) >= currentWeekStart)
+      .reduce(
+        (acc: any, log: FoodLog) => {
+          acc[log.verdict.toLowerCase()]++;
+          acc.total++;
+          return acc;
+        },
+        { yes: 0, ok: 0, no: 0, total: 0 }
+      );
+  })();
+
   // Calculate percentages
   const excellentPercentage = totalStats.total > 0 ? Math.round((totalStats.yes / totalStats.total) * 100) : 0;
   const moderatePercentage = totalStats.total > 0 ? Math.round((totalStats.ok / totalStats.total) * 100) : 0;
@@ -256,7 +277,7 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-orange-700 font-medium">15 YES foods this week</span>
-                      {totalStats.yes >= 15 && (
+                      {weeklyStats.yes >= 15 && (
                         <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full">WEEKLY CHAMPION!</span>
                       )}
                     </div>
@@ -264,17 +285,17 @@ export default function Progress() {
                       <div className="w-16 bg-orange-200 rounded-full h-3">
                         <div 
                           className="bg-orange-500 h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min((totalStats.yes / 15) * 100, 100)}%` }}
+                          style={{ width: `${Math.min((weeklyStats.yes / 15) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-semibold text-orange-700">{Math.min(totalStats.yes, 15)}/15</span>
+                      <span className="text-sm font-semibold text-orange-700">{Math.min(weeklyStats.yes, 15)}/15</span>
                     </div>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-orange-700 font-medium">90% YES+OK ratio this week</span>
-                      {totalStats.total > 0 && ((totalStats.yes + totalStats.ok) / totalStats.total) >= 0.9 && (
+                      {weeklyStats.total > 0 && ((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) >= 0.9 && (
                         <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">ELITE STATUS!</span>
                       )}
                     </div>
@@ -283,12 +304,12 @@ export default function Progress() {
                         <div 
                           className="bg-gradient-to-r from-orange-500 to-purple-500 h-3 rounded-full transition-all duration-300"
                           style={{ 
-                            width: `${totalStats.total > 0 ? Math.min(((totalStats.yes + totalStats.ok) / totalStats.total) * 111, 100) : 0}%` 
+                            width: `${weeklyStats.total > 0 ? Math.min(((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) * 111, 100) : 0}%` 
                           }}
                         ></div>
                       </div>
                       <span className="text-sm font-semibold text-orange-700">
-                        {totalStats.total > 0 ? Math.round(((totalStats.yes + totalStats.ok) / totalStats.total) * 100) : 0}%
+                        {weeklyStats.total > 0 ? Math.round(((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
@@ -300,22 +321,22 @@ export default function Progress() {
                 <h3 className="font-semibold text-lg mb-3 text-yellow-800">🎖️ Exclusive Milestone Rewards</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className={`p-3 rounded-lg border-2 transition-all duration-300 ${
-                    totalStats.yes >= 5 ? 'bg-green-50 border-green-300 shadow-md' : 'bg-gray-50 border-gray-200'
+                    weeklyStats.yes >= 5 ? 'bg-green-50 border-green-300 shadow-md' : 'bg-gray-50 border-gray-200'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full ${totalStats.yes >= 5 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                        <span className={`text-sm font-medium ${totalStats.yes >= 5 ? 'text-green-700' : 'text-gray-600'}`}>
+                        <div className={`w-4 h-4 rounded-full ${weeklyStats.yes >= 5 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                        <span className={`text-sm font-medium ${weeklyStats.yes >= 5 ? 'text-green-700' : 'text-gray-600'}`}>
                           Health Rookie
                         </span>
                       </div>
-                      {totalStats.yes >= 5 ? (
+                      {weeklyStats.yes >= 5 ? (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">✓ Earned</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/5</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{weeklyStats.yes}/5</span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">5 YES foods</div>
+                    <div className="text-xs text-gray-500 mt-1">5 YES foods this week</div>
                   </div>
                   
                   <div className={`p-3 rounded-lg border-2 transition-all duration-300 ${
