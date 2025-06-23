@@ -31,10 +31,12 @@ export default function Landing() {
               className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => window.location.reload()}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-ios-blue to-health-green rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">Y</span>
-              </div>
-              <span className="font-semibold text-xl">YesNoApp</span>
+              <img 
+                src="/attached_assets/veridect_logo_1750692817533.PNG" 
+                alt="Veridect Logo" 
+                className="w-8 h-8 object-contain"
+              />
+              <span className="font-semibold text-xl">Veridect</span>
             </div>
 
             {/* Desktop Navigation - visible on large screens */}
@@ -328,7 +330,7 @@ export default function Landing() {
             <Card className="p-8 border-2 border-gray-200 tier-card">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold mb-2">Free</h3>
-                <div className="text-4xl font-bold mb-2">$0</div>
+                <div className="text-4xl font-bold mb-2">€0</div>
                 <p className="text-ios-secondary">Forever free</p>
               </div>
               <ul className="space-y-4 mb-8">
@@ -361,7 +363,7 @@ export default function Landing() {
               </div>
               <div className="text-center mb-6 mt-4">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">Pro</h3>
-                <div className="text-4xl font-bold mb-2 text-gray-900">$19.99</div>
+                <div className="text-4xl font-bold mb-2 text-gray-900">€19.99</div>
                 <p className="text-gray-600">per month</p>
               </div>
               <ul className="space-y-4 mb-8">
@@ -395,7 +397,7 @@ export default function Landing() {
             <Card className="p-8 border-2 border-gray-200 tier-card">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold mb-2">Medical</h3>
-                <div className="text-4xl font-bold mb-2">$99.99</div>
+                <div className="text-4xl font-bold mb-2">€49.99</div>
                 <p className="text-ios-secondary">per month</p>
               </div>
               <ul className="space-y-4 mb-8">
@@ -466,10 +468,12 @@ export default function Landing() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-ios-blue to-health-green rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">Y</span>
-                </div>
-                <span className="font-semibold text-xl">YesNoApp</span>
+                <img 
+                  src="/attached_assets/veridect_logo_1750692817533.PNG" 
+                  alt="Veridect Logo" 
+                  className="w-8 h-8 object-contain"
+                />
+                <span className="font-semibold text-xl">Veridect</span>
               </div>
               <p className="text-gray-400 mb-4">AI-powered nutrition guidance for healthier living.</p>
             </div>
@@ -503,7 +507,7 @@ export default function Landing() {
           </div>
           
           <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2024 YesNoApp. All rights reserved.</p>
+            <p className="text-gray-400 text-sm">© 2024 Veridect. All rights reserved.</p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <span className="text-gray-400 text-sm">HIPAA Compliant</span>
               <span className="text-gray-400 text-sm">•</span>

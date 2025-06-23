@@ -1,8 +1,8 @@
-# YesNoApp - AI-Powered Food Analysis Platform
+# Veridect - AI-Powered Food Analysis Platform
 
 ## Overview
 
-YesNoApp is a health-focused web application that provides instant AI-powered food analysis and nutritional guidance. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, and comprehensive food logging capabilities.
+Veridect is a health-focused web application that provides instant AI-powered food analysis and nutritional guidance. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, and comprehensive food logging capabilities.
 
 ## System Architecture
 
@@ -111,6 +111,17 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Complete rebranding from YesNoApp to Veridect
+  - App name changed to Veridect throughout all pages and components
+  - Contact information updated to info@veridect.com and +34672810584
+  - Founder and CEO listed as Michael Bright (Valencia-based entrepreneur)
+  - Medical tier pricing corrected to €49.99 to match home page
+  - All pricing converted to euros for European launch
+  - Investor roadmap updated: Q2 private beta, Q3 public beta ongoing, targeting 20K users
+  - Funding target set to €2M for growth and team expansion
+  - Location updated to Valencia, ES
+  - Veridect logo integrated across landing page and navigation
+  - Recognition and awards section commented out as requested
 - June 23, 2025: Consistent verdict system and optimized food analysis
   - Implemented smart caching with user profile fingerprinting for consistent verdicts
   - Same food now provides identical analysis results for each user's specific profile
@@ -143,7 +154,7 @@ Changelog:
   - Ensures all buttons and text are fully visible and accessible on mobile devices
 - June 20, 2025: GDPR compliance system implemented
   - First-time GDPR banner appears only once after registration login
-  - Personalized data sharing options specific to YesNoApp features
+  - Personalized data sharing options specific to Veridect features
   - Essential data collection notice in privacy page with Terms of Service reference
   - Four targeted consent options: AI training, nutrition emails, usage analytics, community database
   - Database tracking prevents banner from showing again after initial consent

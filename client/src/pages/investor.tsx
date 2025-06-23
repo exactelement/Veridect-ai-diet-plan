@@ -13,15 +13,15 @@ export default function Investor() {
 
   const milestones = [
     { quarter: "Q1 2025", milestone: "MVP Launch & Initial User Base", status: "completed" },
-    { quarter: "Q2 2025", milestone: "Pro Tier Launch & Revenue Generation", status: "current" },
-    { quarter: "Q3 2025", milestone: "Medical Partnerships & B2B2C", status: "upcoming" },
-    { quarter: "Q4 2025", milestone: "International Expansion", status: "upcoming" }
+    { quarter: "Q2 2025", milestone: "Private Beta Launch", status: "current" },
+    { quarter: "Q3 2025", milestone: "Public Beta Launch - Currently Ongoing", status: "current" },
+    { quarter: "Q4 2025", milestone: "Full Launch & Scale to 20K Users", status: "upcoming" }
   ];
 
   const traction = [
-    { metric: "User Registrations", value: "10,000+", growth: "+150% MoM" },
-    { metric: "Daily Active Users", value: "2,500+", growth: "+85% MoM" },
-    { metric: "Food Analyses", value: "50,000+", growth: "+200% MoM" },
+    { metric: "User Registrations", value: "20,000+", growth: "+150% MoM" },
+    { metric: "Daily Active Users", value: "5,000+", growth: "+85% MoM" },
+    { metric: "Food Analyses", value: "100,000+", growth: "+200% MoM" },
     { metric: "Conversion Rate", value: "12%", growth: "+3% MoM" }
   ];
 
@@ -38,7 +38,7 @@ export default function Investor() {
               Investor Presentation
             </h1>
             <p className="text-xl text-ios-secondary max-w-3xl mx-auto">
-              View our comprehensive investor presentation to learn more about YesNoApp's vision, 
+              View our comprehensive investor presentation to learn more about Veridect's vision, 
               market opportunity, and growth potential.
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function Investor() {
               <div className="mt-6 p-4 bg-white/50 rounded-lg">
                 <p className="text-sm text-ios-secondary text-center">
                   For investment inquiries, partnerships, or detailed financial projections, 
-                  please contact our investor relations team at investors@yesnoapp.com
+                  please contact our investor relations team at info@veridect.com
                 </p>
               </div>
             </CardContent>
