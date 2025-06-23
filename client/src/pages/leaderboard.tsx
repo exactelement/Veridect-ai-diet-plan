@@ -30,33 +30,52 @@ export default function Leaderboard() {
   const getCurrentWeekProgress = () => {
     const now = new Date();
     
-    // Get Madrid time using proper Intl.DateTimeFormat
-    const madridTimeString = new Intl.DateTimeFormat('en-CA', {
+    // Debug: Log the calculation process
+    console.log('=== WEEKLY COUNTDOWN DEBUG ===');
+    console.log('Current UTC time:', now.toISOString());
+    
+    // Get Madrid time parts
+    const madridFormatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Europe/Madrid',
+      weekday: 'long',
       year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    });
+    
+    const madridTimeString = madridFormatter.format(now);
+    console.log('Madrid time string:', madridTimeString);
+    
+    // Get Madrid day of week directly
+    const madridDay = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Madrid',
+      weekday: 'long'
     }).format(now);
     
-    const madridTime = new Date(madridTimeString);
-    const dayOfWeek = madridTime.getDay(); // 0 = Sunday, 1 = Monday
+    const madridDayNumber = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"})).getDay();
+    
+    console.log('Madrid day name:', madridDay);
+    console.log('Madrid day number:', madridDayNumber, '(0=Sunday, 1=Monday)');
     
     // Calculate days until next Monday reset
     let daysRemaining;
-    if (dayOfWeek === 0) {
+    if (madridDayNumber === 0) {
       // Sunday - next Monday is tomorrow (1 day)
       daysRemaining = 1;
+      console.log('Today is Sunday in Madrid - 1 day until Monday reset');
     } else {
       // Monday=1 to Saturday=6 - calculate days to next Monday
-      daysRemaining = 8 - dayOfWeek;
+      daysRemaining = 8 - madridDayNumber;
+      console.log(`Today is ${madridDay} (${madridDayNumber}) in Madrid - ${daysRemaining} days until next Monday`);
     }
     
     const daysPassed = 7 - daysRemaining;
     const progressPercentage = Math.round((daysPassed / 7) * 100);
+    
+    console.log('Final result:', { daysRemaining, daysPassed, progressPercentage });
+    console.log('=== END DEBUG ===');
     
     return { daysRemaining, progressPercentage };
   };
