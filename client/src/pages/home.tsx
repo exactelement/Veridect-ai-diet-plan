@@ -77,9 +77,14 @@ export default function Home() {
 
   const currentStreak = (user as any)?.currentStreak || 0;
   const currentLevel = (user as any)?.currentLevel || 1;
-  const totalPoints = (user as any)?.totalPoints || 0;
-  const pointsToNextLevel = ((currentLevel * 100) - totalPoints);
-  const levelProgress = ((totalPoints % 100) / 100) * 100;
+  
+  // Lifetime points for level calculation
+  const totalLifetimePoints = (user as any)?.totalPoints || 0;
+  const pointsToNextLevel = ((currentLevel * 100) - totalLifetimePoints);
+  const levelProgress = ((totalLifetimePoints % 100) / 100) * 100;
+
+  // Weekly points for weekly progress display
+  const weeklyPoints = (user as any)?.weeklyPoints || 0;
 
   // User interface preferences - use fresh user data directly
   const activeUser = currentUser || user;
@@ -402,7 +407,7 @@ export default function Home() {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-600">Total Score</span>
-                    <span className="text-sm font-bold text-gray-800">{weeklyScore?.score || 0} pts</span>
+                    <span className="text-sm font-bold text-gray-800">{weeklyPoints} pts</span>
                   </div>
                 </div>
                 
