@@ -120,8 +120,19 @@ export default function Onboarding() {
     <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">Y</span>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="text-ios-secondary hover:text-ios-primary"
+            >
+              ← Skip for now
+            </Button>
+            <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">Y</span>
+            </div>
+            <div className="w-20"></div> {/* Spacer for centering */}
           </div>
           <CardTitle className="text-3xl font-bold">Welcome to YesNoApp</CardTitle>
           <p className="text-ios-secondary">Let's personalize your nutrition journey</p>

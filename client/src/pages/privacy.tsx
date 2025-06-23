@@ -62,6 +62,7 @@ export default function Privacy() {
         title: "Export Failed",
         description: "Failed to export your data. Please try again.",
         variant: "destructive",
+        duration: 4000,
       });
     },
   });

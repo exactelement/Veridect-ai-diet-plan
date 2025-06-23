@@ -72,8 +72,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const profileData = updateUserProfileSchema.parse(req.body);
-      const updatedUser = await storage.updateUserProfile(userId, profileData);
+      
+      // Get current user to merge with existing data
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Merge privacy settings with existing defaults
+      const profileData = {
+        ...req.body,
+        privacySettings: {
+          showCalorieCounter: true,
+          participateInWeeklyChallenge: true,
+          showFoodStats: true,
+          showNutritionDetails: true,
+          ...currentUser.privacySettings,
+          ...req.body.privacySettings
+        }
+      };
+      
+      const validatedData = updateUserProfileSchema.parse(profileData);
+      const updatedUser = await storage.updateUserProfile(userId, validatedData);
       res.json(updatedUser);
     } catch (error: any) {
       console.error("Error updating profile:", error);

@@ -157,6 +157,7 @@ export const updateUserProfileSchema = z.object({
     showCalorieCounter: z.boolean(),
     participateInWeeklyChallenge: z.boolean(),
     showFoodStats: z.boolean(),
+    showNutritionDetails: z.boolean(),
   }).optional(),
 });
 

@@ -188,6 +188,7 @@ export default function Profile() {
         title: "Update Failed",
         description: error.message,
         variant: "destructive",
+        duration: 4000,
       });
     },
   });
