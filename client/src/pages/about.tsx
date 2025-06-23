@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Target, Users, Globe, Award, Lightbulb, Mail, MapPin } from "lucide-react";
+import { Heart, Target, Users, Globe, Award, Lightbulb, Mail, MapPin, Calendar } from "lucide-react";
 
 const TEAM_MEMBERS = [
   {
@@ -86,7 +86,14 @@ export default function About() {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">About YesNoApp</h1>
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <img 
+              src="/attached_assets/veridect_logo_1750692817533.PNG" 
+              alt="Veridect Logo" 
+              className="w-12 h-12 object-contain"
+            />
+            <h1 className="text-4xl font-bold text-health-green">About Veridect</h1>
+          </div>
           <p className="text-xl text-ios-secondary max-w-3xl mx-auto">
             We're on a mission to make healthy eating simple, accessible, and enjoyable for everyone. 
             One food choice at a time.
@@ -142,7 +149,7 @@ export default function About() {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-ios-secondary leading-relaxed">
-              YesNoApp transforms complex nutritional analysis into simple verdicts. Our AI analyzes 
+              Veridect transforms complex nutritional analysis into simple verdicts. Our AI analyzes 
               food photos in real-time, considering your personal health goals, dietary restrictions, 
               and preferences to deliver instant guidance you can trust.
             </p>
@@ -194,58 +201,92 @@ export default function About() {
           </CardContent>
         </Card>
 
-        {/* Team */}
+        {/* Founder */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Meet Our Team</CardTitle>
+            <CardTitle className="text-2xl">Meet Our Founder</CardTitle>
             <p className="text-ios-secondary">
-              Experts in AI, nutrition science, and health technology working together to improve global health.
+              Passionate entrepreneur dedicated to democratizing nutrition through AI technology.
             </p>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {TEAM_MEMBERS.map((member, index) => (
-                <div key={index} className="text-center">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <h4 className="font-semibold">{member.name}</h4>
-                  <p className="text-ios-blue text-sm mb-2">{member.role}</p>
-                  <p className="text-ios-secondary text-xs">{member.bio}</p>
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-health-green to-ios-blue rounded-full mx-auto mb-6 flex items-center justify-center">
+                <span className="text-white font-bold text-4xl">MB</span>
+              </div>
+              <h3 className="text-2xl font-semibold mb-2">Michael Bright</h3>
+              <p className="text-health-green font-medium mb-4">CEO & Founder</p>
+              <p className="text-ios-secondary leading-relaxed mb-6">
+                Valencia-based entrepreneur passionate about democratizing nutrition through AI technology. 
+                Michael founded Veridect with the vision of making healthy eating decisions as simple as "Yes" or "No", 
+                bringing advanced nutrition guidance to everyone regardless of their background or location.
+              </p>
+              <div className="flex items-center justify-center space-x-6 text-sm text-ios-secondary">
+                <div className="flex items-center space-x-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>Valencia, Spain</span>
                 </div>
-              ))}
+                <div className="flex items-center space-x-1">
+                  <Target className="w-4 h-4" />
+                  <span>€2M Series A Target</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Milestones */}
+        {/* 2025 Roadmap */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Our Journey</CardTitle>
+            <CardTitle className="text-2xl flex items-center">
+              <Calendar className="w-6 h-6 mr-3 text-ios-blue" />
+              2025 Roadmap
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {MILESTONES.map((milestone, index) => (
-                <div key={index} className="flex items-start space-x-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-ios-blue text-white rounded-full flex items-center justify-center font-bold">
-                      {milestone.year}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-lg">{milestone.title}</h4>
-                    <p className="text-ios-secondary">{milestone.description}</p>
+              <div className="flex items-start space-x-6">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-ios-blue text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    Q2
                   </div>
                 </div>
-              ))}
+                <div>
+                  <h4 className="font-semibold text-lg">Private Beta Launch</h4>
+                  <p className="text-ios-secondary">Invitation-only testing with select users</p>
+                  <Badge className="mt-2 bg-ios-blue/10 text-ios-blue border-ios-blue/20">Current</Badge>
+                </div>
+              </div>
+              <div className="flex items-start space-x-6">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-health-green text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    Q3
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-lg">Public Beta Launch</h4>
+                  <p className="text-ios-secondary">Currently ongoing - open to all users</p>
+                  <Badge className="mt-2 bg-health-green/10 text-health-green border-health-green/20">Ongoing</Badge>
+                </div>
+              </div>
+              <div className="flex items-start space-x-6">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-warning-orange text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    Q4
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-lg">Full Launch & Scale</h4>
+                  <p className="text-ios-secondary">Target 20,000 users and €2M funding for growth acceleration</p>
+                  <Badge className="mt-2 bg-warning-orange/10 text-warning-orange border-warning-orange/20">Upcoming</Badge>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Recognition */}
-        <Card>
+        {/* Recognition - Commented out as requested */}
+        {/* <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Recognition & Awards</CardTitle>
           </CardHeader>
@@ -268,7 +309,7 @@ export default function About() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Stats */}
         <Card className="bg-ios-bg">
@@ -276,8 +317,8 @@ export default function About() {
             <h3 className="text-2xl font-bold text-center mb-8">Impact by Numbers</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-ios-blue mb-2">50K+</div>
-                <p className="text-sm text-ios-secondary">Active Users</p>
+                <div className="text-3xl font-bold text-ios-blue mb-2">20K</div>
+                <p className="text-sm text-ios-secondary">Target Users</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-health-green mb-2">2M+</div>
@@ -312,15 +353,15 @@ export default function About() {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-ios-blue" />
-                    <span className="text-sm">hello@yesnoapp.com</span>
+                    <span className="text-sm">info@veridect.com</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-health-green" />
-                    <span className="text-sm">support@yesnoapp.com</span>
+                    <span className="text-sm">+34 672 810 584</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin className="w-5 h-5 text-warning-orange" />
-                    <span className="text-sm">San Francisco, CA</span>
+                    <span className="text-sm">Valencia, Spain</span>
                   </div>
                 </div>
               </div>
@@ -351,7 +392,7 @@ export default function About() {
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold mb-4 text-white">Ready to Transform Your Health?</h3>
             <p className="mb-6 text-white">
-              Join thousands of users who are already making smarter food choices with YesNoApp.
+              Join thousands of users who are already making smarter food choices with Veridect.
             </p>
             <Button className="bg-white text-ios-blue hover:bg-gray-100 px-8 py-3 text-lg">
               Get Started Today
