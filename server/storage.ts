@@ -406,7 +406,7 @@ export class DatabaseStorage implements IStorage {
     if (!user) throw new Error("User not found");
     
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
-    const newLevel = Math.floor(newTotalPoints / 100) + 1;
+    const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
     
     const [updatedUser] = await db
       .update(users)

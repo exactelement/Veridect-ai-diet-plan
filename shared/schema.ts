@@ -59,7 +59,7 @@ export const users = pgTable("users", {
   currentStreak: integer("current_streak").default(0), // Days without "NO" food
   longestStreak: integer("longest_streak").default(0), // Best streak record
   totalPoints: integer("total_points").default(0), // Lifetime total points for level calculation
-  currentLevel: integer("current_level").default(1), // User level (100 points per level)
+  currentLevel: integer("current_level").default(1), // User level (1000 points per level)
   lastStreakDate: timestamp("last_streak_date"), // Last date streak was updated
   
   // GDPR and Privacy
