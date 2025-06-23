@@ -184,9 +184,10 @@ export default function Profile() {
         duration: 3000, // Auto-dismiss after 3 seconds
       });
       
-      // Don't update local state here - let it be updated by the useEffect when fresh user data arrives
-      // Invalidate the user data query to refresh
+      // Invalidate user data and leaderboard queries to refresh UI
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/my-score"] });
     },
     onError: (error: Error, variables) => {
       toast({
