@@ -22,8 +22,9 @@ const analysisCache = new Map<string, FoodAnalysisResult>();
 // Generate cache key from input parameters
 function getCacheKey(foodName?: string, imageData?: string): string {
   if (imageData) {
-    // Use first 50 chars of base64 as cache key for images
-    return `img:${imageData.substring(0, 50)}`;
+    // Use a longer portion of base64 and add timestamp to ensure uniqueness
+    const timestamp = Date.now();
+    return `img:${imageData.substring(0, 100)}_${timestamp}`;
   }
   if (foodName) {
     // Use lowercase food name as cache key
@@ -344,12 +345,11 @@ export async function analyzeFoodWithGemini(
     subscriptionTier?: string;
   }
 ): Promise<FoodAnalysisResult> {
-  // Check cache first
-  const cacheKey = getCacheKey(foodName, imageData);
-  if (cacheKey && analysisCache.has(cacheKey)) {
-    console.log("Returning cached analysis for:", cacheKey.substring(0, 20));
-    return analysisCache.get(cacheKey)!;
-  }
+  // DISABLED CACHING - Fresh analysis every time to prevent duplicate results
+  console.log(`Fresh analysis for: ${foodName || 'image upload'}`);
+  
+  // Clear any existing cache to prevent stale results
+  analysisCache.clear();
 
   try {
     // Try AI analysis first with user profile for personalization
@@ -372,15 +372,7 @@ export async function analyzeFoodWithGemini(
       alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, userProfile),
     };
 
-    // Cache AI analysis result
-    if (cacheKey) {
-      analysisCache.set(cacheKey, result);
-      // Limit cache size to prevent memory issues
-      if (analysisCache.size > 100) {
-        const firstKey = analysisCache.keys().next().value;
-        analysisCache.delete(firstKey);
-      }
-    }
+    // NO CACHING - Return fresh result every time
 
     return result;
   } catch (error) {
@@ -406,11 +398,7 @@ export async function analyzeFoodWithGemini(
       alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName, userProfile),
     };
 
-    // Cache fallback result
-    if (cacheKey) {
-      analysisCache.set(cacheKey, result);
-    }
-
+    // NO CACHING - Return fresh fallback result
     return result;
   }
 }
