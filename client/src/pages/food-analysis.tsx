@@ -85,7 +85,9 @@ export default function FoodAnalysis() {
     },
     onSuccess: (data) => {
       setAnalysisResult(data.analysis);
+      // Invalidate ALL relevant caches so progress page updates immediately
       queryClient.invalidateQueries({ queryKey: ["/api/food/logs/today"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food/analyzed/today"] });
       queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/my-score"] });
       toast({
         title: "Analysis Complete!",

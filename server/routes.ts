@@ -178,7 +178,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isLogged: false, // Not logged until user clicks "Yum"
       });
       
-      await storage.createFoodLog(logData);
+      const savedLog = await storage.createFoodLog(logData);
+      console.log("Food analysis saved:", { 
+        id: savedLog.id, 
+        foodName: savedLog.foodName, 
+        isLogged: savedLog.isLogged,
+        userId: savedLog.userId 
+      });
       
       res.json({ analysis });
     } catch (error: any) {
