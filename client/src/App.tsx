@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -18,7 +18,7 @@ import Subscription from "@/pages/subscription";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import HowToUse from "@/pages/how-to-use";
-import TranslateWidget, { TranslationProvider } from "@/components/google-translate";
+import TranslateWidget, { TranslationProvider, useTranslation } from "@/components/google-translate";
 import About from "@/pages/about";
 import Investor from "@/pages/investor";
 import Disclaimer from "@/pages/disclaimer";
@@ -30,6 +30,8 @@ import GDPRInitialBanner from "@/components/gdpr-initial-banner";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [showGDPRInitialBanner, setShowGDPRInitialBanner] = useState(false);
+  const { setLanguage, currentLanguage } = useTranslation();
+  const [location] = useLocation();
 
   // Show GDPR banner only once after first login post-registration
   useEffect(() => {
@@ -37,6 +39,16 @@ function Router() {
       setShowGDPRInitialBanner(true);
     }
   }, [user, isAuthenticated]);
+
+  // Retranslate when route changes
+  useEffect(() => {
+    if (currentLanguage !== 'en') {
+      const timer = setTimeout(() => {
+        setLanguage(currentLanguage);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [location, currentLanguage, setLanguage]);
 
   if (isLoading) {
     return (

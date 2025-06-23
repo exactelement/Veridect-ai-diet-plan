@@ -1,4 +1,11 @@
 import { useState, createContext, useContext, useEffect } from 'react';
+
+// Declare global types for window
+declare global {
+  interface Window {
+    translationTimeout?: number;
+  }
+}
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -155,16 +162,53 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsTranslating(false);
   };
 
-  // Auto-translate on page load if language is not English
+  // Auto-translate on page load and route changes
   useEffect(() => {
     if (currentLanguage !== 'en') {
       // Small delay to let page content load
       const timer = setTimeout(() => {
         translatePage(currentLanguage);
-      }, 500);
+      }, 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [currentLanguage]);
+
+  // Monitor DOM changes and retranslate when new content appears
+  useEffect(() => {
+    if (currentLanguage === 'en') return;
+
+    const observer = new MutationObserver((mutations) => {
+      let hasNewTextContent = false;
+      
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
+              hasNewTextContent = true;
+            }
+          });
+        }
+      });
+
+      if (hasNewTextContent) {
+        // Debounce the translation to avoid too many calls
+        clearTimeout(window.translationTimeout);
+        window.translationTimeout = setTimeout(() => {
+          translatePage(currentLanguage);
+        }, 300);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(window.translationTimeout);
+    };
+  }, [currentLanguage]);
 
   // Save translations to localStorage whenever they change
   useEffect(() => {
