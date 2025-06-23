@@ -106,15 +106,16 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     if (targetLang === 'en') {
       setCurrentLanguage('en');
       localStorage.setItem('veridect-language', 'en');
-      // Don't clear translations cache for performance
-      // Force page reload to show original text
+      // Trigger re-render of all components
       window.location.reload();
       return;
     }
 
-    setIsTranslating(true);
     setCurrentLanguage(targetLang);
     localStorage.setItem('veridect-language', targetLang);
+    // Trigger immediate re-render
+    window.location.reload();
+    return;
     
     // Find all text nodes and translate them
     const walker = document.createTreeWalker(

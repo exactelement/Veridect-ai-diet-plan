@@ -1,15 +1,16 @@
 import { Home, Camera, TrendingUp, Trophy, User } from "lucide-react";
 import { useLocation } from "wouter";
+import { t } from "@/lib/instantTranslation";
 
 export default function Navigation() {
   const [location, navigate] = useLocation();
 
   const navItems = [
-    { id: "home", icon: Home, label: "Home", path: "/home" },
-    { id: "analyse", icon: Camera, label: "Analyse", path: "/" },
-    { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress" },
-    { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
-    { id: "profile", icon: User, label: "Profile", path: "/profile" },
+    { id: "home", icon: Home, label: t("Home"), path: "/home" },
+    { id: "analyse", icon: Camera, label: t("Analyze"), path: "/" },
+    { id: "progress", icon: TrendingUp, label: t("Progress"), path: "/progress" },
+    { id: "leaderboard", icon: Trophy, label: t("Rankings"), path: "/leaderboard" },
+    { id: "profile", icon: User, label: t("Profile"), path: "/profile" },
   ];
 
   const handleNavigation = (path: string) => {

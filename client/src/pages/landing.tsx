@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown } from "lucide-react";
+import { t } from "@/lib/instantTranslation";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -137,7 +138,7 @@ export default function Landing() {
         <div className="page-container text-center">
           <div className="animate-slide-up">
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="gradient-text">Yes</span> or <span className="gradient-text">No</span>?
+              <span className="gradient-text">{t('Yes')}</span> or <span className="gradient-text">{t('No')}</span>?
             </h1>
             <p className="text-xl md:text-2xl text-ios-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
               Transform complex nutritional decisions into simple, AI-powered verdicts. 
