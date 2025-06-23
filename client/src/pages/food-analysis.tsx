@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AnalysisResult {
   foodName: string;
@@ -31,6 +32,45 @@ export default function FoodAnalysis() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Dynamic greeting based on device time - updates on each app visit
+  const [timeGreeting, setTimeGreeting] = useState(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    if (currentHour < 12) {
+      return "Good morning";
+    } else if (currentHour < 18) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  });
+
+  // Update greeting every time user opens the app/page
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    const newGreeting = currentHour < 12 
+      ? "Good morning" 
+      : currentHour < 18 
+      ? "Good afternoon" 
+      : "Good evening";
+    
+    setTimeGreeting(newGreeting);
+  }, []);
+
+  // Get user interface preferences
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/auth/user"],
+    staleTime: 0, // Always get fresh preferences
+  });
+
+  const activeUser = currentUser || user;
+  const privacySettings = (activeUser as any)?.privacySettings || {};
+  const showNutritionDetails = privacySettings.showNutritionDetails !== false;
 
   const analyzeMutation = useMutation({
     mutationFn: async (data: { foodName?: string; imageData?: string }) => {
@@ -258,38 +298,41 @@ export default function FoodAnalysis() {
                 </CardContent>
               </Card>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {analysisResult.calories && (
+              {/* Nutritional details - only show if user hasn't disabled them */}
+              {showNutritionDetails && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {analysisResult.calories && (
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-ios-blue">{analysisResult.calories}</div>
+                        <div className="text-sm text-ios-secondary">Calories</div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {analysisResult.protein && (
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-health-green">{analysisResult.protein}g</div>
+                        <div className="text-sm text-ios-secondary">Protein</div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {analysisResult.portion && (
+                    <Card>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-warning-orange">{analysisResult.portion}</div>
+                        <div className="text-sm text-ios-secondary">Portion</div>
+                      </CardContent>
+                    </Card>
+                  )}
                   <Card>
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-ios-blue">{analysisResult.calories}</div>
-                      <div className="text-sm text-ios-secondary">Calories</div>
+                      <div className="text-2xl font-bold text-ios-secondary">{analysisResult.confidence}%</div>
+                      <div className="text-sm text-ios-secondary">Confidence</div>
                     </CardContent>
                   </Card>
-                )}
-                {analysisResult.protein && (
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-health-green">{analysisResult.protein}g</div>
-                      <div className="text-sm text-ios-secondary">Protein</div>
-                    </CardContent>
-                  </Card>
-                )}
-                {analysisResult.portion && (
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-warning-orange">{analysisResult.portion}</div>
-                      <div className="text-sm text-ios-secondary">Portion</div>
-                    </CardContent>
-                  </Card>
-                )}
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-ios-secondary">{analysisResult.confidence}%</div>
-                    <div className="text-sm text-ios-secondary">Confidence</div>
-                  </CardContent>
-                </Card>
-              </div>
+                </div>
+              )}
 
               {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
                 <Card>
@@ -341,9 +384,11 @@ export default function FoodAnalysis() {
     <div className="pt-20 pb-24 container-padding">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Food Analysis</h1>
+          <h1 className="text-4xl font-bold mb-4">
+            {timeGreeting}, {(activeUser as any)?.firstName || 'there'}!
+          </h1>
           <p className="text-xl text-ios-secondary">
-            Get instant health verdicts on your food choices
+            Ready to analyze your food? Get instant health verdicts on your choices
           </p>
         </div>
 

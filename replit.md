@@ -111,6 +111,15 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Enhanced user experience features implementation
+  - App now opens directly to Food Analysis page for instant food scanning (already configured)
+  - Added dynamic time-based greetings that update on each app visit (Good morning/afternoon/evening)
+  - Enhanced interface preference toggles to hide/show nutritional details based on privacy settings
+  - Users can control visibility of calorie counter, food statistics, and weekly challenge participation
+- June 23, 2025: Fixed white text visibility issues on landing page and about page CTA sections
+  - Replaced problematic gradient backgrounds with solid blue backgrounds
+  - Ensured proper text contrast for "Ready to Transform Your Health?" sections
+  - Fixed subscription tier card styling with white background and dark text
 - June 20, 2025: Complete multi-provider authentication system and deployment guides updated
   - Apple Sign-In JavaScript SDK integration with frontend authentication flow
   - Complete Apple authentication with JWT token processing and user account creation
