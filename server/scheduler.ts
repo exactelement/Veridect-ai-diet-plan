@@ -33,8 +33,9 @@ class DailyScheduler {
     // Check every minute to catch the exact midnight moment
     this.dailyCleanupInterval = setInterval(checkAndCleanup, 60000);
     
-    // Also run cleanup on startup if it's past midnight (in case server was down)
-    checkAndCleanup();
+    // Run cleanup immediately on startup to clear any old data
+    console.log("Running initial cleanup on startup...");
+    storage.clearPreviousDayFoodLogs();
   }
 
   private scheduleWeeklyReset() {

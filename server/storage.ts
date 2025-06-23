@@ -244,24 +244,29 @@ export class DatabaseStorage implements IStorage {
   // Leaderboard operations
   // Daily food log cleanup - clears yesterday's logs at midnight Madrid time
   async clearPreviousDayFoodLogs(): Promise<void> {
-    const now = new Date();
-    const madridTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
-    
-    // Get yesterday's date in Madrid time
-    const yesterday = new Date(madridTime);
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
-    
-    const yesterdayEnd = new Date(yesterday);
-    yesterdayEnd.setHours(23, 59, 59, 999);
-
     try {
-      // Delete all food logs from yesterday and earlier
-      await db
-        .delete(foodLogs)
-        .where(lte(foodLogs.createdAt, yesterdayEnd));
+      // Get midnight today in Madrid time, then convert to UTC for database
+      const now = new Date();
       
-      console.log(`Daily cleanup completed: Cleared food logs before ${yesterdayEnd.toISOString()}`);
+      // Create Madrid midnight today in UTC
+      const madridMidnightUTC = new Date();
+      madridMidnightUTC.setUTCHours(22, 0, 0, 0); // Madrid is UTC+2 in summer, so midnight Madrid = 22:00 UTC previous day
+      
+      // If it's already past Madrid midnight, we want today's midnight, not yesterday's
+      if (now.getUTCHours() >= 22) {
+        madridMidnightUTC.setUTCDate(madridMidnightUTC.getUTCDate() + 1);
+      }
+      
+      console.log(`Current UTC time: ${now.toISOString()}`);
+      console.log(`Madrid midnight UTC: ${madridMidnightUTC.toISOString()}`);
+      console.log(`Deleting food logs before: ${madridMidnightUTC.toISOString()}`);
+      
+      // Delete all food logs from before today's Madrid midnight
+      const result = await db
+        .delete(foodLogs)
+        .where(lt(foodLogs.createdAt, madridMidnightUTC));
+      
+      console.log(`Daily cleanup completed: Cleared food logs before Madrid midnight`);
     } catch (error) {
       console.error('Error during daily food log cleanup:', error);
     }
