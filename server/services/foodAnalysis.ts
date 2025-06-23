@@ -51,12 +51,42 @@ function getCacheKey(foodName?: string, imageData?: string, userProfile?: any): 
   return `${foodKey}::${profileKey}`;
 }
 
+// Creative opening phrases for variety
+const CREATIVE_OPENINGS = [
+  "Well hello there, beautiful!",
+  "Spotted in the wild:",
+  "Here's the tea:",
+  "Plot twist alert!",
+  "Let's break this down:",
+  "Okay, we're talking:",
+  "This is giving me:",
+  "Real talk time:",
+  "Here's what's happening:",
+  "Drumroll please...",
+  "Not gonna lie:",
+  "Picture this:",
+  "Fun fact incoming:",
+  "Let me paint you a picture:",
+  "Straight up:",
+  "Here's the scoop:",
+  "Can we just appreciate:",
+  "Okay but seriously:",
+  "Breaking news:",
+  "Between you and me:"
+];
+
+// Function to get a varied explanation with creative opening
+function getVariedExplanation(baseExplanation: string, foodName: string): string {
+  const randomOpening = CREATIVE_OPENINGS[Math.floor(Math.random() * CREATIVE_OPENINGS.length)];
+  return `${randomOpening} ${baseExplanation}`;
+}
+
 // Fallback food database for when AI fails
 const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "apple": {
     foodName: "Apple",
     verdict: "YES",
-    explanation: "Great choice! Apples are packed with fiber, vitamins, and natural antioxidants. Perfect healthy snack!",
+    explanation: "This crunchy powerhouse is loaded with fiber and antioxidants. Nature's candy that actually loves you back!",
     calories: 95,
     protein: 0,
     carbohydrates: 25,
@@ -70,7 +100,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "banana": {
     foodName: "Banana",
     verdict: "YES",
-    explanation: "Excellent choice! Bananas provide natural energy, potassium, and vitamin B6. Perfect for pre or post workout!",
+    explanation: "This yellow champion brings potassium power and natural energy. Your muscles will thank you later!",
     calories: 105,
     protein: 1,
     carbohydrates: 27,
@@ -204,7 +234,7 @@ function getFallbackAnalysis(foodName: string): GeminiAnalysisResult {
       return {
         foodName: value.foodName!,
         verdict: value.verdict!,
-        explanation: value.explanation!,
+        explanation: getVariedExplanation(value.explanation!, value.foodName!),
         calories: value.calories!,
         protein: value.protein!,
         carbohydrates: value.carbohydrates!,
@@ -248,6 +278,7 @@ function getFallbackAnalysis(foodName: string): GeminiAnalysisResult {
 
   const explanations = responses[randomVerdict];
   const randomExplanation = explanations[Math.floor(Math.random() * explanations.length)];
+  const variedExplanation = getVariedExplanation(randomExplanation, foodName);
 
   // Generate realistic nutritional values based on verdict
   let calorieRange, proteinRange, fatRange;
@@ -273,7 +304,7 @@ function getFallbackAnalysis(foodName: string): GeminiAnalysisResult {
   return {
     foodName: foodName || "Unknown Food",
     verdict: randomVerdict,
-    explanation: randomExplanation,
+    explanation: variedExplanation,
     calories,
     protein,
     carbohydrates: Math.max(0, carbs),

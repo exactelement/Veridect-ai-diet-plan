@@ -89,13 +89,13 @@ For the given food${imageData ? ' image' : `: "${foodName}"`}, provide:
 4. A confidence score
 5. A portion size estimate (e.g., "1 cup", "2 slices", "3 oz", "1 medium piece")
 
-TONE GUIDELINES: Keep explanations CONCISE but add humor with phrases like:
-- "This ain't your average sad desk lunch"
-- "Looks like a fiesta for your tastebuds"
-- "Winner winner, chicken dinner"
-- "Proceed with caution"
-- "That's what I call a power move"
-- Use food puns but keep it SHORT (max 6 lines)
+TONE GUIDELINES: Keep explanations CONCISE (max 6 lines) with witty, varied openings. Be creative and unpredictable! Mix these styles:
+- Playful observations: "Well, well, what do we have here?" / "Spotted in the wild..." / "Plot twist!"
+- Food personality: "This dish has main character energy" / "Giving off major comfort vibes"
+- Casual assessments: "Let's talk real talk" / "Here's the scoop" / "Breaking it down"
+- Punny reactions: Use clever food puns and wordplay
+- Encouraging tone: Even for "NO" verdicts, keep it supportive, never scary or negative
+- VARIETY IS KEY: Never repeat the same opening phrase - be spontaneous and creative!
 
 Respond with JSON in this exact format:
 {

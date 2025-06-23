@@ -143,8 +143,9 @@ Preferred communication style: Simple, everyday language.
 - **Concise Witty Responses**: Limited explanations to maximum 6 lines with punchy, memorable phrases
 - **Eliminated Scary Language**: Replaced frightening "Red flag" responses with encouraging, playful alternatives
 - **JSON Parsing Fix**: Corrected Gemini API errors by enforcing whole number format requirements
-- **Tone Guidelines**: Added specific humor instructions like "Winner winner, chicken dinner" and "Holy guacamole"
-- **Fallback Response Updates**: All fallback responses now use witty, encouraging language instead of negative warnings
+- **Creative Variety System**: Added 20+ different opening phrases to prevent repetitive responses
+- **Dynamic Response Generation**: Implemented randomized creative openings for both AI and fallback responses
+- **Tone Guidelines Update**: Removed rigid example phrases, added variety requirements for spontaneous creativity
 - **User Experience Improvement**: Food analysis provides entertaining, supportive feedback that motivates rather than scares
 
 ### UX Improvements & Bug Fixes (June 23, 2025)
