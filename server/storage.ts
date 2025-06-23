@@ -52,6 +52,7 @@ export interface IStorage {
   getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]>;
   findRecentUnloggedAnalysis(userId: string, foodName: string, verdict: string): Promise<FoodLog | undefined>;
   updateFoodLogToLogged(id: number): Promise<FoodLog>;
+  addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void>;
   
   // Leaderboard operations
   updateWeeklyScore(userId: string, verdict: string): Promise<void>;
@@ -324,6 +325,7 @@ export class DatabaseStorage implements IStorage {
 
     try {
       const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
+      console.log(`Adding ${verdictPoints} weekly points for ${verdict} verdict`);
       
       await db
         .insert(weeklyScores)
@@ -347,9 +349,33 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error updating weekly score:', error);
     }
+  }
 
-    // Update ranks for all users this week
-    await this.updateWeeklyRanks(weekStart);
+  // Add bonus points to weekly score without affecting food counts
+  async addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void> {
+    const now = this.getMadridTime();
+    const weekStart = new Date(now);
+    const day = weekStart.getDay();
+    const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart.setDate(diff);
+    weekStart.setHours(0, 0, 0, 0);
+
+    try {
+      console.log(`Adding ${bonusPoints} bonus points to weekly score`);
+      await db
+        .update(weeklyScores)
+        .set({
+          weeklyPoints: sql`${weeklyScores.weeklyPoints} + ${bonusPoints}`
+        })
+        .where(
+          and(
+            eq(weeklyScores.userId, userId),
+            eq(weeklyScores.weekStart, weekStart)
+          )
+        );
+    } catch (error) {
+      console.error('Error adding bonus to weekly score:', error);
+    }
   }
 
   private async updateWeeklyRanks(weekStart: Date): Promise<void> {

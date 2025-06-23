@@ -191,9 +191,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (todaysAnalyses.length === 5) {
         console.log("User completed 5 analyses challenge, awarding 25 bonus points");
         await storage.updateUserPoints(userId, 25);
-        await storage.updateWeeklyScore(userId, "YES"); // Add 10 points to weekly for bonus
-        await storage.updateWeeklyScore(userId, "YES"); // Add 10 more points
-        await storage.updateWeeklyScore(userId, "YES"); // Add 5 more points (total 25)
+        // Add bonus points to weekly score properly
+        await storage.addBonusToWeeklyScore(userId, 25);
       }
       
       res.json({ analysis });
@@ -229,8 +228,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log("Created new food log entry:", { id: foodLog.id, foodName });
       }
       
-      // Award food logging points and update streak
+      // Award food logging points and update streak - ONLY ONCE PER FOOD
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
+      console.log(`Awarding ${foodPoints} points for logging ${foodName} (${verdict})`);
       await storage.updateUserPoints(userId, foodPoints);
       await storage.updateWeeklyScore(userId, verdict);
       await storage.updateStreak(userId, verdict);
