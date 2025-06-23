@@ -312,7 +312,6 @@ export default function FoodAnalysis() {
                 "border-warning-orange bg-warning-orange/5"
               }`}>
                 <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3">Analysis Explanation</h3>
                   <p className="text-ios-text leading-relaxed">{analysisResult.explanation}</p>
                 </CardContent>
               </Card>
