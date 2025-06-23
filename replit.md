@@ -111,9 +111,9 @@ Preferred communication style: Simple, everyday language.
 ## Point System Architecture
 
 **Unified Point Tracking:**
-- All points (food logging + bonus points) accumulate to `totalPoints` field
-- Level calculation: 1000 points per level using totalPoints
-- Weekly leaderboard: Calculated from weekly food logs only
+- All points (food logging + bonus points) accumulate to `totalPoints` field for lifetime tracking
+- Weekly points: ALL points earned this week (food + bonus), resets every Monday
+- Level calculation: 1000 points per level using lifetime totalPoints
 - Consistent scoring: YES=10, OK=5, NO=2 points across all systems
 
 **Point Sources:**
@@ -124,6 +124,12 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Unified point system implementation
+  - Fixed weekly points to include ALL points earned that week (food logging + bonus points)
+  - Updated updateWeeklyScore function to accumulate any point source, not just food verdicts
+  - Level calculation uses lifetime totalPoints with 1000 points per level
+  - Weekly leaderboard resets every Monday and tracks complete weekly accumulation
+  - Both systems now use identical point values with proper weekly/lifetime separation
 - June 23, 2025: Complete rebranding from YesNoApp to Veridect
   - App name changed to Veridect throughout all pages and components
   - Contact information updated to info@veridect.com and +34672810584

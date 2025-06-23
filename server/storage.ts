@@ -242,14 +242,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Leaderboard operations
-  async updateWeeklyScore(userId: string, verdict: string): Promise<void> {
+  // Weekly score management - tracks ALL points earned this week (food + bonus)
+  async updateWeeklyScore(userId: string, pointsToAdd: number): Promise<void> {
     const now = new Date();
-    const startOfWeek = new Date(now);
-    // Set Monday as first day of week (getDay() returns 0=Sunday, 1=Monday, etc.)
-    const dayOfWeek = now.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
-    startOfWeek.setDate(now.getDate() - daysToSubtract);
-    startOfWeek.setHours(0, 0, 0, 0);
+    const madridTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+    const dayOfWeek = madridTime.getDay(); // 0 = Sunday, 1 = Monday
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Adjust for Monday start
+    const weekStart = new Date(madridTime);
+    weekStart.setDate(weekStart.getDate() - daysToMonday);
+    weekStart.setHours(0, 0, 0, 0);
 
     const existingScore = await db
       .select()
@@ -257,49 +258,37 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(weeklyScores.userId, userId),
-          eq(weeklyScores.weekStart, startOfWeek)
+          eq(weeklyScores.weekStart, weekStart)
         )
       );
 
     if (existingScore.length > 0) {
-      // Update existing score
+      // Update existing score by adding points
       const score = existingScore[0];
-      const updates: any = {};
-      
-      if (verdict === "YES") updates.yesCount = (score.yesCount || 0) + 1;
-      else if (verdict === "NO") updates.noCount = (score.noCount || 0) + 1;
-      else if (verdict === "OK") updates.okCount = (score.okCount || 0) + 1;
-
-      // Calculate new total score (YES=10, OK=5, NO=2) - same as user points
-      const newYes = updates.yesCount || score.yesCount || 0;
-      const newOk = updates.okCount || score.okCount || 0;
-      const newNo = updates.noCount || score.noCount || 0;
-      updates.totalScore = String(newYes * 10 + newOk * 5 + newNo * 2);
+      const currentTotal = parseInt(score.totalScore || "0");
+      const newTotal = currentTotal + pointsToAdd;
 
       await db
         .update(weeklyScores)
-        .set(updates)
+        .set({ 
+          totalScore: String(newTotal),
+          updatedAt: new Date()
+        })
         .where(eq(weeklyScores.id, score.id));
     } else {
-      // Create new score
-      const initialScore = {
-        yesCount: verdict === "YES" ? 1 : 0,
-        okCount: verdict === "OK" ? 1 : 0,
-        noCount: verdict === "NO" ? 1 : 0,
-      };
-      
+      // Create new score entry
       await db
         .insert(weeklyScores)
         .values({
           userId,
-          weekStart: startOfWeek,
-          ...initialScore,
-          totalScore: String(initialScore.yesCount * 10 + initialScore.okCount * 5 + initialScore.noCount * 2),
+          weekStart,
+          totalScore: String(pointsToAdd),
+          rank: 1 // Will be recalculated
         });
     }
 
     // Update ranks for all users this week
-    await this.updateWeeklyRanks(startOfWeek);
+    await this.updateWeeklyRanks(weekStart);
   }
 
   private async updateWeeklyRanks(weekStart: Date): Promise<void> {
@@ -407,6 +396,9 @@ export class DatabaseStorage implements IStorage {
     
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
+    
+    // Update weekly points to include ALL points earned this week
+    await this.updateWeeklyScore(userId, pointsToAdd);
     
     const [updatedUser] = await db
       .update(users)
