@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
 export interface GeminiAnalysisResult {
   foodName: string;
-  verdict: "YES" | "NO" | "OK" | "NOT_FOOD";
+  verdict: "YES" | "NO" | "OK";
   explanation: string;
   calories?: number;
   protein?: number;
@@ -90,9 +90,9 @@ ${personalizedContext}
 For the given ${imageData ? ' image' : `food: "${foodName}"`}, first determine if this is actually food:
 
 IF NOT FOOD (digital screens, electronics, text, objects, etc.):
-- Set verdict to "NOT_FOOD"
-- Set foodName to "Non-Food Item Detected"
-- Set explanation to a witty rejection message
+- Set verdict to "NO"
+- Set foodName to "Non-Food Item"
+- Set explanation to a witty rejection message like "Hold up! That's not food - I only analyze edible items!"
 - Set all nutrition values to 0
 - Set confidence to 99
 
@@ -113,8 +113,8 @@ TONE GUIDELINES: Keep explanations CONCISE (max 6 lines) with witty, varied open
 
 Respond with JSON in this exact format:
 {
-  "foodName": "The actual name of the food item OR 'Non-Food Item Detected'",
-  "verdict": "YES/NO/OK/NOT_FOOD",
+  "foodName": "The actual name of the food item OR 'Non-Food Item'",
+  "verdict": "YES/NO/OK",
   "explanation": "Fun, witty explanation with humor and personality",
   "calories": 250,
   "protein": 20,

@@ -683,11 +683,9 @@ export default function Profile() {
                                     {log.verdict}
                                   </Badge>
                                 </div>
-                                {log.calories && (
-                                  <p className="text-sm text-ios-secondary mt-1">
-                                    {log.calories} calories
-                                  </p>
-                                )}
+                                <p className="text-sm text-ios-secondary mt-1">
+                                  {log.calories && log.calories > 0 ? `${log.calories} calories` : 'N/A calories'}
+                                </p>
                                 <p className="text-xs text-ios-secondary mt-1">
                                   {new Date(log.createdAt).toLocaleTimeString()}
                                 </p>

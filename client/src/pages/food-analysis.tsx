@@ -13,7 +13,7 @@ import { useLocation } from "wouter";
 
 interface AnalysisResult {
   foodName: string;
-  verdict: "YES" | "NO" | "OK" | "NOT_FOOD";
+  verdict: "YES" | "NO" | "OK";
   explanation: string;
   calories?: number;
   protein?: number;
@@ -209,8 +209,8 @@ export default function FoodAnalysis() {
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
     
-    // Don't allow logging non-food items
-    if (analysisResult.verdict === "NOT_FOOD") {
+    // Don't allow logging non-food items (they get "NO" verdict with 0 calories)
+    if (analysisResult.foodName === "Non-Food Item" && analysisResult.calories === 0) {
       toast({
         title: "Cannot Log Non-Food Item",
         description: "This isn't food! Please analyze an actual food item.",
@@ -279,7 +279,6 @@ export default function FoodAnalysis() {
       case "YES": return "text-health-green";
       case "NO": return "text-danger-red";
       case "OK": return "text-warning-orange";
-      case "NOT_FOOD": return "text-gray-500";
       default: return "text-ios-secondary";
     }
   };
@@ -289,7 +288,6 @@ export default function FoodAnalysis() {
       case "YES": return <CheckCircle className="w-8 h-8" />;
       case "NO": return <XCircle className="w-8 h-8" />;
       case "OK": return <AlertTriangle className="w-8 h-8" />;
-      case "NOT_FOOD": return <XCircle className="w-8 h-8" />;
       default: return null;
     }
   };
@@ -384,21 +382,32 @@ export default function FoodAnalysis() {
               )}
 
               <div className="flex justify-center space-x-4">
-                <Button 
-                  onClick={handleYum}
-                  disabled={isLogging}
-                  className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
-                >
-                  {isLogging ? "Logging..." : "😋 Yum"}
-                </Button>
-                <Button 
-                  onClick={handleNah}
-                  disabled={isLogging}
-                  variant="outline"
-                  className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold"
-                >
-                  😝 Nah
-                </Button>
+                {analysisResult.foodName === "Non-Food Item" ? (
+                  <Button 
+                    onClick={handleNah}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 text-lg font-semibold"
+                  >
+                    Try Again with Food
+                  </Button>
+                ) : (
+                  <>
+                    <Button 
+                      onClick={handleYum}
+                      disabled={isLogging}
+                      className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
+                    >
+                      {isLogging ? "Logging..." : "😋 Yum"}
+                    </Button>
+                    <Button 
+                      onClick={handleNah}
+                      disabled={isLogging}
+                      variant="outline"
+                      className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold"
+                    >
+                      😝 Nah
+                    </Button>
+                  </>
+                )}
               </div>
               
               <div className="flex justify-center space-x-4 pt-4">
