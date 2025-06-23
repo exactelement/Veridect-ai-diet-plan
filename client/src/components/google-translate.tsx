@@ -41,6 +41,7 @@ interface TranslationContextType {
   translateText: (text: string) => string;
   setLanguage: (language: string) => void;
   isTranslating: boolean;
+  getTranslation: (text: string) => Promise<string>;
 }
 
 const TranslationContext = createContext<TranslationContextType>({
@@ -49,6 +50,7 @@ const TranslationContext = createContext<TranslationContextType>({
   translateText: (text) => text,
   setLanguage: () => {},
   isTranslating: false,
+  getTranslation: async (text) => text,
 });
 
 export const useTranslation = () => useContext(TranslationContext);
@@ -162,52 +164,15 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsTranslating(false);
   };
 
-  // Auto-translate on page load and route changes
+  // Simplified auto-translate for fallback content only
   useEffect(() => {
     if (currentLanguage !== 'en') {
-      // Small delay to let page content load
+      // Only translate content that hasn't been translated by components
       const timer = setTimeout(() => {
         translatePage(currentLanguage);
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [currentLanguage]);
-
-  // Monitor DOM changes and retranslate when new content appears
-  useEffect(() => {
-    if (currentLanguage === 'en') return;
-
-    const observer = new MutationObserver((mutations) => {
-      let hasNewTextContent = false;
-      
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
-              hasNewTextContent = true;
-            }
-          });
-        }
-      });
-
-      if (hasNewTextContent) {
-        // Debounce the translation to avoid too many calls
-        clearTimeout(window.translationTimeout);
-        window.translationTimeout = setTimeout(() => {
-          translatePage(currentLanguage);
-        }, 300);
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      observer.disconnect();
-      clearTimeout(window.translationTimeout);
-    };
   }, [currentLanguage]);
 
   // Save translations to localStorage whenever they change
@@ -224,6 +189,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     },
     setLanguage: translatePage,
     isTranslating,
+    getTranslation: translateText,
   };
 
   return (
