@@ -83,8 +83,8 @@ export default function Home() {
   const pointsToNextLevel = ((currentLevel * 100) - totalLifetimePoints);
   const levelProgress = ((totalLifetimePoints % 100) / 100) * 100;
 
-  // Weekly points for weekly progress display
-  const weeklyPoints = (user as any)?.weeklyPoints || 0;
+  // Weekly points from the weekly score API (this week's points only)
+  const weeklyPoints = weeklyScore?.totalScore ? parseInt(weeklyScore.totalScore) : 0;
 
   // User interface preferences - use fresh user data directly
   const activeUser = currentUser || user;
