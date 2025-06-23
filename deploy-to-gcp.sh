@@ -85,32 +85,42 @@ fi
 CONNECTION_NAME=$(gcloud sql instances describe $DB_INSTANCE --format="value(connectionName)")
 echo "Database connection name: $CONNECTION_NAME"
 
-# Step 5: Set up secrets (user needs to add actual values)
-echo "🔐 Setting up secrets..."
-echo "Please add your secrets to Google Secret Manager:"
-echo ""
-echo "1. Database URL:"
-echo "   echo 'postgresql://user:password@localhost/yesnoapp?host=/cloudsql/$CONNECTION_NAME' | gcloud secrets create DATABASE_URL --data-file=-"
-echo ""
-echo "2. Session Secret:"
-echo "   openssl rand -base64 32 | gcloud secrets create SESSION_SECRET --data-file=-"
-echo ""
-echo "3. Google Gemini API Key:"
-echo "   echo 'your_gemini_api_key' | gcloud secrets create GOOGLE_GEMINI_API_KEY --data-file=-"
-echo ""
-echo "4. Stripe Keys (if using payments):"
-echo "   echo 'your_stripe_secret' | gcloud secrets create STRIPE_SECRET_KEY --data-file=-"
-echo "   echo 'your_stripe_public' | gcloud secrets create VITE_STRIPE_PUBLIC_KEY --data-file=-"
-echo ""
-echo "5. Google OAuth (if using Google Sign-In):"
-echo "   echo 'your_google_client_id' | gcloud secrets create GOOGLE_CLIENT_ID --data-file=-"
-echo "   echo 'your_google_client_secret' | gcloud secrets create GOOGLE_CLIENT_SECRET --data-file=-"
-echo ""
-echo "6. Apple Sign-In (if using Apple authentication):"
-echo "   echo 'com.yesnoapp.signin' | gcloud secrets create APPLE_SERVICE_ID --data-file=-"
-echo "   echo 'your_team_id' | gcloud secrets create APPLE_TEAM_ID --data-file=-"
-echo "   echo 'your_key_id' | gcloud secrets create APPLE_KEY_ID --data-file=-"
-echo "   echo 'your_private_key_contents' | gcloud secrets create APPLE_PRIVATE_KEY --data-file=-"
+# Step 5: Auto-deploy secrets from Replit environment
+echo "🔐 Setting up secrets from Replit environment..."
+
+# Function to create secret if environment variable exists
+create_secret_if_exists() {
+    local env_var=$1
+    local secret_name=$2
+    
+    if [ -n "${!env_var}" ]; then
+        echo "Creating secret: $secret_name"
+        echo "${!env_var}" | gcloud secrets create "$secret_name" --data-file=- --quiet || \
+        echo "${!env_var}" | gcloud secrets versions add "$secret_name" --data-file=- --quiet
+    else
+        echo "⚠️  Environment variable $env_var not found, skipping $secret_name"
+    fi
+}
+
+# Deploy all available environment variables as secrets
+create_secret_if_exists "DATABASE_URL" "DATABASE_URL"
+create_secret_if_exists "SESSION_SECRET" "SESSION_SECRET"
+create_secret_if_exists "GOOGLE_GEMINI_API_KEY" "GOOGLE_GEMINI_API_KEY"
+create_secret_if_exists "STRIPE_SECRET_KEY" "STRIPE_SECRET_KEY"
+create_secret_if_exists "VITE_STRIPE_PUBLIC_KEY" "VITE_STRIPE_PUBLIC_KEY"
+create_secret_if_exists "GOOGLE_CLIENT_ID" "GOOGLE_CLIENT_ID"
+create_secret_if_exists "GOOGLE_CLIENT_SECRET" "GOOGLE_CLIENT_SECRET"
+create_secret_if_exists "APPLE_SERVICE_ID" "APPLE_SERVICE_ID"
+create_secret_if_exists "APPLE_TEAM_ID" "APPLE_TEAM_ID"
+create_secret_if_exists "APPLE_KEY_ID" "APPLE_KEY_ID"
+create_secret_if_exists "APPLE_PRIVATE_KEY" "APPLE_PRIVATE_KEY"
+
+# Generate session secret if not provided
+if [ -z "$SESSION_SECRET" ]; then
+    echo "Generating random session secret..."
+    openssl rand -base64 32 | gcloud secrets create SESSION_SECRET --data-file=- --quiet || \
+    openssl rand -base64 32 | gcloud secrets versions add SESSION_SECRET --data-file=- --quiet
+fi
 
 # Step 6: Create service account
 echo "👤 Creating service account..."
@@ -128,8 +138,42 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SERVICE_ACCOUNT" \
     --role="roles/cloudsql.client"
 
-# Step 7: Deploy to Cloud Run
-echo "🚀 Deploying to Cloud Run..."
+# Step 7: Deploy to Cloud Run with secrets
+echo "🚀 Deploying to Cloud Run with environment variables..."
+
+# Build secrets flags for Cloud Run
+SECRETS_FLAGS=""
+if gcloud secrets describe DATABASE_URL --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=DATABASE_URL=DATABASE_URL:latest"
+fi
+if gcloud secrets describe SESSION_SECRET --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=SESSION_SECRET=SESSION_SECRET:latest"
+fi
+if gcloud secrets describe GOOGLE_GEMINI_API_KEY --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest"
+fi
+if gcloud secrets describe STRIPE_SECRET_KEY --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest"
+fi
+if gcloud secrets describe GOOGLE_CLIENT_ID --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest"
+fi
+if gcloud secrets describe GOOGLE_CLIENT_SECRET --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest"
+fi
+if gcloud secrets describe APPLE_SERVICE_ID --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_SERVICE_ID=APPLE_SERVICE_ID:latest"
+fi
+if gcloud secrets describe APPLE_TEAM_ID --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_TEAM_ID=APPLE_TEAM_ID:latest"
+fi
+if gcloud secrets describe APPLE_KEY_ID --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_KEY_ID=APPLE_KEY_ID:latest"
+fi
+if gcloud secrets describe APPLE_PRIVATE_KEY --quiet &>/dev/null; then
+    SECRETS_FLAGS="$SECRETS_FLAGS --set-secrets=APPLE_PRIVATE_KEY=APPLE_PRIVATE_KEY:latest"
+fi
+
 gcloud run deploy $SERVICE_NAME \
     --image=$IMAGE_URL \
     --platform=managed \
@@ -144,7 +188,8 @@ gcloud run deploy $SERVICE_NAME \
     --concurrency=80 \
     --timeout=300 \
     --port=8080 \
-    --set-env-vars=NODE_ENV=production
+    --set-env-vars=NODE_ENV=production \
+    $SECRETS_FLAGS
 
 # Get service URL
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
@@ -155,14 +200,13 @@ echo "🎉 Deployment complete!"
 echo "📍 Service URL: $SERVICE_URL"
 echo "📊 Monitor at: https://console.cloud.google.com/run/detail/$REGION/$SERVICE_NAME"
 echo ""
-echo "⚠️  Don't forget to:"
-echo "1. Add your actual secrets to Secret Manager"
-echo "2. Update Cloud Run service with secret environment variables"
-echo "3. Test your deployment"
+echo "✅ Environment variables automatically deployed from Replit secrets!"
 echo ""
-echo "To update secrets in Cloud Run:"
-echo "gcloud run services update $SERVICE_NAME \\"
-echo "  --region=$REGION \\"
-echo "  --set-secrets=DATABASE_URL=DATABASE_URL:latest \\"
-echo "  --set-secrets=SESSION_SECRET=SESSION_SECRET:latest \\"
-echo "  --set-secrets=GOOGLE_GEMINI_API_KEY=GOOGLE_GEMINI_API_KEY:latest"
+echo "⚠️  Next steps:"
+echo "1. Update OAuth redirect URIs with the new service URL: $SERVICE_URL"
+echo "2. Test your deployment"
+echo "3. Configure custom domain if needed"
+echo ""
+echo "OAuth Configuration:"
+echo "- Google OAuth Console: Add $SERVICE_URL/api/auth/google/callback"
+echo "- Apple Developer Portal: Add $SERVICE_URL/api/auth/apple/callback"
