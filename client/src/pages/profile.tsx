@@ -584,25 +584,6 @@ export default function Profile() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Weekly Challenge Participation</h3>
-                      <p className="text-sm text-ios-secondary">Include me in leaderboard competitions</p>
-                    </div>
-                    <Switch
-                      checked={participateInChallenge}
-                      onCheckedChange={(checked) => {
-                        // Don't update local state immediately - wait for server response
-                        updateInterfaceMutation.mutate({
-                          showCalorieCounter: showCalories,
-                          participateInWeeklyChallenge: checked,
-                          showFoodStats: showFoodStats,
-                        });
-                      }}
-                      disabled={updateInterfaceMutation.isPending}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
                       <h3 className="font-medium">Show Food Statistics</h3>
                       <p className="text-sm text-ios-secondary">Display Yes/OK/No food counts and health score</p>
                     </div>
@@ -614,6 +595,25 @@ export default function Profile() {
                           showCalorieCounter: showCalories,
                           participateInWeeklyChallenge: participateInChallenge,
                           showFoodStats: checked,
+                        });
+                      }}
+                      disabled={updateInterfaceMutation.isPending}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium">Weekly Challenge Participation</h3>
+                      <p className="text-sm text-ios-secondary">Include me in leaderboard competitions</p>
+                    </div>
+                    <Switch
+                      checked={participateInChallenge}
+                      onCheckedChange={(checked) => {
+                        // Don't update local state immediately - wait for server response
+                        updateInterfaceMutation.mutate({
+                          showCalorieCounter: showCalories,
+                          participateInWeeklyChallenge: checked,
+                          showFoodStats: showFoodStats,
                         });
                       }}
                       disabled={updateInterfaceMutation.isPending}
