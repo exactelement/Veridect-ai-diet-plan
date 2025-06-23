@@ -1,8 +1,8 @@
-# YesNoApp iOS Development Guide
+# Veridect iOS Development Guide
 
 ## Overview
 
-This guide will help you build a complete native iOS app for YesNoApp with Apple HealthKit integration, camera-based food analysis, and full feature parity with the web application.
+This guide will help you build a complete native iOS app for Veridect with Apple HealthKit integration, camera-based food analysis, gamification features, and full feature parity with the web application including weekly leaderboards and level progression.
 
 ## Prerequisites
 
@@ -10,9 +10,9 @@ This guide will help you build a complete native iOS app for YesNoApp with Apple
 - iOS 16.0+ deployment target
 - Apple Developer Account ($99/year)
 - Basic Swift and SwiftUI knowledge
-- YesNoApp backend API running
-- Google Sign-In SDK for iOS
-- Apple Developer credentials configured in backend
+- Veridect backend API running
+- Replit Auth integration
+- Understanding of gamification UI patterns
 
 ## Project Setup
 
@@ -22,8 +22,8 @@ This guide will help you build a complete native iOS app for YesNoApp with Apple
 2. Choose "Create a new Xcode project"
 3. Select "iOS" → "App"
 4. Configure project:
-   - **Product Name**: YesNoApp
-   - **Bundle Identifier**: `com.yesnoapp.ios`
+   - **Product Name**: Veridect
+   - **Bundle Identifier**: `com.veridect.ios`
    - **Language**: Swift
    - **Interface**: SwiftUI
    - **Use Core Data**: No (we'll use API + UserDefaults)

@@ -1,8 +1,8 @@
-# YesNoApp Android Development Guide
+# Veridect Android Development Guide
 
 ## Overview
 
-This guide will help you build a complete native Android app for YesNoApp with Google Fit integration, camera-based food analysis, and full feature parity with the web application.
+This guide will help you build a complete native Android app for Veridect with Google Fit integration, camera-based food analysis, gamification features, and full feature parity with the web application including weekly leaderboards and level progression.
 
 ## Prerequisites
 
@@ -11,9 +11,9 @@ This guide will help you build a complete native Android app for YesNoApp with G
 - Google Play Services
 - Basic Kotlin knowledge
 - Google Cloud Platform account (for APIs)
-- YesNoApp backend API running
-- Google Sign-In credentials configured
-- Firebase project setup for authentication
+- Veridect backend API running
+- Replit Auth integration
+- Understanding of Material Design gamification patterns
 
 ## Project Setup
 
@@ -22,8 +22,8 @@ This guide will help you build a complete native Android app for YesNoApp with G
 1. Open Android Studio
 2. Choose "Empty Activity"
 3. Configure project:
-   - **Name**: YesNoApp
-   - **Package name**: `com.yesnoapp.android`
+   - **Name**: Veridect
+   - **Package name**: `com.veridect.android`
    - **Language**: Kotlin
    - **Minimum SDK**: API 24 (Android 7.0)
    - **Build configuration language**: Kotlin DSL

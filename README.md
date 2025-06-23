@@ -1,17 +1,18 @@
-# YesNoApp - AI-Powered Food Analysis Platform
+# Veridect - AI-Powered Food Analysis Platform
 
-A modern health-focused web application that provides instant AI-powered food analysis with simple "Yes", "No", or "OK" verdicts. Built with React, Express.js, and Google Gemini AI.
+A modern health-focused web application that provides instant AI-powered food analysis with simple "Yes", "No", or "OK" verdicts. Features comprehensive gamification including weekly leaderboards, level progression, and dual point tracking system. Built with React, Express.js, and Google Gemini AI.
 
 ## Key Features
 
-- **Instant Food Analysis**: Camera, upload, or text-based food analysis
+- **Instant Food Analysis**: Camera, upload, or text-based food analysis with beverage support
 - **Personalized AI Verdicts**: Based on your health goals, dietary preferences, and allergies
-- **Gamification System**: Earn points for healthy choices (YES=10, OK=5, NO=2)
-- **Multi-Authentication**: Google, Apple, Replit, and email/password login
+- **Dual Point System**: Lifetime points (never reset) for levels + weekly points (reset Monday) for competition
+- **Weekly Leaderboards**: Optional participation with Yes/OK/No tracking, Madrid timezone resets
+- **Level Progression**: 1000 points per level using lifetime points accumulation
+- **Privacy Controls**: Customizable participation in challenges and data display
+- **Multi-Authentication**: Replit Auth with session-based security
 - **GDPR Compliance**: Granular privacy consent management
 - **Subscription Tiers**: Free, Pro ($19.99), and Medical ($49.99) plans
-- **Weekly Leaderboards**: Compete with others in healthy eating challenges
-- **Password Recovery**: Secure token-based password reset system
 
 ## Quick Start
 

@@ -1,4 +1,4 @@
-# YesNoApp Setup Guide
+# Veridect Setup Guide
 
 ## Quick Start (5 minutes)
 
@@ -19,13 +19,10 @@ GOOGLE_GEMINI_API_KEY=your_gemini_api_key
 # Authentication (Required)
 SESSION_SECRET=your_random_session_secret_key
 
-# Multi-Provider Authentication (Optional - enables Google/Apple sign-in)
-GOOGLE_CLIENT_ID=your_google_oauth_client_id
-GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
-APPLE_SERVICE_ID=your_apple_service_id
-APPLE_TEAM_ID=your_apple_team_id
-APPLE_KEY_ID=your_apple_key_id
-APPLE_PRIVATE_KEY=your_apple_private_key_content
+# Replit Auth Configuration (Automatic in Replit environment)
+REPLIT_DOMAINS=your-repl-domain.replit.dev
+REPL_ID=your_repl_id
+ISSUER_URL=https://replit.com/oidc
 
 # Optional: Payment Processing
 STRIPE_SECRET_KEY=your_stripe_secret_key

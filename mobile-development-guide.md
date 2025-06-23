@@ -1,16 +1,16 @@
-# YesNoApp Mobile Development Guide
+# Veridect Mobile Development Guide
 
 ## Overview
 
-This guide covers building native Android and iOS apps that integrate with your existing YesNoApp backend, adding Google Fit and Apple Health integrations for comprehensive health data synchronization.
+This guide covers building native Android and iOS apps that integrate with your existing Veridect backend, adding Google Fit and Apple Health integrations for comprehensive health data synchronization, plus gamification features including weekly leaderboards and level progression.
 
 ## Architecture Strategy
 
 ### Hybrid Approach: Native Mobile + Web Backend
-- **Backend**: Keep existing Node.js/Express API (add mobile-specific endpoints)
-- **Android**: Native Kotlin app with Google Fit SDK
-- **iOS**: Native Swift app with HealthKit framework
-- **Shared**: API endpoints, user accounts, food analysis engine
+- **Backend**: Keep existing Node.js/Express API with gamification system
+- **Android**: Native Kotlin app with Google Fit SDK and leaderboard UI
+- **iOS**: Native Swift app with HealthKit framework and level progression
+- **Shared**: API endpoints, user accounts, food analysis engine, point tracking system
 
 ## Android App Development
 
@@ -26,7 +26,7 @@ This guide covers building native Android and iOS apps that integrate with your 
 ```bash
 # Open Android Studio
 # Choose "Empty Activity"
-# Package name: com.yesnoapp.android
+# Package name: com.veridect.android
 # Language: Kotlin
 # Minimum SDK: API 24
 ```

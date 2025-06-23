@@ -133,9 +133,10 @@ Preferred communication style: Simple, everyday language.
 - **Build Status**: Successfully building with npm run build
 - **Docker Configuration**: Multi-stage Dockerfile optimized for Cloud Run
 - **Stripe Integration**: Temporarily disabled for deployment compatibility
-- **Translation System**: Fully functional with 20+ languages
-- **Authentication**: Replit Auth integration working
-- **Database**: PostgreSQL schema and operations ready
+- **Gamification System**: Weekly leaderboards and dual point tracking fully operational
+- **Authentication**: Replit Auth integration working with privacy controls
+- **Database**: PostgreSQL schema with weekly reset system and constraints
+- **Scheduler System**: Madrid timezone daily/weekly reset automation active
 
 ## Recent Changes
 
@@ -162,12 +163,21 @@ Preferred communication style: Simple, everyday language.
 - **Server Integration**: Scheduler starts with server and handles graceful shutdown
 - **Historical Data Intact**: Complete food analysis history maintained for user progress tracking
 
+### Weekly Challenge System Fixes (June 23, 2025)
+- **Fixed Total Score Display**: Homepage and leaderboard now correctly show weekly points (resets Monday)
+- **Corrected Point System**: Dual tracking - lifetime points (never reset) vs weekly points (reset Monday)
+- **Weekly Challenge Participation**: Users can opt out and be automatically removed from leaderboard
+- **Real-time Leaderboard Updates**: Toggling participation instantly refreshes leaderboard display
+- **Madrid Time Zone Compliance**: All weekly resets occur at Monday 00:00 Madrid time
+- **Yes/OK/No Counter Accuracy**: Leaderboard displays correct verdict counts from actual food logging
+
 ### UX Improvements & Bug Fixes (June 23, 2025)
 - **Fixed "Yum" Button UX**: Eliminated blank screen during food logging with smooth client-side navigation
 - **Immediate Visual Feedback**: Analysis stays visible during API calls with loading states on buttons
 - **Translation Widget Removed**: Disabled translation feature due to MyMemory API rate limits
 - **Complete Analysis Reset**: Both "Yum" and "Nah" buttons now clear analysis card AND uploaded photos
 - **File Input Reset**: File inputs properly cleared to prevent cached image display
+- **Profile Settings Reorder**: Show Food Statistics moved above Weekly Challenge Participation
 - **Smooth Navigation**: Replaced page reloads with seamless transitions using wouter routing
 - **Reduced Loading Times**: Removed artificial delays and optimized user interaction flow
 - **Food History Filtering**: Added isLogged field to track only foods clicked "Yum" vs just analyzed
