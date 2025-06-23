@@ -152,6 +152,8 @@ Preferred communication style: Simple, everyday language.
 - **Fixed "Yum" Button UX**: Eliminated blank screen during food logging with smooth client-side navigation
 - **Immediate Visual Feedback**: Analysis stays visible during API calls with loading states on buttons
 - **Translation Widget Removed**: Disabled translation feature due to MyMemory API rate limits
+- **Complete Analysis Reset**: Both "Yum" and "Nah" buttons now clear analysis card AND uploaded photos
+- **File Input Reset**: File inputs properly cleared to prevent cached image display
 - **Smooth Navigation**: Replaced page reloads with seamless transitions using wouter routing
 - **Reduced Loading Times**: Removed artificial delays and optimized user interaction flow
 

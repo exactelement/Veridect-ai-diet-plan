@@ -198,6 +198,9 @@ export default function FoodAnalysis() {
     setSelectedImage(null);
     setImagePreview(null);
     setFoodDescription("");
+    // Reset file inputs
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const [isLogging, setIsLogging] = useState(false);
@@ -234,8 +237,8 @@ export default function FoodAnalysis() {
           description: `+${points} points added to your score!`,
         });
         
-        // Clear analysis result and navigate smoothly
-        setAnalysisResult(null);
+        // Clear analysis result and image, then navigate smoothly
+        resetAnalysis();
         setLocation("/");
       } else {
         throw new Error("Failed to log food");
@@ -253,11 +256,11 @@ export default function FoodAnalysis() {
   };
 
   const handleNah = () => {
+    resetAnalysis();
     toast({
       title: "Analysis Discarded",
       description: "No worries, let's find something better!",
     });
-    resetAnalysis();
   };
 
   const getVerdictColor = (verdict: string) => {
