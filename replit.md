@@ -124,6 +124,16 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Added floating Google Translate widget for multi-language support
+  - Real-time page translation to 20+ languages including Spanish, French, German, Chinese, Arabic
+  - Floating widget with minimize/maximize functionality positioned bottom-right
+  - One-click translation with language selection dropdown
+  - Reset to original language functionality
+  - Widget appears for all users (authenticated and unauthenticated)
+  - Supports major European, Asian, and Middle Eastern languages
+- June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
+  - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
+  - Consistent pricing format across all subscription tiers
 - June 23, 2025: Fixed weekly challenge countdown to properly handle Madrid timezone reset schedule
   - Monday shows 7 days remaining (week just reset at 00:00 Madrid time)
   - Sunday shows 1 day remaining (last day before Monday reset)
