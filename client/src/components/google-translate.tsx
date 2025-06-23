@@ -48,8 +48,13 @@ export const useTranslation = () => useContext(TranslationContext);
 
 // Translation Provider Component
 export function TranslationProvider({ children }: { children: React.ReactNode }) {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('veridect-language') || 'en';
+  });
+  const [translations, setTranslations] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('veridect-translations');
+    return saved ? JSON.parse(saved) : {};
+  });
   const [isTranslating, setIsTranslating] = useState(false);
 
   const translateText = async (text: string, targetLang: string): Promise<string> => {
@@ -80,11 +85,16 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const translatePage = async (targetLang: string) => {
     if (targetLang === 'en') {
       setCurrentLanguage('en');
-      setTranslations({});
+      localStorage.setItem('veridect-language', 'en');
+      // Don't clear translations cache for performance
+      // Force page reload to show original text
+      window.location.reload();
       return;
     }
 
     setIsTranslating(true);
+    setCurrentLanguage(targetLang);
+    localStorage.setItem('veridect-language', targetLang);
     
     // Find all text nodes and translate them
     const walker = document.createTreeWalker(
@@ -142,9 +152,24 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    setCurrentLanguage(targetLang);
     setIsTranslating(false);
   };
+
+  // Auto-translate on page load if language is not English
+  useEffect(() => {
+    if (currentLanguage !== 'en') {
+      // Small delay to let page content load
+      const timer = setTimeout(() => {
+        translatePage(currentLanguage);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Save translations to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('veridect-translations', JSON.stringify(translations));
+  }, [translations]);
 
   const contextValue: TranslationContextType = {
     currentLanguage,
@@ -167,8 +192,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 export default function TranslateWidget() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const { setLanguage, isTranslating, currentLanguage } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode);
@@ -177,6 +202,11 @@ export default function TranslateWidget() {
   const handleTranslate = () => {
     setLanguage(selectedLanguage);
   };
+
+  // Update selected language when current language changes
+  useEffect(() => {
+    setSelectedLanguage(currentLanguage);
+  }, [currentLanguage]);
 
   if (!isVisible) {
     return (

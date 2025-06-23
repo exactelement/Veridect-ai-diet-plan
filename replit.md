@@ -133,6 +133,9 @@ Changelog:
   - Smart text node detection that skips code, scripts, and non-translatable content
   - Reset functionality to return to original English content
   - Widget appears for all users with translation context provider
+  - Global language persistence: selected language maintained across all pages
+  - Auto-translation on page load when non-English language is selected
+  - LocalStorage caching for translations and language preference
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers
