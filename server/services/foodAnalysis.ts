@@ -98,7 +98,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "salad": {
     foodName: "Mixed Salad",
     verdict: "YES",
-    explanation: "Now THAT'S what I call a power move! This leafy green masterpiece is packed with vitamins, minerals, and fiber. Your body's about to throw a celebration party!",
+    explanation: "Now THAT'S what I call a power move! This leafy green masterpiece is packed with vitamins and fiber. Your body's about to celebrate!",
     calories: 150,
     protein: 8,
     carbohydrates: 12,
@@ -112,7 +112,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "pizza": {
     foodName: "Pizza",
     verdict: "NO",
-    explanation: "Whoa there, pizza lover! This cheesy temptation is loaded with calories and sodium. Maybe save this bad boy for your epic cheat day when you can truly appreciate its delicious rebellion!",
+    explanation: "Whoa there, pizza lover! This cheesy temptation is loaded with calories and sodium. Save it for cheat day!",
     calories: 285,
     protein: 12,
     carbohydrates: 36,
@@ -126,7 +126,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "chicken": {
     foodName: "Grilled Chicken",
     verdict: "YES",
-    explanation: "Winner winner, chicken dinner! This lean protein superstar is ready to fuel your muscles and keep you satisfied. It's basically the MVP of healthy eating!",
+    explanation: "Winner winner, chicken dinner! This lean protein superstar is perfect for muscle building. The MVP of healthy eating!",
     calories: 165,
     protein: 31,
     carbohydrates: 0,
@@ -140,7 +140,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "broccoli": {
     foodName: "Broccoli",
     verdict: "YES",
-    explanation: "Look at these little green trees of awesomeness! Packed with vitamins C and K, plus fiber that'll make your digestive system do a happy dance. Broccoli for the win!",
+    explanation: "Look at these little green trees of awesomeness! Packed with vitamins C and K, plus fiber. Broccoli for the win!",
     calories: 25,
     protein: 3,
     carbohydrates: 5,
@@ -182,7 +182,7 @@ const FALLBACK_FOODS: Record<string, Partial<GeminiAnalysisResult>> = {
   "avocado": {
     foodName: "Avocado",
     verdict: "YES",
-    explanation: "Holy guacamole! This green goddess is loaded with heart-healthy fats and fiber. It's basically nature's butter, but way cooler!",
+    explanation: "Holy guacamole! This green goddess is loaded with heart-healthy fats and fiber. Nature's butter!",
     calories: 160,
     protein: 2,
     carbohydrates: 9,
