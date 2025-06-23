@@ -358,7 +358,7 @@ export default function Home() {
                   </div>
                   <CardTitle className="text-xl font-bold text-gray-800">{tier.name}</CardTitle>
                   <div className="text-3xl font-bold text-gray-800">
-                    ${tier.price}
+                    {tier.price === 0 ? 'Free' : `€${tier.price}`}
                     {tier.price > 0 && <span className="text-base font-normal text-gray-600">/month</span>}
                   </div>
                   <p className="text-sm text-gray-600 mt-2">{tier.description}</p>

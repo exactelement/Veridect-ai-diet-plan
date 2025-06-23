@@ -31,11 +31,9 @@ export default function Landing() {
               className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => window.location.reload()}
             >
-              <img 
-                src="/attached_assets/veridect_logo_1750692817533.PNG" 
-                alt="Veridect Logo" 
-                className="w-8 h-8 object-contain"
-              />
+              <div className="w-8 h-8 bg-gradient-to-br from-health-green to-ios-blue rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">V</span>
+              </div>
               <span className="font-semibold text-xl">Veridect</span>
             </div>
 
@@ -468,11 +466,9 @@ export default function Landing() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img 
-                  src="/attached_assets/veridect_logo_1750692817533.PNG" 
-                  alt="Veridect Logo" 
-                  className="w-8 h-8 object-contain"
-                />
+                <div className="w-8 h-8 bg-gradient-to-br from-health-green to-ios-blue rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">V</span>
+                </div>
                 <span className="font-semibold text-xl">Veridect</span>
               </div>
               <p className="text-gray-400 mb-4">AI-powered nutrition guidance for healthier living.</p>

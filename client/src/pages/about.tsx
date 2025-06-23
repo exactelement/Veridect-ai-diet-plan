@@ -87,11 +87,9 @@ export default function About() {
         {/* Header */}
         <div className="text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <img 
-              src="/attached_assets/veridect_logo_1750692817533.PNG" 
-              alt="Veridect Logo" 
-              className="w-12 h-12 object-contain"
-            />
+            <div className="w-12 h-12 bg-gradient-to-br from-health-green to-ios-blue rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">V</span>
+            </div>
             <h1 className="text-4xl font-bold text-health-green">About Veridect</h1>
           </div>
           <p className="text-xl text-ios-secondary max-w-3xl mx-auto">
@@ -106,9 +104,9 @@ export default function About() {
             <Lightbulb className="w-16 h-16 mx-auto mb-6 text-white" />
             <h2 className="text-3xl font-bold mb-4 text-white">Our Mission</h2>
             <p className="text-xl leading-relaxed max-w-4xl mx-auto text-white">
-              To democratize nutrition knowledge by providing instant, AI-powered food analysis 
-              that helps people make healthier choices without the complexity of traditional 
-              calorie counting or nutrition label reading.
+              To bring awareness to healthier nutrition and provide advanced nutrition guidance 
+              through instant, AI-powered food analysis that helps people make informed choices 
+              without the complexity of traditional calorie counting or nutrition label reading.
             </p>
           </CardContent>
         </Card>
@@ -121,8 +119,8 @@ export default function About() {
           <CardContent className="space-y-6">
             <p className="text-ios-secondary leading-relaxed">
               Nutrition is confusing. With conflicting advice, complex labels, and overwhelming choices, 
-              making healthy decisions has become unnecessarily complicated. We believe healthy eating 
-              should be as simple as asking "Is this good for me?" and getting a clear, personalized answer.
+              making healthy decisions has become unnecessarily complicated. We believe in bringing awareness 
+              to healthier nutrition and providing clear, personalized guidance that empowers informed choices.
             </p>
             
             <div className="grid md:grid-cols-3 gap-6">
@@ -218,8 +216,8 @@ export default function About() {
               <p className="text-health-green font-medium mb-4">CEO & Founder</p>
               <p className="text-ios-secondary leading-relaxed mb-6">
                 Valencia-based entrepreneur passionate about democratizing nutrition through AI technology. 
-                Michael founded Veridect with the vision of making healthy eating decisions as simple as "Yes" or "No", 
-                bringing advanced nutrition guidance to everyone regardless of their background or location.
+                Michael founded Veridect to bring awareness to healthier nutrition and provide advanced nutrition guidance 
+                to everyone regardless of their background or location.
               </p>
               <div className="flex items-center justify-center space-x-6 text-sm text-ios-secondary">
                 <div className="flex items-center space-x-1">
