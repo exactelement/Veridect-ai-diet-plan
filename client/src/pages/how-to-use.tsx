@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Upload, Type, CheckCircle, Target, TrendingUp, Crown, Shield, Play, ChevronRight } from "lucide-react";
+import TopHeader from "@/components/top-header";
 
 const TUTORIAL_STEPS = [
   {
@@ -194,7 +195,9 @@ export default function HowToUse() {
   const currentStep = TUTORIAL_STEPS.find(step => step.id === activeStep);
 
   return (
-    <div className="pt-20 pb-8 container-padding">
+    <>
+      <TopHeader />
+      <div className="pt-20 pb-8 container-padding">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -451,7 +454,8 @@ export default function HowToUse() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

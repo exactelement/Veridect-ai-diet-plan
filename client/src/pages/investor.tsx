@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, DollarSign, Users, Target, Calendar, Download, Mail } from "lucide-react";
+import TopHeader from "@/components/top-header";
 
 export default function Investor() {
   const metrics = [
@@ -26,9 +27,11 @@ export default function Investor() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
-      <div className="container-padding">
-        <div className="max-w-6xl mx-auto space-y-8">
+    <>
+      <TopHeader />
+      <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
+        <div className="container-padding">
+          <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center">
             <Badge className="mb-4 bg-ios-blue/10 text-ios-blue border-ios-blue/20">
@@ -210,8 +213,9 @@ export default function Investor() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, Brain, Shield, TrendingUp } from "lucide-react";
+import TopHeader from "@/components/top-header";
 
 export default function Disclaimer() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
-      <div className="container-padding">
-        <div className="max-w-4xl mx-auto space-y-8">
+    <>
+      <TopHeader />
+      <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
+        <div className="container-padding">
+          <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center">
             <AlertTriangle className="w-16 h-16 text-warning-orange mx-auto mb-4" />
@@ -196,8 +199,9 @@ export default function Disclaimer() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

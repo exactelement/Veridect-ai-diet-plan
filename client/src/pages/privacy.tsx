@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Shield, Lock, Eye, Database, Users, Globe, Download, UserX, AlertCircle } from "lucide-react";
+import TopHeader from "@/components/top-header";
 
 export default function Privacy() {
   const { toast } = useToast();
@@ -68,9 +69,11 @@ export default function Privacy() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
-      <div className="container-padding">
-        <div className="max-w-4xl mx-auto space-y-8">
+    <>
+      <TopHeader />
+      <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
+        <div className="container-padding">
+          <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center">
             <Shield className="w-16 h-16 text-ios-blue mx-auto mb-4" />
@@ -294,8 +297,9 @@ export default function Privacy() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
