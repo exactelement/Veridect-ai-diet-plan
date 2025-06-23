@@ -164,8 +164,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const analysis = await analyzeFoodWithGemini(foodName, imageData, userProfile);
       
-      // Only return analysis - NO automatic logging
-      // User must click "Yum" to actually log the food
+      // Save EVERY analysis to database (isLogged: false until user clicks "Yum")
+      // This ensures challenge counters track all analyzed foods
+      const logData = insertFoodLogSchema.parse({
+        userId,
+        foodName: analysis.foodName,
+        verdict: analysis.verdict,
+        explanation: analysis.explanation,
+        calories: analysis.calories,
+        protein: analysis.protein,
+        confidence: analysis.confidence,
+        analysisMethod: analysis.method,
+        isLogged: false, // Not logged until user clicks "Yum"
+      });
+      
+      await storage.createFoodLog(logData);
+      
       res.json({ analysis });
     } catch (error: any) {
       console.error("Error analyzing food:", error);
