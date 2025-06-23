@@ -169,6 +169,8 @@ Preferred communication style: Simple, everyday language.
 - **File Input Reset**: File inputs properly cleared to prevent cached image display
 - **Smooth Navigation**: Replaced page reloads with seamless transitions using wouter routing
 - **Reduced Loading Times**: Removed artificial delays and optimized user interaction flow
+- **Food History Filtering**: Added isLogged field to track only foods clicked "Yum" vs just analyzed
+- **Database Schema Update**: Profile food history now shows only actually logged foods, not all analyzed items
 
 ### Translation System (June 23, 2025) - REMOVED
 - **API Rate Limit Issues**: MyMemory API exceeded daily free translation limits

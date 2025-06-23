@@ -216,7 +216,12 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(foodLogs)
-      .where(eq(foodLogs.userId, userId))
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          eq(foodLogs.isLogged, true) // Only return items that were actually logged via "Yum"
+        )
+      )
       .orderBy(desc(foodLogs.createdAt))
       .limit(limit)
       .offset(offset);
@@ -234,6 +239,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(foodLogs.userId, userId),
+          eq(foodLogs.isLogged, true), // Only return items that were actually logged
           gte(foodLogs.createdAt, today),
           lte(foodLogs.createdAt, tomorrow)
         )

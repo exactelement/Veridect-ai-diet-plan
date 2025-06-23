@@ -94,6 +94,7 @@ export const foodLogs = pgTable("food_logs", {
   confidence: integer("confidence").notNull(),
   portion: varchar("portion"),
   analysisMethod: varchar("analysis_method").notNull(), // ai, fallback, manual
+  isLogged: boolean("is_logged").default(false), // true if user clicked "Yum", false if just analyzed
   nutritionFacts: jsonb("nutrition_facts"),
   alternatives: jsonb("alternatives"),
   createdAt: timestamp("created_at").defaultNow(),

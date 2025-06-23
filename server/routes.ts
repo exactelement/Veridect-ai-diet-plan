@@ -181,6 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const logData = insertFoodLogSchema.parse({
         userId,
         analysisMethod: req.body.analysisMethod || "ai",
+        isLogged: true, // Mark as logged when "Yum" is clicked
         ...req.body
       });
       
