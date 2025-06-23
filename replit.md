@@ -148,6 +148,14 @@ Preferred communication style: Simple, everyday language.
 - **Tone Guidelines Update**: Removed rigid example phrases, added variety requirements for spontaneous creativity
 - **User Experience Improvement**: Food analysis provides entertaining, supportive feedback that motivates rather than scares
 
+### Daily Reset System Implementation (June 23, 2025)
+- **Madrid Time Zone Compliance**: All resets occur at midnight Madrid time for European users
+- **Automated Daily Cleanup**: Background scheduler automatically clears previous day's food logs
+- **Fresh Daily Start**: Food logs and calorie counters reset to 0 every day at midnight
+- **Weekly Points Reset**: Weekly leaderboard resets every Monday at midnight Madrid time
+- **Server Integration**: Scheduler starts with server and handles graceful shutdown
+- **Error Handling**: Comprehensive logging and error management for cleanup operations
+
 ### UX Improvements & Bug Fixes (June 23, 2025)
 - **Fixed "Yum" Button UX**: Eliminated blank screen during food logging with smooth client-side navigation
 - **Immediate Visual Feedback**: Analysis stays visible during API calls with loading states on buttons

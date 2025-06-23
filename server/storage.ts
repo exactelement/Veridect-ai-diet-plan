@@ -242,6 +242,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Leaderboard operations
+  // Daily food log cleanup - clears yesterday's logs at midnight Madrid time
+  async clearPreviousDayFoodLogs(): Promise<void> {
+    const now = new Date();
+    const madridTime = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+    
+    // Get yesterday's date in Madrid time
+    const yesterday = new Date(madridTime);
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    
+    const yesterdayEnd = new Date(yesterday);
+    yesterdayEnd.setHours(23, 59, 59, 999);
+
+    try {
+      // Delete all food logs from yesterday and earlier
+      await db
+        .delete(foodLogs)
+        .where(lte(foodLogs.createdAt, yesterdayEnd));
+      
+      console.log(`Daily cleanup completed: Cleared food logs before ${yesterdayEnd.toISOString()}`);
+    } catch (error) {
+      console.error('Error during daily food log cleanup:', error);
+    }
+  }
+
   // Weekly score management - tracks ALL points earned this week (food + bonus)
   async updateWeeklyScore(userId: string, pointsToAdd: number): Promise<void> {
     const now = new Date();
@@ -474,6 +499,22 @@ export class DatabaseStorage implements IStorage {
         sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
       );
     return Number(result[0].count);
+  }
+
+  // Reset weekly points every Monday (Madrid time)
+  async resetWeeklyPoints(): Promise<void> {
+    try {
+      await db.delete(weeklyScores);
+      console.log("Weekly points reset completed");
+    } catch (error) {
+      console.error("Error resetting weekly points:", error);
+    }
+  }
+
+  // Get Madrid time for consistent scheduling
+  getMadridTime(): Date {
+    const now = new Date();
+    return new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
   }
 }
 

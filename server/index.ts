@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { dailyScheduler } from "./scheduler";
 import path from "path";
 
 const app = express();
@@ -70,11 +71,17 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start daily and weekly schedulers after server is running
+    dailyScheduler.start();
+    log(`Daily cleanup scheduled for midnight Madrid time`);
+    log(`Weekly reset scheduled for Monday midnight Madrid time`);
   });
 
   // Graceful shutdown for Cloud Run
   process.on('SIGINT', () => {
     console.log('Received SIGINT, shutting down gracefully');
+    dailyScheduler.stop();
     server.close(() => {
       console.log('Process terminated');
       process.exit(0);
@@ -83,6 +90,7 @@ app.use((req, res, next) => {
 
   process.on('SIGTERM', () => {
     console.log('Received SIGTERM, shutting down gracefully');
+    dailyScheduler.stop();
     server.close(() => {
       console.log('Process terminated');
       process.exit(0);
