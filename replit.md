@@ -146,7 +146,7 @@ Preferred communication style: Simple, everyday language.
 - **Creative Variety System**: Added 20+ different opening phrases to prevent repetitive responses
 - **Dynamic Response Generation**: Implemented randomized creative openings for both AI and fallback responses
 - **Non-Food Detection**: Non-food items receive "NO" verdict with clear rejection messages
-- **Food-Only Analysis**: System strictly analyzes only actual edible food items
+- **Food & Drink Analysis**: System analyzes all edible food items AND beverages (including water, coffee, juice, alcohol)
 - **Enhanced User Protection**: Prevents logging of non-food items with appropriate error messages
 - **UI Consistency**: Non-food items show "N/A cal" in food history and single "Try Again" button
 - **Tone Guidelines Update**: Removed rigid example phrases, added variety requirements for spontaneous creativity
