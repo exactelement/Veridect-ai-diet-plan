@@ -150,11 +150,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Daily Reset System Implementation (June 23, 2025)
 - **Madrid Time Zone Compliance**: All resets occur at midnight Madrid time for European users
-- **Automated Daily Cleanup**: Background scheduler automatically clears previous day's food logs
-- **Fresh Daily Start**: Food logs and calorie counters reset to 0 every day at midnight
+- **Data Preservation**: All food logs preserved permanently for history tracking in profile page
+- **Daily View Filtering**: Only "Today's Food Log" and daily calories reset to 0 at midnight
+- **Smart Date Filtering**: getTodaysFoodLogs() function filters by current date without deleting data
 - **Weekly Points Reset**: Weekly leaderboard resets every Monday at midnight Madrid time
 - **Server Integration**: Scheduler starts with server and handles graceful shutdown
-- **Error Handling**: Comprehensive logging and error management for cleanup operations
+- **Historical Data Intact**: Complete food analysis history maintained for user progress tracking
 
 ### UX Improvements & Bug Fixes (June 23, 2025)
 - **Fixed "Yum" Button UX**: Eliminated blank screen during food logging with smooth client-side navigation

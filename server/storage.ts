@@ -242,34 +242,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Leaderboard operations
-  // Daily food log cleanup - clears yesterday's logs at midnight Madrid time
+  // Daily reset - only resets daily views, preserves all historical data
   async clearPreviousDayFoodLogs(): Promise<void> {
-    try {
-      // Get midnight today in Madrid time, then convert to UTC for database
-      const now = new Date();
-      
-      // Create Madrid midnight today in UTC
-      const madridMidnightUTC = new Date();
-      madridMidnightUTC.setUTCHours(22, 0, 0, 0); // Madrid is UTC+2 in summer, so midnight Madrid = 22:00 UTC previous day
-      
-      // If it's already past Madrid midnight, we want today's midnight, not yesterday's
-      if (now.getUTCHours() >= 22) {
-        madridMidnightUTC.setUTCDate(madridMidnightUTC.getUTCDate() + 1);
-      }
-      
-      console.log(`Current UTC time: ${now.toISOString()}`);
-      console.log(`Madrid midnight UTC: ${madridMidnightUTC.toISOString()}`);
-      console.log(`Deleting food logs before: ${madridMidnightUTC.toISOString()}`);
-      
-      // Delete all food logs from before today's Madrid midnight
-      const result = await db
-        .delete(foodLogs)
-        .where(lt(foodLogs.createdAt, madridMidnightUTC));
-      
-      console.log(`Daily cleanup completed: Cleared food logs before Madrid midnight`);
-    } catch (error) {
-      console.error('Error during daily food log cleanup:', error);
-    }
+    // NOTE: This function name is misleading - we DON'T actually delete food logs
+    // Food logs are preserved for history. Only the daily view is filtered by date.
+    // The getTodaysFoodLogs() function already handles showing only today's data.
+    console.log("Daily reset triggered - no data deletion needed, daily views are date-filtered");
   }
 
   // Weekly score management - tracks ALL points earned this week (food + bonus)

@@ -23,9 +23,9 @@ class DailyScheduler {
       const hour = madridTime.getHours();
       const minute = madridTime.getMinutes();
       
-      // Run cleanup at midnight (00:00) Madrid time
+      // Run daily reset at midnight (00:00) Madrid time
       if (hour === 0 && minute === 0) {
-        console.log("Running daily food log cleanup...");
+        console.log("Running daily reset (view filtering only)...");
         await storage.clearPreviousDayFoodLogs();
       }
     };
@@ -33,8 +33,8 @@ class DailyScheduler {
     // Check every minute to catch the exact midnight moment
     this.dailyCleanupInterval = setInterval(checkAndCleanup, 60000);
     
-    // Run cleanup immediately on startup to clear any old data
-    console.log("Running initial cleanup on startup...");
+    // Run daily reset check on startup (no data deletion)
+    console.log("Running initial daily reset check on startup...");
     storage.clearPreviousDayFoodLogs();
   }
 
