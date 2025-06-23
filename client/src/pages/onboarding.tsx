@@ -124,10 +124,13 @@ export default function Onboarding() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/")}
+              onClick={() => {
+                completeOnboardingMutation.mutate();
+              }}
+              disabled={completeOnboardingMutation.isPending}
               className="text-ios-secondary hover:text-ios-primary"
             >
-              ← Skip for now
+              {completeOnboardingMutation.isPending ? "..." : "← Skip for now"}
             </Button>
             <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-2xl">Y</span>
