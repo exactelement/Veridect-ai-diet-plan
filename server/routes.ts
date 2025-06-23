@@ -154,30 +154,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const analysis = await analyzeFoodWithGemini(foodName, imageData, userProfile);
       
-      // Save to database
-      const foodLog = await storage.createFoodLog({
-        userId,
-        foodName: analysis.foodName,
-        verdict: analysis.verdict,
-        explanation: analysis.explanation,
-        calories: analysis.calories,
-        protein: analysis.protein,
-        confidence: analysis.confidence,
-        portion: analysis.portion,
-        analysisMethod: analysis.method,
-        nutritionFacts: analysis.nutritionFacts,
-        alternatives: analysis.alternatives,
-      });
-
-      // Update weekly score
-      await storage.updateWeeklyScore(userId, analysis.verdict);
-
-      // Update user points and streak based on verdict
-      const points = analysis.verdict === "YES" ? 10 : analysis.verdict === "OK" ? 5 : 2;
-      await storage.updateUserPoints(userId, points);
-      await storage.updateStreak(userId, analysis.verdict);
-
-      res.json({ analysis, logId: foodLog.id });
+      // Only return analysis - NO automatic logging
+      // User must click "Yum" to actually log the food
+      res.json({ analysis });
     } catch (error: any) {
       console.error("Error analyzing food:", error);
       res.status(500).json({ message: error.message || "Failed to analyze food" });
