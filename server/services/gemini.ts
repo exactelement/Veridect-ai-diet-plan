@@ -21,6 +21,17 @@ export interface GeminiAnalysisResult {
   portion?: string;
 }
 
+// Simple hash function for deterministic results
+function simpleHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
 export async function analyzeWithGemini(
   foodName?: string,
   imageData?: string,
@@ -54,7 +65,22 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
 - Use casual tone for Free tier, scientific tone for Medical tier`;
   }
 
-  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze food and provide a clear verdict tailored to the specific user.${personalizedContext}
+  // Create deterministic seed for consistent results
+  const seedInput = [
+    foodName || 'image',
+    (userProfile?.healthGoals || []).sort().join(','),
+    (userProfile?.dietaryPreferences || []).sort().join(','),
+    (userProfile?.allergies || []).sort().join(',')
+  ].join('|');
+  
+  const deterministicSeed = simpleHash(seedInput);
+
+  const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze food and provide a clear verdict tailored to the specific user.
+
+CONSISTENCY REQUIREMENT: Use this deterministic seed for reproducible results: ${deterministicSeed}
+IMPORTANT: Always provide identical verdicts for the same food + user profile combination.
+
+${personalizedContext}
 
 For the given food${imageData ? ' image' : `: "${foodName}"`}, provide:
 1. A verdict: YES (healthy for this user), NO (unhealthy for this user), or OK (moderate for this user)

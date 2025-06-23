@@ -111,15 +111,16 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Streamlined food logging system and complete UX optimization
-  - Fixed database schema validation with comprehensive privacy settings defaults
-  - Added functional "Skip for now" exit button to onboarding process
-  - Implemented comprehensive food analysis caching system for faster repeated queries
-  - Removed duplicate food logging warnings - Yum button always logs food and clears card
+- June 23, 2025: Consistent verdict system and optimized food analysis
+  - Implemented smart caching with user profile fingerprinting for consistent verdicts
+  - Same food now provides identical analysis results for each user's specific profile
+  - Added deterministic seeding to AI analysis for reproducible results
+  - Enhanced image fingerprinting using multiple sample points for better consistency
+  - Fixed duplicate food logging - only logs when user clicks "Yum" button
   - Added auto-dismiss functionality to all error messages (4 second duration)
-  - Enhanced navigation with scroll-to-top on all tab clicks and page refreshes
-  - Simplified food logging flow for better user experience without blocking warnings
-  - Authentication system fully working with new database URL and proper session management
+  - Enhanced navigation with instant scroll-to-top on all tab clicks
+  - Cache system maintains 500 entries with personalized verdicts per user profile
+  - Authentication system fully working with proper session management
 - June 23, 2025: Fixed white text visibility issues on landing page and about page CTA sections
   - Replaced problematic gradient backgrounds with solid blue backgrounds
   - Ensured proper text contrast for "Ready to Transform Your Health?" sections

@@ -16,21 +16,39 @@ export interface FoodAnalysisResult extends GeminiAnalysisResult {
   alternatives?: string[];
 }
 
-// Simple in-memory cache for food analysis results
+// Smart cache for consistent verdicts per user profile
 const analysisCache = new Map<string, FoodAnalysisResult>();
 
-// Generate cache key from input parameters
-function getCacheKey(foodName?: string, imageData?: string): string {
+// Generate cache key from food content AND user profile for consistency
+function getCacheKey(foodName?: string, imageData?: string, userProfile?: any): string {
+  let foodKey = "";
+  
   if (imageData) {
-    // Use a longer portion of base64 and add timestamp to ensure uniqueness
-    const timestamp = Date.now();
-    return `img:${imageData.substring(0, 100)}_${timestamp}`;
+    // For images, create a more stable fingerprint by sampling multiple parts
+    const imageFingerprint = [
+      imageData.substring(0, 100),
+      imageData.substring(Math.floor(imageData.length * 0.25), Math.floor(imageData.length * 0.25) + 50),
+      imageData.substring(Math.floor(imageData.length * 0.5), Math.floor(imageData.length * 0.5) + 50),
+      imageData.substring(Math.floor(imageData.length * 0.75), Math.floor(imageData.length * 0.75) + 50),
+      imageData.substring(-100)
+    ].join('');
+    foodKey = `img:${imageFingerprint}`;
+  } else if (foodName) {
+    // For text, use normalized food name
+    foodKey = `text:${foodName.toLowerCase().trim()}`;
   }
-  if (foodName) {
-    // Use lowercase food name as cache key
-    return `text:${foodName.toLowerCase().trim()}`;
-  }
-  return "";
+  
+  if (!foodKey) return "";
+  
+  // Create user profile fingerprint for consistent personalization
+  const profileKey = userProfile ? [
+    (userProfile.healthGoals || []).sort().join(','),
+    (userProfile.dietaryPreferences || []).sort().join(','),
+    (userProfile.allergies || []).sort().join(','),
+    userProfile.subscriptionTier || 'free'
+  ].join('|') : 'anonymous';
+  
+  return `${foodKey}::${profileKey}`;
 }
 
 // Fallback food database for when AI fails
@@ -345,11 +363,15 @@ export async function analyzeFoodWithGemini(
     subscriptionTier?: string;
   }
 ): Promise<FoodAnalysisResult> {
-  // DISABLED CACHING - Fresh analysis every time to prevent duplicate results
-  console.log(`Fresh analysis for: ${foodName || 'image upload'}`);
+  // Check smart cache for consistent verdicts per user profile
+  const cacheKey = getCacheKey(foodName, imageData, userProfile);
+  if (cacheKey && analysisCache.has(cacheKey)) {
+    console.log(`Returning consistent cached analysis for: ${foodName || 'image'}`);
+    return analysisCache.get(cacheKey)!;
+  }
   
-  // Clear any existing cache to prevent stale results
-  analysisCache.clear();
+  console.log(`Fresh analysis for: ${foodName || 'image upload'}`);
+  // Don't clear cache - maintain consistency
 
   try {
     // Try AI analysis first with user profile for personalization
@@ -372,7 +394,15 @@ export async function analyzeFoodWithGemini(
       alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, userProfile),
     };
 
-    // NO CACHING - Return fresh result every time
+    // Cache result for consistency (with user profile fingerprint)
+    if (cacheKey) {
+      analysisCache.set(cacheKey, result);
+      // Limit cache size to prevent memory issues
+      if (analysisCache.size > 500) {
+        const firstKey = analysisCache.keys().next().value;
+        analysisCache.delete(firstKey);
+      }
+    }
 
     return result;
   } catch (error) {
@@ -398,7 +428,16 @@ export async function analyzeFoodWithGemini(
       alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName, userProfile),
     };
 
-    // NO CACHING - Return fresh fallback result
+    // Cache fallback result for consistency
+    if (cacheKey) {
+      analysisCache.set(cacheKey, result);
+      // Limit cache size to prevent memory issues  
+      if (analysisCache.size > 500) {
+        const firstKey = analysisCache.keys().next().value;
+        analysisCache.delete(firstKey);
+      }
+    }
+    
     return result;
   }
 }
