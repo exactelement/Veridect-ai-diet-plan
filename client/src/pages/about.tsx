@@ -82,7 +82,7 @@ const VALUES = [
 
 export default function About() {
   return (
-    <div className="pt-20 pb-8 container-padding">
+    <div className="pt-20 pb-24 container-padding">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
