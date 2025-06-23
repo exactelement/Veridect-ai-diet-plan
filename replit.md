@@ -124,6 +124,11 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
+- June 23, 2025: Fixed weekly challenge countdown to properly handle Madrid timezone reset schedule
+  - Monday shows 7 days remaining (week just reset at 00:00 Madrid time)
+  - Sunday shows 1 day remaining (last day before Monday reset)
+  - Accurate countdown calculation for all days until next Monday 00:00 Madrid time
+  - System correctly handles both summer (UTC+2) and winter (UTC+1) timezone offsets
 - June 23, 2025: Complete point system implementation and bonus points integration
   - Added all missing achievement bonus points (225 total: first analysis, milestones at 5/10/25 analyses)
   - Verified point calculations: 192 food points + 225 bonus points = 417 lifetime total

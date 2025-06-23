@@ -30,52 +30,23 @@ export default function Leaderboard() {
   const getCurrentWeekProgress = () => {
     const now = new Date();
     
-    // Debug: Log the calculation process
-    console.log('=== WEEKLY COUNTDOWN DEBUG ===');
-    console.log('Current UTC time:', now.toISOString());
+    // Get current time in Madrid
+    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
     
-    // Get Madrid time parts
-    const madridFormatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Europe/Madrid',
-      weekday: 'long',
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric'
-    });
+    // Calculate next Monday 00:00 Madrid time
+    const nextMonday = new Date(madridTime);
+    const dayOfWeek = madridTime.getDay(); // 0 = Sunday, 1 = Monday
+    const daysToAdd = dayOfWeek === 0 ? 1 : (8 - dayOfWeek); // Days until next Monday
+    nextMonday.setDate(madridTime.getDate() + daysToAdd);
+    nextMonday.setHours(0, 0, 0, 0);
     
-    const madridTimeString = madridFormatter.format(now);
-    console.log('Madrid time string:', madridTimeString);
+    // Calculate time remaining
+    const timeRemaining = nextMonday.getTime() - madridTime.getTime();
+    const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
     
-    // Get Madrid day of week directly
-    const madridDay = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'Europe/Madrid',
-      weekday: 'long'
-    }).format(now);
-    
-    const madridDayNumber = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"})).getDay();
-    
-    console.log('Madrid day name:', madridDay);
-    console.log('Madrid day number:', madridDayNumber, '(0=Sunday, 1=Monday)');
-    
-    // Calculate days until next Monday reset
-    let daysRemaining;
-    if (madridDayNumber === 0) {
-      // Sunday - next Monday is tomorrow (1 day)
-      daysRemaining = 1;
-      console.log('Today is Sunday in Madrid - 1 day until Monday reset');
-    } else {
-      // Monday=1 to Saturday=6 - calculate days to next Monday
-      daysRemaining = 8 - madridDayNumber;
-      console.log(`Today is ${madridDay} (${madridDayNumber}) in Madrid - ${daysRemaining} days until next Monday`);
-    }
-    
+    // Calculate progress through current week
     const daysPassed = 7 - daysRemaining;
     const progressPercentage = Math.round((daysPassed / 7) * 100);
-    
-    console.log('Final result:', { daysRemaining, daysPassed, progressPercentage });
-    console.log('=== END DEBUG ===');
     
     return { daysRemaining, progressPercentage };
   };
