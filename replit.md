@@ -124,13 +124,14 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Completed multilingual support and fixed header visibility issues
+- June 23, 2025: Completed multilingual support and fixed all translation issues
   - Added language selector in top header for English/Spanish switching
   - AI food analysis now provides verdicts and explanations in chosen language
   - Complete UI translation system implemented for navigation and interface
   - Fixed TopHeader component to be always visible with logo, language selector, and login/logout buttons
-  - Resolved authentication infinite loop by implementing proper error handling and caching
+  - Resolved authentication infinite loop and home page language context errors
   - All pages now have proper spacing (pt-16) for fixed header layout
+  - Fixed missing Spanish translations for food analysis buttons and greetings
 - June 23, 2025: Fixed weekly challenge countdown to properly handle Madrid timezone reset schedule
   - Monday shows 7 days remaining (week just reset at 00:00 Madrid time)
   - Sunday shows 1 day remaining (last day before Monday reset)

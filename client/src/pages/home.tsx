@@ -39,6 +39,7 @@ interface SubscriptionTier {
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { language, t } = useLanguage();
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],

@@ -170,11 +170,13 @@ const translations = {
     
     // Food Analysis
     'analysis.title': 'Análisis de Comida',
+    'analysis.subtitle': '¿Qué estás comiendo hoy?',
     'analysis.enterFoodName': 'Ingresa el nombre o descripción de la comida',
     'analysis.analyzing': 'Analizando tu comida...',
     'analysis.analyze': 'Analizar',
     'analysis.takePhoto': 'Tomar Foto',
     'analysis.uploadImage': 'Subir Imagen',
+    'analysis.describeFood': 'Describir Comida',
     'analysis.verdict': 'Veredicto',
     'analysis.explanation': 'Explicación',
     'analysis.nutritionFacts': 'Información Nutricional',
