@@ -10,7 +10,6 @@ import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
   const { user } = useAuth();
-  const { language, t } = useLanguage();
 
   // Scroll to top when navigating to leaderboard
   useEffect(() => {

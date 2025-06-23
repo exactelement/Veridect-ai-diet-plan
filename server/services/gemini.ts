@@ -41,8 +41,7 @@ export async function analyzeWithGemini(
     allergies?: string[];
     fitnessLevel?: string;
     subscriptionTier?: string;
-  },
-  language: string = 'en'
+  }
 ): Promise<GeminiAnalysisResult> {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -76,13 +75,7 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
   
   const deterministicSeed = simpleHash(seedInput);
 
-  const languageInstructions = language === 'es' ? 
-    'IMPORTANT: Respond in Spanish. Use "SÍ" for YES, "NO" for NO, and "OK" for OK. Provide all explanations in Spanish.' :
-    'IMPORTANT: Respond in English.';
-
   const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze food and provide a clear verdict tailored to the specific user.
-
-${languageInstructions}
 
 CONSISTENCY REQUIREMENT: Use this deterministic seed for reproducible results: ${deterministicSeed}
 IMPORTANT: Always provide identical verdicts for the same food + user profile combination.

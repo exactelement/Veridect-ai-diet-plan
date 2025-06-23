@@ -7,7 +7,6 @@ import { Progress } from "@/components/ui/progress";
 import { Camera, Trophy, Target, TrendingUp, Zap, Star, Award, Calendar, Heart, Brain, Shield, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface FoodLog {
   id: number;
@@ -39,7 +38,6 @@ interface SubscriptionTier {
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
-  const { language, t } = useLanguage();
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
@@ -97,33 +95,19 @@ export default function Home() {
 
 
 
-  // Dynamic greeting based on user's local device time - updates on every page load/visit  
-  const [timeGreeting, setTimeGreeting] = useState("");
-  
-  useEffect(() => {
+  // Dynamic greeting based on user's local device time - updates on every page load/visit
+  const [timeGreeting, setTimeGreeting] = useState(() => {
     const now = new Date();
     const currentHour = now.getHours();
     
-    let greeting;
-    if (language === 'es') {
-      if (currentHour < 12) {
-        greeting = "Buenos días";
-      } else if (currentHour < 18) {
-        greeting = "Buenas tardes";
-      } else {
-        greeting = "Buenas noches";
-      }
+    if (currentHour < 12) {
+      return "Good morning";
+    } else if (currentHour < 18) {
+      return "Good afternoon";
     } else {
-      if (currentHour < 12) {
-        greeting = "Good morning";
-      } else if (currentHour < 18) {
-        greeting = "Good afternoon";
-      } else {
-        greeting = "Good evening";
-      }
+      return "Good evening";
     }
-    setTimeGreeting(greeting);
-  }, [language]);
+  });
 
   // Update greeting every time the user visits/opens the home page
   useEffect(() => {
@@ -199,9 +183,9 @@ export default function Home() {
             {/* Greeting Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {timeGreeting}, {(user as any)?.firstName || (language === 'es' ? 'hola' : 'there')}!
+                {timeGreeting}, {(user as any)?.firstName || 'there'}!
               </h1>
-              <p className="text-gray-600">{language === 'es' ? '¿Listo para tomar decisiones alimentarias saludables hoy?' : 'Ready to make healthy food choices today?'}</p>
+              <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
             {/* Calorie Counter Bar - Only show if user hasn't disabled it */}

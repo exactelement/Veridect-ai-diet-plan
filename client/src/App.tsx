@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -48,8 +47,7 @@ function Router() {
 
   return (
     <div className="min-h-screen bg-ios-bg">
-      {/* Top Header - Always visible */}
-      <TopHeader />
+      {isAuthenticated && user && (user as any).onboardingCompleted && <TopHeader />}
       
       <Switch>
         {!isAuthenticated ? (
@@ -85,7 +83,6 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       
-      {/* Bottom Navigation - Only for authenticated users */}
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
       {isAuthenticated && <GDPRBanner />}
       {showGDPRInitialBanner && (
@@ -97,14 +94,12 @@ function Router() {
 
 function App() {
   return (
-    <LanguageProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Router />
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </LanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Router />
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

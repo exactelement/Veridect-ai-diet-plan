@@ -133,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/food/analyze', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const { foodName, imageData, language = 'en' } = req.body;
+      const { foodName, imageData } = req.body;
 
       if (!foodName && !imageData) {
         return res.status(400).json({ message: "Either foodName or imageData is required" });
@@ -152,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import food analysis service
       const { analyzeFoodWithGemini } = await import('./services/foodAnalysis');
       
-      const analysis = await analyzeFoodWithGemini(foodName, imageData, userProfile, language);
+      const analysis = await analyzeFoodWithGemini(foodName, imageData, userProfile);
       
       // Only return analysis - NO automatic logging
       // User must click "Yum" to actually log the food

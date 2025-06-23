@@ -10,15 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
-import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageSelector from "@/components/language-selector";
-
 
 export default function TopHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const { t } = useLanguage();
 
   const menuItems = [
     { label: "About Us", href: "/about", icon: FileText },
@@ -65,9 +61,6 @@ export default function TopHeader() {
 
           {/* Right side controls */}
           <div className="flex items-center space-x-4">
-            {/* Language Selector - Always visible */}
-            <LanguageSelector />
-
             {/* Welcome message - hidden on small screens */}
             {isAuthenticated && user && (
               <div className="hidden sm:block">
@@ -80,14 +73,10 @@ export default function TopHeader() {
               </div>
             )}
 
-            {/* Login/Logout button - always visible on desktop */}
-            {!isAuthenticated ? (
-              <Button asChild variant="default" size="sm" className="bg-ios-blue hover:bg-ios-blue/90 hidden sm:flex">
-                <Link href="/login">{t("nav.login")}</Link>
-              </Button>
-            ) : (
-              <Button asChild variant="outline" size="sm" className="hidden sm:flex text-red-600 border-red-600 hover:bg-red-50">
-                <a href="/api/logout">{t("nav.logout")}</a>
+            {/* Login button - always visible */}
+            {!isAuthenticated && (
+              <Button asChild variant="default" size="sm" className="bg-ios-blue hover:bg-ios-blue/90">
+                <Link href="/login">Login</Link>
               </Button>
             )}
 
@@ -116,7 +105,7 @@ export default function TopHeader() {
                     <DropdownMenuItem asChild>
                       <a href="/api/logout" className="flex items-center space-x-2 w-full text-danger-red">
                         <LogOut className="w-4 h-4" />
-                        <span>{t("nav.logout")}</span>
+                        <span>Logout</span>
                       </a>
                     </DropdownMenuItem>
                   )}
@@ -192,7 +181,7 @@ export default function TopHeader() {
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <LogOut className="w-5 h-5" />
-                          <span className="font-medium">{t("nav.logout")}</span>
+                          <span className="font-medium">Logout</span>
                         </a>
                       ) : (
                         <Link
@@ -201,7 +190,7 @@ export default function TopHeader() {
                           className="flex items-center space-x-3 p-3 text-ios-blue hover:bg-ios-blue/5 rounded-lg transition-colors"
                         >
                           <User className="w-5 h-5" />
-                          <span className="font-medium">{t("nav.login")}</span>
+                          <span className="font-medium">Login</span>
                         </Link>
                       )}
                     </div>
