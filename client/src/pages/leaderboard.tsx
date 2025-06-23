@@ -29,17 +29,32 @@ export default function Leaderboard() {
   // Calculate weekly challenge progress based on Madrid timezone (Monday 00:00 reset)
   const getCurrentWeekProgress = () => {
     const now = new Date();
-    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
     
-    // Find the next Monday 00:00 Madrid time for countdown
-    const nextMonday = new Date(madridTime);
-    const dayOfWeek = nextMonday.getDay(); // 0 = Sunday, 1 = Monday
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek); // Days until next Monday
-    nextMonday.setDate(nextMonday.getDate() + daysUntilMonday);
-    nextMonday.setHours(0, 0, 0, 0);
+    // Get Madrid time using proper Intl.DateTimeFormat
+    const madridTimeString = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).format(now);
     
-    const timeRemaining = nextMonday.getTime() - madridTime.getTime();
-    const daysRemaining = Math.max(1, Math.ceil(timeRemaining / (1000 * 60 * 60 * 24)));
+    const madridTime = new Date(madridTimeString);
+    const dayOfWeek = madridTime.getDay(); // 0 = Sunday, 1 = Monday
+    
+    // Calculate days until next Monday reset
+    let daysRemaining;
+    if (dayOfWeek === 0) {
+      // Sunday - next Monday is tomorrow (1 day)
+      daysRemaining = 1;
+    } else {
+      // Monday=1 to Saturday=6 - calculate days to next Monday
+      daysRemaining = 8 - dayOfWeek;
+    }
+    
     const daysPassed = 7 - daysRemaining;
     const progressPercentage = Math.round((daysPassed / 7) * 100);
     
