@@ -197,21 +197,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
+      const { foodName, verdict } = req.body;
       
-      const logData = insertFoodLogSchema.parse({
-        userId,
-        analysisMethod: req.body.analysisMethod || "ai",
-        isLogged: true, // Mark as logged when "Yum" is clicked
-        ...req.body
-      });
+      // Find the most recent analysis of this food that hasn't been logged yet
+      const recentAnalysis = await storage.findRecentUnloggedAnalysis(userId, foodName, verdict);
       
-      const foodLog = await storage.createFoodLog(logData);
+      let foodLog;
+      if (recentAnalysis) {
+        // Update existing analysis to mark as logged
+        foodLog = await storage.updateFoodLogToLogged(recentAnalysis.id);
+        console.log("Updated existing analysis to logged:", { id: recentAnalysis.id, foodName });
+      } else {
+        // Fallback: create new entry if no recent analysis found
+        const logData = insertFoodLogSchema.parse({
+          userId,
+          analysisMethod: req.body.analysisMethod || "ai",
+          isLogged: true,
+          ...req.body
+        });
+        foodLog = await storage.createFoodLog(logData);
+        console.log("Created new food log entry:", { id: foodLog.id, foodName });
+      }
       
       // Award food logging points and update streak
-      const foodPoints = req.body.verdict === "YES" ? 10 : req.body.verdict === "OK" ? 5 : 2;
-      await storage.updateUserPoints(userId, foodPoints); // Adds to lifetime points for level progression
-      await storage.updateWeeklyScore(userId, req.body.verdict); // Adds to weekly points for leaderboard
-      await storage.updateStreak(userId, req.body.verdict);
+      const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
+      await storage.updateUserPoints(userId, foodPoints);
+      await storage.updateWeeklyScore(userId, verdict);
+      await storage.updateStreak(userId, verdict);
       
       res.json({ success: true, log: foodLog });
     } catch (error: any) {

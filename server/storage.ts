@@ -50,6 +50,8 @@ export interface IStorage {
   getFoodLogs(userId: string, limit: number, offset: number): Promise<FoodLog[]>;
   getTodaysFoodLogs(userId: string): Promise<FoodLog[]>;
   getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]>;
+  findRecentUnloggedAnalysis(userId: string, foodName: string, verdict: string): Promise<FoodLog | undefined>;
+  updateFoodLogToLogged(id: number): Promise<FoodLog>;
   
   // Leaderboard operations
   updateWeeklyScore(userId: string, verdict: string): Promise<void>;
@@ -267,6 +269,39 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(foodLogs.createdAt));
+  }
+
+  // Find recent unlogged analysis to prevent duplicates
+  async findRecentUnloggedAnalysis(userId: string, foodName: string, verdict: string): Promise<FoodLog | undefined> {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    
+    const [result] = await db
+      .select()
+      .from(foodLogs)
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          eq(foodLogs.foodName, foodName),
+          eq(foodLogs.verdict, verdict),
+          eq(foodLogs.isLogged, false),
+          gte(foodLogs.createdAt, fiveMinutesAgo)
+        )
+      )
+      .orderBy(desc(foodLogs.createdAt))
+      .limit(1);
+      
+    return result;
+  }
+
+  // Update existing analysis to logged status
+  async updateFoodLogToLogged(id: number): Promise<FoodLog> {
+    const [updated] = await db
+      .update(foodLogs)
+      .set({ isLogged: true })
+      .where(eq(foodLogs.id, id))
+      .returning();
+      
+    return updated;
   }
 
   // Leaderboard operations
