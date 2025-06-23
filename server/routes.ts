@@ -223,6 +223,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get ALL analyzed foods today (for challenges)
+  app.get('/api/food/analyzed/today', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const logs = await storage.getTodaysAnalyzedFoods(userId);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching today's analyzed foods:", error);
+      res.status(500).json({ message: "Failed to fetch today's analyzed foods" });
+    }
+  });
+
   // Leaderboard routes
   app.get('/api/leaderboard/weekly', isAuthenticated, async (req: any, res) => {
     try {

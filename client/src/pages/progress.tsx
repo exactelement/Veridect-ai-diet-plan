@@ -16,6 +16,11 @@ export default function Progress() {
     queryKey: ["/api/food/logs"],
   });
 
+  // Get ALL analyzed foods today for today's challenges
+  const { data: todaysAnalyzedFoods = [] } = useQuery<FoodLog[]>({
+    queryKey: ["/api/food/analyzed/today"],
+  });
+
   // Calculate total stats from all logged food
   const totalStats = allLogs.reduce(
     (acc: any, log: FoodLog) => {

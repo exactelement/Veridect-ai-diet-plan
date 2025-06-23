@@ -49,6 +49,7 @@ export interface IStorage {
   createFoodLog(log: InsertFoodLog): Promise<FoodLog>;
   getFoodLogs(userId: string, limit: number, offset: number): Promise<FoodLog[]>;
   getTodaysFoodLogs(userId: string): Promise<FoodLog[]>;
+  getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]>;
   
   // Leaderboard operations
   updateWeeklyScore(userId: string, verdict: string): Promise<void>;
