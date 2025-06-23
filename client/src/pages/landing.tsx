@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "@/lib/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +13,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 
 export default function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { t } = useTranslation();
 
   const navigationItems = [
-    { label: t("landing.features.title"), href: "#features" },
-    { label: t("landing.pricing.title"), href: "#pricing" },
-    { label: t("landing.how.title"), href: "#how-it-works" },
-    { label: t("landing.about.title"), href: "#about" }
+    { label: "Features", href: "#features" },
+    { label: "Pricing", href: "#pricing" },
+    { label: "How It Works", href: "#how-it-works" },
   ];
 
   return (
@@ -54,7 +51,7 @@ export default function Landing() {
                 </a>
               ))}
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
-                {t('auth.get_started')}
+                Get Started
               </Button>
             </div>
 
@@ -62,7 +59,7 @@ export default function Landing() {
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
-                {t('auth.login')}
+                Login
               </Button>
 
               {/* Dropdown menu for medium screens */}
@@ -123,7 +120,7 @@ export default function Landing() {
                           }}
                           className="w-full bg-ios-blue text-white rounded-lg ios-button ios-shadow"
                         >
-                          {t('auth.get_started')}
+                          Get Started
                         </Button>
                       </div>
                     </div>
@@ -140,17 +137,18 @@ export default function Landing() {
         <div className="page-container text-center">
           <div className="animate-slide-up">
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="gradient-text">{t('common.yes')}</span> or <span className="gradient-text">{t('common.no')}</span>?
+              <span className="gradient-text">Yes</span> or <span className="gradient-text">No</span>?
             </h1>
             <p className="text-xl md:text-2xl text-ios-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
-              {t('landing.subtitle')}
+              Transform complex nutritional decisions into simple, AI-powered verdicts. 
+              Get instant health guidance that adapts to your goals and lifestyle.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
-                {t('landing.cta.primary')}
+                Try It Free
               </Button>
               <Button variant="outline" className="border-2 border-ios-blue text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button">
-                {t('landing.cta.secondary')}
+                Watch Demo
               </Button>
             </div>
           </div>

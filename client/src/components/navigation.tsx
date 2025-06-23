@@ -1,17 +1,15 @@
 import { Home, Camera, TrendingUp, Trophy, User } from "lucide-react";
 import { useLocation } from "wouter";
-import { useTranslation } from "@/lib/i18n";
 
 export default function Navigation() {
   const [location, navigate] = useLocation();
-  const { t } = useTranslation();
 
   const navItems = [
-    { id: "home", icon: Home, label: t("nav.home"), path: "/home" },
-    { id: "analyse", icon: Camera, label: t("nav.analyze"), path: "/" },
-    { id: "progress", icon: TrendingUp, label: t("nav.progress"), path: "/progress" },
-    { id: "leaderboard", icon: Trophy, label: t("nav.rankings"), path: "/leaderboard" },
-    { id: "profile", icon: User, label: t("nav.profile"), path: "/profile" },
+    { id: "home", icon: Home, label: "Home", path: "/home" },
+    { id: "analyse", icon: Camera, label: "Analyse", path: "/" },
+    { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress" },
+    { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
+    { id: "profile", icon: User, label: "Profile", path: "/profile" },
   ];
 
   const handleNavigation = (path: string) => {

@@ -1,6 +1,4 @@
 import { useState, createContext, useContext, useEffect } from 'react';
-import { PRELOADED_TRANSLATIONS } from '@/lib/translationCache';
-import { useTranslation as useI18n } from '@/lib/i18n';
 
 // Declare global types for window
 declare global {
@@ -43,7 +41,6 @@ interface TranslationContextType {
   translateText: (text: string) => string;
   setLanguage: (language: string) => void;
   isTranslating: boolean;
-  getTranslation: (text: string) => Promise<string>;
 }
 
 const TranslationContext = createContext<TranslationContextType>({
@@ -52,7 +49,6 @@ const TranslationContext = createContext<TranslationContextType>({
   translateText: (text) => text,
   setLanguage: () => {},
   isTranslating: false,
-  getTranslation: async (text) => text,
 });
 
 export const useTranslation = () => useContext(TranslationContext);
@@ -64,17 +60,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   });
   const [translations, setTranslations] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('veridect-translations');
-    const savedTranslations = saved ? JSON.parse(saved) : {};
-    
-    // Merge with preloaded translations
-    const preloaded: Record<string, string> = {};
-    Object.entries(PRELOADED_TRANSLATIONS).forEach(([lang, texts]) => {
-      Object.entries(texts).forEach(([original, translated]) => {
-        preloaded[`${original}:${lang}`] = translated;
-      });
-    });
-    
-    return { ...preloaded, ...savedTranslations };
+    return saved ? JSON.parse(saved) : {};
   });
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -104,12 +90,18 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   };
 
   const translatePage = async (targetLang: string) => {
-    setCurrentLanguage(targetLang);
-    localStorage.setItem('veridect-language', targetLang);
-    
     if (targetLang === 'en') {
+      setCurrentLanguage('en');
+      localStorage.setItem('veridect-language', 'en');
+      // Don't clear translations cache for performance
+      // Force page reload to show original text
+      window.location.reload();
       return;
     }
+
+    setIsTranslating(true);
+    setCurrentLanguage(targetLang);
+    localStorage.setItem('veridect-language', targetLang);
     
     // Find all text nodes and translate them
     const walker = document.createTreeWalker(
@@ -170,13 +162,53 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsTranslating(false);
   };
 
-  // Remove auto-translation effects to prevent refresh loops
+  // Auto-translate on page load and route changes
   useEffect(() => {
-    // Only save translations to localStorage when they change
-    if (Object.keys(translations).length > 0) {
-      localStorage.setItem('veridect-translations', JSON.stringify(translations));
+    if (currentLanguage !== 'en') {
+      // Small delay to let page content load
+      const timer = setTimeout(() => {
+        translatePage(currentLanguage);
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [translations]);
+  }, [currentLanguage]);
+
+  // Monitor DOM changes and retranslate when new content appears
+  useEffect(() => {
+    if (currentLanguage === 'en') return;
+
+    const observer = new MutationObserver((mutations) => {
+      let hasNewTextContent = false;
+      
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
+              hasNewTextContent = true;
+            }
+          });
+        }
+      });
+
+      if (hasNewTextContent) {
+        // Debounce the translation to avoid too many calls
+        clearTimeout(window.translationTimeout);
+        window.translationTimeout = setTimeout(() => {
+          translatePage(currentLanguage);
+        }, 300);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(window.translationTimeout);
+    };
+  }, [currentLanguage]);
 
   // Save translations to localStorage whenever they change
   useEffect(() => {
@@ -192,7 +224,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     },
     setLanguage: translatePage,
     isTranslating,
-    getTranslation: translateText,
   };
 
   return (

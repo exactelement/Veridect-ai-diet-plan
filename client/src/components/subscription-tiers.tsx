@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, Shield, Zap } from "lucide-react";
-import { useTranslation } from "@/lib/i18n";
 
 interface SubscriptionTier {
   id: string;
@@ -92,7 +91,7 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
           >
             {tier.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-ios-blue text-white">{t('subscription.most_popular')}</Badge>
+                <Badge className="bg-ios-blue text-white">Most Popular</Badge>
               </div>
             )}
             
@@ -125,7 +124,7 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
               <div className="pt-4">
                 {isCurrent ? (
                   <Button disabled className="w-full">
-                    {t('subscription.current_plan')}
+                    Current Plan
                   </Button>
                 ) : tier.id === "free" ? (
                   <Button 

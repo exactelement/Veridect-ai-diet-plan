@@ -124,16 +124,18 @@ Preferred communication style: Simple, everyday language.
 ## Changelog
 
 Changelog:
-- June 23, 2025: Implemented comprehensive i18n framework for 100% translation coverage
-  - Full internationalization system with TypeScript support and type-safe translation keys
-  - Comprehensive translation dictionaries for English, Spanish, French, German
-  - Context-based translation provider with language switching and RTL support
-  - Translation keys organized by feature: navigation, authentication, subscriptions, errors, etc.
-  - Dynamic parameter interpolation for complex translations (e.g., "{{count}} analyses per day")
-  - All UI components, dropdowns, notifications, and personalized content now translatable
-  - Subscription tiers, features, and descriptions fully localized
-  - Integration with existing translation widget for seamless language switching
-  - Type-safe translation keys prevent missing translations and improve maintainability
+- June 23, 2025: Implemented in-app live translation system for multi-language support
+  - Real-time text replacement within the app (no new tabs or page reloads)
+  - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
+  - Uses MyMemory translation API with intelligent caching for performance
+  - Floating widget with minimize/maximize functionality positioned bottom-right
+  - Translation preserves app functionality while changing all visible text
+  - Smart text node detection that skips code, scripts, and non-translatable content
+  - Reset functionality to return to original English content
+  - Widget appears for all users with translation context provider
+  - Global language persistence: selected language maintained across all pages
+  - Auto-translation on page load when non-English language is selected
+  - LocalStorage caching for translations and language preference
 - June 23, 2025: Fixed duplicate "Free" text in subscription tier pricing display
   - Free tier now shows "Free" as title and "€0" as price (eliminated duplication)
   - Consistent pricing format across all subscription tiers
