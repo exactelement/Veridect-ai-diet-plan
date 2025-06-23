@@ -187,6 +187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const logData = insertFoodLogSchema.parse({
         userId,
+        analysisMethod: req.body.analysisMethod || "ai", // Default to "ai" if not provided
         ...req.body
       });
       

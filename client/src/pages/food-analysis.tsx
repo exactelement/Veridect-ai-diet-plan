@@ -209,6 +209,7 @@ export default function FoodAnalysis() {
         protein: analysisResult.protein,
         confidence: analysisResult.confidence,
         portion: analysisResult.portion,
+        analysisMethod: analysisResult.method || "ai",
         action: "yum",
         points: points
       });
