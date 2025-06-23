@@ -56,6 +56,11 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Scroll to top when navigating to profile
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   // Collapsible section states
   const [personalOpen, setPersonalOpen] = useState(false);

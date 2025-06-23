@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,11 @@ import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
   const { user } = useAuth();
+
+  // Scroll to top when navigating to leaderboard
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const { data: leaderboard = [] } = useQuery<WeeklyScore[]>({
     queryKey: ["/api/leaderboard/weekly"],
   });

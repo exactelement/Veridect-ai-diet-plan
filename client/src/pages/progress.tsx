@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import type { FoodLog } from "@shared/schema";
@@ -5,6 +6,11 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Progress() {
   const { user } = useAuth();
+
+  // Scroll to top when navigating to progress
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   const { data: allLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],

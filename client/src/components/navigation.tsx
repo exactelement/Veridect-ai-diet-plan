@@ -13,9 +13,9 @@ export default function Navigation() {
   ];
 
   const handleNavigation = (path: string) => {
+    // Scroll to top immediately - no smooth behavior for instant response
+    window.scrollTo(0, 0);
     navigate(path);
-    // Scroll to top of page when navigating
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const isActive = (path: string) => {

@@ -238,34 +238,15 @@ export default function FoodAnalysis() {
           window.location.href = "/";
         }, 1000);
       } else {
-        const errorData = await response.json();
-        if (errorData.duplicate) {
-          toast({
-            title: "Already Logged",
-            description: "You just logged this food recently!",
-            variant: "destructive",
-            duration: 4000,
-          });
-        } else {
-          throw new Error("Failed to log food");
-        }
+        throw new Error("Failed to log food");
       }
     } catch (error: any) {
-      if (error.message?.includes("409") || error.message?.includes("duplicate")) {
-        toast({
-          title: "Already Logged",
-          description: "You just logged this food recently!",
-          variant: "destructive",
-          duration: 4000,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to log food. Please try again.",
-          variant: "destructive",
-          duration: 4000,
-        });
-      }
+      toast({
+        title: "Error",
+        description: "Failed to log food. Please try again.",
+        variant: "destructive",
+        duration: 4000,
+      });
     } finally {
       setIsLogging(false);
     }
