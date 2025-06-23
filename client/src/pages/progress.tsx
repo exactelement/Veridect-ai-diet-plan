@@ -141,8 +141,10 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-green-700 font-medium">3 YES foods in a row</span>
-                      {totalStats.yes >= 3 && (
-                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">+50 bonus points!</span>
+                      {totalStats.yes >= 3 ? (
+                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{totalStats.yes}/3</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -203,8 +205,10 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-blue-700 font-medium">Analyze 5 foods today</span>
-                      {totalStats.total >= 5 && (
-                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">+25 points!</span>
+                      {totalStats.total >= 5 ? (
+                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{totalStats.total}/5</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -295,8 +299,10 @@ export default function Progress() {
                           Health Rookie
                         </span>
                       </div>
-                      {totalStats.yes >= 5 && (
-                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">+100 pts</span>
+                      {totalStats.yes >= 5 ? (
+                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">✓ Earned</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/5</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">5 YES foods</div>
@@ -346,8 +352,10 @@ export default function Progress() {
                           Health Legend
                         </span>
                       </div>
-                      {totalStats.yes >= 50 && (
-                        <span className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded">+1000 pts</span>
+                      {totalStats.yes >= 50 ? (
+                        <span className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded">✓ Earned</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/50</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">50 YES foods (Ultimate)</div>
@@ -355,20 +363,35 @@ export default function Progress() {
                 </div>
               </div>
 
-              {/* Reward Summary */}
-              {(totalStats.yes > 0 || totalStats.total > 0) && (
+              {/* Actual Bonus Points Earned Today */}
+              {(totalStats.yes >= 3 || totalStats.yes >= 5 || totalStats.yes >= 10 || totalStats.total >= 5 || totalStats.total >= 10) && (
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-100 rounded-lg p-4 shadow-sm border border-indigo-200">
                   <h3 className="font-semibold text-lg mb-3 text-indigo-800">🎁 Today's Rewards Earned</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-indigo-700">
-                        {totalStats.yes * 50 + totalStats.ok * 25 + totalStats.total * 10}
+                        {(() => {
+                          let bonusPoints = 0;
+                          // Only award bonus if challenges are actually completed
+                          if (totalStats.yes >= 3) bonusPoints += 50;  // 3 YES streak
+                          if (totalStats.yes >= 5) bonusPoints += 100; // 5 YES milestone  
+                          if (totalStats.yes >= 10) bonusPoints += 200; // 10 YES milestone
+                          if (totalStats.total >= 5) bonusPoints += 25; // 5 analyses
+                          if (totalStats.total >= 10) bonusPoints += 50; // 10 analyses
+                          return bonusPoints;
+                        })()}
                       </div>
                       <div className="text-sm text-indigo-600">Bonus Points</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-700">
-                        {Math.floor(totalStats.yes / 3) + Math.floor(totalStats.yes / 5) + Math.floor(totalStats.yes / 10)}
+                        {(() => {
+                          let badges = 0;
+                          if (totalStats.yes >= 3) badges += 1;  // Streak badge
+                          if (totalStats.yes >= 5) badges += 1;  // Health Rookie badge
+                          if (totalStats.yes >= 10) badges += 1; // Health Champion badge
+                          return badges;
+                        })()}
                       </div>
                       <div className="text-sm text-purple-600">Badges Earned</div>
                     </div>
