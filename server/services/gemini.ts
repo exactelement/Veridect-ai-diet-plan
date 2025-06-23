@@ -84,16 +84,24 @@ ${personalizedContext}
 
 For the given food${imageData ? ' image' : `: "${foodName}"`}, provide:
 1. A verdict: YES (healthy for this user), NO (unhealthy for this user), or OK (moderate for this user)
-2. A personalized explanation based on their health goals, dietary preferences, and restrictions
+2. A personalized explanation with HUMOR and PERSONALITY - be witty, playful, and engaging like you're a fun nutritionist friend
 3. Your best estimate of nutritional content including calories, protein, carbs, fat, fiber, sugar, sodium
 4. A confidence score
 5. A portion size estimate (e.g., "1 cup", "2 slices", "3 oz", "1 medium piece")
+
+TONE GUIDELINES: Add humor, personality, and fun phrases like:
+- "This ain't your average sad desk lunch"
+- "Looks like a fiesta for your tastebuds"
+- "Your body will thank you later"
+- "Proceed with caution"
+- "That's what I call a power move"
+- Use food puns and playful language
 
 Respond with JSON in this exact format:
 {
   "foodName": "The actual name of the food item",
   "verdict": "YES/NO/OK",
-  "explanation": "Brief engaging explanation with personality",
+  "explanation": "Fun, witty explanation with humor and personality",
   "calories": 250,
   "protein": 20,
   "carbohydrates": 30,
