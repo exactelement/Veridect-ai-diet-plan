@@ -194,9 +194,12 @@ export default function FoodAnalysis() {
     setFoodDescription("");
   };
 
+  const [isLogging, setIsLogging] = useState(false);
+
   const handleYum = async () => {
-    if (!analysisResult) return;
+    if (!analysisResult || isLogging) return;
     
+    setIsLogging(true);
     try {
       const points = analysisResult.verdict === "YES" ? 10 : 
                    analysisResult.verdict === "OK" ? 5 : 2;
@@ -230,7 +233,10 @@ export default function FoodAnalysis() {
         title: "Error",
         description: "Failed to log food. Please try again.",
         variant: "destructive",
+        duration: 4000,
       });
+    } finally {
+      setIsLogging(false);
     }
   };
 
@@ -352,13 +358,15 @@ export default function FoodAnalysis() {
 
               <div className="flex justify-center space-x-4">
                 <Button 
-                  onClick={handleYum} 
-                  className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold"
+                  onClick={handleYum}
+                  disabled={isLogging}
+                  className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
                 >
-                  😋 Yum
+                  {isLogging ? "Logging..." : "😋 Yum"}
                 </Button>
                 <Button 
-                  onClick={handleNah} 
+                  onClick={handleNah}
+                  disabled={isLogging}
                   variant="outline"
                   className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold"
                 >
