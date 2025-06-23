@@ -2,7 +2,7 @@
 
 ## Overview
 
-Veridect is a health-focused web application that provides instant AI-powered food analysis and nutritional guidance. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, and comprehensive food logging capabilities.
+Veridect is a health-focused web application that provides instant AI-powered food analysis and nutritional guidance with comprehensive multi-language support. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations in 20+ languages. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, comprehensive food logging capabilities, and real-time translation across all pages and components.
 
 ## System Architecture
 
@@ -14,6 +14,8 @@ Veridect is a health-focused web application that provides instant AI-powered fo
 - **Routing**: Wouter for lightweight client-side routing
 - **State Management**: TanStack Query for server state management
 - **Form Handling**: React Hook Form with Zod validation
+- **Translation System**: Custom in-app translation with MyMemory API integration
+- **Internationalization**: 20+ languages with real-time text replacement and persistence
 
 ### Backend Architecture
 - **Runtime**: Node.js 20 with Express.js framework
@@ -58,6 +60,8 @@ Veridect is a health-focused web application that provides instant AI-powered fo
 - **Responsive Design**: Mobile-first approach with adaptive layouts
 - **Component Library**: Consistent UI components with accessibility features
 - **Progressive Enhancement**: Graceful degradation for older browsers
+- **Translation Widget**: Floating bottom-right widget with minimize/maximize functionality
+- **Multi-language Support**: Real-time text replacement across all pages and components
 
 ## Data Flow
 
@@ -121,9 +125,34 @@ Preferred communication style: Simple, everyday language.
 2. Bonus Points: Achievements, streaks, challenges (via updateUserPoints function)
 3. Future: Daily challenges, referral bonuses, subscription perks
 
-## Changelog
+## Recent Changes
 
-Changelog:
+### Translation System Implementation (June 23, 2025)
+- **Global Multi-Language Support**: Implemented comprehensive in-app translation system
+- **20+ Languages**: Spanish, French, German, Chinese, Arabic, Hindi, Japanese, Korean, and more
+- **Real-Time Translation**: Dynamic text replacement without page reloads or new tabs
+- **Persistent Language Selection**: User language preference maintained across all pages using localStorage
+- **Smart Text Detection**: Intelligent DOM scanning that preserves app functionality
+- **Translation Caching**: MyMemory API integration with localStorage caching for performance
+- **Route-Based Auto-Translation**: Automatic retranslation on page navigation
+- **Floating Widget**: Minimize/maximize translation control positioned bottom-right
+- **DOM Mutation Observer**: Monitors dynamic content changes for immediate translation
+- **Fallback System**: Graceful degradation when translation API is unavailable
+
+### User Experience Improvements (June 23, 2025)
+- **Fixed Subscription Pricing Display**: Eliminated duplicate "Free" text in subscription tiers
+- **Corrected Weekly Challenge Countdown**: Proper Madrid timezone handling for Monday resets
+- **Enhanced Point System Integration**: Unified lifetime and weekly point tracking
+- **Improved Navigation**: Instant scroll-to-top on tab clicks with smooth transitions
+
+### Technical Architecture Updates (June 23, 2025)
+- **Translation Context Provider**: Global React context for translation state management
+- **localStorage Integration**: Persistent translation cache and language preferences
+- **API Rate Limiting**: Built-in delays and batch processing for translation requests
+- **Performance Optimization**: Debounced retranslation and intelligent cache management
+- **Error Handling**: Comprehensive fallback mechanisms for translation failures
+
+## Historical Changelog
 - June 23, 2025: Implemented in-app live translation system for multi-language support
   - Real-time text replacement within the app (no new tabs or page reloads)
   - 20+ languages including Spanish, French, German, Chinese, Arabic, Hindi, Japanese
