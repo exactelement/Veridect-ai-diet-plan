@@ -455,14 +455,35 @@ export default function Progress() {
                                          (myWeeklyScore.noCount || 0) * 2;
                         const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
                         
-                        // Count badges based on completed challenges
-                        let badges = 0;
+                        // Count completed challenges based on actual awarded bonuses
+                        // Challenge point values: 5 analyses=25pts, 3 YES streak=50pts, 10 analyses=50pts, 5 YES today=100pts
                         
-                        // Each 25-point increment = 1 challenge completed = 1 badge
-                        if (bonusPoints >= 25) badges += 1;   // First challenge (5 analyses = 25 points)
-                        if (bonusPoints >= 50) badges += 1;   // Second challenge (3 YES streak = 50 points)
-                        if (bonusPoints >= 100) badges += 1;  // Third challenge (10 analyses = 50 points)
-                        if (bonusPoints >= 175) badges += 1;  // Fourth challenge (5 YES foods = 100 points)
+                        let badges = 0;
+                        let remainingPoints = bonusPoints;
+                        
+                        // Check for 5 YES today challenge (100 points)
+                        if (remainingPoints >= 100) {
+                          badges++;
+                          remainingPoints -= 100;
+                        }
+                        
+                        // Check for 3 YES streak challenge (50 points) 
+                        if (remainingPoints >= 50) {
+                          badges++;
+                          remainingPoints -= 50;
+                        }
+                        
+                        // Check for 10 analyses challenge (50 points)
+                        if (remainingPoints >= 50) {
+                          badges++;
+                          remainingPoints -= 50;
+                        }
+                        
+                        // Check for 5 analyses challenge (25 points)
+                        if (remainingPoints >= 25) {
+                          badges++;
+                          remainingPoints -= 25;
+                        }
                         
                         return badges;
                       })()}
