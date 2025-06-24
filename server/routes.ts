@@ -15,11 +15,11 @@ import { validateRequest, foodAnalysisSchema, foodLogSchema } from "./middleware
 // Helper function to check and award daily analysis challenges with race condition protection
 async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[]) {
   try {
-    // Use database transaction to prevent race conditions
+    // Award bonus points for analysis milestones - added to BOTH systems
     if (todaysAnalyses.length === 5) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
       if (!bonusAlreadyAwarded) {
-        // Atomic operation to prevent double-awarding
+        // 25 bonus points to lifetime AND weekly totals
         await storage.updateUserPoints(userId, 25);
         await storage.addBonusToWeeklyScore(userId, 25);
         await storage.markBonusAwarded(userId, '5_analyses');
@@ -29,7 +29,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
     if (todaysAnalyses.length === 10) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
       if (!bonusAlreadyAwarded) {
-        // Atomic operation to prevent double-awarding
+        // 50 bonus points to lifetime AND weekly totals
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '10_analyses');
@@ -45,24 +45,24 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
   try {
     const todaysLogs = await storage.getTodaysFoodLogs(userId);
     
-    // Check for 3 YES foods in a row
+    // Check for 3 YES foods in a row (logged foods only)
     const last3Logs = todaysLogs.slice(-3);
     if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
       if (!bonusAlreadyAwarded) {
-        // Atomic operation to prevent double-awarding
+        // 50 bonus points to lifetime AND weekly totals
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '3_yes_streak');
       }
     }
     
-    // Check for 5 YES foods today
+    // Check for 5 YES foods today (logged foods only)
     const yesCount = todaysLogs.filter(log => log.verdict === "YES").length;
     if (yesCount === 5) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_today');
       if (!bonusAlreadyAwarded) {
-        // Awarding 100 bonus points for 5 YES foods today
+        // 100 bonus points to lifetime AND weekly totals
         await storage.updateUserPoints(userId, 100);
         await storage.addBonusToWeeklyScore(userId, 100);
         await storage.markBonusAwarded(userId, '5_yes_today');
@@ -275,9 +275,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const savedLog = await storage.createFoodLog(logData);
-      // Food analysis saved successfully
+      // Food analysis saved successfully - NO POINTS AWARDED
       
-      // Award bonus points for completing daily challenges
+      // Award bonus points for completing daily challenges (analysis count only)
       const todaysAnalyses = await storage.getTodaysAnalyzedFoods(userId);
       await checkAndAwardDailyChallenges(userId, todaysAnalyses);
       
@@ -325,20 +325,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Created new food log entry
       }
       
-      // Award food logging points and update streak - ONLY ONCE PER FOOD
+      // Award food logging points - SINGLE SOURCE OF POINTS
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      // Awarding points for logging food
-      await storage.updateUserPoints(userId, foodPoints);
       
-      // Only update weekly score if this is a new food log (not from previous analysis)
-      const existingAnalysis = await storage.findRecentUnloggedAnalysis(userId, foodName, verdict);
-      if (!existingAnalysis) {
-        // This is a direct food log entry, add to weekly score
-        await storage.updateWeeklyScore(userId, verdict);
-        // Added verdict to weekly score
-      } else {
-        // Skipped weekly score update - already counted during analysis
-      }
+      // Award to BOTH lifetime points (permanent) and weekly points (resets weekly)
+      await storage.updateUserPoints(userId, foodPoints);
+      await storage.updateWeeklyScore(userId, verdict);
       
       await storage.updateStreak(userId, verdict);
       
