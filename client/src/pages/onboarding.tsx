@@ -15,8 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 const onboardingSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
   calorieGoal: z.number().min(800, "Minimum 800 calories").max(5000, "Maximum 5000 calories").default(2000),
   dietaryPreferences: z.array(z.string()).default([]),
   healthGoals: z.array(z.string()).default([]),
@@ -48,8 +46,6 @@ export default function Onboarding() {
   const form = useForm<OnboardingForm>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
       calorieGoal: 2000,
       dietaryPreferences: [],
       healthGoals: [],
@@ -107,14 +103,14 @@ export default function Onboarding() {
   });
 
   const onSubmit = (data: OnboardingForm) => {
-    if (step < 4) {
+    if (step < 3) {
       setStep(step + 1);
     } else {
       updateProfileMutation.mutate(data);
     }
   };
 
-  const progress = (step / 4) * 100;
+  const progress = (step / 3) * 100;
 
   return (
     <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
@@ -140,7 +136,7 @@ export default function Onboarding() {
           <CardTitle className="text-3xl font-bold">Welcome to YesNoApp</CardTitle>
           <p className="text-ios-secondary">Let's personalize your nutrition journey</p>
           <Progress value={progress} className="mt-4" />
-          <p className="text-sm text-ios-secondary">Step {step} of 4</p>
+          <p className="text-sm text-ios-secondary">Step {step} of 3</p>
         </CardHeader>
 
         <CardContent>
@@ -154,35 +150,7 @@ export default function Onboarding() {
                     <p className="text-ios-secondary">This helps us provide personalized recommendations</p>
                   </div>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your first name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your last name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
 
                   <FormField
                     control={form.control}
@@ -403,7 +371,7 @@ export default function Onboarding() {
                   className="ml-auto bg-ios-blue text-white"
                   disabled={updateProfileMutation.isPending || completeOnboardingMutation.isPending}
                 >
-                  {step === 4 ? "Complete Setup" : "Continue"}
+                  {step === 3 ? "Complete Setup" : "Continue"}
                 </Button>
               </div>
             </form>

@@ -157,6 +157,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Data Consistency Fix - Registration vs Onboarding (June 24, 2025)
+- **UX Issue Resolved**: Removed duplicate name collection from onboarding flow
+- **Data Integrity**: Registration names are now authoritative source (no overwrite risk)
+- **Streamlined Flow**: Onboarding reduced from 4 steps to 3 steps
+- **Clear Separation**: Registration handles identity, onboarding handles health preferences
+- **Consistent Data**: Eliminates confusion from collecting same data twice
+
 ### Comprehensive Bonus Point System Implementation (June 24, 2025)
 - **3 YES Foods in a Row Challenge**: Added 50 bonus points for achieving 3 consecutive YES food choices
 - **Multiple Analysis Challenges**: 5 analyses (25 points), 10 analyses (50 points), 5 YES foods today (100 points)
