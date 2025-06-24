@@ -14,6 +14,27 @@ This guide will help you build a complete native Android app for Veridect with G
 - Veridect backend API running
 - Multi-provider authentication system (Email/Password, Google, Apple)
 - Understanding of Material Design gamification patterns
+- Stripe Android SDK for subscription management
+- Google Gemini AI API access for food analysis
+
+## Current Subscription Tiers (2025)
+
+The Android app must implement the following subscription tiers:
+
+- **Free Tier** (€0): 5 daily food analyses, basic features
+- **Pro Tier** (€1/month - promotional pricing, normally €10/month): Unlimited analyses, food logging, leaderboards, progress tracking
+- **Advanced Tier** (€50/month - coming soon): Medical features, priority support, advanced analytics
+
+## Key Features to Implement
+
+### Core Features
+- Multi-provider authentication (Email/Password, Google, Apple ID via web view)
+- Camera-based food analysis with Google Gemini AI
+- Real-time food verdicts (YES/NO/OK) with explanations
+- Dual point system (lifetime points for levels, weekly points for leaderboards)
+- Position-ranked weekly leaderboards (#1, #2, #3, etc.)
+- Daily challenges and streak tracking
+- Spanish contact information (info@veridect.com, +34 672 810 584)
 
 ## Authentication Integration
 
@@ -94,11 +115,11 @@ app/
 
 ```kotlin
 android {
-    namespace = "com.yesnoapp.android"
+    namespace = "com.veridect.android"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.yesnoapp.android"
+        applicationId = "com.veridect.android"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -332,13 +353,13 @@ data class FoodLog(
 
 ## API Service Implementation
 
-### app/src/main/java/com/yesnoapp/android/data/api/YesNoAppApi.kt
+### app/src/main/java/com/veridect/android/data/api/VeridectApi.kt
 
 ```kotlin
 import retrofit2.Response
 import retrofit2.http.*
 
-interface YesNoAppApi {
+interface VeridectApi {
     @POST("auth/login")
     suspend fun login(@Body credentials: LoginRequest): Response<AuthResponse>
     
@@ -378,7 +399,7 @@ data class LeaderboardEntry(val userId: String, val firstName: String?, val tota
 data class WeeklyScore(val score: String, val rank: Int)
 ```
 
-### app/src/main/java/com/yesnoapp/android/data/api/ApiClient.kt
+### app/src/main/java/com/veridect/android/data/api/ApiClient.kt
 
 ```kotlin
 import okhttp3.OkHttpClient
@@ -388,7 +409,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "https://your-api-domain.com/api/"
+    private const val BASE_URL = "https://veridect.com/api/"
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

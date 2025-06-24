@@ -13,6 +13,27 @@ This guide will help you build a complete native iOS app for Veridect with Apple
 - Veridect backend API running
 - Multi-provider authentication system (Email/Password, Google, Apple)
 - Understanding of gamification UI patterns
+- Stripe iOS SDK for subscription management
+- Google Gemini AI API access for food analysis
+
+## Current Subscription Tiers (2025)
+
+The iOS app must implement the following subscription tiers:
+
+- **Free Tier** (€0): 5 daily food analyses, basic features
+- **Pro Tier** (€1/month - promotional pricing, normally €10/month): Unlimited analyses, food logging, leaderboards, progress tracking
+- **Advanced Tier** (€50/month - coming soon): Medical features, priority support, advanced analytics
+
+## Key Features to Implement
+
+### Core Features
+- Multi-provider authentication (Email/Password, Google, Apple ID)
+- Camera-based food analysis with Google Gemini AI
+- Real-time food verdicts (YES/NO/OK) with explanations
+- Dual point system (lifetime points for levels, weekly points for leaderboards)
+- Position-ranked weekly leaderboards (#1, #2, #3, etc.)
+- Daily challenges and streak tracking
+- Spanish contact information (info@veridect.com, +34 672 810 584)
 
 ## Authentication Integration
 
@@ -133,18 +154,18 @@ Right-click `Info.plist` → "Open As" → "Source Code", add:
     
     <!-- HealthKit Usage Descriptions -->
     <key>NSHealthShareUsageDescription</key>
-    <string>YesNoApp needs access to your health data to provide personalized nutrition insights and track your progress toward health goals.</string>
+    <string>Veridect needs access to your health data to provide personalized nutrition insights and track your progress toward health goals.</string>
     
     <key>NSHealthUpdateUsageDescription</key>
-    <string>YesNoApp wants to save your nutrition data to Apple Health to help you maintain a comprehensive health record.</string>
+    <string>Veridect wants to save your nutrition data to Apple Health to help you maintain a comprehensive health record.</string>
     
     <!-- Camera Usage -->
     <key>NSCameraUsageDescription</key>
-    <string>YesNoApp needs camera access to analyze your food and provide instant nutrition verdicts.</string>
+    <string>Veridect needs camera access to analyze your food and provide instant nutrition verdicts.</string>
     
     <!-- Photo Library (optional, for food image uploads) -->
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>YesNoApp can analyze food photos from your photo library to provide nutrition insights.</string>
+    <string>Veridect can analyze food photos from your photo library to provide nutrition insights.</string>
     
 </dict>
 </plist>

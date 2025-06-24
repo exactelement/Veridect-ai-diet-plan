@@ -201,7 +201,7 @@ res/drawable/ic_launcher_background.xml
         android:required="false" />
 
     <application
-        android:name=".YesNoApplication"
+        android:name=".VeridectApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -239,13 +239,13 @@ res/drawable/ic_launcher_background.xml
 
 ```xml
 <resources>
-    <string name="app_name">YesNoApp</string>
+    <string name="app_name">Veridect</string>
     <string name="app_description">AI-powered food analysis for smarter eating</string>
     
     <!-- Permission descriptions -->
-    <string name="camera_permission_rationale">YesNoApp needs camera access to analyze your food photos for instant nutrition insights.</string>
-    <string name="storage_permission_rationale">YesNoApp needs storage access to analyze food images from your gallery.</string>
-    <string name="fitness_permission_rationale">YesNoApp syncs nutrition data with Google Fit to provide comprehensive health tracking.</string>
+    <string name="camera_permission_rationale">Veridect needs camera access to analyze your food photos for instant nutrition insights.</string>
+    <string name="storage_permission_rationale">Veridect needs storage access to analyze food images from your gallery.</string>
+    <string name="fitness_permission_rationale">Veridect syncs nutrition data with Google Fit to provide comprehensive health tracking.</string>
     
     <!-- Google Fit API Key (from Google Cloud Console) -->
     <string name="google_fit_api_key">your_google_fit_api_key_here</string>

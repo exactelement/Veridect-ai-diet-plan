@@ -237,16 +237,16 @@ class LaunchScreenViewController: UIViewController {
 3. Select "New App"
 4. Configure:
    - **Platform**: iOS
-   - **Name**: YesNoApp
+   - **Name**: Veridect
    - **Primary Language**: English (U.S.)
-   - **Bundle ID**: com.yesnoapp.ios
-   - **SKU**: yesnoapp-ios-v1 (unique identifier)
+   - **Bundle ID**: com.veridect.ios
+   - **SKU**: veridect-ios-v1 (unique identifier)
 
 ### Configure App Information
 
 **App Information Tab:**
 ```
-Name: YesNoApp - Smart Food Analysis
+Name: Veridect - Smart Food Analysis
 Subtitle: AI-Powered Nutrition Guidance
 Category: Primary: Health & Fitness, Secondary: Food & Drink
 Content Rights: No, it does not contain, show, or access third-party content
