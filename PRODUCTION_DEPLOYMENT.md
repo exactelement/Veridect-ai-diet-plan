@@ -1,4 +1,7 @@
 # Veridect Production Deployment Guide
+## ⚠️ PATENT NOTICE
+**Do not deploy publicly until Spanish patent application is filed**
+This deployment guide is prepared for post-patent filing launch.
 
 ## Prerequisites
 - Google Cloud Platform account with billing enabled
