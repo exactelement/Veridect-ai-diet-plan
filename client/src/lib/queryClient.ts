@@ -47,11 +47,26 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes instead of infinity
+      retry: (failureCount, error) => {
+        // Don't retry on 401, 403, 404, or validation errors
+        if ((error as any)?.message?.includes('401') || 
+            (error as any)?.message?.includes('403') || 
+            (error as any)?.message?.includes('404')) {
+          return false;
+        }
+        return failureCount < 2; // Retry up to 2 times for other errors
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
     mutations: {
-      retry: false,
+      retry: (failureCount, error) => {
+        // Don't retry mutations on client errors (4xx)
+        if ((error as any)?.message?.match(/^4\d\d:/)) {
+          return false;
+        }
+        return failureCount < 1; // Only retry once for server errors
+      },
     },
   },
 });

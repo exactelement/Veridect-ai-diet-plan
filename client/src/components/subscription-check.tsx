@@ -62,17 +62,26 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   );
 }
 
-export function checkTierAccess(userTier: string, requiredTier: string): boolean {
-  // Pro and Advanced have access to everything
-  if (userTier === 'pro' || userTier === 'advanced') {
+export function checkTierAccess(userTier: string = 'free', requiredTier: string): boolean {
+  // Normalize tiers to lowercase for consistent comparison
+  const normalizedUserTier = userTier?.toLowerCase() || 'free';
+  const normalizedRequiredTier = requiredTier?.toLowerCase() || 'free';
+  
+  // Advanced tier has access to everything
+  if (normalizedUserTier === 'advanced') {
+    return true;
+  }
+  
+  // Pro tier has access to pro and free features
+  if (normalizedUserTier === 'pro' && (normalizedRequiredTier === 'pro' || normalizedRequiredTier === 'free')) {
     return true;
   }
   
   // Free tier only has access to free features
-  if (requiredTier === 'free') {
+  if (normalizedRequiredTier === 'free') {
     return true;
   }
   
-  // Free tier cannot access pro/advanced features
+  // Default deny
   return false;
 }

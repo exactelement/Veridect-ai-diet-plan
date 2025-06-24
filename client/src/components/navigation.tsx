@@ -41,8 +41,8 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-ios-gray-200 z-50">
-      <div className="max-w-md mx-auto px-4 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-ios-gray-200 z-50 safe-area-pb">
+      <div className="max-w-md mx-auto px-4 py-2 pb-safe">
         <div className="flex items-center justify-between">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -57,12 +57,12 @@ export default function Navigation() {
                 onClick={() => handleNavigation(item.path, item.requiredTier)}
                 className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-all duration-200 relative ${
                   isLocked
-                    ? "text-gray-300 cursor-pointer"
+                    ? "text-gray-300 cursor-not-allowed"
                     : shouldGreyOut
-                    ? "text-gray-400"
+                    ? "text-gray-400 cursor-not-allowed"
                     : active
-                    ? "text-ios-blue"
-                    : "text-ios-secondary hover:text-ios-text"
+                    ? "text-ios-blue cursor-pointer"
+                    : "text-ios-secondary hover:text-ios-text cursor-pointer"
                 }`}
               >
                 <div className={`p-2 rounded-xl transition-all duration-200 relative ${

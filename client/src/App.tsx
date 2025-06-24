@@ -26,6 +26,7 @@ import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
 import GDPRBanner from "@/components/gdpr-banner";
 import GDPRInitialBanner from "@/components/gdpr-initial-banner";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -100,12 +101,14 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Router />
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Router />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

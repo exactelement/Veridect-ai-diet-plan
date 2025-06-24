@@ -75,7 +75,13 @@ export const users = pgTable("users", {
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_users_email").on(table.email),
+  index("idx_users_google_id").on(table.googleId),
+  index("idx_users_stripe_subscription").on(table.stripeSubscriptionId),
+  index("idx_users_subscription_tier").on(table.subscriptionTier),
+  index("idx_users_password_reset").on(table.passwordResetToken)
+]);
 
 // Food analysis logs
 export const foodLogs = pgTable("food_logs", {
@@ -99,7 +105,11 @@ export const foodLogs = pgTable("food_logs", {
   nutritionFacts: jsonb("nutrition_facts"),
   alternatives: jsonb("alternatives"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_food_logs_user_created").on(table.userId, table.createdAt),
+  index("idx_food_logs_user_logged").on(table.userId, table.isLogged),
+  index("idx_food_logs_created_at").on(table.createdAt)
+]);
 
 // Weekly leaderboard - tracks points earned THIS WEEK only
 export const weeklyScores = pgTable("weekly_scores", {
@@ -111,7 +121,11 @@ export const weeklyScores = pgTable("weekly_scores", {
   okCount: integer("ok_count").default(0),
   weeklyPoints: integer("weekly_points").default(0), // Points earned THIS WEEK (food + bonuses)
   rank: integer("rank"),
-});
+}, (table) => [
+  index("idx_weekly_scores_user_week").on(table.userId, table.weekStart),
+  index("idx_weekly_scores_points").on(table.weeklyPoints),
+  index("idx_weekly_scores_week_start").on(table.weekStart)
+]);
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({

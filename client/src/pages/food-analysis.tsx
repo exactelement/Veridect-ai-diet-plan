@@ -81,10 +81,19 @@ export default function FoodAnalysis() {
   const privacySettings = (activeUser as any)?.privacySettings || {};
   const showNutritionDetails = privacySettings.showNutritionDetails !== false;
 
+  const { executeWithRetry, isRetrying } = useErrorRecovery({
+    maxRetries: 2,
+    onError: (error, retryCount) => {
+      console.log(`Analysis attempt ${retryCount} failed:`, error.message);
+    }
+  });
+
   const analyzeMutation = useMutation({
     mutationFn: async (data: { foodName?: string; imageData?: string }) => {
-      const response = await apiRequest("POST", "/api/food/analyze", data);
-      return response.json();
+      return executeWithRetry(async () => {
+        const response = await apiRequest("POST", "/api/food/analyze", data);
+        return response.json();
+      }, "Failed to analyze food after multiple attempts");
     },
     onSuccess: (data) => {
       setAnalysisResult(data.analysis);

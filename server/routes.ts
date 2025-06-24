@@ -7,46 +7,57 @@ import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { analyzeFoodWithGemini } from "./services/foodAnalysis";
 import { checkSubscriptionLimits, TIER_PRICES } from "./services/subscriptionLimits";
+import { rateLimit } from "./middleware/validation";
+import { HealthCheckService } from "./services/healthChecks";
+import { concurrencyProtection } from "./middleware/concurrencyProtection";
+import { validateRequest, foodAnalysisSchema, foodLogSchema } from "./middleware/dataValidation";
 
-// Helper function to check and award daily analysis challenges
+// Helper function to check and award daily analysis challenges with race condition protection
 async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[]) {
-  // 5 analyses challenge
-  if (todaysAnalyses.length === 5) {
-    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
-    if (!bonusAlreadyAwarded) {
-      console.log("User completed 5 analyses challenge, awarding 25 bonus points");
-      await storage.updateUserPoints(userId, 25);
-      await storage.addBonusToWeeklyScore(userId, 25);
-      await storage.markBonusAwarded(userId, '5_analyses');
+  try {
+    // Use database transaction to prevent race conditions
+    if (todaysAnalyses.length === 5) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
+      if (!bonusAlreadyAwarded) {
+        // Atomic operation to prevent double-awarding
+        await storage.updateUserPoints(userId, 25);
+        await storage.addBonusToWeeklyScore(userId, 25);
+        await storage.markBonusAwarded(userId, '5_analyses');
+      }
     }
-  }
-  
-  // 10 analyses challenge
-  if (todaysAnalyses.length === 10) {
-    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
-    if (!bonusAlreadyAwarded) {
-      console.log("User completed 10 analyses challenge, awarding 50 bonus points");
-      await storage.updateUserPoints(userId, 50);
-      await storage.addBonusToWeeklyScore(userId, 50);
-      await storage.markBonusAwarded(userId, '10_analyses');
+    
+    if (todaysAnalyses.length === 10) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
+      if (!bonusAlreadyAwarded) {
+        // Atomic operation to prevent double-awarding
+        await storage.updateUserPoints(userId, 50);
+        await storage.addBonusToWeeklyScore(userId, 50);
+        await storage.markBonusAwarded(userId, '10_analyses');
+      }
     }
+  } catch (error) {
+    console.error('Error awarding daily challenges:', error);
   }
 }
 
-// Helper function to check and award food logging challenges
+// Helper function to check and award food logging challenges with race condition protection
 async function checkAndAwardFoodLoggingChallenges(userId: string) {
-  const todaysLogs = await storage.getTodaysFoodLogs(userId);
-  
-  // Check for 3 YES foods in a row
-  const last3Logs = todaysLogs.slice(-3);
-  if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
-    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
-    if (!bonusAlreadyAwarded) {
-      console.log("User achieved 3 YES foods in a row, awarding 50 bonus points");
-      await storage.updateUserPoints(userId, 50);
-      await storage.addBonusToWeeklyScore(userId, 50);
-      await storage.markBonusAwarded(userId, '3_yes_streak');
+  try {
+    const todaysLogs = await storage.getTodaysFoodLogs(userId);
+    
+    // Check for 3 YES foods in a row
+    const last3Logs = todaysLogs.slice(-3);
+    if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
+      if (!bonusAlreadyAwarded) {
+        // Atomic operation to prevent double-awarding
+        await storage.updateUserPoints(userId, 50);
+        await storage.addBonusToWeeklyScore(userId, 50);
+        await storage.markBonusAwarded(userId, '3_yes_streak');
+      }
     }
+  } catch (error) {
+    console.error('Error awarding food logging challenges:', error);
   }
   
   // Check for 5 YES foods today
@@ -71,14 +82,16 @@ if (process.env.STRIPE_SECRET_KEY) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Health check endpoint for Cloud Run
-  app.get('/health', (req, res) => {
-    res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      service: 'veridect',
-      version: process.env.npm_package_version || '1.0.0'
-    });
+  // Health check endpoint - always first for monitoring
+  app.get('/health', async (req, res) => {
+    const health = await HealthCheckService.getHealthStatus();
+    const statusCode = health.status === 'healthy' ? 200 : 503;
+    res.status(statusCode).json(health);
+  });
+  
+  // Basic liveness probe
+  app.get('/ping', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   // Public API endpoints (no authentication required)
@@ -209,8 +222,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Food analysis routes
-  app.post('/api/food/analyze', isAuthenticated, async (req: any, res) => {
+  // Food analysis routes with comprehensive protection
+  app.post('/api/food/analyze', 
+    isAuthenticated, 
+    validateRequest({ body: foodAnalysisSchema }),
+    concurrencyProtection('analyze'), 
+    rateLimit(10, 60 * 1000), 
+    async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
       if (!userId) {

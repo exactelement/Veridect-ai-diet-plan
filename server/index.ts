@@ -2,11 +2,19 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { dailyScheduler } from "./scheduler";
+import { validateEnvironment, sanitizeInput } from "./middleware/validation";
+import { AnalyticsCleanupService } from "./services/analyticsCleanup";
 import path from "path";
+
+// Validate environment on startup
+validateEnvironment();
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+// Security middleware
+app.use(sanitizeInput);
 
 // Serve static files from public directory
 app.use(express.static(path.join(process.cwd(), 'public')));
@@ -44,12 +52,31 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // Comprehensive error handling middleware
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+    let message = err.message || "Internal Server Error";
+    
+    // Log error details for debugging
+    console.error(`Error ${status} on ${req.method} ${req.path}:`, {
+      message: err.message,
+      stack: err.stack,
+      body: req.body,
+      user: req.user?.id
+    });
+    
+    // Don't expose internal errors to client in production
+    if (status === 500 && process.env.NODE_ENV === 'production') {
+      message = "Internal Server Error";
+    }
+    
+    // Standardized error response format
+    res.status(status).json({
+      error: true,
+      message,
+      timestamp: new Date().toISOString(),
+      path: req.path
+    });
   });
 
   // importantly only setup vite in development and after
