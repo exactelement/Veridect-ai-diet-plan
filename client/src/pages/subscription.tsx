@@ -352,7 +352,7 @@ export default function Subscription() {
             key={tier.id} 
             className={`relative ${tier.color} hover:shadow-lg transition-all duration-200 ${
               tier.popular ? 'ring-2 ring-yellow-400' : ''
-            } ${tier.comingSoon ? 'opacity-75' : ''}`}
+            } ${tier.comingSoon ? 'opacity-75' : ''} overflow-hidden`}
           >
             {tier.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -361,8 +361,8 @@ export default function Subscription() {
             )}
             
             {tier.comingSoon && (
-              <div className="absolute -top-3 right-4">
-                <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
+              <div className="absolute top-3 right-3">
+                <Badge className="bg-gray-600 text-white px-3 py-1 text-xs">Coming Soon</Badge>
               </div>
             )}
             
