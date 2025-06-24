@@ -265,23 +265,46 @@ export class DatabaseStorage implements IStorage {
 
   async getTodaysFoodLogs(userId: string): Promise<FoodLog[]> {
     // Use Madrid timezone for consistent daily reset behavior
-    const madridToday = this.getMadridTime();
-    madridToday.setHours(0, 0, 0, 0);
-    const madridTomorrow = new Date(madridToday);
-    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
+    const madridNow = this.getMadridTime();
+    
+    // Get Madrid day boundaries (midnight to midnight in Madrid time)
+    const madridTodayStart = new Date(madridNow);
+    madridTodayStart.setHours(0, 0, 0, 0);
+    
+    const madridTomorrowStart = new Date(madridTodayStart);
+    madridTomorrowStart.setDate(madridTomorrowStart.getDate() + 1);
+    
+    // Convert Madrid boundaries to UTC for database query
+    // Madrid is UTC+1 in winter, UTC+2 in summer (currently summer, so UTC+2)
+    const utcTodayStart = new Date(madridTodayStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
+    const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
 
-    return await db
+    console.log(`Getting today's food logs for ${userId} (Madrid timezone):`);
+    console.log(`Madrid now: ${madridNow.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`);
+    console.log(`Madrid today start: ${madridTodayStart.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`);
+    console.log(`UTC today start: ${utcTodayStart.toISOString()}`);
+    console.log(`UTC tomorrow start: ${utcTomorrowStart.toISOString()}`);
+
+    const logs = await db
       .select()
       .from(foodLogs)
       .where(
         and(
           eq(foodLogs.userId, userId),
           eq(foodLogs.isLogged, true), // Only return items that were actually logged
-          gte(foodLogs.createdAt, madridToday),
-          lte(foodLogs.createdAt, madridTomorrow)
+          gte(foodLogs.createdAt, utcTodayStart),
+          lt(foodLogs.createdAt, utcTomorrowStart)
         )
       )
       .orderBy(desc(foodLogs.createdAt));
+
+    console.log(`Found ${logs.length} logged food items for today`);
+    logs.forEach(log => {
+      const logMadridTime = new Date(log.createdAt!).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+      console.log(`- ${log.foodName} (${log.verdict}) at ${logMadridTime} Madrid time`);
+    });
+    
+    return logs;
   }
 
   // Get ALL analyzed foods today (for challenges) - both logged and not logged
@@ -675,8 +698,15 @@ export class DatabaseStorage implements IStorage {
 
   // Get Madrid time for consistent scheduling
   getMadridTime(): Date {
+    // Get current time in Madrid timezone properly
     const now = new Date();
-    return new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    
+    // Madrid timezone: UTC+1 in winter (CET), UTC+2 in summer (CEST)
+    // June is summer, so UTC+2
+    const madridOffset = 2; // Summer time
+    
+    return new Date(utc + (madridOffset * 3600000));
   }
 }
 
