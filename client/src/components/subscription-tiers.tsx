@@ -86,7 +86,9 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
             key={tier.id}
             className={`relative tier-card ${
               tier.popular ? "border-2 border-ios-blue scale-105" : ""
-            } ${isCurrent ? "bg-gray-50" : ""}`}
+            } ${isCurrent ? "bg-gray-50" : ""} ${
+              tier.id === "advanced" ? "opacity-60 grayscale" : ""
+            }`}
           >
             {tier.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -135,14 +137,16 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
                   </Button>
                 ) : canUpgrade ? (
                   <Button
-                    onClick={() => onSelectTier(tier)}
+                    onClick={() => tier.id === "advanced" ? null : onSelectTier(tier)}
+                    disabled={tier.id === "advanced"}
                     className={`w-full ${
+                      tier.id === "advanced" ? "bg-gray-400 text-gray-600" :
                       tier.color === "blue" ? "bg-ios-blue text-white" :
                       tier.color === "green" ? "bg-health-green text-white" :
                       ""
                     }`}
                   >
-                    Upgrade to {tier.name}
+                    {tier.id === "advanced" ? "Coming Soon" : `Upgrade to ${tier.name}`}
                   </Button>
                 ) : (
                   <Button disabled className="w-full">
