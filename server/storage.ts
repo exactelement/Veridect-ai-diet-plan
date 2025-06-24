@@ -234,10 +234,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTodaysFoodLogs(userId: string): Promise<FoodLog[]> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    // Use Madrid timezone for consistent daily reset behavior
+    const madridToday = this.getMadridTime();
+    madridToday.setHours(0, 0, 0, 0);
+    const madridTomorrow = new Date(madridToday);
+    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
 
     return await db
       .select()
@@ -246,19 +247,20 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(foodLogs.userId, userId),
           eq(foodLogs.isLogged, true), // Only return items that were actually logged
-          gte(foodLogs.createdAt, today),
-          lte(foodLogs.createdAt, tomorrow)
+          gte(foodLogs.createdAt, madridToday),
+          lte(foodLogs.createdAt, madridTomorrow)
         )
       )
       .orderBy(desc(foodLogs.createdAt));
   }
 
   // Get ALL analyzed foods today (for challenges) - both logged and not logged
+  // Uses Madrid timezone for consistent daily reset behavior
   async getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const madridToday = this.getMadridTime();
+    madridToday.setHours(0, 0, 0, 0);
+    const madridTomorrow = new Date(madridToday);
+    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
 
     return await db
       .select()
@@ -267,8 +269,8 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(foodLogs.userId, userId),
           // No isLogged filter - return ALL analyzed foods
-          gte(foodLogs.createdAt, today),
-          lte(foodLogs.createdAt, tomorrow)
+          gte(foodLogs.createdAt, madridToday),
+          lte(foodLogs.createdAt, madridTomorrow)
         )
       )
       .orderBy(desc(foodLogs.createdAt));
