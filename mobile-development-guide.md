@@ -2,15 +2,15 @@
 
 ## Overview
 
-This guide covers building native Android and iOS apps that integrate with your existing Veridect backend, adding Google Fit and Apple Health integrations for comprehensive health data synchronization, plus gamification features including weekly leaderboards and level progression.
+This guide covers building native Android and iOS apps that integrate with your existing Veridect backend, adding Google Fit and Apple Health integrations for comprehensive health data synchronization, plus gamification features including position-ranked weekly leaderboards and level progression with personalized AI food analysis.
 
 ## Architecture Strategy
 
 ### Hybrid Approach: Native Mobile + Web Backend
-- **Backend**: Keep existing Node.js/Express API with gamification system
-- **Android**: Native Kotlin app with Google Fit SDK and leaderboard UI
-- **iOS**: Native Swift app with HealthKit framework and level progression
-- **Shared**: API endpoints, user accounts, food analysis engine, point tracking system
+- **Backend**: Keep existing Node.js/Express API with gamification system and personalized AI
+- **Android**: Native Kotlin app with Google Fit SDK and position-ranked leaderboard UI
+- **iOS**: Native Swift app with HealthKit framework and level progression display
+- **Shared**: API endpoints, user accounts, personalized food analysis engine, dual point tracking system
 
 ## Android App Development
 

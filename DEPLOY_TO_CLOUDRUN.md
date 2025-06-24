@@ -29,6 +29,9 @@ gcloud run services update veridect-app \
   --region europe-west1 \
   --set-env-vars \
   DATABASE_URL="postgresql://user:pass@host:5432/db",\
+  GOOGLE_GEMINI_API_KEY="your-gemini-key",\
+  SENDGRID_API_KEY="your-sendgrid-key",\
+  SESSION_SECRET="your-session-secret"
   SESSION_SECRET="your-secure-32-char-secret",\
   GOOGLE_GEMINI_API_KEY="your-gemini-api-key",\
   REPL_ID="your-replit-app-id",\

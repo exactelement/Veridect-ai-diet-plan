@@ -5,9 +5,10 @@ A modern health-focused web application that provides instant AI-powered food an
 ## Key Features
 
 - **Instant Food Analysis**: Camera, upload, or text-based food analysis with beverage support
-- **Personalized AI Verdicts**: Based on your health goals, dietary preferences, and allergies
+- **Personalized AI Verdicts**: AI considers health goals, dietary preferences, allergies, and subscription tier
+- **Witty AI Responses**: Dynamic, humorous responses for non-food items with creative humor styles
 - **Dual Point System**: Lifetime points (never reset) for levels + weekly points (reset Monday) for competition
-- **Weekly Leaderboards**: Optional participation with Yes/OK/No tracking, Madrid timezone resets
+- **Weekly Leaderboards**: Position rankings (#1, #2, #3) with optional participation, Madrid timezone resets
 - **Level Progression**: 1000 points per level using lifetime points accumulation
 - **Privacy Controls**: Customizable participation in challenges and data display
 - **Multi-Authentication**: Replit Auth with session-based security

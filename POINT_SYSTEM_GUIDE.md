@@ -48,6 +48,30 @@ Veridect implements a dual point tracking system designed to balance competitive
 
 ### Leaderboard Features
 
+- **Position Rankings**: Clear #1, #2, #3 position indicators for all users
+- **Real-time Updates**: Rankings calculated from current weekly scores  
+- **Privacy Controls**: Users can hide from leaderboard while maintaining points
+- **Weekly Competition**: Fresh start every Monday for fair competition
+
+## Personalized AI Integration
+
+### AI Consideration Factors
+
+The food analysis AI considers these user profile elements for personalized verdicts:
+
+- **Health Goals**: Weight loss, muscle gain, maintenance, general health
+- **Dietary Preferences**: Vegan, vegetarian, keto, paleo, Mediterranean, etc.
+- **Allergies**: Nut, dairy, gluten, seafood, and other allergen detection
+- **Subscription Tier**: Casual tone (Free), scientific analysis (Medical)
+
+### Non-Food Item Responses
+
+When users analyze non-food items, the AI generates creative, humorous responses with dynamic humor styles:
+- Tech/digital puns
+- Playful confusion 
+- Food-related wordplay
+- Sarcastic observations
+
 - Real-time ranking based on weekly points
 - Yes/OK/No food verdict counters
 - Optional participation (privacy-controlled)

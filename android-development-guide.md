@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide will help you build a complete native Android app for Veridect with Google Fit integration, camera-based food analysis, gamification features, and full feature parity with the web application including weekly leaderboards and level progression.
+This guide will help you build a complete native Android app for Veridect with Google Fit integration, camera-based food analysis, personalized AI verdicts, position-ranked weekly leaderboards, level progression, and full feature parity with the web application.
 
 ## Prerequisites
 

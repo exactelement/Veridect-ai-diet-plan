@@ -28,7 +28,7 @@ ISSUER_URL=https://replit.com/oidc
 STRIPE_SECRET_KEY=your_stripe_secret_key
 VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
 
-# Optional: Email Services
+# Email Services (Required for password reset)
 SENDGRID_API_KEY=your_sendgrid_api_key
 
 # Optional: Analytics

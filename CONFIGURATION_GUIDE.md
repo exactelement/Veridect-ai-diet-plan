@@ -22,9 +22,15 @@ REPLIT_DOMAINS="your-app-name.replit.dev"
 ISSUER_URL="https://replit.com/oidc"
 ```
 
-#### AI Services
+#### AI Services (Required for personalized food analysis)
 ```bash
 GOOGLE_GEMINI_API_KEY="your-gemini-api-key"
+# AI considers user health goals, dietary preferences, allergies, and subscription tier
+```
+
+#### Email Services (Required for password reset)
+```bash
+SENDGRID_API_KEY="your-sendgrid-api-key"
 ```
 
 #### Payment Processing (Optional)

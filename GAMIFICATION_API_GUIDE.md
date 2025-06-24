@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the gamification system APIs for Veridect, including point tracking, leaderboards, and user progression.
+This guide documents the gamification system APIs for Veridect, including dual point tracking, position-ranked leaderboards, and personalized AI food analysis integration.
 
 ## Point System Endpoints
 
