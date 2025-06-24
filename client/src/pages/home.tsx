@@ -181,10 +181,11 @@ export default function Home() {
       description: "Advanced nutrition tracking for health enthusiasts",
       features: [
         "Unlimited analyses",
-        "Detailed nutrition breakdown",
-        "Personalized recommendations",
-        "Progress analytics",
-        "Export data",
+        "Food logging & progress tracking",
+        "Challenges and bonus points",
+        "Leaderboard & community access",
+        "Food history",
+        "Personalised AI analysis",
         "Priority support"
       ],
       icon: <Star className="w-6 h-6" />,

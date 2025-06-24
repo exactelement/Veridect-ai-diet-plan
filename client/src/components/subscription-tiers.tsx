@@ -41,14 +41,14 @@ const TIERS: SubscriptionTier[] = [
     price: 19.99,
     description: "For serious health enthusiasts",
     features: [
-      "Unlimited food analyses",
-      "Detailed nutrition tracking",
-      "Goal-based recommendations",
-      "Weekly progress reports",
-      "Wearables integration",
+      "Unlimited analyses",
+      "Food logging & progress tracking",
+      "Challenges and bonus points",
+      "Leaderboard & community access",
+      "Food history",
+      "Personalised AI analysis",
       "Priority support",
-      "Advanced analytics",
-      "Custom meal plans"
+      "Advanced analytics"
     ],
     icon: <Crown className="w-6 h-6" />,
     popular: true,

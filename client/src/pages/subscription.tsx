@@ -58,11 +58,12 @@ const subscriptionTiers: SubscriptionTier[] = [
     price: 1.00,
     description: "Launch promotion - normally €10/month",
     features: [
-      "Unlimited food analyses",
-      "Detailed nutritional breakdown",
-      "Advanced AI insights",
-      "Personalized recommendations",
-      "Export food history",
+      "Unlimited analyses",
+      "Food logging & progress tracking",
+      "Challenges and bonus points",
+      "Leaderboard & community access",
+      "Food history",
+      "Personalised AI analysis",
       "Priority support",
       "🎉 1-year promotional price"
     ],
