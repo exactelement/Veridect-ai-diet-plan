@@ -70,12 +70,24 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Auto-focus email field on load
+  // Auto-focus appropriate field based on mode
   useEffect(() => {
-    const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-    if (emailInput) {
-      emailInput.focus();
-    }
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      if (mode === 'register') {
+        // Focus on first name field for registration
+        const firstNameInput = document.querySelector('input[name="firstName"]') as HTMLInputElement;
+        if (firstNameInput) {
+          firstNameInput.focus();
+        }
+      } else {
+        // Focus on email field for login, forgot password, and reset password
+        const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+        if (emailInput) {
+          emailInput.focus();
+        }
+      }
+    }, 100);
   }, [mode]);
 
   // Keyboard shortcuts
