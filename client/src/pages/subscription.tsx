@@ -231,7 +231,7 @@ export default function Subscription() {
 
   if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mt-16">
         <Card className="max-w-md mx-auto">
           <CardHeader className="text-center">
             <CardTitle>Subscription Unavailable</CardTitle>
@@ -258,7 +258,7 @@ export default function Subscription() {
     };
 
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mt-16">
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm 
             tier={selectedTier} 
@@ -273,7 +273,7 @@ export default function Subscription() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-16">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-ios-primary mb-2">
           Choose Your Plan
