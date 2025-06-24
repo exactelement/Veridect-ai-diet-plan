@@ -39,12 +39,16 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           subscriptionTier: "free",
           subscriptionStatus: "inactive",
         });
-      } else if (user.passwordHash && !user.googleId) {
-        // User registered with email/password, trying to sign in with Google
-        return done(new Error("EMAIL_PASSWORD_ACCOUNT"));
       } else {
-        // Link Google ID to existing email account - preserve ALL existing data including onboarding status
-        if (!user.googleId) {
+        // User exists with this email - NEVER create a duplicate
+        if (user.passwordHash && !user.googleId) {
+          // User registered with email/password, trying to sign in with Google
+          return done(new Error("EMAIL_PASSWORD_ACCOUNT"));
+        } else if (user.appleId && !user.googleId) {
+          // User registered with Apple, trying to sign in with Google
+          return done(new Error("APPLE_ACCOUNT"));
+        } else if (!user.googleId) {
+          // Link Google ID to existing email account - preserve ALL existing data
           await storage.updateUserProfile(user.id, { 
             googleId: profile.id,
             authProvider: "google",
@@ -52,9 +56,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           });
           // Refresh user data after update
           user = await storage.getUser(user.id);
+          // Set a flag to show account linking message
+          (user as any).accountLinked = true;
         }
-        // Set a flag to show account linking message
-        (user as any).accountLinked = true;
       }
 
       return done(null, user);
@@ -173,6 +177,9 @@ export async function setupMultiAuth(app: Express) {
             // Handle specific authentication errors
             if (err.message === 'EMAIL_PASSWORD_ACCOUNT') {
               return res.redirect('/login?error=use_email_login');
+            }
+            if (err.message === 'APPLE_ACCOUNT') {
+              return res.redirect('/login?error=use_apple_login');
             }
             return res.redirect('/login?error=google_failed');
           }
