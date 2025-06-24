@@ -132,11 +132,11 @@ Preferred communication style: Simple, everyday language.
 ## Point System Architecture
 
 **Dual Point Tracking System:**
-- **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression
-- **Weekly Points**: RESET every Monday - used for leaderboard competition and weekly progress bar
-- Both systems track the same activities: food logging + bonus points from challenges/achievements
-- Level calculation: 1000 points per level using lifetime totalPoints (never affected by weekly resets)
-- Consistent scoring: YES=10, OK=5, NO=2 points across all systems
+- **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression (1000 points per level)
+- **Weekly Points**: RESET every Monday - used for leaderboard competition and weekly progress tracking
+- **Point Addition Rule**: Same points added to both systems during each week (food logging + bonus challenges)
+- **Weekly Reset Behavior**: Weekly points start at 0 every Monday, lifetime points continue accumulating
+- **Consistent Scoring**: YES=10, OK=5, NO=2 points plus bonus points from challenges added to both systems
 
 **Point Sources:**
 1. Food Analysis: Points added to both lifetime and weekly when user clicks "Yum" button
@@ -165,12 +165,12 @@ Preferred communication style: Simple, everyday language.
 - **Badge Counter Enhancement**: Updated progress page to show accurate bonus points and achievement badges earned
 - **Challenge Detection Logic**: Implemented proper streak detection and challenge completion verification
 
-### Point Counter Synchronization Fix (June 24, 2025)
-- **Root Cause Resolution**: Fixed `updateUserPoints` function that was only updating lifetime points but not weekly points
-- **Synchronization Logic**: Modified `updateUserPoints` to update both lifetime and weekly counters simultaneously
+### Dual Point System Correction (June 24, 2025)
+- **System Clarification**: Lifetime points accumulate forever (level progression), weekly points reset every Monday (competition)
+- **Point Addition Logic**: Both systems receive same point additions during each week from food logging and bonuses
+- **Weekly Reset Functionality**: Weekly points start fresh every Monday while lifetime points continue growing
 - **Database Constraint Fix**: Replaced `onConflictDoUpdate` with explicit select/update to avoid constraint errors
-- **Perfect Synchronization**: Both counters now increase by exactly the same amounts during the same week
-- **Mathematical Accuracy**: Eliminated all point counting discrepancies between lifetime and weekly systems
+- **Proper Separation**: Level progression (lifetime) and weekly competition (resets) now work as designed
 
 ### Docker Container & Cloud Run Deployment (June 24, 2025)
 - **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment

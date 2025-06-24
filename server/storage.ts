@@ -377,18 +377,32 @@ export class DatabaseStorage implements IStorage {
     weekStart.setHours(0, 0, 0, 0);
 
     try {
-      console.log(`Adding ${bonusPoints} bonus points to weekly score`);
-      await db
-        .update(weeklyScores)
-        .set({
-          weeklyPoints: sql`${weeklyScores.weeklyPoints} + ${bonusPoints}`
-        })
-        .where(
-          and(
-            eq(weeklyScores.userId, userId),
-            eq(weeklyScores.weekStart, weekStart)
-          )
-        );
+      const [existing] = await db
+        .select()
+        .from(weeklyScores)
+        .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)))
+        .limit(1);
+
+      if (existing) {
+        await db
+          .update(weeklyScores)
+          .set({
+            weeklyPoints: existing.weeklyPoints + bonusPoints,
+          })
+          .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
+      } else {
+        await db
+          .insert(weeklyScores)
+          .values({
+            userId,
+            weekStart,
+            yesCount: 0,
+            noCount: 0,
+            okCount: 0,
+            weeklyPoints: bonusPoints,
+          });
+      }
+      console.log(`Added ${bonusPoints} bonus points to weekly competition (resets Monday)`);
     } catch (error) {
       console.error('Error adding bonus to weekly score:', error);
     }
@@ -532,7 +546,7 @@ export class DatabaseStorage implements IStorage {
     return score;
   }
 
-  // Gamification operations - accumulates ONLY lifetime points (no weekly points)
+  // Points management - handles BOTH lifetime (never resets) and weekly (resets Monday) points
   async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
@@ -540,7 +554,7 @@ export class DatabaseStorage implements IStorage {
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
     
-    // Update lifetime points
+    // Update lifetime points (NEVER RESET - accumulates forever for level progression)
     const [updatedUser] = await db
       .update(users)
       .set({ 
@@ -551,45 +565,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    // CRITICAL FIX: Also update weekly points to keep both counters synchronized
-    const now = this.getMadridTime();
-    const weekStart = new Date(now);
-    const day = weekStart.getDay();
-    const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
-    weekStart.setDate(diff);
-    weekStart.setHours(0, 0, 0, 0);
-
-    try {
-      const [existing] = await db
-        .select()
-        .from(weeklyScores)
-        .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)))
-        .limit(1);
-
-      if (existing) {
-        await db
-          .update(weeklyScores)
-          .set({
-            weeklyPoints: existing.weeklyPoints + pointsToAdd,
-          })
-          .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
-      } else {
-        await db
-          .insert(weeklyScores)
-          .values({
-            userId,
-            weekStart,
-            yesCount: 0,
-            noCount: 0,
-            okCount: 0,
-            weeklyPoints: pointsToAdd,
-          });
-      }
-      console.log(`Added ${pointsToAdd} points to both lifetime (${newTotalPoints}) and weekly counters`);
-    } catch (error) {
-      console.error('Error updating weekly points during bonus award:', error);
-    }
+    // Also add same points to weekly score (RESETS every Monday for competition)
+    await this.addBonusToWeeklyScore(userId, pointsToAdd);
     
+    console.log(`Added ${pointsToAdd} points to both lifetime (${newTotalPoints}, Level ${newLevel}) and this week's competition`);
     return updatedUser;
   }
 
