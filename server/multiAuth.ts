@@ -265,18 +265,29 @@ export async function setupMultiAuth(app: Express) {
           subscriptionTier: "free",
           subscriptionStatus: "inactive",
         });
-      } else if (existingUser.passwordHash && !existingUser.appleId) {
-        // User registered with email/password, trying to sign in with Apple
-        return res.status(400).json({ 
-          message: 'This email is already registered with a password. Please sign in using your email and password instead of Apple ID.',
-          authMethod: 'email_password'
-        });
-      } else if (existingUser.googleId && !existingUser.appleId) {
-        // User registered with Google, trying to sign in with Apple
-        return res.status(400).json({ 
-          message: 'This email is already registered with Google. Please use "Sign in with Google" instead of Apple ID.',
-          authMethod: 'google'
-        });
+      } else {
+        // Handle existing user with proper conflict detection
+        if (existingUser.passwordHash && !existingUser.appleId && !existingUser.googleId) {
+          // Pure email/password account, trying to sign in with Apple
+          return res.status(400).json({ 
+            message: 'This email is already registered with a password. Please sign in using your email and password instead of Apple ID.',
+            authMethod: 'email_password'
+          });
+        } else if (existingUser.googleId && !existingUser.appleId) {
+          // Google account (with or without password), trying to sign in with Apple
+          return res.status(400).json({ 
+            message: 'This email is already registered with Google. Please use "Sign in with Google" instead of Apple ID.',
+            authMethod: 'google'
+          });
+        } else if (!existingUser.appleId) {
+          // Link Apple ID to existing account - preserve ALL existing data
+          await storage.updateUserProfile(existingUser.id, { 
+            appleId: appleId,
+            authProvider: "apple"
+          });
+          // Refresh user data after update
+          existingUser = await storage.getUser(existingUser.id);
+        }
       }
 
       // Login the user
@@ -321,17 +332,26 @@ export async function setupMultiAuth(app: Express) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
-      // Check if user already exists and provide specific guidance
+      // Check if user already exists across ALL authentication providers
       const existingUser = await storage.getUserByEmail(email.toLowerCase().trim());
       if (existingUser) {
-        let message = "An account with this email already exists. ";
+        let message = "This email is already registered. ";
         
-        if (existingUser.googleId) {
+        // Determine the original registration method and provide specific guidance
+        if (existingUser.googleId && !existingUser.passwordHash && !existingUser.appleId) {
           message += 'Please use "Sign in with Google" instead.';
-        } else if (existingUser.appleId) {
+        } else if (existingUser.appleId && !existingUser.passwordHash && !existingUser.googleId) {
           message += 'Please use "Sign in with Apple" instead.';
+        } else if (existingUser.passwordHash && !existingUser.googleId && !existingUser.appleId) {
+          message += 'Please sign in using your email and password instead.';
+        } else if (existingUser.googleId && existingUser.passwordHash) {
+          message += 'This account supports both Google sign-in and email/password. Please use either method to sign in.';
+        } else if (existingUser.appleId && existingUser.passwordHash) {
+          message += 'This account supports both Apple sign-in and email/password. Please use either method to sign in.';
+        } else if (existingUser.googleId && existingUser.appleId) {
+          message += 'This account supports both Google and Apple sign-in. Please use either method.';
         } else {
-          message += 'Please try logging in with your email and password instead.';
+          message += 'Please use your original sign-in method or contact support.';
         }
         
         return res.status(409).json({ message });
