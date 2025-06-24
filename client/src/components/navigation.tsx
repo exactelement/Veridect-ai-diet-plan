@@ -17,7 +17,7 @@ export default function Navigation() {
   ];
 
   const handleNavigation = (path: string, requiredTier: string) => {
-    const hasAccess = checkTierAccess(userTier, requiredTier);
+    const hasAccess = checkTierAccess(userTier, requiredTier, user?.email);
     
 
     
@@ -47,7 +47,7 @@ export default function Navigation() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
-            const hasAccess = checkTierAccess(userTier, item.requiredTier);
+            const hasAccess = checkTierAccess(userTier, item.requiredTier, user?.email);
             const isLocked = !hasAccess;
             const shouldGreyOut = !hasAccess;
             

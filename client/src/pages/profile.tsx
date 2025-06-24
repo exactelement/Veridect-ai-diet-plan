@@ -58,7 +58,7 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const userTier = user?.subscriptionTier || 'free';
-  const hasProAccess = checkTierAccess(userTier, 'pro');
+  const hasProAccess = checkTierAccess(userTier, 'pro', user?.email);
 
   // Scroll to top when navigating to profile
   useEffect(() => {

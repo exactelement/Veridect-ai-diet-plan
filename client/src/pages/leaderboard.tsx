@@ -13,7 +13,7 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const userTier = user?.subscriptionTier || 'free';
-  const hasAccess = userTier === 'pro' || userTier === 'advanced';
+  const hasAccess = checkTierAccess(userTier, 'pro', user?.email);
 
   // Scroll to top when navigating to leaderboard
   useEffect(() => {

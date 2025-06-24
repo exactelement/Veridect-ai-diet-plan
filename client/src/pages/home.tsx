@@ -474,7 +474,7 @@ export default function Home() {
           </div>
 
           {/* Premium features - locked for free users */}
-          {userTier === 'free' && (
+          {!hasProAccess && (
             <div className="mt-8">
               <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
                 Premium Features (Upgrade Required)
@@ -539,7 +539,7 @@ export default function Home() {
       </div>
 
       {/* Weekly Progress - only for Pro and Advanced users */}
-      {(userTier === 'pro' || userTier === 'advanced') && (
+      {hasProAccess && (
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
