@@ -275,14 +275,22 @@ export default function Profile() {
                         {user.subscriptionTier.toUpperCase()} Plan
                       </Badge>
                       {user.subscriptionTier === 'pro' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowCancelDialog(true)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 h-8"
-                        >
-                          Cancel Subscription
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          {(user as any).subscriptionStatus === 'cancelling' ? (
+                            <Badge variant="outline" className="text-orange-600 border-orange-300 bg-orange-50">
+                              Cancelled - Access until period end
+                            </Badge>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setShowCancelDialog(true)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 h-8"
+                            >
+                              Cancel Subscription
+                            </Button>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
@@ -770,7 +778,7 @@ export default function Profile() {
                 Cancel Pro Subscription
               </DialogTitle>
               <DialogDescription>
-                Are you sure you want to cancel your Pro subscription? You'll lose access to:
+                Are you sure you want to cancel your Pro subscription? This will schedule cancellation at the end of your billing period. You'll lose access to:
               </DialogDescription>
             </DialogHeader>
             
@@ -794,7 +802,7 @@ export default function Profile() {
               
               <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> You'll retain Pro access until the end of your current billing period, then revert to the Free plan.
+                  <strong>Important:</strong> Your subscription will be scheduled for cancellation at the end of your current billing period. You'll retain full Pro access until then, after which you'll automatically revert to the Free plan.
                 </p>
               </div>
             </div>
@@ -818,7 +826,7 @@ export default function Profile() {
                     Cancelling...
                   </>
                 ) : (
-                  'Yes, Cancel'
+                  'Schedule Cancellation'
                 )}
               </Button>
             </DialogFooter>
