@@ -431,10 +431,11 @@ export default function Home() {
       </div>
       )}
 
-      {/* Free tier features section */}
-      <div className="container-padding mb-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
+      {/* Free tier features section - only show for free tier users */}
+      {!hasProAccess && (
+        <div className="container-padding mb-8">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
               <CardHeader>
@@ -474,11 +475,10 @@ export default function Home() {
           </div>
 
           {/* Premium features - locked for free users */}
-          {!hasProAccess && (
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
-                Premium Features (Upgrade Required)
-              </h3>
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
+              Premium Features (Upgrade Required)
+            </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
                 <Card className="bg-gray-100 border-gray-200">
                   <CardHeader className="pb-3">
@@ -533,10 +533,10 @@ export default function Home() {
                   Upgrade to Pro - €1/month billed annually
                 </Button>
               </div>
-            </div>
-          )}
+          </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Weekly Progress - only for Pro and Advanced users */}
       {hasProAccess && (
