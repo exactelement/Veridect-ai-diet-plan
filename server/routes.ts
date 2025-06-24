@@ -482,7 +482,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user?.claims?.sub || req.user?.id;
       const { tier } = req.body;
 
-      if (!['pro', 'medical'].includes(tier)) {
+      if (!['pro', 'advanced'].includes(tier)) {
         return res.status(400).json({ message: "Invalid subscription tier" });
       }
 
@@ -504,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const priceId = tier === 'pro' 
         ? process.env.STRIPE_PRO_PRICE_ID 
-        : process.env.STRIPE_MEDICAL_PRICE_ID;
+        : process.env.STRIPE_ADVANCED_PRICE_ID;
 
       if (!priceId) {
         throw new Error(`Missing price ID for ${tier} tier`);
@@ -644,17 +644,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const invoice = event.data.object as any;
           if (invoice.subscription) {
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-            // Update user subscription status
             const users = await storage.getUsersByStripeSubscriptionId(subscription.id);
+            
+            // Determine tier from subscription items
+            const tier = subscription.items.data[0]?.price?.id === process.env.STRIPE_PRO_PRICE_ID ? 'pro' : 'advanced';
+            
             for (const user of users) {
               await storage.updateUserStripeInfo(user.id, {
+                subscriptionTier: tier,
                 subscriptionStatus: 'active',
               });
+              console.log(`User ${user.id} upgraded to ${tier} tier - payment succeeded`);
             }
           }
           break;
         case 'invoice.payment_failed':
-          // Handle failed payment
+          const failedInvoice = event.data.object as any;
+          if (failedInvoice.subscription) {
+            const users = await storage.getUsersByStripeSubscriptionId(failedInvoice.subscription as string);
+            for (const user of users) {
+              await storage.updateUserStripeInfo(user.id, {
+                subscriptionTier: 'free',
+                subscriptionStatus: 'payment_failed',
+              });
+              console.log(`User ${user.id} downgraded to free - payment failed`);
+            }
+          }
           break;
         case 'customer.subscription.deleted':
           const deletedSub = event.data.object as Stripe.Subscription;
