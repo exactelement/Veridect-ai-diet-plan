@@ -361,7 +361,7 @@ export default function Subscription() {
             )}
             
             {tier.comingSoon && (
-              <div className="absolute top-3 right-3">
+              <div className="absolute top-3 left-3">
                 <Badge className="bg-gray-600 text-white px-3 py-1 text-xs">Coming Soon</Badge>
               </div>
             )}
