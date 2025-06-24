@@ -157,6 +157,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### App Icon & PWA Setup - Veridect Branding (June 24, 2025)
+- **App Icon**: Implemented Veridect logo as favicon and app icon across all platforms
+- **PWA Manifest**: Added Progressive Web App manifest for mobile installation
+- **SEO Meta Tags**: Enhanced with proper title, description, and Open Graph tags
+- **Multi-Platform Icons**: Apple Touch Icons, Android Chrome icons, and PWA support
+- **Brand Consistency**: Veridect green theme color (#10b981) throughout app metadata
+
 ### Email Service Implementation - Password Reset (June 24, 2025)
 - **Email Service**: Implemented SendGrid email service for password reset functionality
 - **Professional Templates**: HTML and text email templates with Veridect branding
