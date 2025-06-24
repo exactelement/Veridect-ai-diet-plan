@@ -297,10 +297,32 @@ La presente invención representa innovaciones técnicas específicas no cubiert
 
 ---
 
-**Fecha de presentación:** [FECHA]
+## DISCLAIMERS Y VALIDACIÓN REQUERIDA
+
+**IMPORTANTE:** Este documento es un borrador técnico basado en las innovaciones implementadas en Veridect. Se requiere validación profesional antes de presentación oficial.
+
+**Validación Requerida:**
+- Búsqueda profesional de arte previo en OEPM, EPO y USPTO
+- Revisión por abogado especialista en patentes español
+- Validación de novedad y actividad inventiva
+- Confirmación de aplicabilidad industrial
+
+**Limitaciones de Búsqueda:**
+- Análisis preliminar basado en investigación disponible
+- Acceso limitado a bases de datos oficiales
+- Requiere búsqueda profesional comprehensiva
+
+**Enfoque de Reivindicaciones:**
+- Centrado en combinaciones técnicas únicas
+- Evita reivindicaciones amplias sobre componentes individuales
+- Enfatiza integración específica de sistemas
+
+---
+
+**Fecha de presentación:** [FECHA - PENDIENTE VALIDACIÓN PROFESIONAL]
 **Firma del solicitante:** ___________________
 **Nombre completo:** [NOMBRE COMPLETO]
 
 ---
 
-*Solicitud de patente provisional revisada tras investigación en OEPM - enfocada exclusivamente en innovaciones técnicas únicas no cubiertas por estado de la técnica actual.*
+*Borrador de solicitud de patente provisional - REQUIERE VALIDACIÓN PROFESIONAL antes de presentación oficial. Enfocado en innovaciones técnicas específicas implementadas en sistema "Pregunta a Veri".*
