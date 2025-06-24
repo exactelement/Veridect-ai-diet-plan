@@ -171,7 +171,7 @@ export default function Landing() {
                     <div className="w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg mb-4 flex items-center justify-center">
                       <Camera className="w-12 h-12 text-white" />
                     </div>
-                    <Button className="bg-ios-blue text-white px-6 py-3 rounded-full ios-button">
+                    <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-3 rounded-full ios-button">
                       Analyze Food
                     </Button>
                   </div>
