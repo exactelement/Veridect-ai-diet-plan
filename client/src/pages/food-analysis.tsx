@@ -296,7 +296,7 @@ export default function FoodAnalysis() {
 
   if (analysisResult) {
     return (
-      <div className="pt-20 pb-8 container-padding">
+      <div className="pt-20 pb-32 container-padding">
         <div className="max-w-4xl mx-auto">
           <Card>
             <CardHeader className="text-center">
@@ -412,7 +412,7 @@ export default function FoodAnalysis() {
                 )}
               </div>
               
-              <div className="flex justify-center space-x-4 pt-4">
+              <div className="flex justify-center space-x-4 pt-4 pb-8">
                 <Button onClick={resetAnalysis} variant="outline" size="sm">
                   Analyze Another Food
                 </Button>
