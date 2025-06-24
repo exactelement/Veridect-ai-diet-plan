@@ -433,7 +433,7 @@ export default function FoodAnalysis() {
               
               <div className="flex justify-center space-x-4 pt-4 pb-8">
                 <Button onClick={resetAnalysis} variant="outline" size="sm">
-                  Analyze Another Food
+                  Ask Veri Again
                 </Button>
                 <Button onClick={() => window.history.back()} variant="ghost" size="sm">
                   Back to Dashboard
@@ -533,8 +533,8 @@ export default function FoodAnalysis() {
                     onClick={() => fileInputRef.current?.click()}
                     className="border-2 border-dashed border-gray-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
                   >
-                    <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-ios-secondary">Click to upload an image of your food</p>
+                    <Upload className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                    <p className="text-gray-700">Click to upload an image of your food</p>
                   </div>
                 )}
               </div>
@@ -567,10 +567,10 @@ export default function FoodAnalysis() {
                 {analyzeMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Analyzing...
+                    Asking Veri...
                   </>
                 ) : (
-                  "Analyze Food"
+                  "Ask Veri"
                 )}
               </Button>
             </div>

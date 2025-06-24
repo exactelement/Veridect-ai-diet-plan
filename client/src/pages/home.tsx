@@ -476,7 +476,7 @@ export default function Home() {
 
           {/* Premium features - locked for free users */}
           <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
+            <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
               Premium Features (Upgrade Required)
             </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
@@ -486,7 +486,7 @@ export default function Home() {
                       <span>🎯</span> Personalization
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="text-xs text-gray-400">
+                  <CardContent className="text-xs text-gray-700">
                     Custom AI based on your goals
                   </CardContent>
                 </Card>

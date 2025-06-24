@@ -140,7 +140,7 @@ export default function SubscriptionTiers({ currentTier, onSelectTier }: Subscri
                     onClick={() => tier.id === "advanced" ? null : onSelectTier(tier)}
                     disabled={tier.id === "advanced"}
                     className={`w-full ${
-                      tier.id === "advanced" ? "bg-gray-400 text-gray-600" :
+                      tier.id === "advanced" ? "bg-gray-300 text-gray-800" :
                       tier.color === "blue" ? "bg-ios-blue text-white" :
                       tier.color === "green" ? "bg-health-green text-white" :
                       ""

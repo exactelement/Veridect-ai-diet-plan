@@ -80,7 +80,7 @@ export default function Leaderboard() {
       case 1:
         return <Crown className="w-6 h-6 text-yellow-500" />;
       case 2:
-        return <Medal className="w-6 h-6 text-gray-400" />;
+        return <Medal className="w-6 h-6 text-gray-500" />;
       case 3:
         return <Award className="w-6 h-6 text-amber-600" />;
       default:
@@ -93,7 +93,7 @@ export default function Leaderboard() {
       case 1:
         return "bg-gradient-to-r from-yellow-500/10 to-yellow-400/10 border-yellow-500/20";
       case 2:
-        return "bg-gradient-to-r from-gray-400/10 to-gray-300/10 border-gray-400/20";
+        return "bg-gradient-to-r from-gray-500/10 to-gray-400/10 border-gray-500/20";
       case 3:
         return "bg-gradient-to-r from-amber-600/10 to-amber-500/10 border-amber-600/20";
       default:

@@ -175,7 +175,7 @@ export default function Landing() {
                       <Camera className="w-12 h-12 text-white" />
                     </div>
                     <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-3 rounded-full ios-button">
-                      Analyze Food
+                      Ask Veri
                     </Button>
                   </div>
                 </div>
@@ -529,13 +529,13 @@ export default function Landing() {
           </div>
           
           <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2024 Veridect. All rights reserved.</p>
+            <p className="text-gray-300 text-sm">© 2024 Veridect. All rights reserved.</p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <span className="text-gray-400 text-sm">HIPAA Compliant</span>
-              <span className="text-gray-400 text-sm">•</span>
-              <span className="text-gray-400 text-sm">GDPR Ready</span>
-              <span className="text-gray-400 text-sm">•</span>
-              <span className="text-gray-400 text-sm">SOC 2 Certified</span>
+              <span className="text-gray-300 text-sm">HIPAA Compliant</span>
+              <span className="text-gray-300 text-sm">•</span>
+              <span className="text-gray-300 text-sm">GDPR Ready</span>
+              <span className="text-gray-300 text-sm">•</span>
+              <span className="text-gray-300 text-sm">SOC 2 Certified</span>
             </div>
           </div>
         </div>

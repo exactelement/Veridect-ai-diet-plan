@@ -454,8 +454,8 @@ export default function Profile() {
                 <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Heart className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
-                      <span className={hasProAccess ? '' : 'text-gray-400'}>Personalization</span>
+                      <Heart className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-600'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-600'}>Personalization</span>
                       {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
                     </div>
                     {hasProAccess && (personalizationOpen ? (
@@ -614,9 +614,9 @@ export default function Profile() {
                 <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Monitor className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
-                      <span className={hasProAccess ? '' : 'text-gray-400'}>App Interface</span>
-                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
+                      <Monitor className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-600'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-600'}>App Interface</span>
+                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-600 ml-2" />}
                     </div>
                     {hasProAccess && (interfaceOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
@@ -704,9 +704,9 @@ export default function Profile() {
                 <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <History className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
-                      <span className={hasProAccess ? '' : 'text-gray-400'}>Food History</span>
-                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
+                      <History className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-600'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-600'}>Food History</span>
+                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-600 ml-2" />}
                     </div>
                     {hasProAccess && (historyOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
