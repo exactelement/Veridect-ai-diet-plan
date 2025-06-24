@@ -138,7 +138,7 @@ export function checkSubscriptionLimits(
       remainingAnalyses: remaining,
       message: canAnalyze 
         ? undefined 
-        : `Daily analysis limit reached. Upgrade to Pro for unlimited analyses.`,
+        : `Great job! You've used all ${limits.dailyAnalyses} of your daily analyses. Ready for unlimited food insights? Upgrade to Pro for just €1/month and keep the momentum going!`,
       upgradeRequired: !canAnalyze && tier === 'free'
     };
   }
@@ -150,7 +150,7 @@ export function checkSubscriptionLimits(
     allowed: hasAccess,
     message: hasAccess 
       ? undefined 
-      : `This feature requires a ${getRequiredTierForFeature(feature)} subscription.`,
+      : `Unlock this amazing feature with ${getRequiredTierForFeature(feature)} for just €1/month! Join thousands enjoying premium nutrition insights.`,
     upgradeRequired: !hasAccess
   };
 }

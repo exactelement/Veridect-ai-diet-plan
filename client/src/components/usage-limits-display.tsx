@@ -58,7 +58,7 @@ export default function UsageLimitsDisplay() {
           {isAtLimit ? (
             <div className="text-center">
               <p className="text-sm text-red-600 mb-2">
-                Daily limit reached! Upgrade for unlimited analyses.
+                Great job! You've used all your daily analyses. Ready for unlimited insights?
               </p>
               <Button size="sm" className="w-full" onClick={() => window.location.href = '/subscription'}>
                 <Crown className="w-4 h-4 mr-2" />
@@ -68,7 +68,7 @@ export default function UsageLimitsDisplay() {
           ) : isNearLimit ? (
             <div className="text-center">
               <p className="text-sm text-yellow-600 mb-2">
-                You're running low on daily analyses.
+                You're doing great! Just a few analyses left today.
               </p>
               <Button variant="outline" size="sm" className="w-full" onClick={() => window.location.href = '/subscription'}>
                 <Crown className="w-4 h-4 mr-2" />
