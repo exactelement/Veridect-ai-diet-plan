@@ -350,7 +350,7 @@ export default function Subscription() {
         {subscriptionTiers.map((tier) => (
           <Card 
             key={tier.id} 
-            className={`relative ${tier.color} hover:shadow-lg transition-all duration-200 flex flex-col ${
+            className={`relative ${tier.color} hover:shadow-lg transition-all duration-200 ${
               tier.popular ? 'ring-2 ring-yellow-400' : ''
             } ${tier.comingSoon ? 'opacity-75' : ''}`}
           >
@@ -377,62 +377,54 @@ export default function Subscription() {
               </div>
               <p className="text-sm text-ios-secondary">{tier.description}</p>
             </CardHeader>
-            <CardContent className="flex flex-col h-full">
-              <div className="flex-1 space-y-4">
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-ios-primary">Features:</h4>
+                <ul className="space-y-1">
+                  {tier.features.map((feature, index) => (
+                    <li key={index} className="flex items-start text-sm">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {tier.limitations.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-sm text-ios-primary">Features:</h4>
-                  <ul className="space-y-1 min-h-[200px]">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-start text-sm">
-                        <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
+                  <h4 className="font-semibold text-sm text-ios-secondary">Limitations:</h4>
+                  <ul className="space-y-1">
+                    {tier.limitations.map((limitation, index) => (
+                      <li key={index} className="flex items-start text-sm text-ios-secondary">
+                        <span className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0">•</span>
+                        <span>{limitation}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                
-                {tier.limitations.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-sm text-ios-secondary">Limitations:</h4>
-                    <ul className="space-y-1 min-h-[80px]">
-                      {tier.limitations.map((limitation, index) => (
-                        <li key={index} className="flex items-start text-sm text-ios-secondary">
-                          <span className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0">•</span>
-                          <span>{limitation}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {tier.limitations.length === 0 && (
-                  <div className="min-h-[120px]"></div>
-                )}
-              </div>
+              )}
               
-              <div className="mt-6">
-                <Button
-                  onClick={() => handleSelectTier(tier)}
-                  disabled={createSubscriptionMutation.isPending || tier.comingSoon}
-                  className="w-full h-12"
-                  variant={tier.id === "free" ? "outline" : "default"}
-                >
-                  {tier.comingSoon ? (
-                    "Coming Soon"
-                  ) : createSubscriptionMutation.isPending && selectedTier?.id === tier.id ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Processing...
-                    </>
-                  ) : user?.subscriptionTier === tier.id ? (
-                    "Current Plan"
-                  ) : tier.id === "free" ? (
-                    "Free Plan"
-                  ) : (
-                    `Upgrade to ${tier.name}`
-                  )}
-                </Button>
-              </div>
+              <Button
+                onClick={() => handleSelectTier(tier)}
+                disabled={createSubscriptionMutation.isPending || tier.comingSoon}
+                className="w-full"
+                variant={tier.id === "free" ? "outline" : "default"}
+              >
+                {tier.comingSoon ? (
+                  "Coming Soon"
+                ) : createSubscriptionMutation.isPending && selectedTier?.id === tier.id ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : user?.subscriptionTier === tier.id ? (
+                  "Current Plan"
+                ) : tier.id === "free" ? (
+                  "Free Plan"
+                ) : (
+                  `Upgrade to ${tier.name}`
+                )}
+              </Button>
             </CardContent>
           </Card>
         ))}
