@@ -7,12 +7,12 @@ export default function Terms() {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
+          <h1 className="text-4xl font-bold mb-4">Veridect Terms of Service</h1>
           <p className="text-xl text-ios-secondary">
-            Please read these terms carefully before using YesNoApp.
+            Please read these terms carefully before using Veridect.
           </p>
           <p className="text-sm text-ios-secondary mt-2">
-            Last updated: December 19, 2024
+            Last updated: June 24, 2025
           </p>
         </div>
 
@@ -24,7 +24,7 @@ export default function Terms() {
               <div>
                 <h3 className="font-semibold text-warning-orange mb-2">Medical Disclaimer</h3>
                 <p className="text-sm">
-                  YesNoApp provides nutritional information and suggestions for educational purposes only. 
+                  Veridect provides nutritional information and suggestions for educational, informational, and entertainment purposes only. 
                   This service is not intended to replace professional medical advice, diagnosis, or treatment. 
                   Always consult with qualified healthcare providers before making significant dietary changes.
                 </p>
