@@ -34,8 +34,13 @@ export default function TopHeader() {
               alt="Veridect Logo" 
               className="w-8 h-8 object-contain"
             />
-            <div className="text-2xl font-bold text-health-green">
-              Veridect
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-health-green">
+                Veridect
+              </span>
+              <span className="text-xs bg-health-green text-white px-2 py-1 rounded-full font-medium">
+                beta
+              </span>
             </div>
           </Link>
 
