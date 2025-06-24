@@ -131,6 +131,14 @@ export default function Login() {
           title = "Use Email Login Instead";
           description = "This email is already registered with a password. Please sign in using your email and password instead of Google.";
           break;
+        case 'use_google_login':
+          title = "Use Google Login Instead";
+          description = "This email is already registered with Google. Please use 'Sign in with Google' instead of Apple ID.";
+          break;
+        case 'use_apple_login':
+          title = "Use Apple Login Instead";
+          description = "This email is already registered with Apple ID. Please use 'Sign in with Apple' instead.";
+          break;
         case 'apple_auth_failed':
           title = "Apple Sign-In Failed";
           description = "Apple authentication encountered an error. Please try again or use email login.";

@@ -41,7 +41,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         });
       } else if (user.passwordHash && !user.googleId) {
         // User registered with email/password, trying to sign in with Google
-        return done(new Error("This email is already registered with a password. Please sign in using your email and password instead of Google."));
+        return done(new Error("EMAIL_PASSWORD_ACCOUNT"));
       } else {
         // Link Google ID to existing email account - preserve ALL existing data including onboarding status
         if (!user.googleId) {
@@ -82,13 +82,20 @@ passport.use(new LocalStrategy({
     // Check if user registered via Google OAuth without password
     if (!user.passwordHash && user.googleId) {
       return done(null, false, { 
-        message: 'This email is registered with Google. Please use "Sign in with Google" instead.' 
+        message: 'GOOGLE_ACCOUNT' 
+      });
+    }
+
+    // Check if user registered via Apple ID without password
+    if (!user.passwordHash && user.appleId) {
+      return done(null, false, { 
+        message: 'APPLE_ACCOUNT' 
       });
     }
 
     if (!user.passwordHash) {
       return done(null, false, { 
-        message: 'This account was created through a different method. Please try signing in with Google or contact support.' 
+        message: 'UNKNOWN_ACCOUNT' 
       });
     }
 
@@ -164,7 +171,7 @@ export async function setupMultiAuth(app: Express) {
         passport.authenticate('google', (err, user) => {
           if (err) {
             // Handle specific authentication errors
-            if (err.message && err.message.includes('already registered with a password')) {
+            if (err.message === 'EMAIL_PASSWORD_ACCOUNT') {
               return res.redirect('/login?error=use_email_login');
             }
             return res.redirect('/login?error=google_failed');
@@ -251,6 +258,18 @@ export async function setupMultiAuth(app: Express) {
           subscriptionTier: "free",
           subscriptionStatus: "inactive",
         });
+      } else if (existingUser.passwordHash && !existingUser.appleId) {
+        // User registered with email/password, trying to sign in with Apple
+        return res.status(400).json({ 
+          message: 'This email is already registered with a password. Please sign in using your email and password instead of Apple ID.',
+          authMethod: 'email_password'
+        });
+      } else if (existingUser.googleId && !existingUser.appleId) {
+        // User registered with Google, trying to sign in with Apple
+        return res.status(400).json({ 
+          message: 'This email is already registered with Google. Please use "Sign in with Google" instead of Apple ID.',
+          authMethod: 'google'
+        });
       }
 
       // Login the user
@@ -295,10 +314,20 @@ export async function setupMultiAuth(app: Express) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
-      // Check if user already exists
+      // Check if user already exists and provide specific guidance
       const existingUser = await storage.getUserByEmail(email.toLowerCase().trim());
       if (existingUser) {
-        return res.status(409).json({ message: "An account with this email already exists. Please try logging in instead." });
+        let message = "An account with this email already exists. ";
+        
+        if (existingUser.googleId) {
+          message += 'Please use "Sign in with Google" instead.';
+        } else if (existingUser.appleId) {
+          message += 'Please use "Sign in with Apple" instead.';
+        } else {
+          message += 'Please try logging in with your email and password instead.';
+        }
+        
+        return res.status(409).json({ message });
       }
 
       // Hash password
@@ -337,7 +366,18 @@ export async function setupMultiAuth(app: Express) {
       }
       
       if (!user) {
-        return res.status(401).json({ message: info?.message || "Invalid credentials" });
+        // Handle specific authentication method conflicts
+        let message = info?.message || "Invalid credentials";
+        
+        if (info?.message === 'GOOGLE_ACCOUNT') {
+          message = 'This email is registered with Google. Please use "Sign in with Google" instead.';
+        } else if (info?.message === 'APPLE_ACCOUNT') {
+          message = 'This email is registered with Apple ID. Please use "Sign in with Apple" instead.';
+        } else if (info?.message === 'UNKNOWN_ACCOUNT') {
+          message = 'This account was created through a different method. Please try signing in with Google, Apple, or contact support.';
+        }
+        
+        return res.status(401).json({ message });
       }
 
       req.login(user, (err) => {
