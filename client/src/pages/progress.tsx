@@ -21,7 +21,22 @@ export default function Progress() {
     queryKey: ["/api/food/analyzed/today"],
   });
 
-  // Calculate total stats from all logged food
+  // Get today's logged food for the progress wheel (resets daily)
+  const { data: todaysLoggedFoods = [] } = useQuery<FoodLog[]>({
+    queryKey: ["/api/food/logs/today"],
+  });
+
+  // Calculate TODAY'S LOGGED stats for the progress wheel (resets daily at Madrid midnight)
+  const todaysLoggedStats = todaysLoggedFoods.reduce(
+    (acc: any, log: FoodLog) => {
+      acc[log.verdict.toLowerCase()]++;
+      acc.total++;
+      return acc;
+    },
+    { yes: 0, ok: 0, no: 0, total: 0 }
+  );
+
+  // Calculate total stats from all logged food (for historical reference)
   const totalStats = allLogs.reduce(
     (acc: any, log: FoodLog) => {
       acc[log.verdict.toLowerCase()]++;
@@ -62,20 +77,20 @@ export default function Progress() {
       );
   })();
 
-  // Calculate percentages
-  const excellentPercentage = totalStats.total > 0 ? Math.round((totalStats.yes / totalStats.total) * 100) : 0;
-  const moderatePercentage = totalStats.total > 0 ? Math.round((totalStats.ok / totalStats.total) * 100) : 0;
-  const badPercentage = totalStats.total > 0 ? Math.round((totalStats.no / totalStats.total) * 100) : 0;
+  // Calculate percentages for TODAY'S progress wheel (resets daily)
+  const excellentPercentage = todaysLoggedStats.total > 0 ? Math.round((todaysLoggedStats.yes / todaysLoggedStats.total) * 100) : 0;
+  const moderatePercentage = todaysLoggedStats.total > 0 ? Math.round((todaysLoggedStats.ok / todaysLoggedStats.total) * 100) : 0;
+  const badPercentage = todaysLoggedStats.total > 0 ? Math.round((todaysLoggedStats.no / todaysLoggedStats.total) * 100) : 0;
 
-  // Calculate circle chart segments (for 360 degrees)
-  const excellentDegrees = (totalStats.yes / totalStats.total) * 360 || 0;
-  const moderateDegrees = (totalStats.ok / totalStats.total) * 360 || 0;
-  const badDegrees = (totalStats.no / totalStats.total) * 360 || 0;
+  // Calculate circle chart segments for TODAY'S data (for 360 degrees)
+  const excellentDegrees = (todaysLoggedStats.yes / todaysLoggedStats.total) * 360 || 0;
+  const moderateDegrees = (todaysLoggedStats.ok / todaysLoggedStats.total) * 360 || 0;
+  const badDegrees = (todaysLoggedStats.no / todaysLoggedStats.total) * 360 || 0;
 
-  // Create conic gradient based on the data
+  // Create conic gradient based on TODAY'S data (resets daily)
   const createConicGradient = () => {
-    if (totalStats.total === 0) {
-      return 'conic-gradient(#e5e7eb 0deg 360deg)'; // Gray when no data
+    if (todaysLoggedStats.total === 0) {
+      return 'conic-gradient(#e5e7eb 0deg 360deg)'; // Gray when no data today
     }
 
     let gradient = 'conic-gradient(';
@@ -123,40 +138,40 @@ export default function Progress() {
                   }}
                 >
                   <div className="w-32 h-32 bg-white rounded-full flex flex-col items-center justify-center shadow-lg">
-                    <div className="text-3xl font-bold text-gray-800">{totalStats.total}</div>
-                    <div className="text-sm text-gray-500">Total Choices</div>
+                    <div className="text-3xl font-bold text-gray-800">{todaysLoggedStats.total}</div>
+                    <div className="text-sm text-gray-500">Today's Choices</div>
                   </div>
                 </div>
               </div>
 
-              {/* Stats Below Circle */}
+              {/* Stats Below Circle - TODAY'S DATA (resets daily) */}
               <div className="w-full grid grid-cols-3 gap-6">
                 {/* Excellent */}
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-green-600 mb-1">{totalStats.yes}</div>
+                  <div className="text-4xl font-bold text-green-600 mb-1">{todaysLoggedStats.yes}</div>
                   <div className="text-lg font-semibold text-gray-800">Excellent</div>
                   <div className="text-sm text-gray-500">{excellentPercentage}%</div>
                 </div>
 
                 {/* Moderate */}
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-yellow-600 mb-1">{totalStats.ok}</div>
+                  <div className="text-4xl font-bold text-yellow-600 mb-1">{todaysLoggedStats.ok}</div>
                   <div className="text-lg font-semibold text-gray-800">Moderate</div>
                   <div className="text-sm text-gray-500">{moderatePercentage}%</div>
                 </div>
 
                 {/* Bad */}
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-red-600 mb-1">{totalStats.no}</div>
+                  <div className="text-4xl font-bold text-red-600 mb-1">{todaysLoggedStats.no}</div>
                   <div className="text-lg font-semibold text-gray-800">Bad</div>
                   <div className="text-sm text-gray-500">{badPercentage}%</div>
                 </div>
               </div>
 
               {/* Legend for empty state */}
-              {totalStats.total === 0 && (
+              {todaysLoggedStats.total === 0 && (
                 <div className="text-center text-gray-500 mt-4">
-                  <p className="text-sm">Start analyzing food to see your progress!</p>
+                  <p className="text-sm">Start logging food to see today's progress!</p>
                 </div>
               )}
             </div>
