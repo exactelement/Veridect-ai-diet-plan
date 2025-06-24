@@ -56,7 +56,7 @@ const subscriptionTiers: SubscriptionTier[] = [
   {
     id: "pro",
     name: "Pro",
-    price: 12.00,
+    price: 12,
 
     features: [
       "Unlimited analyses",
@@ -76,7 +76,7 @@ const subscriptionTiers: SubscriptionTier[] = [
   {
     id: "advanced",
     name: "Advanced",
-    price: 50.00,
+    price: 50,
     description: "For professionals & advanced users",
     comingSoon: true,
     features: [

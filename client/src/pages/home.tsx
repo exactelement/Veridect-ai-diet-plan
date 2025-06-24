@@ -184,7 +184,7 @@ export default function Home() {
     {
       id: "pro",
       name: "Pro",
-      price: 1.00,
+      price: 1,
       description: "Billed annually (€12/year) - Limited offer! Normally €10/month",
       features: [
         "Unlimited analyses",
@@ -202,7 +202,7 @@ export default function Home() {
     {
       id: "advanced",
       name: "Advanced",
-      price: 50.00,
+      price: 50,
       description: "For professionals & advanced users",
       features: [
         "Everything in Pro",
