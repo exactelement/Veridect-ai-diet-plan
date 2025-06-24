@@ -634,8 +634,13 @@ export class DatabaseStorage implements IStorage {
     const lastStreakDate = user.lastStreakDate ? new Date(user.lastStreakDate) : null;
     let newStreak = user.currentStreak || 0;
     
-    console.log(`Updating streak for ${userId}: verdict=${verdict}, currentStreak=${user.currentStreak}`);
-    console.log(`Madrid today: ${madridToday.toISOString()}, lastStreakDate: ${lastStreakDate?.toISOString()}`);
+    console.log(`\n=== STREAK UPDATE DEBUG ===`);
+    console.log(`User: ${userId}`);
+    console.log(`Verdict: ${verdict}`);
+    console.log(`Current streak: ${user.currentStreak}`);
+    console.log(`Madrid today: ${madridToday.toISOString()}`);
+    console.log(`Last streak date: ${lastStreakDate?.toISOString()}`);
+    console.log(`Is new day? ${!lastStreakDate || lastStreakDate < madridToday}`);
     
     // Check if we need to update streak based on Madrid timezone
     if (!lastStreakDate || lastStreakDate < madridToday) {
@@ -670,6 +675,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     console.log(`Streak updated: ${user.currentStreak} -> ${newStreak}`);
+    console.log(`=== STREAK UPDATE COMPLETE ===\n`);
     return updatedUser;
   }
 
