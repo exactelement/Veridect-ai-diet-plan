@@ -462,9 +462,7 @@ export default function Login() {
 
 
 
-  const handleReplitLogin = () => {
-    window.location.href = "/api/login";
-  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ios-bg to-ios-gray-50 p-4">
@@ -527,17 +525,7 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Replit Login - Primary Option */}
-              <Button
-                onClick={handleReplitLogin}
-                className="w-full h-12 text-base font-medium bg-ios-blue text-white hover:bg-ios-blue/90 transition-colors shadow-lg"
-                disabled={isLoading}
-              >
-                <div className="w-5 h-5 mr-2 bg-white rounded flex items-center justify-center">
-                  <span className="text-ios-blue font-bold text-xs">R</span>
-                </div>
-                Continue with Replit
-              </Button>
+
             </>
           )}
 
