@@ -2,9 +2,14 @@ import { MailService } from '@sendgrid/mail';
 
 let mailService: MailService | null = null;
 
+console.log('Initializing SendGrid service...');
 if (process.env.SENDGRID_API_KEY) {
+  console.log('SendGrid API key found, initializing service');
   mailService = new MailService();
   mailService.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('SendGrid service initialized successfully');
+} else {
+  console.log('SendGrid API key not found - emails will be logged to console');
 }
 
 interface EmailParams {
@@ -25,16 +30,24 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 
   try {
-    await mailService.send({
+    console.log(`Attempting to send email to ${params.to} via SendGrid...`);
+    console.log(`From: ${params.from}`);
+    console.log(`Subject: ${params.subject}`);
+    
+    const result = await mailService.send({
       to: params.to,
       from: params.from,
       subject: params.subject,
       text: params.text,
       html: params.html,
     });
+    console.log('SendGrid email sent successfully! Status:', result[0].statusCode);
     return true;
   } catch (error) {
-    console.error('SendGrid email error:', error);
+    console.error('SendGrid email failed:', error.message);
+    if (error.response && error.response.body) {
+      console.error('SendGrid error details:', JSON.stringify(error.response.body, null, 2));
+    }
     return false;
   }
 }
@@ -44,7 +57,7 @@ export function generatePasswordResetEmail(email: string, resetToken: string, ba
   
   return {
     to: email,
-    from: 'noreply@veridect.com', // Replace with your verified SendGrid sender
+    from: 'michael@10xr.es', // Must be verified in SendGrid
     subject: 'Reset Your Veridect Password',
     text: `
 Hello,
