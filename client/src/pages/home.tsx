@@ -185,7 +185,7 @@ export default function Home() {
       id: "pro",
       name: "Pro",
       price: 1.00,
-      description: "€1/month billed annually (€12/year) - Limited offer! Normally €10/month",
+      description: "Billed annually (€12/year) - Limited offer! Normally €10/month",
       features: [
         "Unlimited analyses",
         "Food logging & progress tracking",

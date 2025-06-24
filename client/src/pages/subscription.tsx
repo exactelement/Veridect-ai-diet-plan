@@ -57,7 +57,7 @@ const subscriptionTiers: SubscriptionTier[] = [
     id: "pro",
     name: "Pro",
     price: 12.00,
-    description: "Everything in Free, plus unlimited analyses and premium features",
+    description: "Unlock unlimited potential with advanced features",
     features: [
       "Unlimited analyses",
       "Food logging & progress tracking",
