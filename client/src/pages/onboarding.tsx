@@ -360,7 +360,8 @@ export default function Onboarding() {
                         <Star className="w-10 h-10 text-ios-blue mx-auto mb-3" />
                         <h3 className="text-xl font-bold mb-2">Pro</h3>
                         <div className="text-3xl font-bold text-ios-blue mb-1">€1<span className="text-base font-normal">/month</span></div>
-                        <p className="text-xs text-ios-secondary mb-4">Promotional - normally €10/month</p>
+                        <p className="text-xs text-ios-secondary">billed annually (€12/year)</p>
+                        <p className="text-xs text-red-600 font-medium mb-4">Limited offer! Normally €10/month</p>
                         <ul className="space-y-2 text-sm text-left mb-6">
                           <li>• Unlimited analyses</li>
                           <li>• Food logging & progress tracking</li>
@@ -431,7 +432,7 @@ export default function Onboarding() {
                           </div>
                           <div>
                             <div className="text-2xl font-bold text-ios-blue">€1</div>
-                            <div className="text-xs text-blue-600">promotional price</div>
+                            <div className="text-xs text-blue-600">per month, billed annually</div>
                           </div>
                         </div>
                         <ul className="space-y-2 text-sm">

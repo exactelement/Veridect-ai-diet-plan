@@ -185,7 +185,7 @@ export default function Home() {
       id: "pro",
       name: "Pro",
       price: 1.00,
-      description: "€1/month promotional - normally €10/month",
+      description: "€1/month billed annually (€12/year) - Limited offer! Normally €10/month",
       features: [
         "Unlimited analyses",
         "Food logging & progress tracking",
@@ -530,7 +530,7 @@ export default function Home() {
                   onClick={() => navigate('/subscription')}
                   className="bg-ios-blue hover:bg-blue-600 text-white px-8 py-3"
                 >
-                  Upgrade to Pro - Only €1/month
+                  Upgrade to Pro - €1/month billed annually
                 </Button>
               </div>
             </div>

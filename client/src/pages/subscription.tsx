@@ -146,7 +146,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
             <span className="text-sm font-normal text-ios-secondary">/month</span>
             {tier.id === "pro" && (
               <div className="text-xs text-yellow-600 font-medium mt-1">
-                Was €10/month - €1 promotional pricing!
+                €1/month billed annually - Limited offer!
               </div>
             )}
           </div>
@@ -307,7 +307,7 @@ export default function Subscription() {
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800 font-medium mb-2">
-                Coming Very Soon: €1/month Pro Tier (Limited offer - normally €10/month!)
+                Coming Very Soon: €1/month Pro Tier billed annually (Limited offer!)
               </p>
               <ul className="text-sm text-blue-700 text-left space-y-1">
                 <li>• Unlimited food analyses</li>

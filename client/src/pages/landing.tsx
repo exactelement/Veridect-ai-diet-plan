@@ -359,9 +359,10 @@ export default function Landing() {
               </div>
               <div className="text-center mb-6 mt-4">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">Pro</h3>
-                <div className="text-4xl font-bold mb-2 text-gray-900">€1.00<span className="text-lg font-normal text-gray-700">/month</span></div>
-                <p className="text-gray-600">€1/month promotional - normally €10/month</p>
-                <p className="text-xs text-yellow-600 font-medium">Limited time offer!</p>
+                <div className="text-4xl font-bold mb-2 text-gray-900">€1<span className="text-lg font-normal text-gray-700">/month</span></div>
+                <p className="text-sm text-gray-600">billed annually (€12/year)</p>
+                <p className="text-xs text-red-600 font-medium">Limited offer! Normally €10/month</p>
+
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">

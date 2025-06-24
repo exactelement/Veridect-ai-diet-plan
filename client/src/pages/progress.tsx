@@ -28,7 +28,7 @@ export default function Progress() {
                 Upgrade to Pro for Full Progress Tracking
               </div>
               <p className="text-yellow-700 text-sm">
-                Free tier users get basic food analysis. Upgrade to Pro (€1/month) for:
+                Free tier users get basic food analysis. Upgrade to Pro (€1/month billed annually) for:
               </p>
               <ul className="text-left text-sm space-y-1 text-yellow-700">
                 <li>• Unlimited daily analyses</li>
@@ -41,7 +41,7 @@ export default function Progress() {
                 onClick={() => navigate('/subscription')}
                 className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
               >
-                Upgrade to Pro - €1/month
+                Upgrade to Pro - €1/month billed annually
               </Button>
               <p className="text-xs text-yellow-600">
                 You can still use your 5 daily analyses on the home page!
