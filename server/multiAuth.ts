@@ -48,7 +48,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     }
   }));
 } else {
-  console.log("Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
+  console.log("⚠️  Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
+  console.log("📖 To enable Google login, see OAUTH_SETUP_GUIDE.md for detailed instructions");
 }
 
 // Local Strategy (Email/Password)
@@ -141,7 +142,7 @@ export async function setupMultiAuth(app: Express) {
   } else {
     // Fallback routes when Google OAuth is not configured
     app.get('/api/auth/google', (req, res) => {
-      res.redirect('/login?error=google_not_configured');
+      res.redirect('/login?error=google_oauth_not_configured');
     });
   }
 

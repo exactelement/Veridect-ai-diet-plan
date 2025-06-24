@@ -60,10 +60,11 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function Login() {
-  // Get reset token from URL if present
+  // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get('token');
-  
+  const errorParam = urlParams.get('error');
+
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(resetToken ? 'reset' : 'login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -108,6 +109,43 @@ export default function Login() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [mode]);
+
+  // Handle URL error parameters
+  useEffect(() => {
+    if (errorParam) {
+      let title = "Authentication Error";
+      let description = "";
+
+      switch (errorParam) {
+        case 'google_oauth_not_configured':
+          title = "Google Sign-In Not Available";
+          description = "Google authentication requires setup. Please use email registration for now or contact support.";
+          break;
+        case 'google_failed':
+          title = "Google Sign-In Failed";
+          description = "Google authentication encountered an error. Please try again or use email login.";
+          break;
+        case 'apple_auth_failed':
+          title = "Apple Sign-In Failed";
+          description = "Apple authentication encountered an error. Please try again or use email login.";
+          break;
+        default:
+          description = "An authentication error occurred. Please try email login instead.";
+      }
+
+      toast({
+        title,
+        description,
+        variant: "destructive",
+        duration: 6000,
+      });
+
+      // Clean up URL parameter
+      const newUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [errorParam, toast]);
+
   const { toast } = useToast();
 
   const loginForm = useForm<LoginForm>({
@@ -316,12 +354,24 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
+    setIsLoading(true);
     window.location.href = "/api/auth/google";
   };
 
   const handleAppleLogin = async () => {
     try {
       setIsLoading(true);
+
+      // Check if Apple Client ID is configured
+      if (!import.meta.env.VITE_APPLE_CLIENT_ID) {
+        toast({
+          title: "Apple Sign-In Not Available",
+          description: "Apple authentication requires configuration. Please contact support or use email registration.",
+          variant: "destructive",
+          duration: 6000,
+        });
+        return;
+      }
 
       // Check if Apple ID script is loaded
       if (typeof (window as any).AppleID === 'undefined') {
@@ -331,7 +381,7 @@ export default function Login() {
 
       // Initialize Apple Sign-In
       await (window as any).AppleID.auth.init({
-        clientId: process.env.VITE_APPLE_CLIENT_ID || 'com.veridect.signin',
+        clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
         scope: 'name email',
         redirectURI: window.location.origin + '/api/auth/apple/callback',
         state: 'signin',
@@ -449,18 +499,22 @@ export default function Login() {
                   variant="outline"
                   className="w-full h-12 text-base font-medium hover:bg-gray-50 transition-colors"
                   disabled={isLoading}
+                  title="Google OAuth credentials required for this feature"
                 >
                   <Chrome className="mr-2 h-5 w-5" />
                   Continue with Google
+                  {isLoading && <div className="ml-2 w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />}
                 </Button>
                 <Button
                   onClick={handleAppleLogin}
                   variant="outline"
                   className="w-full h-12 text-base font-medium"
                   disabled={isLoading}
+                  title="Apple Sign-In configuration required for this feature"
                 >
                   <Apple className="mr-2 h-5 w-5" />
                   Continue with Apple
+                  {isLoading && <div className="ml-2 w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />}
                 </Button>
               </div>
 

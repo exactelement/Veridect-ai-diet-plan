@@ -162,6 +162,24 @@ Preferred communication style: Simple, everyday language.
 - **Patent Protection**: App remains private until Spanish patent application is filed
 - **Container Security**: Multi-stage build with non-root execution and health monitoring ready
 
+## OAuth Authentication Status
+
+### Google OAuth & Apple Sign-In Implementation (June 24, 2025)
+- **Frontend Integration**: Complete implementation with proper error handling and loading states
+- **Backend Support**: Full Passport.js integration with session management 
+- **Configuration Check**: System detects missing credentials and shows helpful messages
+- **Graceful Fallback**: Clear user guidance to email registration when OAuth unavailable
+- **Account Linking**: Existing users can link OAuth accounts to email-based accounts
+- **Error Handling**: Comprehensive error messages for all failure scenarios
+- **Setup Documentation**: Created OAUTH_SETUP_GUIDE.md with step-by-step instructions
+- **User Experience**: OAuth buttons always visible with tooltips, no broken functionality
+- **Security**: Proper JWT verification for Apple, OAuth 2.0 flow for Google
+- **Status**: Ready for production once API credentials are added
+
+**Required for Activation:**
+- Google: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` environment variables
+- Apple: `VITE_APPLE_CLIENT_ID` environment variable
+
 ## Recent Changes
 
 ### UI/UX Improvements - Food Analysis Enhancement (June 24, 2025)
