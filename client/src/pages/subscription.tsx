@@ -8,7 +8,7 @@ import { Crown, Shield, Check, Zap, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   console.warn('Missing VITE_STRIPE_PUBLIC_KEY - Stripe payments will not work');
@@ -365,12 +365,49 @@ export default function Subscription() {
         ))}
       </div>
       
-      {user?.subscriptionTier && user.subscriptionTier !== "free" && (
-        <div className="text-center mt-8">
-          <p className="text-sm text-ios-secondary">
-            Current plan: <strong>{subscriptionTiers.find(t => t.id === user.subscriptionTier)?.name}</strong>
-          </p>
-        </div>
+      {/* Current subscription status and management */}
+      {subscriptionStatus && subscriptionStatus.tier !== "free" && (
+        <Card className="max-w-md mx-auto mt-8">
+          <CardHeader className="text-center">
+            <CardTitle>Subscription Management</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <div>
+              <p className="text-sm text-ios-secondary mb-2">Current plan:</p>
+              <Badge className="bg-blue-600 text-white px-4 py-2">
+                {subscriptionTiers.find(t => t.id === subscriptionStatus.tier)?.name}
+              </Badge>
+            </div>
+            
+            {subscriptionStatus.cancelAtPeriodEnd ? (
+              <div className="space-y-3">
+                <p className="text-sm text-orange-600">
+                  Your subscription will end on {new Date(subscriptionStatus.currentPeriodEnd * 1000).toLocaleDateString()}
+                </p>
+                <Button
+                  onClick={() => reactivateSubscriptionMutation.mutate()}
+                  disabled={reactivateSubscriptionMutation.isPending}
+                  className="w-full"
+                >
+                  {reactivateSubscriptionMutation.isPending ? "Processing..." : "Reactivate Subscription"}
+                </Button>
+              </div>
+            ) : subscriptionStatus.canCancel && (
+              <Button
+                onClick={() => cancelSubscriptionMutation.mutate()}
+                disabled={cancelSubscriptionMutation.isPending}
+                variant="outline"
+                className="w-full text-red-600 border-red-300 hover:bg-red-50"
+              >
+                {cancelSubscriptionMutation.isPending ? "Processing..." : "Cancel Subscription"}
+              </Button>
+            )}
+            
+            <p className="text-xs text-ios-secondary">
+              Status: {subscriptionStatus.status}
+            </p>
+          </CardContent>
+        </Card>
       )}
       
       {/* Bottom spacer to prevent footer overlap */}

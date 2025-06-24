@@ -520,8 +520,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateUserStripeInfo(userId, {
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscription.id,
-        subscriptionTier: tier,
-        subscriptionStatus: 'active',
+        subscriptionTier: 'free', // Keep free until payment succeeds
+        subscriptionStatus: 'pending',
       });
 
       const latestInvoice = subscription.latest_invoice as any;
@@ -534,6 +534,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error creating subscription:", error);
       res.status(500).json({ message: error.message || "Failed to create subscription" });
+    }
+  });
+
+  // Get current subscription status
+  app.get('/api/subscription/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.stripeSubscriptionId || !stripe) {
+        return res.json({
+          tier: user?.subscriptionTier || 'free',
+          status: user?.subscriptionStatus || 'inactive',
+          canCancel: false
+        });
+      }
+
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      
+      res.json({
+        tier: user.subscriptionTier,
+        status: subscription.status,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodEnd: subscription.current_period_end,
+        canCancel: ['active', 'trialing'].includes(subscription.status)
+      });
+    } catch (error: any) {
+      console.error("Error fetching subscription status:", error);
+      res.status(500).json({ message: "Failed to fetch subscription status" });
     }
   });
 
@@ -550,17 +579,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No active subscription found" });
       }
 
-      await stripe.subscriptions.cancel(user.stripeSubscriptionId);
-      
-      await storage.updateUserStripeInfo(userId, {
-        subscriptionTier: 'free',
-        subscriptionStatus: 'cancelled',
+      // Cancel at period end to maintain access until billing cycle ends
+      await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        cancel_at_period_end: true
       });
 
-      res.json({ message: "Subscription cancelled successfully" });
+      res.json({ 
+        message: "Subscription will be cancelled at the end of your current billing period",
+        cancelAtPeriodEnd: true
+      });
     } catch (error: any) {
       console.error("Error cancelling subscription:", error);
       res.status(500).json({ message: error.message || "Failed to cancel subscription" });
+    }
+  });
+
+  // Reactivate cancelled subscription
+  app.post('/api/subscription/reactivate', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({ message: "Payment processing temporarily unavailable" });
+      }
+
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.stripeSubscriptionId) {
+        return res.status(400).json({ message: "No subscription found" });
+      }
+
+      await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        cancel_at_period_end: false
+      });
+
+      res.json({ message: "Subscription reactivated successfully" });
+    } catch (error: any) {
+      console.error("Error reactivating subscription:", error);
+      res.status(500).json({ message: error.message || "Failed to reactivate subscription" });
     }
   });
 
