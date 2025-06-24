@@ -38,7 +38,7 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   }
 
   return (
-    <div className="pt-40 pb-20">
+    <div className="pt-48 pb-20">
       <Card className={`${tierColors[requiredTier]} backdrop-blur-sm`}>
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2">
