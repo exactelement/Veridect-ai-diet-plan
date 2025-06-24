@@ -105,12 +105,15 @@ export default function Onboarding() {
   const onSubmit = (data: OnboardingForm) => {
     if (step < 3) {
       setStep(step + 1);
-    } else {
+    } else if (step === 3) {
       updateProfileMutation.mutate(data);
+    } else {
+      // Step 4 - handle subscription choice
+      completeOnboardingMutation.mutate();
     }
   };
 
-  const progress = (step / 3) * 100;
+  const progress = (step / 4) * 100;
 
   return (
     <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
@@ -136,7 +139,7 @@ export default function Onboarding() {
           <CardTitle className="text-3xl font-bold">Welcome to YesNoApp</CardTitle>
           <p className="text-ios-secondary">Let's personalize your nutrition journey</p>
           <Progress value={progress} className="mt-4" />
-          <p className="text-sm text-ios-secondary">Step {step} of 3</p>
+          <p className="text-sm text-ios-secondary">Step {step} of 4</p>
         </CardHeader>
 
         <CardContent>
@@ -314,44 +317,77 @@ export default function Onboarding() {
                 <div className="space-y-6">
                   <div className="text-center mb-6">
                     <ShieldCheck className="w-12 h-12 text-ios-blue mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">You're all set!</h2>
-                    <p className="text-ios-secondary">Review your information and complete setup</p>
+                    <h2 className="text-2xl font-bold mb-2">Unlock your full potential!</h2>
+                    <p className="text-ios-secondary">Choose the plan that fits your nutrition journey</p>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold">Personal Information</h3>
-                      <p className="text-ios-secondary">
-                        {form.getValues("firstName")} {form.getValues("lastName")}
-                      </p>
-                    </div>
+                  <div className="grid gap-4">
+                    {/* Free Plan */}
+                    <Card className="border-2 border-gray-200">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold">Free Plan</h3>
+                            <p className="text-gray-600">Perfect to get started</p>
+                          </div>
+                          <div className="text-2xl font-bold">€0</div>
+                        </div>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center"><span className="mr-2">✓</span>5 analyses per day</li>
+                          <li className="flex items-center"><span className="mr-2">✓</span>Basic nutritional info</li>
+                          <li className="flex items-center"><span className="mr-2">✓</span>Simple yes/no verdicts</li>
+                        </ul>
+                        <Button 
+                          type="button"
+                          variant="outline" 
+                          className="w-full mt-4"
+                          onClick={() => completeOnboardingMutation.mutate()}
+                          disabled={completeOnboardingMutation.isPending}
+                        >
+                          Continue with Free
+                        </Button>
+                      </CardContent>
+                    </Card>
 
-                    {form.getValues("healthGoals").length > 0 && (
-                      <div>
-                        <h3 className="font-semibold">Health Goals</h3>
-                        <p className="text-ios-secondary">
-                          {form.getValues("healthGoals").join(", ")}
-                        </p>
-                      </div>
-                    )}
-
-                    {form.getValues("dietaryPreferences").length > 0 && (
-                      <div>
-                        <h3 className="font-semibold">Dietary Preferences</h3>
-                        <p className="text-ios-secondary">
-                          {form.getValues("dietaryPreferences").join(", ")}
-                        </p>
-                      </div>
-                    )}
-
-                    {form.getValues("allergies").length > 0 && (
-                      <div>
-                        <h3 className="font-semibold">Allergies</h3>
-                        <p className="text-ios-secondary">
-                          {form.getValues("allergies").join(", ")}
-                        </p>
-                      </div>
-                    )}
+                    {/* Pro Plan */}
+                    <Card className="border-2 border-ios-blue bg-blue-50">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold text-ios-blue">Pro Plan</h3>
+                            <p className="text-blue-600">Most popular choice</p>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-ios-blue">€1</div>
+                            <div className="text-xs text-blue-600">promotional price</div>
+                          </div>
+                        </div>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center"><span className="mr-2">✓</span>Unlimited analyses</li>
+                          <li className="flex items-center"><span className="mr-2">✓</span>Food logging & progress</li>
+                          <li className="flex items-center"><span className="mr-2">✓</span>Challenges & leaderboard</li>
+                          <li className="flex items-center"><span className="mr-2">✓</span>Personalized AI analysis</li>
+                        </ul>
+                        <Button 
+                          type="button"
+                          className="w-full mt-4 bg-ios-blue hover:bg-blue-600"
+                          onClick={() => navigate('/subscription')}
+                        >
+                          Upgrade to Pro
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div className="text-center">
+                    <button 
+                      type="button"
+                      className="text-sm text-gray-500 underline"
+                      onClick={() => completeOnboardingMutation.mutate()}
+                      disabled={completeOnboardingMutation.isPending}
+                    >
+                      I'll decide later
+                    </button>
                   </div>
                 </div>
               )}
@@ -371,7 +407,7 @@ export default function Onboarding() {
                   className="ml-auto bg-ios-blue text-white"
                   disabled={updateProfileMutation.isPending || completeOnboardingMutation.isPending}
                 >
-                  {step === 3 ? "Complete Setup" : "Continue"}
+                  {step === 3 ? "Continue" : step === 4 ? "Skip" : "Continue"}
                 </Button>
               </div>
             </form>
