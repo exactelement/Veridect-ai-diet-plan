@@ -264,7 +264,6 @@ export default function FoodAnalysis() {
         title: "Error",
         description: "Failed to log food. Please try again.",
         variant: "destructive",
-        duration: 4000,
       });
     } finally {
       setIsLogging(false);

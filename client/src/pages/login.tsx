@@ -139,7 +139,6 @@ export default function Login() {
         title,
         description,
         variant: "destructive",
-        duration: 6000,
       });
 
       // Clean up URL parameter
@@ -199,7 +198,6 @@ export default function Login() {
           title: "Login Failed",
           description: error.message || "Invalid email or password",
           variant: "destructive",
-          duration: 4000,
         });
       }
     } catch (error) {
@@ -207,7 +205,6 @@ export default function Login() {
         title: "Login Failed",
         description: "Network error occurred during login",
         variant: "destructive",
-        duration: 4000,
       });
     } finally {
       setIsLoading(false);
