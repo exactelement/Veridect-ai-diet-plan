@@ -10,10 +10,10 @@ export default function Navigation() {
 
   const navItems = [
     { id: "home", icon: Home, label: "Home", path: "/home", requiredTier: "free" },
-    { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free" },
+    { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free", greyOut: true },
     { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress", requiredTier: "pro" },
     { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard", requiredTier: "pro" },
-    { id: "profile", icon: User, label: "Profile", path: "/profile", requiredTier: "pro" },
+    { id: "profile", icon: User, label: "Profile", path: "/profile", requiredTier: "free" },
   ];
 
   const handleNavigation = (path: string, requiredTier: string) => {
@@ -47,6 +47,7 @@ export default function Navigation() {
             const active = isActive(item.path);
             const hasAccess = checkTierAccess(userTier, item.requiredTier);
             const isLocked = !hasAccess;
+            const shouldGreyOut = item.greyOut && !checkTierAccess(userTier, 'pro');
             
             return (
               <button
@@ -55,6 +56,8 @@ export default function Navigation() {
                 className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-all duration-200 relative ${
                   isLocked
                     ? "text-gray-300 cursor-pointer"
+                    : shouldGreyOut
+                    ? "text-gray-400"
                     : active
                     ? "text-ios-blue"
                     : "text-ios-secondary hover:text-ios-text"
@@ -63,6 +66,8 @@ export default function Navigation() {
                 <div className={`p-2 rounded-xl transition-all duration-200 relative ${
                   isLocked
                     ? "bg-gray-100"
+                    : shouldGreyOut
+                    ? "bg-gray-50"
                     : active 
                     ? "bg-ios-blue/10 scale-110" 
                     : "hover:bg-ios-gray-100"
@@ -74,7 +79,7 @@ export default function Navigation() {
                   )}
                 </div>
                 <span className={`text-xs font-medium mt-1 transition-all duration-200 ${
-                  isLocked ? "opacity-50" : active ? "opacity-100" : "opacity-70"
+                  isLocked ? "opacity-50" : shouldGreyOut ? "opacity-60" : active ? "opacity-100" : "opacity-70"
                 }`}>
                   {item.label}
                 </span>
