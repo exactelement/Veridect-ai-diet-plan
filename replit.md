@@ -165,6 +165,14 @@ Preferred communication style: Simple, everyday language.
   - Email/Password ↔ Google ↔ Apple ID: Smart error messages guide users to correct sign-in method
   - Database schema updated with authentication and privacy fields
   - All authentication conflicts handled with specific user guidance
+
+### Critical Bug Fixes (June 24, 2025)
+- **Fixed Double Point Counting**: Eliminated duplicate point awards in food logging system
+  - Analysis phase: No points awarded (correct)
+  - Logging phase: Points awarded only once to both lifetime and weekly totals
+  - Modified updateWeeklyScore to skip point calculation when called from food logging
+- **Fixed Frontend Error Handling**: Improved error handling in food logging to show proper success messages
+- **Point System Audit**: Verified dual point system working correctly with proper separation
 - **Documentation Organization**: Non-essential files moved to `/info-files/` folder for cleanup
 - **Mobile Development**: Updated iOS and Android development guides with authentication integration
 - **Custom Domain**: Configured application for `veridect.com` domain with proper OAuth redirects and email links

@@ -266,9 +266,10 @@ export default function FoodAnalysis() {
       setLocation("/");
     } catch (error: any) {
       console.error("Food logging error:", error);
+      const errorMessage = error?.message || "Failed to log food. Please try again.";
       toast({
         title: "Error",
-        description: error.message || "Failed to log food. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

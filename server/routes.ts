@@ -19,7 +19,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
     if (todaysAnalyses.length === 5) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
       if (!bonusAlreadyAwarded) {
-        // 25 bonus points to lifetime AND weekly totals
+        // 25 bonus points to lifetime points only, weekly handled separately
         await storage.updateUserPoints(userId, 25);
         await storage.addBonusToWeeklyScore(userId, 25);
         await storage.markBonusAwarded(userId, '5_analyses');
@@ -29,7 +29,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
     if (todaysAnalyses.length === 10) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
       if (!bonusAlreadyAwarded) {
-        // 50 bonus points to lifetime AND weekly totals
+        // 50 bonus points to lifetime points only, weekly handled separately  
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '10_analyses');
@@ -50,7 +50,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
     if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
       if (!bonusAlreadyAwarded) {
-        // 50 bonus points to lifetime AND weekly totals
+        // 50 bonus points to lifetime points only, weekly handled separately
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '3_yes_streak');
@@ -329,8 +329,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
       
       // Award to BOTH lifetime points (permanent) and weekly points (resets weekly)
+      // BUT updateWeeklyScore already calculates the points, so don't double-count
       await storage.updateUserPoints(userId, foodPoints);
-      await storage.updateWeeklyScore(userId, verdict);
+      await storage.updateWeeklyScore(userId, verdict, false); // Pass false to skip point calculation
       
       await storage.updateStreak(userId, verdict);
       

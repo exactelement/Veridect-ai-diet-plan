@@ -341,7 +341,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Weekly score management - tracks ALL points earned this week (food + bonus)
-  async updateWeeklyScore(userId: string, verdict: "YES" | "NO" | "OK"): Promise<void> {
+  async updateWeeklyScore(userId: string, verdict: "YES" | "NO" | "OK", awardPoints: boolean = true): Promise<void> {
     const now = this.getMadridTime();
     const weekStart = new Date(now);
     const day = weekStart.getDay();
@@ -350,8 +350,8 @@ export class DatabaseStorage implements IStorage {
     weekStart.setHours(0, 0, 0, 0);
 
     try {
-      const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      // Adding weekly points for verdict
+      const verdictPoints = awardPoints ? (verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2) : 0;
+      // Adding weekly points for verdict (if awardPoints is true)
       
       // Use explicit select/update to avoid constraint issues
       const [existing] = await db
