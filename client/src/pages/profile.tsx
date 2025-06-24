@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock, AlertCircle, XCircle, Loader2, Crown } from "lucide-react";
 import { updateUserProfileSchema } from "@shared/schema";
 import type { UpdateUserProfile, FoodLog } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -245,9 +246,21 @@ export default function Profile() {
                   </h1>
                   <p className="text-ios-secondary">{user.email}</p>
                   {user.subscriptionTier && (
-                    <Badge className="mt-2 bg-ios-blue text-white">
-                      {user.subscriptionTier.toUpperCase()} Plan
-                    </Badge>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge className="bg-ios-blue text-white">
+                        {user.subscriptionTier.toUpperCase()} Plan
+                      </Badge>
+                      {user.subscriptionTier === 'pro' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowCancelDialog(true)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 h-8"
+                        >
+                          Cancel Subscription
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
