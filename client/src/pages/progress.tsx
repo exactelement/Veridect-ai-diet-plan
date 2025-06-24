@@ -3,14 +3,30 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import type { FoodLog } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { SubscriptionCheck, checkTierAccess } from "@/components/subscription-check";
+import { useLocation } from "wouter";
 
 export default function Progress() {
   const { user } = useAuth();
+  const [, navigate] = useLocation();
+  const userTier = user?.subscriptionTier || 'free';
+  const hasAccess = checkTierAccess(userTier, 'pro');
 
   // Scroll to top when navigating to progress
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Check subscription access
+  if (!hasAccess) {
+    return (
+      <SubscriptionCheck
+        requiredTier="pro"
+        feature="Progress Tracking"
+        onUpgrade={() => navigate('/subscription')}
+      />
+    );
+  }
   
   const { data: allLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],

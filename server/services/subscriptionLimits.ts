@@ -141,7 +141,9 @@ function getRequiredTierForFeature(feature: keyof TierLimits): string {
   if (feature === 'medicalFeatures') {
     return 'Advanced';
   }
-  if (['detailedNutrition', 'advancedAI', 'exportData', 'prioritySupport', 'unlimitedHistory'].includes(feature)) {
+  if (['detailedNutrition', 'advancedAI', 'exportData', 'prioritySupport', 'unlimitedHistory', 
+       'foodLogging', 'personalization', 'leaderboardAccess', 'foodHistory', 
+       'weeklyProgress', 'challengesAccess', 'progressTracking', 'bonusPoints'].includes(feature)) {
     return 'Pro';
   }
   return 'Free';

@@ -4,17 +4,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Medal, Award, Crown, TrendingUp, Users, Calendar, Target } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { SubscriptionCheck, checkTierAccess } from "@/components/subscription-check";
 import type { WeeklyScore } from "@shared/schema";
 
 export default function Leaderboard() {
   const { user } = useAuth();
+  const [, navigate] = useLocation();
+  const userTier = user?.subscriptionTier || 'free';
+  const hasAccess = checkTierAccess(userTier, 'pro');
 
   // Scroll to top when navigating to leaderboard
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Check subscription access
+  if (!hasAccess) {
+    return (
+      <SubscriptionCheck
+        requiredTier="pro"
+        feature="Leaderboard Access"
+        onUpgrade={() => navigate('/subscription')}
+      />
+    );
+  }
   const { data: leaderboard = [] } = useQuery<WeeklyScore[]>({
     queryKey: ["/api/leaderboard/weekly"],
   });

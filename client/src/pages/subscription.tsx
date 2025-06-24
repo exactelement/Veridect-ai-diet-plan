@@ -56,7 +56,7 @@ const subscriptionTiers: SubscriptionTier[] = [
     id: "pro",
     name: "Pro",
     price: 1.00,
-    description: "€12 paid annually - normally €10/month",
+    description: "€1/month promotional - normally €10/month",
     features: [
       "Unlimited analyses",
       "Food logging & progress tracking",
@@ -140,7 +140,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
             <span className="text-sm font-normal text-ios-secondary">/month</span>
             {tier.id === "pro" && (
               <div className="text-xs text-yellow-600 font-medium mt-1">
-                Was €10/month - Limited time offer!
+                Was €10/month - €1 promotional pricing!
               </div>
             )}
           </div>
