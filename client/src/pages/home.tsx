@@ -195,14 +195,16 @@ export default function Home() {
     {
       id: "advanced",
       name: "Advanced",
-      price: 49.99,
-      description: "Professional-grade nutrition analysis",
+      price: 50.00,
+      description: "For professionals & advanced users",
       features: [
         "Everything in Pro",
-        "Advanced-grade accuracy",
-        "Allergy & condition alerts",
-        "Healthcare provider reports",
+        "Professional-grade analysis",
+        "Advanced nutrition metrics",
+        "Clinical data integration",
+        "Team collaboration tools",
         "API access",
+        "Access to professional nutritionist",
         "Dedicated account manager"
       ],
       icon: <Shield className="w-6 h-6" />,

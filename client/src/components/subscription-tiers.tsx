@@ -58,17 +58,16 @@ const TIERS: SubscriptionTier[] = [
     id: "advanced",
     name: "Advanced",
     price: 50.00,
-    description: "Advanced-grade precision",
+    description: "For professionals & advanced users",
     features: [
       "Everything in Pro",
-      "Advanced-grade analysis",
-      "Certified nutritionist access",
-      "Health provider integration",
-      "Medication interaction alerts",
-      "HIPAA compliance",
-      "Personal health coach",
-      "Lab results integration",
-      "Prescription diet plans"
+      "Professional-grade analysis",
+      "Advanced nutrition metrics",
+      "Clinical data integration",
+      "Team collaboration tools",
+      "API access",
+      "Access to professional nutritionist",
+      "Dedicated account manager"
     ],
     icon: <Shield className="w-6 h-6" />,
     color: "green"

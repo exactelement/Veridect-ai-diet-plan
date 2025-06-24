@@ -84,7 +84,7 @@ const subscriptionTiers: SubscriptionTier[] = [
       "Clinical data integration",
       "Team collaboration tools",
       "API access",
-      "White-label options",
+      "Access to professional nutritionist",
       "Dedicated account manager"
     ],
     limitations: [],
