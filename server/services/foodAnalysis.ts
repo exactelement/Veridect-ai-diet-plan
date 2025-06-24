@@ -407,11 +407,11 @@ export async function analyzeFoodWithGemini(
   // Check smart cache for consistent verdicts per user profile
   const cacheKey = getCacheKey(foodName, imageData, effectiveProfile);
   if (cacheKey && analysisCache.has(cacheKey)) {
-    console.log(`Returning consistent cached analysis for: ${foodName || 'image'}`);
+    // Returning cached analysis for consistency
     return analysisCache.get(cacheKey)!;
   }
   
-  console.log(`Fresh analysis for: ${foodName || 'image upload'}`);
+  // Processing fresh analysis
   // Don't clear cache - maintain consistency
 
   try {

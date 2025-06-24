@@ -36,7 +36,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
       }
     }
   } catch (error) {
-    console.error('Error awarding daily challenges:', error);
+    // Daily challenge error handling - non-critical
   }
 }
 
@@ -57,7 +57,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
       }
     }
   } catch (error) {
-    console.error('Error awarding food logging challenges:', error);
+    // Food logging challenge error handling - non-critical
   }
   
   // Check for 5 YES foods today
@@ -65,7 +65,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
   if (yesCount === 5) {
     const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_today');
     if (!bonusAlreadyAwarded) {
-      console.log("User logged 5 YES foods today, awarding 100 bonus points");
+      // Awarding 100 bonus points for 5 YES foods today
       await storage.updateUserPoints(userId, 100);
       await storage.addBonusToWeeklyScore(userId, 100);
       await storage.markBonusAwarded(userId, '5_yes_today');
@@ -102,7 +102,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const count = await storage.getUserCount();
       res.json({ count });
     } catch (error) {
-      console.error('Error fetching user count:', error);
       res.status(500).json({ message: 'Failed to fetch user count' });
     }
   });
@@ -110,12 +109,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get weekly leaderboard - shows all users (public endpoint)
   app.get('/api/leaderboard/weekly', async (req, res) => {
     try {
-      console.log('Fetching weekly leaderboard...');
       const leaderboard = await storage.getWeeklyLeaderboard();
-      console.log('Leaderboard data:', leaderboard.length, 'users');
       res.json(leaderboard);
     } catch (error) {
-      console.error('Error fetching weekly leaderboard:', error);
       res.status(500).json({ message: 'Failed to fetch weekly leaderboard' });
     }
   });
@@ -142,7 +138,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(freshUser);
     } catch (error) {
-      console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
@@ -156,7 +151,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updatePrivacyBannerSeen(userId, gdprConsent);
       res.json({ success: true, user: updatedUser });
     } catch (error) {
-      console.error("Error updating GDPR consent:", error);
       res.status(500).json({ message: "Failed to update GDPR consent" });
     }
   });
@@ -192,7 +186,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updateUserProfile(userId, validatedData);
       res.json(updatedUser);
     } catch (error: any) {
-      console.error("Error updating profile:", error);
       res.status(400).json({ message: error.message || "Failed to update profile" });
     }
   });
@@ -203,7 +196,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.completeOnboarding(userId);
       res.json(updatedUser);
     } catch (error) {
-      console.error("Error completing onboarding:", error);
       res.status(500).json({ message: "Failed to complete onboarding" });
     }
   });
@@ -217,7 +209,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedUser = await storage.updateGdprConsent(userId, consentData);
       res.json({ success: true, user: updatedUser });
     } catch (error: any) {
-      console.error("Error updating GDPR consent:", error);
       res.status(500).json({ message: "Failed to update consent preferences" });
     }
   });
@@ -284,12 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const savedLog = await storage.createFoodLog(logData);
-      console.log("Food analysis saved:", { 
-        id: savedLog.id, 
-        foodName: savedLog.foodName, 
-        isLogged: savedLog.isLogged,
-        userId: savedLog.userId 
-      });
+      // Food analysis saved successfully
       
       // Award bonus points for completing daily challenges
       const todaysAnalyses = await storage.getTodaysAnalyzedFoods(userId);
@@ -297,7 +283,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ analysis });
     } catch (error: any) {
-      console.error("Error analyzing food:", error);
       res.status(500).json({ message: error.message || "Failed to analyze food" });
     }
   });
@@ -327,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (recentAnalysis) {
         // Update existing analysis to mark as logged
         foodLog = await storage.updateFoodLogToLogged(recentAnalysis.id);
-        console.log("Updated existing analysis to logged:", { id: recentAnalysis.id, foodName });
+        // Updated existing analysis to logged
       } else {
         // Fallback: create new entry if no recent analysis found
         const logData = insertFoodLogSchema.parse({
@@ -337,12 +322,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...req.body
         });
         foodLog = await storage.createFoodLog(logData);
-        console.log("Created new food log entry:", { id: foodLog.id, foodName });
+        // Created new food log entry
       }
       
       // Award food logging points and update streak - ONLY ONCE PER FOOD
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      console.log(`Awarding ${foodPoints} points for logging ${foodName} (${verdict})`);
+      // Awarding points for logging food
       await storage.updateUserPoints(userId, foodPoints);
       
       // Only update weekly score if this is a new food log (not from previous analysis)
@@ -350,9 +335,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!existingAnalysis) {
         // This is a direct food log entry, add to weekly score
         await storage.updateWeeklyScore(userId, verdict);
-        console.log(`Added ${verdict} to weekly score (direct food log)`);
+        // Added verdict to weekly score
       } else {
-        console.log(`Skipped weekly score update - already counted during analysis for ${foodName}`);
+        // Skipped weekly score update - already counted during analysis
       }
       
       await storage.updateStreak(userId, verdict);
@@ -362,7 +347,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ success: true, log: foodLog });
     } catch (error: any) {
-      console.error("Error creating food log:", error);
       res.status(400).json({ message: error.message || "Failed to log food" });
     }
   });
@@ -386,7 +370,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const logs = await storage.getFoodLogs(userId, parseInt(limit), parseInt(offset));
       res.json(logs);
     } catch (error) {
-      console.error("Error fetching food logs:", error);
       res.status(500).json({ message: "Failed to fetch food logs" });
     }
   });
@@ -409,7 +392,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const logs = await storage.getTodaysFoodLogs(userId);
       res.json(logs);
     } catch (error) {
-      console.error("Error fetching today's logs:", error);
       res.status(500).json({ message: "Failed to fetch today's logs" });
     }
   });
@@ -421,7 +403,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const logs = await storage.getTodaysAnalyzedFoods(userId);
       res.json(logs);
     } catch (error) {
-      console.error("Error fetching today's analyzed foods:", error);
       res.status(500).json({ message: "Failed to fetch today's analyzed foods" });
     }
   });
@@ -444,7 +425,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const leaderboard = await storage.getWeeklyLeaderboard();
       res.json(leaderboard);
     } catch (error) {
-      console.error("Error fetching leaderboard:", error);
       res.status(500).json({ message: "Failed to fetch leaderboard" });
     }
   });
@@ -467,7 +447,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const score = await storage.getUserWeeklyScore(userId);
       res.json(score);
     } catch (error) {
-      console.error("Error fetching user score:", error);
       res.status(500).json({ message: "Failed to fetch user score" });
     }
   });
@@ -542,7 +521,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         clientSecret: paymentIntent.client_secret,
       });
     } catch (error: any) {
-      console.error("Error creating subscription:", error);
       res.status(500).json({ message: error.message || "Failed to create subscription" });
     }
   });
@@ -571,7 +549,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         canCancel: ['active', 'trialing'].includes(subscription.status)
       });
     } catch (error: any) {
-      console.error("Error fetching subscription status:", error);
       res.status(500).json({ message: "Failed to fetch subscription status" });
     }
   });
@@ -599,7 +576,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cancelAtPeriodEnd: true
       });
     } catch (error: any) {
-      console.error("Error cancelling subscription:", error);
       res.status(500).json({ message: error.message || "Failed to cancel subscription" });
     }
   });
@@ -624,7 +600,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ message: "Subscription reactivated successfully" });
     } catch (error: any) {
-      console.error("Error reactivating subscription:", error);
       res.status(500).json({ message: error.message || "Failed to reactivate subscription" });
     }
   });
@@ -632,14 +607,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Webhook for Stripe events
   app.post('/api/webhook/stripe', async (req, res) => {
     if (!stripe) {
-      console.error('Stripe not initialized');
+      // Stripe not initialized
       return res.status(503).json({ message: "Payment processing temporarily unavailable" });
     }
 
     const sig = req.headers['stripe-signature'] as string;
     
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      console.error('STRIPE_WEBHOOK_SECRET not configured');
       return res.status(400).json({ message: "Webhook secret not configured" });
     }
 
@@ -648,7 +622,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err: any) {
-      console.error('Webhook signature verification failed:', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -668,7 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 subscriptionTier: tier,
                 subscriptionStatus: 'active',
               });
-              console.log(`User ${user.id} upgraded to ${tier} tier - payment succeeded`);
+              // User upgraded to tier - payment succeeded
             }
           }
           break;
@@ -681,7 +654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 subscriptionTier: 'free',
                 subscriptionStatus: 'payment_failed',
               });
-              console.log(`User ${user.id} downgraded to free - payment failed`);
+              // User downgraded to free - payment failed
             }
           }
           break;
@@ -697,7 +670,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
       }
     } catch (error) {
-      console.error('Error processing webhook:', error);
+      // Error processing webhook - silent handling
     }
 
     res.json({ received: true });
@@ -733,7 +706,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Disposition', 'attachment; filename="yesnoapp-data-export.json"');
       res.json(exportData);
     } catch (error) {
-      console.error("Error exporting user data:", error);
       res.status(500).json({ message: "Failed to export data" });
     }
   });
@@ -751,7 +723,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedUser);
     } catch (error) {
-      console.error("Error updating GDPR consent:", error);
       res.status(500).json({ message: "Failed to update consent preferences" });
     }
   });
@@ -774,7 +745,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({ message: "Account deleted successfully" });
       });
     } catch (error) {
-      console.error("Error deleting user account:", error);
       res.status(500).json({ message: "Failed to delete account" });
     }
   });

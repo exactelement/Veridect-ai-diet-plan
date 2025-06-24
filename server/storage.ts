@@ -337,7 +337,7 @@ export class DatabaseStorage implements IStorage {
     // NOTE: This function name is misleading - we DON'T actually delete food logs
     // Food logs are preserved for history. Only the daily view is filtered by date.
     // The getTodaysFoodLogs() function already handles showing only today's data.
-    console.log("Daily reset triggered - no data deletion needed, daily views are date-filtered");
+    // Daily reset triggered
   }
 
   // Weekly score management - tracks ALL points earned this week (food + bonus)
@@ -351,7 +351,7 @@ export class DatabaseStorage implements IStorage {
 
     try {
       const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      console.log(`Adding ${verdictPoints} weekly points for ${verdict} verdict (${verdict} = ${verdictPoints} points)`);
+      // Adding weekly points for verdict
       
       // Use explicit select/update to avoid constraint issues
       const [existing] = await db
@@ -385,7 +385,7 @@ export class DatabaseStorage implements IStorage {
           });
       }
     } catch (error) {
-      console.error('Error updating weekly score:', error);
+      // Error updating weekly score
     }
   }
 
@@ -424,9 +424,9 @@ export class DatabaseStorage implements IStorage {
             weeklyPoints: bonusPoints,
           });
       }
-      console.log(`Added ${bonusPoints} bonus points to weekly score (challenges only)`);
+      // Added bonus points to weekly score
     } catch (error) {
-      console.error('Error adding bonus to weekly score:', error);
+      // Error adding bonus to weekly score
     }
   }
 

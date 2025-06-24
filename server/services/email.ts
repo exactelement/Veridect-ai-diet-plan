@@ -2,14 +2,14 @@ import { MailService } from '@sendgrid/mail';
 
 let mailService: MailService | null = null;
 
-console.log('Initializing SendGrid service...');
+// Initializing SendGrid service
 if (process.env.SENDGRID_API_KEY) {
-  console.log('SendGrid API key found, initializing service');
+  // SendGrid API key found, initializing service
   mailService = new MailService();
   mailService.setApiKey(process.env.SENDGRID_API_KEY);
-  console.log('SendGrid service initialized successfully');
+  // SendGrid service initialized successfully
 } else {
-  console.log('SendGrid API key not found - emails will be logged to console');
+  // SendGrid API key not found - emails will be logged to console
 }
 
 interface EmailParams {

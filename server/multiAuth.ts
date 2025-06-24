@@ -126,8 +126,12 @@ export async function setupMultiAuth(app: Express) {
     tableName: "sessions",
   });
 
+  if (!process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET environment variable is required');
+  }
+
   app.use(session({
-    secret: process.env.SESSION_SECRET || "fallback-secret-key-for-development",
+    secret: process.env.SESSION_SECRET,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,

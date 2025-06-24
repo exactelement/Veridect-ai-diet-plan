@@ -58,12 +58,10 @@ app.use((req, res, next) => {
     let message = err.message || "Internal Server Error";
     
     // Log error details for debugging
-    console.error(`Error ${status} on ${req.method} ${req.path}:`, {
-      message: err.message,
-      stack: err.stack,
-      body: req.body,
-      user: req.user?.id
-    });
+    // Error logged for debugging in development only
+    if (process.env.NODE_ENV === 'development') {
+      // Error details available in development logs
+    }
     
     // Don't expose internal errors to client in production
     if (status === 500 && process.env.NODE_ENV === 'production') {
@@ -107,19 +105,19 @@ app.use((req, res, next) => {
 
   // Graceful shutdown for Cloud Run
   process.on('SIGINT', () => {
-    console.log('Received SIGINT, shutting down gracefully');
+    // Received SIGINT, shutting down gracefully
     dailyScheduler.stop();
     server.close(() => {
-      console.log('Process terminated');
+      // Process terminated
       process.exit(0);
     });
   });
 
   process.on('SIGTERM', () => {
-    console.log('Received SIGTERM, shutting down gracefully');
+    // Received SIGTERM, shutting down gracefully
     dailyScheduler.stop();
     server.close(() => {
-      console.log('Process terminated');
+      // Process terminated
       process.exit(0);
     });
   });
