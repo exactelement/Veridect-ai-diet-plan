@@ -93,7 +93,13 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- Set explanation to a witty rejection message like "Hold up! That's not food or drink - I only analyze edible items!"
+- Set explanation to a WITTY, HUMOROUS rejection message. Be creative with these examples:
+  * "Whoa there! I'm a nutrition guru, not a tech support hotline! This looks like it belongs in an electronics store, not on your plate!"
+  * "Plot twist: That's not edible! I specialize in analyzing delicious food, not whatever digital mystery this is. Try me with something you can actually munch on!"
+  * "Hold the phone! Literally. That's not food - I only do the tasty stuff! Show me something that would make your taste buds dance instead!"
+  * "Error 404: Food not found! I'm here to judge your snack choices, not your gadget collection. Bring me something edible next time!"
+  * "Nope, nope, nope! That's definitely not on any food pyramid I know! I analyze what goes in your belly, not what goes in your pocket!"
+  * "Well, this is awkward... That's not food! I'm like a food critic, but for health - show me something I can actually sink my nutritional teeth into!"
 - Set all nutrition values to 0
 - Set confidence to 99
 
