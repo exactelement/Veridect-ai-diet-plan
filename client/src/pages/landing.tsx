@@ -359,8 +359,8 @@ export default function Landing() {
               </div>
               <div className="text-center mb-6 mt-4">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">Pro</h3>
-                <div className="text-4xl font-bold mb-2 text-gray-900">€19.99</div>
-                <p className="text-gray-600">per month</p>
+                <div className="text-4xl font-bold mb-2 text-gray-900">€1.00</div>
+                <p className="text-gray-600">1-year promotional deal - normally €10/month</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
@@ -369,15 +369,23 @@ export default function Landing() {
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span className="text-gray-800">Detailed nutrition tracking</span>
+                  <span className="text-gray-800">Food logging & progress tracking</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span className="text-gray-800">Goal-based recommendations</span>
+                  <span className="text-gray-800">Challenges and bonus points</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span className="text-gray-800">Wearables integration</span>
+                  <span className="text-gray-800">Leaderboard & community access</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Food history</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span className="text-gray-800">Personalised AI analysis</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
@@ -389,37 +397,50 @@ export default function Landing() {
               </Button>
             </Card>
             
-            {/* Medical Tier */}
-            <Card className="p-8 border-2 border-gray-200 tier-card">
+            {/* Advanced Tier */}
+            <Card className="p-8 border-2 border-gray-200 tier-card opacity-50">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">Medical</h3>
-                <div className="text-4xl font-bold mb-2">€49.99</div>
-                <p className="text-ios-secondary">per month</p>
+                <h3 className="text-2xl font-bold mb-2">Advanced</h3>
+                <div className="text-4xl font-bold mb-2">€50.00</div>
+                <p className="text-ios-secondary">For professionals & advanced users</p>
+                <Badge className="bg-gray-600 text-white mt-2">Coming Soon</Badge>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>Medical-grade analysis</span>
+                  <span>Everything in Pro</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>Certified nutritionist access</span>
+                  <span>Professional-grade analysis</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>Health provider integration</span>
+                  <span>Advanced nutrition metrics</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>Medication interaction alerts</span>
+                  <span>Clinical data integration</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>HIPAA compliance</span>
+                  <span>Team collaboration tools</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>API access</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>Access to professional nutritionist</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>Dedicated account manager</span>
                 </li>
               </ul>
-              <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-ios-blue text-white py-3 rounded-xl font-medium ios-button">
-                Contact Sales
+              <Button disabled className="w-full bg-gray-400 text-white py-3 rounded-xl font-medium cursor-not-allowed">
+                Coming Soon
               </Button>
             </Card>
           </div>
