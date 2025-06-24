@@ -57,6 +57,17 @@ export default function TopHeader() {
                 </Link>
               );
             })}
+            
+            {/* Logout button for authenticated users */}
+            {isAuthenticated && (
+              <a
+                href="/api/logout"
+                className="flex items-center space-x-1 text-sm font-medium text-danger-red hover:text-danger-red/80 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </a>
+            )}
           </nav>
 
           {/* Right side controls */}
