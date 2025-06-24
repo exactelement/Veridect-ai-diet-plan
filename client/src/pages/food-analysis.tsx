@@ -329,6 +329,11 @@ export default function FoodAnalysis() {
               }`}>
                 <CardContent className="p-6">
                   <p className="text-ios-text leading-relaxed">{analysisResult.explanation}</p>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-xs text-ios-secondary italic">
+                      Estimates are approximations based on analysis by AI
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
