@@ -157,6 +157,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Comprehensive Bonus Point System Implementation (June 24, 2025)
+- **3 YES Foods in a Row Challenge**: Added 50 bonus points for achieving 3 consecutive YES food choices
+- **Multiple Analysis Challenges**: 5 analyses (25 points), 10 analyses (50 points), 5 YES foods today (100 points)
+- **Proper Bonus Tracking**: Created daily_bonuses table to prevent duplicate awards and track achievement history
+- **Dual Point Integration**: All bonus points correctly added to both lifetime points (level progression) and weekly points (competition)
+- **Badge Counter Enhancement**: Updated progress page to show accurate bonus points and achievement badges earned
+- **Challenge Detection Logic**: Implemented proper streak detection and challenge completion verification
+
 ### Weekly Points Double Counting Fix (June 24, 2025)
 - **Root Cause Resolution**: Fixed duplicate point additions where updateUserPoints was incorrectly calling updateWeeklyScore
 - **Function Separation**: Modified updateUserPoints to only handle lifetime points (totalPoints) for level progression
