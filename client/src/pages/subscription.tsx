@@ -340,12 +340,14 @@ export default function Subscription() {
               )}
               
               <Button 
-                onClick={() => handleSelectTier(tier)}
-                className="w-full"
+                onClick={() => tier.comingSoon ? null : handleSelectTier(tier)}
+                className={`w-full ${tier.comingSoon ? 'bg-gray-400 text-gray-600' : ''}`}
                 variant={user?.subscriptionTier === tier.id ? "outline" : "default"}
-                disabled={createSubscriptionMutation.isPending}
+                disabled={createSubscriptionMutation.isPending || tier.comingSoon}
               >
-                {createSubscriptionMutation.isPending && selectedTier?.id === tier.id ? (
+                {tier.comingSoon ? (
+                  "Coming Soon"
+                ) : createSubscriptionMutation.isPending && selectedTier?.id === tier.id ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                     Processing...
