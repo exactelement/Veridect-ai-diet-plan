@@ -80,6 +80,8 @@ export class DatabaseStorage implements IStorage {
   async upsertUser(userData: UpsertUser): Promise<User> {
     const userDataWithDefaults = {
       ...userData,
+      firstName: userData.firstName?.trim(),
+      lastName: userData.lastName?.trim(),
       privacySettings: userData.privacySettings || {
         showCalorieCounter: true,
         participateInWeeklyChallenge: true,
@@ -104,10 +106,16 @@ export class DatabaseStorage implements IStorage {
 
   // Profile operations
   async updateUserProfile(id: string, profile: UpdateUserProfile): Promise<User> {
+    const profileWithTrimmedNames = {
+      ...profile,
+      firstName: profile.firstName?.trim(),
+      lastName: profile.lastName?.trim(),
+    };
+    
     const [user] = await db
       .update(users)
       .set({
-        ...profile,
+        ...profileWithTrimmedNames,
         updatedAt: new Date(),
       })
       .where(eq(users.id, id))
