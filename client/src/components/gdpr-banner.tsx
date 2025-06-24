@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, Shield, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function GDPRBanner() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [consents, setConsents] = useState({
@@ -17,16 +20,9 @@ export default function GDPRBanner() {
   });
 
   useEffect(() => {
-    // Only show banner for authenticated users who haven't dismissed it
-    if (user) {
-      const dismissed = localStorage.getItem('gdpr-banner-dismissed');
-      const lastDismissed = dismissed ? parseInt(dismissed) : 0;
-      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-      
-      // Show banner if never dismissed or dismissed more than 30 days ago
-      if (!dismissed || lastDismissed < thirtyDaysAgo) {
-        setIsVisible(true);
-      }
+    // Only show banner for authenticated users who haven't seen it before
+    if (user && !user.hasSeenPrivacyBanner) {
+      setIsVisible(true);
     }
   }, [user]);
 
@@ -54,18 +50,32 @@ export default function GDPRBanner() {
     savePrefencesAndDismiss();
   };
 
-  const savePrefencesAndDismiss = () => {
-    // Save preferences to localStorage (in a real app, this would go to the server)
-    localStorage.setItem('gdpr-consents', JSON.stringify(consents));
-    localStorage.setItem('gdpr-banner-dismissed', Date.now().toString());
-    
-    // Animate out
-    const banner = document.getElementById('gdpr-banner');
-    if (banner) {
-      banner.classList.add('animate-slide-down');
-      setTimeout(() => setIsVisible(false), 300);
-    } else {
-      setIsVisible(false);
+  const savePrefencesAndDismiss = async () => {
+    try {
+      // Save GDPR consent to server and mark banner as seen
+      await apiRequest("PATCH", "/api/auth/gdpr-consent", {
+        gdprConsent: consents,
+        hasSeenPrivacyBanner: true
+      });
+
+      // Save preferences to localStorage as backup
+      localStorage.setItem('gdpr-consents', JSON.stringify(consents));
+      
+      // Animate out
+      const banner = document.getElementById('gdpr-banner');
+      if (banner) {
+        banner.classList.add('animate-slide-down');
+        setTimeout(() => setIsVisible(false), 300);
+      } else {
+        setIsVisible(false);
+      }
+    } catch (error) {
+      console.error('Error saving privacy preferences:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save privacy preferences. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 

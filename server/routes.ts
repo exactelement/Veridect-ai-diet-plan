@@ -133,6 +133,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GDPR consent route
+  app.patch('/api/auth/gdpr-consent', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const { gdprConsent } = req.body;
+      
+      const updatedUser = await storage.updatePrivacyBannerSeen(userId, gdprConsent);
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Error updating GDPR consent:", error);
+      res.status(500).json({ message: "Failed to update GDPR consent" });
+    }
+  });
+
   // User profile routes
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
