@@ -38,25 +38,27 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   }
 
   return (
-    <Card className={`${tierColors[requiredTier]} backdrop-blur-sm`}>
-      <CardHeader className="text-center">
-        <div className="flex justify-center mb-2">
-          {tierIcons[requiredTier]}
-        </div>
-        <CardTitle className="text-lg">
-          {tierNames[requiredTier]} Feature
-        </CardTitle>
-        <CardDescription>
-          {feature} requires a {tierNames[requiredTier]} subscription
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="text-center">
-        <Button onClick={onUpgrade} className="w-full">
-          <Zap className="w-4 h-4 mr-2" />
-          Upgrade to {tierNames[requiredTier]}
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="pb-32">
+      <Card className={`${tierColors[requiredTier]} backdrop-blur-sm`}>
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-2">
+            {tierIcons[requiredTier]}
+          </div>
+          <CardTitle className="text-lg">
+            {tierNames[requiredTier]} Feature
+          </CardTitle>
+          <CardDescription>
+            {feature} requires a {tierNames[requiredTier]} subscription
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          <Button onClick={onUpgrade} className="w-full">
+            <Zap className="w-4 h-4 mr-2" />
+            Upgrade to {tierNames[requiredTier]}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
