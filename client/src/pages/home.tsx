@@ -192,13 +192,13 @@ export default function Home() {
       color: "from-blue-500 to-purple-600"
     },
     {
-      id: "medical",
-      name: "Medical",
+      id: "advanced",
+      name: "Advanced",
       price: 49.99,
       description: "Professional-grade nutrition analysis",
       features: [
         "Everything in Pro",
-        "Medical-grade accuracy",
+        "Advanced-grade accuracy",
         "Allergy & condition alerts",
         "Healthcare provider reports",
         "API access",

@@ -55,13 +55,13 @@ const TIERS: SubscriptionTier[] = [
     color: "blue"
   },
   {
-    id: "medical",
-    name: "Medical",
-    price: 99.99,
-    description: "Medical-grade precision",
+    id: "advanced",
+    name: "Advanced",
+    price: 50.00,
+    description: "Advanced-grade precision",
     features: [
       "Everything in Pro",
-      "Medical-grade analysis",
+      "Advanced-grade analysis",
       "Certified nutritionist access",
       "Health provider integration",
       "Medication interaction alerts",
