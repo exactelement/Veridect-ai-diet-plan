@@ -236,7 +236,7 @@ export default function Terms() {
             <div>
               <h4 className="font-semibold mb-2">Limitation of Liability</h4>
               <p className="text-sm text-ios-secondary">
-                To the maximum extent permitted by law, YesNoApp shall not be liable for any 
+                To the maximum extent permitted by law, Veridect shall not be liable for any 
                 indirect, incidental, special, consequential, or punitive damages, including 
                 but not limited to loss of profits, data, or other intangible losses.
               </p>
@@ -261,7 +261,7 @@ export default function Terms() {
           </CardHeader>
           <CardContent>
             <p className="text-ios-secondary">
-              You agree to defend, indemnify, and hold harmless YesNoApp and its affiliates from 
+              You agree to defend, indemnify, and hold harmless Veridect and its affiliates from 
               any claims, damages, or expenses arising from your use of the Service, violation of 
               these Terms, or infringement of any third-party rights.
             </p>

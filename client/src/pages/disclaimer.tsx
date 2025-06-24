@@ -13,7 +13,7 @@ export default function Disclaimer() {
           <div className="text-center">
             <AlertTriangle className="w-16 h-16 text-warning-orange mx-auto mb-4" />
             <h1 className="text-4xl font-bold text-ios-text mb-4">
-              AI Disclaimer & Important Information
+              Veridect AI Disclaimer & Important Information
             </h1>
             <p className="text-xl text-ios-secondary">
               Understanding how our AI works and its limitations
@@ -25,12 +25,12 @@ export default function Disclaimer() {
             <CardHeader>
               <CardTitle className="flex items-center text-warning-orange">
                 <Brain className="w-5 h-5 mr-3" />
-                Educational Purposes Only
+                Educational & Entertainment Purposes Only
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-ios-text">
-                YesNoApp provides AI-generated food analysis for <strong>educational and informational purposes only</strong>. 
+                Veridect provides AI-generated food analysis for <strong>educational, informational, and entertainment purposes only</strong>. 
                 Our verdicts are estimates based on artificial intelligence algorithms and should not be considered as 
                 professional medical, nutritional, or dietary advice.
               </p>
