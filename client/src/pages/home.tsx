@@ -284,7 +284,7 @@ export default function Home() {
                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                   <CardContent className="p-4 text-center">
                     <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-700">{healthScore}%</div>
+                    <div className="text-2xl font-bold text-blue-700">{weeklyHealthScore}%</div>
                     <div className="text-sm text-blue-600">Health Score</div>
                   </CardContent>
                 </Card>
