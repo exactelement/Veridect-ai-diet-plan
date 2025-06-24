@@ -169,8 +169,7 @@ export default function Home() {
       features: [
         "5 analyses per day",
         "Basic nutritional info",
-        "Simple yes/no verdicts",
-        "Weekly progress tracking"
+        "Simple yes/no verdicts"
       ],
       icon: <Zap className="w-6 h-6" />,
       color: "from-gray-400 to-gray-600"
