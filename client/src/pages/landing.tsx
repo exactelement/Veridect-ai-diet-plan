@@ -144,7 +144,8 @@ export default function Landing() {
             </h1>
             <p className="text-xl md:text-2xl text-ios-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
               Ask Veri about any food and get instant 
-              <strong className="text-health-green"> YES</strong>, <strong className="text-warning-orange"> OK</strong>, or <strong className="text-danger-red"> NO</strong> verdicts.
+              <strong className="text-health-green"> YES</strong>, <strong className="text-warning-orange"> OK</strong>, or <strong className="text-danger-red"> NO</strong> verdicts 
+              based on scientific research and your personalised profile.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
