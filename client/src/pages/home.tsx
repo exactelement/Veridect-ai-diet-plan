@@ -43,6 +43,11 @@ export default function Home() {
     queryKey: ["/api/food/logs/today"],
   });
 
+  // Get ALL logged food for weekly calculations
+  const { data: allLogs = [] } = useQuery<FoodLog[]>({
+    queryKey: ["/api/food/logs"],
+  });
+
   const { data: weeklyScore } = useQuery<WeeklyScore>({
     queryKey: ["/api/leaderboard/my-score"],
   });
@@ -71,8 +76,33 @@ export default function Home() {
   const calorieProgress = (totalCalories / calorieGoal) * 100;
   const isOverGoal = totalCalories > calorieGoal;
 
-  const healthScore = todaysLogs.length > 0 
-    ? Math.round(((todaysStats.yes * 10 + todaysStats.ok * 5 + todaysStats.no * 2) / (todaysLogs.length * 10)) * 100)
+  // Calculate THIS WEEK'S stats for Weekly Progress section (resets Monday)
+  const weeklyStats = (() => {
+    // Use Madrid timezone for consistent weekly reset behavior (Monday midnight)
+    const madridNow = new Date();
+    madridNow.setTime(madridNow.getTime() + (1 * 60 * 60 * 1000)); // Madrid timezone offset
+    
+    const currentWeekStart = new Date(madridNow);
+    const day = currentWeekStart.getDay();
+    const diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+    currentWeekStart.setDate(diff);
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    return allLogs
+      .filter(log => new Date(log.createdAt) >= currentWeekStart)
+      .reduce(
+        (acc: any, log: FoodLog) => {
+          acc[log.verdict.toLowerCase()]++;
+          acc.total++;
+          return acc;
+        },
+        { yes: 0, ok: 0, no: 0, total: 0 }
+      );
+  })();
+
+  // Weekly Health Score for "Weekly Progress" section (resets Monday)
+  const weeklyHealthScore = weeklyStats.total > 0 
+    ? Math.round(((weeklyStats.yes * 10 + weeklyStats.ok * 5 + weeklyStats.no * 2) / (weeklyStats.total * 10)) * 100)
     : 0;
 
   const currentStreak = (user as any)?.currentStreak || 0;
@@ -395,10 +425,10 @@ export default function Home() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-600">Health Score</span>
-                    <span className="text-sm font-bold text-gray-800">{healthScore}%</span>
+                    <span className="text-sm font-medium text-gray-600">Weekly Health Score</span>
+                    <span className="text-sm font-bold text-gray-800">{weeklyHealthScore}%</span>
                   </div>
-                  <Progress value={healthScore} className="h-2 mb-4" />
+                  <Progress value={weeklyHealthScore} className="h-2 mb-4" />
                   
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-600">Weekly Rank</span>

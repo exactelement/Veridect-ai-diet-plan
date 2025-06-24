@@ -173,7 +173,9 @@ Preferred communication style: Simple, everyday language.
 - **Challenge System Integrity**: 5-analyses bonus awarded exactly once per day with proper validation
 - **Mathematical Accuracy**: Point counters, challenges, and bonus systems all working correctly with precise calculations
 - **Daily Reset Enhancement**: Progress wheel, counters, and today's log list now properly reset at Madrid midnight
-- **Madrid Timezone Consistency**: All daily views use Madrid timezone for accurate daily progress tracking
+- **Weekly Reset Distinction**: Weekly progress sections (challenges, health score, competitions) reset Monday midnight, not daily
+- **Madrid Timezone Consistency**: All daily and weekly views use Madrid timezone for accurate progress tracking
+- **Proper Reset Scheduling**: Daily progress (midnight) vs Weekly progress (Monday midnight) clearly separated
 - **Corrected Point System**: Dual tracking - lifetime points (never reset) vs weekly points (reset Monday)
 - **Weekly Challenge Participation**: Users can opt out and be automatically removed from leaderboard
 - **Real-time Leaderboard Updates**: Toggling participation instantly refreshes leaderboard display

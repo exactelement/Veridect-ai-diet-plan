@@ -57,11 +57,15 @@ export default function Progress() {
   );
 
   // Calculate THIS WEEK'S stats from all logged food (for weekly challenges)
+  // Uses Madrid timezone for consistent weekly reset behavior (Monday midnight)
   const weeklyStats = (() => {
-    const now = new Date();
-    const currentWeekStart = new Date(now);
+    // Create Madrid timezone date for current week calculation
+    const madridNow = new Date();
+    madridNow.setTime(madridNow.getTime() + (1 * 60 * 60 * 1000)); // Madrid timezone offset
+    
+    const currentWeekStart = new Date(madridNow);
     const day = currentWeekStart.getDay();
-    const diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1);
+    const diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1); // Monday start
     currentWeekStart.setDate(diff);
     currentWeekStart.setHours(0, 0, 0, 0);
 
