@@ -40,6 +40,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       } else if (!user.googleId) {
         // Link Google ID to existing account
         user = await storage.updateUserProfile(user.id, { googleId: profile.id });
+        // Set a flag to show account linking message
+        (user as any).accountLinked = true;
       }
 
       return done(null, user);
@@ -135,7 +137,13 @@ export async function setupMultiAuth(app: Express) {
       passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
       (req, res) => {
         const user = req.user as any;
-        const redirect = user?.onboardingCompleted ? '/' : '/onboarding';
+        let redirect = user?.onboardingCompleted ? '/' : '/onboarding';
+        
+        // Add message if account was linked
+        if (user?.accountLinked) {
+          redirect += user?.onboardingCompleted ? '?message=google_linked' : '&message=google_linked';
+        }
+        
         res.redirect(redirect);
       }
     );
