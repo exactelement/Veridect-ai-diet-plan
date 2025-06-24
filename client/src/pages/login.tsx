@@ -134,6 +134,8 @@ export default function Login() {
         const error = await response.json();
         const errorMessage = error.message || "Failed to create account";
         
+        console.log("Registration error:", { status: response.status, message: errorMessage });
+        
         // Handle specific error cases with form field errors
         if (response.status === 409 || errorMessage.includes("already exists")) {
           const friendlyMessage = "This email is already registered. Try logging in instead.";
