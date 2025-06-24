@@ -75,6 +75,11 @@ export function getTierLimits(tier: string = "free"): TierLimits {
 }
 
 export function checkDailyAnalysisLimit(tier: string, todaysCount: number): boolean {
+  // Pro and Advanced tiers have unlimited access
+  if (tier === 'pro' || tier === 'advanced') {
+    return true;
+  }
+  
   const limits = getTierLimits(tier);
   
   if (limits.dailyAnalyses === -1) {
@@ -85,11 +90,21 @@ export function checkDailyAnalysisLimit(tier: string, todaysCount: number): bool
 }
 
 export function canAccessFeature(tier: string, feature: keyof TierLimits): boolean {
+  // Pro and Advanced tiers have access to all features
+  if (tier === 'pro' || tier === 'advanced') {
+    return true;
+  }
+  
   const limits = getTierLimits(tier);
   return limits[feature] === true;
 }
 
 export function getRemainingAnalyses(tier: string, todaysCount: number): number {
+  // Pro and Advanced tiers have unlimited access
+  if (tier === 'pro' || tier === 'advanced') {
+    return -1; // unlimited
+  }
+  
   const limits = getTierLimits(tier);
   
   if (limits.dailyAnalyses === -1) {

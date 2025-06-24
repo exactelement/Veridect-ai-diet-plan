@@ -10,7 +10,7 @@ export default function Progress() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const userTier = user?.subscriptionTier || 'free';
-  const hasAccess = checkTierAccess(userTier, 'pro');
+  const hasAccess = userTier === 'pro' || userTier === 'advanced';
 
   // Scroll to top when navigating to progress
   useEffect(() => {

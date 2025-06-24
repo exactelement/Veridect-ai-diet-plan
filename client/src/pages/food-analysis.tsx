@@ -41,7 +41,7 @@ export default function FoodAnalysis() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
-  const canLogFood = checkTierAccess(userTier, 'pro');
+  const canLogFood = userTier === 'pro' || userTier === 'advanced';
 
   // Dynamic greeting based on device time - updates on each app visit
   const [timeGreeting, setTimeGreeting] = useState(() => {

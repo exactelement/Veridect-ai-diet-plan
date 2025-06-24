@@ -41,8 +41,8 @@ export default function Home() {
   const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
 
-  // Only fetch data if user has Pro tier access
-  const hasProAccess = checkTierAccess(userTier, 'pro');
+  // Only fetch data if user has Pro or Advanced tier access
+  const hasProAccess = userTier === 'pro' || userTier === 'advanced';
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
@@ -533,8 +533,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Weekly Progress - only for Pro users */}
-      {checkTierAccess(userTier, 'pro') && (
+      {/* Weekly Progress - only for Pro and Advanced users */}
+      {(userTier === 'pro' || userTier === 'advanced') && (
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">

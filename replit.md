@@ -153,7 +153,7 @@ Preferred communication style: Simple, everyday language.
 - **Frontend Protection**: Added subscription checks to Progress and Leaderboard page routes
 - **Backend Security**: All premium API endpoints require proper tier validation
 - **Feature Mapping**: Fixed subscription limits feature categorization for accurate error messages
-- **Access Control**: Free tier limited to 5 analyses/day with basic features, Pro gets unlimited access
+- **Access Control**: Free tier limited to 5 analyses/day with basic features, Pro and Advanced get unlimited access to everything
 - **Pro Features**: Unlimited analyses, food logging, challenges, leaderboard, personalization, progress tracking
 - **Advanced Tier**: Properly disabled with "Coming Soon" messaging across all components
 - **Pricing Consistency**: Unified €1/month promotional pricing across all pages and components
