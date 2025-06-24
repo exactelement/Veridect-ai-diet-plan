@@ -234,7 +234,8 @@ export default function FoodAnalysis() {
       const points = currentAnalysis.verdict === "YES" ? 10 : 
                    currentAnalysis.verdict === "OK" ? 5 : 2;
       
-      const response = await apiRequest("POST", "/api/food-logs", {
+      // apiRequest already throws for non-2xx status codes, so we don't need to check response.ok
+      await apiRequest("POST", "/api/food-logs", {
         foodName: currentAnalysis.foodName,
         verdict: currentAnalysis.verdict,
         explanation: currentAnalysis.explanation,
@@ -247,22 +248,27 @@ export default function FoodAnalysis() {
         points: points
       });
 
-      if (response.ok) {
-        toast({
-          title: "Food Logged!",
-          description: `+${points} points added to your score!`,
-        });
-        
-        // Clear analysis result and image, then navigate smoothly
-        resetAnalysis();
-        setLocation("/");
-      } else {
-        throw new Error("Failed to log food");
-      }
+      // If we reach here, the request was successful
+      toast({
+        title: "Food Logged!",
+        description: `+${points} points added to your score!`,
+      });
+      
+      // Invalidate caches to update UI immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food/logs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/food/logs/today"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/weekly"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/my-score"] });
+      
+      // Clear analysis result and image, then navigate smoothly
+      resetAnalysis();
+      setLocation("/");
     } catch (error: any) {
+      console.error("Food logging error:", error);
       toast({
         title: "Error",
-        description: "Failed to log food. Please try again.",
+        description: error.message || "Failed to log food. Please try again.",
         variant: "destructive",
       });
     } finally {
