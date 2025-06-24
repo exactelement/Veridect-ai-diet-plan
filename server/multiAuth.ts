@@ -39,13 +39,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           subscriptionTier: "free",
           subscriptionStatus: "inactive",
         });
-      } else if (!user.googleId) {
-        // Link Google ID to existing email account - preserve all existing data
-        user = await storage.updateUserProfile(user.id, { 
-          googleId: profile.id,
-          authProvider: "google",
-          profileImageUrl: profile.photos?.[0]?.value || user.profileImageUrl
-        });
+      } else {
+        // Link Google ID to existing email account - preserve ALL existing data including onboarding status
+        if (!user.googleId) {
+          await storage.updateUserProfile(user.id, { 
+            googleId: profile.id,
+            authProvider: "google",
+            profileImageUrl: profile.photos?.[0]?.value || user.profileImageUrl
+          });
+          // Refresh user data after update
+          user = await storage.getUser(user.id);
+        }
         // Set a flag to show account linking message
         (user as any).accountLinked = true;
       }
