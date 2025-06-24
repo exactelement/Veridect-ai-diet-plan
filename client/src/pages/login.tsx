@@ -136,14 +136,27 @@ export default function Login() {
         
         // Handle specific error cases with form field errors
         if (response.status === 409 || errorMessage.includes("already exists")) {
+          const friendlyMessage = "This email is already registered. Try logging in instead.";
           registerForm.setError("email", {
             type: "manual",
-            message: "This email is already registered. Try logging in instead."
+            message: friendlyMessage
+          });
+          toast({
+            title: "Email Already Registered",
+            description: friendlyMessage,
+            variant: "destructive",
+            duration: 5000,
           });
         } else if (errorMessage.includes("valid email")) {
           registerForm.setError("email", {
             type: "manual",
             message: errorMessage
+          });
+          toast({
+            title: "Invalid Email",
+            description: errorMessage,
+            variant: "destructive",
+            duration: 4000,
           });
         } else if (errorMessage.includes("First name") || errorMessage.includes("Last name")) {
           if (errorMessage.includes("First name")) {
@@ -158,14 +171,20 @@ export default function Login() {
               message: "Last name is required"
             });
           }
+          toast({
+            title: "Missing Information",
+            description: errorMessage,
+            variant: "destructive",
+            duration: 4000,
+          });
+        } else {
+          toast({
+            title: "Registration Failed",
+            description: errorMessage,
+            variant: "destructive",
+            duration: 4000,
+          });
         }
-        
-        toast({
-          title: "Registration Failed",
-          description: errorMessage,
-          variant: "destructive",
-          duration: 4000,
-        });
       }
     } catch (error) {
       toast({
