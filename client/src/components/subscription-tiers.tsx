@@ -39,7 +39,7 @@ const TIERS: SubscriptionTier[] = [
     id: "pro",
     name: "Pro",
     price: 19.99,
-    description: "For serious health enthusiasts",
+    description: "€12 paid annually - normally €10/month",
     features: [
       "Unlimited analyses",
       "Food logging & progress tracking",

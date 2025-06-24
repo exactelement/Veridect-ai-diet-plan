@@ -304,7 +304,7 @@ export default function Subscription() {
                 <span className="text-sm font-normal text-ios-secondary">/month</span>
                 {tier.id === "pro" && (
                   <div className="text-xs text-yellow-600 font-medium mt-1">
-                    €12 paid annually - Limited time offer!
+                    Limited time offer!
                   </div>
                 )}
               </div>
