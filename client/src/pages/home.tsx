@@ -52,6 +52,10 @@ export default function Home() {
     queryKey: ["/api/leaderboard/my-score"],
   });
 
+  const { data: leaderboard = [] } = useQuery({
+    queryKey: ["/api/leaderboard/weekly"],
+  });
+
   // Force refresh user data to get latest privacy settings
   const { data: currentUser } = useQuery({
     queryKey: ["/api/auth/user"],
@@ -432,7 +436,9 @@ export default function Home() {
                   
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-600">Weekly Rank</span>
-                    <span className="text-sm font-bold text-gray-800">#{weeklyScore?.rank || '-'}</span>
+                    <span className="text-sm font-bold text-gray-800">
+                      #{leaderboard.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
+                    </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
