@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Camera, Trophy, Target, TrendingUp, Zap, Star, Award, Calendar, Heart, Brain, Shield, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { SubscriptionCheck, checkTierAccess } from "@/components/subscription-check";
 
 interface FoodLog {
   id: number;
@@ -38,6 +39,7 @@ interface SubscriptionTier {
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const userTier = user?.subscriptionTier || 'free';
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
@@ -415,54 +417,163 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Weekly Progress */}
+      {/* Free tier features section */}
       <div className="container-padding mb-8">
         <div className="max-w-6xl mx-auto">
-          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-ios-blue" />
-                Weekly Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-600">Weekly Health Score</span>
-                    <span className="text-sm font-bold text-gray-800">{weeklyHealthScore}%</span>
-                  </div>
-                  <Progress value={weeklyHealthScore} className="h-2 mb-4" />
-                  
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-600">Weekly Rank</span>
-                    <span className="text-sm font-bold text-gray-800">
-                      #{leaderboard.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-600">Total Score</span>
-                    <span className="text-sm font-bold text-gray-800">{weeklyPoints} pts</span>
-                  </div>
-                </div>
+          <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-ios-blue" />
+                  Instant Verdicts
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Get immediate Yes/No answers about your food choices</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-health-green" />
+                  Basic Health Explanations
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Understand why foods are good or bad for your health</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-warning-orange" />
+                  5 Daily Analyses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Analyze up to 5 foods per day with our AI</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Premium features - locked for free users */}
+          {!checkTierAccess(userTier, 'pro') && (
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
+                Premium Features (Upgrade Required)
+              </h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
+                <Card className="bg-gray-100 border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
+                      <span>🍽️</span> Food Logging
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-gray-400">
+                    Track your daily food intake
+                  </CardContent>
+                </Card>
                 
-                <div className="text-center">
-                  <Award className="w-16 h-16 text-yellow-500 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-4">Keep going! You're making great progress.</p>
-                  <Button 
-                    variant="outline"
-                    onClick={() => navigate('/leaderboard')}
-                    className="w-full"
-                  >
-                    View Leaderboard
-                  </Button>
-                </div>
+                <Card className="bg-gray-100 border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
+                      <span>🎯</span> Personalization
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-gray-400">
+                    Custom AI based on your goals
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-100 border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
+                      <span>🏆</span> Leaderboard
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-gray-400">
+                    Compete with other users
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-100 border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
+                      <span>📊</span> Food History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-gray-400">
+                    View your analysis history
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+              
+              <div className="text-center mt-6">
+                <Button 
+                  onClick={() => navigate('/subscription')}
+                  className="bg-ios-blue hover:bg-blue-600 text-white px-8 py-3"
+                >
+                  Upgrade to Pro - Only €1/month
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Weekly Progress - only for Pro users */}
+      {checkTierAccess(userTier, 'pro') && (
+        <div className="container-padding mb-8">
+          <div className="max-w-6xl mx-auto">
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-ios-blue" />
+                  Weekly Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-600">Weekly Health Score</span>
+                      <span className="text-sm font-bold text-gray-800">{weeklyHealthScore}%</span>
+                    </div>
+                    <Progress value={weeklyHealthScore} className="h-2 mb-4" />
+                    
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-600">Weekly Rank</span>
+                      <span className="text-sm font-bold text-gray-800">
+                        #{leaderboard.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">Total Score</span>
+                      <span className="text-sm font-bold text-gray-800">{weeklyPoints} pts</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <Award className="w-16 h-16 text-yellow-500 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-4">Keep going! You're making great progress.</p>
+                    <Button 
+                      variant="outline"
+                      onClick={() => navigate('/leaderboard')}
+                      className="w-full"
+                    >
+                      View Leaderboard
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Key Features */}
       <div className="container-padding mb-8">

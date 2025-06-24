@@ -37,15 +37,16 @@ const subscriptionTiers: SubscriptionTier[] = [
     price: 0,
     description: "Perfect for trying Veridect",
     features: [
-      "5 food analyses per day",
-      "Basic nutritional guidance",
-      "Weekly leaderboard participation",
-      "Basic food logging"
+      "Instant Yes/No verdicts",
+      "Basic health explanations", 
+      "5 analyses per day"
     ],
     limitations: [
       "Limited to 5 analyses daily",
-      "No detailed nutrition breakdown",
-      "No advanced AI insights",
+      "No food logging functionality",
+      "No personalization features",
+      "No leaderboard access",
+      "No food history access",
       "Basic support only"
     ],
     icon: <Check className="w-6 h-6 text-green-500" />,

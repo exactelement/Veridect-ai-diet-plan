@@ -346,10 +346,6 @@ export default function Landing() {
                   <Check className="w-5 h-5 text-health-green" />
                   <span>5 analyses per day</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-health-green" />
-                  <span>Community access</span>
-                </li>
               </ul>
               <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
                 Get Started

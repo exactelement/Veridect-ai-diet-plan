@@ -60,11 +60,9 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   );
 }
 
-function checkTierAccess(userTier: string, requiredTier: string): boolean {
+export function checkTierAccess(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ["free", "pro", "advanced"];
   const userLevel = tierHierarchy.indexOf(userTier);
   const requiredLevel = tierHierarchy.indexOf(requiredTier);
   return userLevel >= requiredLevel;
 }
-
-export { checkTierAccess };

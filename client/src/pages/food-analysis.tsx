@@ -9,6 +9,7 @@ import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } fr
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { checkTierAccess } from "@/components/subscription-check";
 import { useLocation } from "wouter";
 
 interface AnalysisResult {
@@ -39,6 +40,8 @@ export default function FoodAnalysis() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const userTier = user?.subscriptionTier || 'free';
+  const canLogFood = checkTierAccess(userTier, 'pro');
 
   // Dynamic greeting based on device time - updates on each app visit
   const [timeGreeting, setTimeGreeting] = useState(() => {
@@ -206,7 +209,7 @@ export default function FoodAnalysis() {
   };
 
   const [isLogging, setIsLogging] = useState(false);
-  const [, setLocation] = useLocation();
+  const [, navigate] = useLocation();
 
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
@@ -399,11 +402,16 @@ export default function FoodAnalysis() {
                 ) : (
                   <>
                     <Button 
-                      onClick={handleYum}
-                      disabled={isLogging}
-                      className="bg-health-green hover:bg-health-green/90 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
+                      onClick={canLogFood ? handleYum : () => navigate('/subscription')}
+                      disabled={isLogging || !canLogFood}
+                      className={`px-8 py-3 text-lg font-semibold ${
+                        canLogFood 
+                          ? "bg-health-green hover:bg-health-green/90 text-white disabled:opacity-50"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                      title={!canLogFood ? "Upgrade to Pro to log food" : ""}
                     >
-                      {isLogging ? "Logging..." : "😋 Yum"}
+                      {!canLogFood ? "🔒 Yum (Pro)" : isLogging ? "Logging..." : "😋 Yum"}
                     </Button>
                     <Button 
                       onClick={handleNah}

@@ -1,18 +1,31 @@
-import { Home, Camera, TrendingUp, Trophy, User } from "lucide-react";
+import { Home, Camera, TrendingUp, Trophy, User, Lock } from "lucide-react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import { checkTierAccess } from "@/components/subscription-check";
 
 export default function Navigation() {
   const [location, navigate] = useLocation();
+  const { user } = useAuth();
+  const userTier = user?.subscriptionTier || 'free';
 
   const navItems = [
-    { id: "home", icon: Home, label: "Home", path: "/home" },
-    { id: "analyse", icon: Camera, label: "Analyse", path: "/" },
-    { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress" },
-    { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
-    { id: "profile", icon: User, label: "Profile", path: "/profile" },
+    { id: "home", icon: Home, label: "Home", path: "/home", requiredTier: "free" },
+    { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free" },
+    { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress", requiredTier: "pro" },
+    { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard", requiredTier: "pro" },
+    { id: "profile", icon: User, label: "Profile", path: "/profile", requiredTier: "pro" },
   ];
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string, requiredTier: string) => {
+    const hasAccess = checkTierAccess(userTier, requiredTier);
+    
+    if (!hasAccess) {
+      // Navigate to subscription page for upgrade
+      window.scrollTo(0, 0);
+      navigate('/subscription');
+      return;
+    }
+    
     // Scroll to top immediately - no smooth behavior for instant response
     window.scrollTo(0, 0);
     navigate(path);
@@ -32,26 +45,36 @@ export default function Navigation() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const hasAccess = checkTierAccess(userTier, item.requiredTier);
+            const isLocked = !hasAccess;
             
             return (
               <button
                 key={item.id}
-                onClick={() => handleNavigation(item.path)}
-                className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-all duration-200 ${
-                  active
+                onClick={() => handleNavigation(item.path, item.requiredTier)}
+                className={`flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-all duration-200 relative ${
+                  isLocked
+                    ? "text-gray-300 cursor-pointer"
+                    : active
                     ? "text-ios-blue"
                     : "text-ios-secondary hover:text-ios-text"
                 }`}
               >
-                <div className={`p-2 rounded-xl transition-all duration-200 ${
-                  active 
+                <div className={`p-2 rounded-xl transition-all duration-200 relative ${
+                  isLocked
+                    ? "bg-gray-100"
+                    : active 
                     ? "bg-ios-blue/10 scale-110" 
                     : "hover:bg-ios-gray-100"
                 }`}>
-                  <Icon className="w-5 h-5" />
+                  {isLocked ? (
+                    <Lock className="w-5 h-5" />
+                  ) : (
+                    <Icon className="w-5 h-5" />
+                  )}
                 </div>
                 <span className={`text-xs font-medium mt-1 transition-all duration-200 ${
-                  active ? "opacity-100" : "opacity-70"
+                  isLocked ? "opacity-50" : active ? "opacity-100" : "opacity-70"
                 }`}>
                   {item.label}
                 </span>

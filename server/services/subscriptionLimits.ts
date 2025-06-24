@@ -6,6 +6,10 @@ interface TierLimits {
   exportData: boolean;
   prioritySupport: boolean;
   unlimitedHistory: boolean;
+  foodLogging: boolean;
+  personalization: boolean;
+  leaderboardAccess: boolean;
+  foodHistory: boolean;
 }
 
 const TIER_LIMITS: Record<string, TierLimits> = {
