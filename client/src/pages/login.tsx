@@ -92,7 +92,13 @@ export default function Login() {
   const handleLogin = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      const response = await apiRequest("POST", "/api/auth/login", data);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+
       if (response.ok) {
         toast({
           title: "Welcome back!",
@@ -111,7 +117,7 @@ export default function Login() {
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "An error occurred during login",
+        description: "Network error occurred during login",
         variant: "destructive",
         duration: 4000,
       });

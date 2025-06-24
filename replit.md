@@ -157,12 +157,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Enhanced Email Validation & User Registration - ROOT CAUSE FIXED (June 24, 2025)
-- **Root Issue**: apiRequest function was throwing errors on non-200 responses, preventing proper error handling
-- **Solution**: Replaced apiRequest with direct fetch to properly handle 409 status responses
+### Fixed Authentication Error Handling - Login & Registration (June 24, 2025)
+- **Root Issue**: apiRequest function was throwing errors on non-200 responses, breaking both login and registration error handling
+- **Login Fix**: Replaced apiRequest with direct fetch for login to properly handle 401 responses
+- **Registration Fix**: Replaced apiRequest with direct fetch for registration to properly handle 409 responses
 - **Duplicate Detection**: Now correctly shows "Email Already Registered" message with login suggestion
-- **Field-Level Errors**: Error appears both in toast and under email input field
-- **Proper Architecture**: Maintains response object access for status code checking
+- **Login Errors**: Now properly displays "Invalid email or password" instead of generic network errors
+- **Consistent Architecture**: Both login and registration use direct fetch for proper response handling
 
 ### Data Consistency Fix - Registration vs Onboarding (June 24, 2025)
 - **UX Issue Resolved**: Removed duplicate name collection from onboarding flow
