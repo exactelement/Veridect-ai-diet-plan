@@ -234,8 +234,8 @@ export default function Home() {
               <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
-            {/* Calorie Counter Bar - Only show if user hasn't disabled it */}
-            {showCalorieCounter && (
+            {/* Calorie Counter Bar - Only for Pro users */}
+            {hasProAccess && (
               <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
