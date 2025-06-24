@@ -1,8 +1,8 @@
-# YesNoApp Android Play Store Deployment Guide
+# Veridect Android Play Store Deployment Guide
 
 ## Overview
 
-This guide covers the complete process of deploying your YesNoApp Android app to Google Play Store, including Android Studio configuration, Play Console setup, compliance requirements, and submission process.
+This guide covers the complete process of deploying your Veridect Android app to Google Play Store, including Android Studio configuration, Play Console setup, compliance requirements, and submission process.
 
 ## Prerequisites
 
@@ -27,8 +27,8 @@ This guide covers the complete process of deploying your YesNoApp Android app to
 ```
 Developer Information:
 - Name: Your Name or Company
-- Website: https://yesnoapp.com
-- Contact Email: developer@yesnoapp.com
+- Website: https://veridect.com
+- Contact Email: info@veridect.com
 - Phone Number: Your phone number
 - Address: Complete business address
 ```
@@ -39,11 +39,11 @@ Developer Information:
 
 ```gradle
 android {
-    namespace 'com.yesnoapp.android'
+    namespace 'com.veridect.android'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.yesnoapp.android"
+        applicationId "com.veridect.android"
         minSdk 24
         targetSdk 34
         versionCode 1

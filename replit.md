@@ -158,6 +158,15 @@ Preferred communication style: Simple, everyday language.
 - **Revenue Status**: COLLECTING REAL REVENUE - Payment system fully operational
 - **Security**: Live payment flow secure with proper webhook verification
 
+## Recent Changes
+
+### Repository Organization & Branding Update (June 24, 2025)
+- **Complete Rebranding**: Updated all "YesNoApp" references to "Veridect" across entire platform
+- **Contact Information**: Updated to Spanish market details (info@veridect.com, +34 672 810 584)
+- **Repository Structure**: Organized non-essential documents into info-files folder for cleaner structure
+- **Documentation Updates**: Updated iOS/Android deployment guides with new branding and contact details
+- **Disclaimer Enhancement**: Added "entertainment purposes" alongside educational and informational purposes
+
 ## Development Status - Patent Pending
 - **Build Status**: Production build completed successfully with optimized assets
 - **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro promotional - normally €10/month)

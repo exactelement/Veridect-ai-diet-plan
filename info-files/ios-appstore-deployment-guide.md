@@ -1,8 +1,8 @@
-# YesNoApp iOS App Store Deployment Guide
+# Veridect iOS App Store Deployment Guide
 
 ## Overview
 
-This guide covers the complete process of deploying your YesNoApp iOS app to the Apple App Store, including Xcode configuration, App Store Connect setup, review guidelines compliance, and submission process.
+This guide covers the complete process of deploying your Veridect iOS app to the Apple App Store, including Xcode configuration, App Store Connect setup, review guidelines compliance, and submission process.
 
 ## Prerequisites
 
@@ -39,8 +39,8 @@ xcodebuild -showBuildSettings | grep DEVELOPMENT_TEAM
 2. Navigate to "Certificates, Identifiers & Profiles"
 3. Click "Identifiers" → "+" to create new App ID
 4. Configure:
-   - **Description**: YesNoApp - Smart Food Analysis
-   - **Bundle ID**: `com.yesnoapp.ios` (explicit, not wildcard)
+   - **Description**: Veridect - Smart Food Analysis
+   - **Bundle ID**: `com.veridect.ios` (explicit, not wildcard)
    - **Capabilities**: Enable HealthKit
 
 ### Generate Certificates
