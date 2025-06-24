@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 PROJECT_ID="${PROJECT_ID:-veridect-app}"
-REGION="europe-west1"
+REGION="us-central1"
 SERVICE_NAME="veridect"
 REPOSITORY="veridect"
 
