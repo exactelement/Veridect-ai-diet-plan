@@ -502,17 +502,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateStripeCustomerId(userId, customerId);
       }
 
-      // Check for required Stripe configuration
-      if (!process.env.STRIPE_PRO_PRICE_ID || !process.env.STRIPE_ADVANCED_PRICE_ID) {
+      // Check for required Stripe configuration (only Pro tier for now)
+      if (!process.env.STRIPE_PRO_PRICE_ID) {
         return res.status(503).json({ 
           message: "Subscription service is temporarily unavailable. Stripe configuration is incomplete.",
           details: "Please contact support or try again later."
         });
       }
 
-      const priceId = tier === 'pro' 
-        ? process.env.STRIPE_PRO_PRICE_ID 
-        : process.env.STRIPE_ADVANCED_PRICE_ID;
+      // Advanced tier not available yet
+      if (tier === 'advanced') {
+        return res.status(503).json({ 
+          message: "Advanced tier is coming soon! Pro tier is available now.",
+          details: "Try the Pro tier for unlimited analyses and premium features."
+        });
+      }
+
+      const priceId = process.env.STRIPE_PRO_PRICE_ID; // Only Pro tier available
 
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
