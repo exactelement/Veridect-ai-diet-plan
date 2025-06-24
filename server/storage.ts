@@ -520,7 +520,7 @@ export class DatabaseStorage implements IStorage {
     return score;
   }
 
-  // Gamification operations - accumulates ALL points (food logging + bonus points)
+  // Gamification operations - accumulates ONLY lifetime points (no weekly points)
   async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
@@ -528,19 +528,17 @@ export class DatabaseStorage implements IStorage {
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
     
-    // Update weekly points to include ALL points earned this week
-    await this.updateWeeklyScore(userId, pointsToAdd);
-    
     const [updatedUser] = await db
       .update(users)
       .set({ 
-        totalPoints: newTotalPoints, // Lifetime accumulation: food logging + bonus points
+        totalPoints: newTotalPoints, // Lifetime accumulation only
         currentLevel: newLevel,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
       .returning();
     
+    console.log(`Added ${pointsToAdd} lifetime points only (total: ${newTotalPoints})`);
     return updatedUser;
   }
 

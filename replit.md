@@ -158,10 +158,10 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 ### Weekly Points Double Counting Fix (June 24, 2025)
-- **Root Cause Resolution**: Fixed double counting in weekly points where food analysis AND food logging both added points for same item
-- **Function Logic Correction**: Modified food-logs endpoint to check for existing analysis before adding weekly points
-- **Duplicate Prevention**: Implemented logic to skip weekly score updates when points already counted during analysis
-- **Mathematical Integrity**: Ensured all future calculations follow established YES=10, OK=5, NO=2 scoring rules without duplicates
+- **Root Cause Resolution**: Fixed duplicate point additions where updateUserPoints was incorrectly calling updateWeeklyScore
+- **Function Separation**: Modified updateUserPoints to only handle lifetime points (totalPoints) for level progression
+- **Eliminated Phantom Points**: Removed erroneous weekly score update causing extra 2 points regardless of verdict
+- **Mathematical Accuracy**: Weekly points now calculated exactly once with YES=10, OK=5, NO=2 scoring rules
 
 ### Docker Container & Cloud Run Deployment (June 24, 2025)
 - **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment
