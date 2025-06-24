@@ -72,14 +72,27 @@ passport.use(new LocalStrategy({
   try {
     const user = await storage.getUserByEmail(email);
     
-    if (!user || !user.passwordHash) {
-      return done(null, false, { message: 'Invalid email or password' });
+    if (!user) {
+      return done(null, false, { message: 'No account found with this email address' });
+    }
+
+    // Check if user registered via Google OAuth without password
+    if (!user.passwordHash && user.googleId) {
+      return done(null, false, { 
+        message: 'This email is registered with Google. Please use "Sign in with Google" instead.' 
+      });
+    }
+
+    if (!user.passwordHash) {
+      return done(null, false, { 
+        message: 'This account was created through a different method. Please try signing in with Google or contact support.' 
+      });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
     
     if (!isValidPassword) {
-      return done(null, false, { message: 'Invalid email or password' });
+      return done(null, false, { message: 'Incorrect password for this email address' });
     }
 
     return done(null, user);
