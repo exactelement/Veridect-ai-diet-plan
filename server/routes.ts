@@ -45,9 +45,17 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
   try {
     const todaysLogs = await storage.getTodaysFoodLogs(userId);
     
-    // Check for 3 YES foods in a row (logged foods only)
-    const last3Logs = todaysLogs.slice(-3);
-    if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
+    // Check for 3 YES foods in a row (consecutive from start of day)
+    let consecutiveYes = 0;
+    for (const log of todaysLogs) {
+      if (log.verdict === "YES") {
+        consecutiveYes++;
+      } else {
+        consecutiveYes = 0; // Reset on any non-YES food
+      }
+    }
+    
+    if (consecutiveYes >= 3) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
       if (!bonusAlreadyAwarded) {
         // 50 bonus points to BOTH lifetime and weekly points
@@ -404,6 +412,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(logs);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch today's analyzed foods" });
+    }
+  });
+
+  // Get current consecutive YES streak for today
+  app.get('/api/food/yes-streak', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const todaysLogs = await storage.getTodaysFoodLogs(userId);
+      
+      // Calculate consecutive YES streak (resets on any NO/OK food)
+      let consecutiveYes = 0;
+      for (const log of todaysLogs) {
+        if (log.verdict === "YES") {
+          consecutiveYes++;
+        } else {
+          consecutiveYes = 0; // Reset on any non-YES food
+        }
+      }
+      
+      res.json({ consecutiveYesStreak: consecutiveYes });
+    } catch (error) {
+      console.error("Error calculating YES streak:", error);
+      res.status(500).json({ message: "Failed to calculate YES streak" });
     }
   });
 
