@@ -209,7 +209,7 @@ export default function FoodAnalysis() {
   };
 
   const [isLogging, setIsLogging] = useState(false);
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
 
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
