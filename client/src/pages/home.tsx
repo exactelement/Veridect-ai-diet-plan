@@ -217,7 +217,7 @@ export default function Home() {
             {/* Greeting Header */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {timeGreeting}, {(user as any)?.firstName || 'there'}!
+                {timeGreeting}, {((user as any)?.firstName || 'there').trim()}!
               </h1>
               <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
