@@ -39,8 +39,7 @@ const subscriptionTiers: SubscriptionTier[] = [
     features: [
       "5 analyses per day",
       "Basic nutritional info",
-      "Simple yes/no verdicts",
-      "Weekly progress tracking"
+      "Simple yes/no verdicts"
     ],
     limitations: [
       "Limited to 5 analyses daily",

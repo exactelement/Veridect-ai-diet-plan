@@ -26,7 +26,7 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     personalization: false,
     leaderboardAccess: false,
     foodHistory: false,
-    weeklyProgress: true, // Weekly progress tracking included in free tier
+    weeklyProgress: false, // Weekly progress tracking NOT included in free tier
   },
   pro: {
     dailyAnalyses: -1, // unlimited

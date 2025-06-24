@@ -421,7 +421,7 @@ export default function Home() {
       <div className="container-padding mb-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -457,18 +457,6 @@ export default function Home() {
                 <p className="text-ios-secondary">Clear yes or no answers about your food choices</p>
               </CardContent>
             </Card>
-            
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-purple-600" />
-                  Weekly Progress Tracking
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Monitor your nutrition progress throughout the week</p>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Premium features - locked for free users */}
@@ -477,7 +465,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
                 Premium Features (Upgrade Required)
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
+              <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 opacity-50">
                 <Card className="bg-gray-100 border-gray-200">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
@@ -521,6 +509,17 @@ export default function Home() {
                     View your analysis history
                   </CardContent>
                 </Card>
+                
+                <Card className="bg-gray-100 border-gray-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
+                      <span>📈</span> Weekly Progress
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-xs text-gray-400">
+                    Track your progress over time
+                  </CardContent>
+                </Card>
               </div>
               
               <div className="text-center mt-6">
@@ -536,8 +535,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Weekly Progress - available for all users including free tier */}
-      {(
+      {/* Weekly Progress - only for Pro users */}
+      {checkTierAccess(userTier, 'pro') && (
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
