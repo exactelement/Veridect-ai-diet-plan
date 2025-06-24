@@ -309,23 +309,19 @@ export default function Login() {
 
   const handleAppleLogin = async () => {
     try {
-      // Check if AppleID is available
-      if (typeof (window as any).AppleID === 'undefined') {
-        toast({
-          title: "Apple Sign-In Not Available",
-          description: "Apple Sign-In requires proper Apple Developer configuration",
-          variant: "destructive",
-        });
-        return;
-      }
-
       setIsLoading(true);
 
-      // Configure Apple Sign-In
+      // Check if Apple ID script is loaded
+      if (typeof (window as any).AppleID === 'undefined') {
+        // Load Apple ID script dynamically
+        await loadAppleIDScript();
+      }
+
+      // Initialize Apple Sign-In
       await (window as any).AppleID.auth.init({
-        clientId: 'com.yesnoapp.signin', // This would be your Apple Developer service ID
+        clientId: process.env.VITE_APPLE_CLIENT_ID || 'com.veridect.signin',
         scope: 'name email',
-        redirectURI: window.location.origin,
+        redirectURI: window.location.origin + '/api/auth/apple/callback',
         state: 'signin',
         usePopup: true
       });
@@ -334,46 +330,72 @@ export default function Login() {
       const data = await (window as any).AppleID.auth.signIn();
       
       if (data.authorization && data.authorization.id_token) {
-        // Send the identity token to your backend
-        const response = await apiRequest("POST", "/api/auth/apple", {
-          identityToken: data.authorization.id_token,
-          user: data.user
+        // Send the identity token to backend
+        const response = await fetch("/api/auth/apple", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            identityToken: data.authorization.id_token,
+            authorizationCode: data.authorization.code,
+            user: data.user
+          }),
+          credentials: "include",
         });
 
         if (response.ok) {
           const result = await response.json();
           toast({
-            title: "Apple Sign-In Successful",
-            description: "Welcome to YesNoApp!",
+            title: "Welcome!",
+            description: "Apple Sign-In successful",
           });
           
-          // Redirect based on onboarding status
-          window.location.href = result.redirect || "/";
+          // Smooth transition based on onboarding status
+          setTimeout(() => {
+            window.location.href = result.redirect || (result.user?.onboardingCompleted ? "/" : "/onboarding");
+          }, 500);
         } else {
           const error = await response.json();
           toast({
             title: "Apple Sign-In Failed",
             description: error.message || "Authentication failed",
             variant: "destructive",
+            duration: 4000,
           });
         }
       }
     } catch (error: any) {
       console.error("Apple Sign-In error:", error);
       
-      if (error.error === 'popup_closed_by_user') {
+      if (error.error === 'popup_closed_by_user' || error.error === 'user_cancelled_authorize') {
         // User cancelled - don't show error
         return;
       }
       
       toast({
         title: "Apple Sign-In Failed",
-        description: "Unable to complete Apple Sign-In",
+        description: "Unable to complete Apple Sign-In. Please try again or use email.",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Function to dynamically load Apple ID script
+  const loadAppleIDScript = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (typeof (window as any).AppleID !== 'undefined') {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load Apple ID script'));
+      document.head.appendChild(script);
+    });
   };
 
 
