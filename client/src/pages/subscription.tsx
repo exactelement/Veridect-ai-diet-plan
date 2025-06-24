@@ -242,6 +242,17 @@ export default function Subscription() {
       return response.json();
     },
     onSuccess: (data) => {
+      if (data.success && !data.clientSecret) {
+        // 100% discount - no payment needed
+        toast({
+          title: "Subscription Activated!",
+          description: "Your Pro subscription is now active with 100% discount",
+          variant: "default",
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        return;
+      }
       setClientSecret(data.clientSecret);
     },
     onError: (error: Error) => {

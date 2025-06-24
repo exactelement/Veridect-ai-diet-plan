@@ -556,7 +556,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const latestInvoice = subscription.latest_invoice as any;
-      const paymentIntent = latestInvoice.payment_intent;
+      const paymentIntent = latestInvoice?.payment_intent;
+
+      // Handle 100% discount coupons that don't require payment
+      if (!paymentIntent) {
+        // For 100% discount coupons, mark subscription as active immediately
+        await storage.updateUserStripeInfo(userId, {
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: subscription.id,
+          subscriptionTier: 'pro',
+          subscriptionStatus: 'active',
+        });
+
+        return res.json({
+          subscriptionId: subscription.id,
+          clientSecret: null, // No payment needed
+          success: true,
+          message: "Subscription activated with 100% discount"
+        });
+      }
 
       res.json({
         subscriptionId: subscription.id,
