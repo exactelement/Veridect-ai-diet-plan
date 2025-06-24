@@ -418,8 +418,8 @@ export default function Progress() {
                 </div>
               </div>
 
-              {/* Actual Bonus Points Earned Today */}
-              {(todaysStats.yes >= 3 || todaysStats.yes >= 5 || todaysStats.yes >= 10 || todaysStats.total >= 5 || todaysStats.total >= 10) && (
+              {/* Today's Rewards Earned - Based on ACTUAL logged food today */}
+              {(todaysLoggedStats.yes >= 3 || todaysLoggedStats.total >= 5) && (
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-100 rounded-lg p-4 shadow-sm border border-indigo-200">
                   <h3 className="font-semibold text-lg mb-3 text-indigo-800">🎁 Today's Rewards Earned</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -427,24 +427,24 @@ export default function Progress() {
                       <div className="text-2xl font-bold text-indigo-700">
                         {(() => {
                           let bonusPoints = 0;
-                          // Only award bonus if challenges are actually completed
-                          if (todaysStats.yes >= 3) bonusPoints += 50;  // 3 YES streak
-                          if (todaysStats.yes >= 5) bonusPoints += 100; // 5 YES milestone  
-                          if (todaysStats.yes >= 10) bonusPoints += 200; // 10 YES milestone
-                          if (todaysStats.total >= 5) bonusPoints += 25; // 5 analyses
-                          if (todaysStats.total >= 10) bonusPoints += 50; // 10 analyses
-                          return bonusPoints;
+                          // Calculate today's actual food points from logged items
+                          const foodPoints = todaysLoggedStats.yes * 10 + todaysLoggedStats.ok * 5 + todaysLoggedStats.no * 2;
+                          
+                          // Add actual bonus points earned today
+                          if (todaysLoggedStats.yes >= 3) bonusPoints += 50;  // 3 YES streak
+                          if (todaysLoggedStats.total >= 5) bonusPoints += 25; // 5 analyses
+                          
+                          return foodPoints + bonusPoints;
                         })()}
                       </div>
-                      <div className="text-sm text-indigo-600">Bonus Points</div>
+                      <div className="text-sm text-indigo-600">Total Points Today</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-700">
                         {(() => {
                           let badges = 0;
-                          if (todaysStats.yes >= 3) badges += 1;  // Streak badge
-                          if (todaysStats.yes >= 5) badges += 1;  // Health Rookie badge
-                          if (todaysStats.yes >= 10) badges += 1; // Health Champion badge
+                          if (todaysLoggedStats.yes >= 3) badges += 1;  // Streak badge
+                          if (todaysLoggedStats.total >= 5) badges += 1;  // Analysis badge
                           return badges;
                         })()}
                       </div>
