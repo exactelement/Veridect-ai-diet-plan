@@ -280,6 +280,8 @@ export default function Leaderboard() {
             </CardContent>
           </Card>
 
+          {/* Bottom spacer to prevent footer overlap */}
+          <div className="h-24"></div>
 
         </div>
       </div>

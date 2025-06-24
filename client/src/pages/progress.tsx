@@ -498,6 +498,9 @@ export default function Progress() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Bottom spacer to prevent footer overlap */}
+        <div className="h-24"></div>
         </div>
       </div>
     </div>
