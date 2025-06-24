@@ -39,6 +39,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           subscriptionTier: "free",
           subscriptionStatus: "inactive",
         });
+      } else if (user.passwordHash && !user.googleId) {
+        // User registered with email/password, trying to sign in with Google
+        return done(new Error("This email is already registered with a password. Please sign in using your email and password instead of Google."));
       } else {
         // Link Google ID to existing email account - preserve ALL existing data including onboarding status
         if (!user.googleId) {
@@ -157,17 +160,36 @@ export async function setupMultiAuth(app: Express) {
     );
 
     app.get('/api/auth/google/callback',
-      passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
-      (req, res) => {
-        const user = req.user as any;
-        let redirect = user?.onboardingCompleted ? '/' : '/onboarding';
-        
-        // Add message if account was linked
-        if (user?.accountLinked) {
-          redirect += user?.onboardingCompleted ? '?message=google_linked' : '&message=google_linked';
-        }
-        
-        res.redirect(redirect);
+      (req, res, next) => {
+        passport.authenticate('google', (err, user) => {
+          if (err) {
+            // Handle specific authentication errors
+            if (err.message && err.message.includes('already registered with a password')) {
+              return res.redirect('/login?error=use_email_login');
+            }
+            return res.redirect('/login?error=google_failed');
+          }
+          
+          if (!user) {
+            return res.redirect('/login?error=google_failed');
+          }
+          
+          // Log the user in
+          req.logIn(user, (loginErr) => {
+            if (loginErr) {
+              return res.redirect('/login?error=google_failed');
+            }
+            
+            let redirect = user?.onboardingCompleted ? '/' : '/onboarding';
+            
+            // Add message if account was linked
+            if (user?.accountLinked) {
+              redirect += user?.onboardingCompleted ? '?message=google_linked' : '&message=google_linked';
+            }
+            
+            res.redirect(redirect);
+          });
+        })(req, res, next);
       }
     );
   } else {
