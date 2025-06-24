@@ -255,7 +255,7 @@ export default function Landing() {
                 <Shield className="w-8 h-8 text-warning-orange" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Privacy First</h3>
-              <p className="text-ios-secondary">Apple-grade security with on-device processing and transparent data handling practices.</p>
+              <p className="text-ios-secondary">Enterprise-grade security with transparent data handling practices and full user control.</p>
             </div>
           </div>
         </div>
