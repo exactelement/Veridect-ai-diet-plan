@@ -288,12 +288,12 @@ export default function Privacy() {
             </CardHeader>
             <CardContent>
               <p className="text-ios-secondary mb-4">
-                We're here to help you understand how your data is protected. Contact our privacy team:
+                We're here to help you understand how your data is protected. Contact us:
               </p>
-              <div className="space-y-2 text-sm">
-                <p><strong>Email:</strong> privacy@yesnoapp.com</p>
-                <p><strong>Data Protection Officer:</strong> dpo@yesnoapp.com</p>
-                <p><strong>Address:</strong> YesNoApp, Inc. Privacy Team, [Address]</p>
+              <div className="text-center">
+                <a href="mailto:info@veridect.com" className="text-ios-blue hover:underline font-medium">
+                  info@veridect.com
+                </a>
               </div>
             </CardContent>
           </Card>
