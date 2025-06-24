@@ -159,7 +159,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Development Status - Patent Pending
 - **Build Status**: Production build completed successfully with optimized assets
-- **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro charged annually)
+- **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro promotional - normally €10/month)
 - **Authentication Tier Control**: All new users (Google OAuth, email, Apple) default to free tier with proper restrictions
 - **Onboarding Flow**: 4-step process ending with subscription tier selection (Free vs Pro upgrade option)
 - **Frontend Protection**: Added subscription checks to Progress and Leaderboard page routes

@@ -57,7 +57,7 @@ const subscriptionTiers: SubscriptionTier[] = [
     id: "pro",
     name: "Pro",
     price: 12.00,
-    description: "€1/month charged annually",
+    description: "€1/month charged annually - Limited offer! (normally €10/month)",
     features: [
       "Unlimited analyses",
       "Food logging & progress tracking",
@@ -66,7 +66,7 @@ const subscriptionTiers: SubscriptionTier[] = [
       "Food history",
       "Personalised AI analysis",
       "Priority support",
-      "🎉 Annual billing discount"
+      "🎉 Limited promotional price - normally €10/month!"
     ],
     limitations: [],
     icon: <Crown className="w-6 h-6 text-yellow-500" />,
@@ -307,7 +307,7 @@ export default function Subscription() {
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800 font-medium mb-2">
-                Coming Very Soon: €1/month Pro Tier (charged annually)
+                Coming Very Soon: €1/month Pro Tier (Limited offer - normally €10/month!)
               </p>
               <ul className="text-sm text-blue-700 text-left space-y-1">
                 <li>• Unlimited food analyses</li>
@@ -387,6 +387,7 @@ export default function Subscription() {
                   <>
                     €1<span className="text-sm font-normal text-ios-secondary">/month</span>
                     <div className="text-xs text-ios-secondary font-normal">charged annually (€12/year)</div>
+                    <div className="text-xs text-red-600 font-medium">Limited offer! Normally €10/month</div>
                   </>
                 ) : (
                   <>
