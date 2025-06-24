@@ -692,9 +692,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No active subscription found" });
       }
 
+      // Check if already cancelled
+      const currentSubscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      
+      if (currentSubscription.cancel_at_period_end) {
+        return res.status(400).json({ 
+          message: "Subscription is already cancelled and will end at the current billing period." 
+        });
+      }
+
       // Cancel at period end to maintain access until billing cycle ends
       await stripe.subscriptions.update(user.stripeSubscriptionId, {
         cancel_at_period_end: true
+      });
+
+      // Update user subscription status in database
+      await storage.updateUserStripeInfo(userId, {
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+        subscriptionTier: user.subscriptionTier, // Keep current tier until period ends
+        subscriptionStatus: 'cancelling', // Mark as cancelling
       });
 
       res.json({ 

@@ -214,7 +214,9 @@ export default function Profile() {
         title: "Subscription Cancelled",
         description: "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
       });
+      // Force refetch user data to get updated subscription status
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       setShowCancelDialog(false);
     },
     onError: (error: any) => {
