@@ -281,7 +281,7 @@ export default function Leaderboard() {
           </Card>
 
           {/* Bottom spacer to prevent footer overlap */}
-          <div className="h-32"></div>
+          <div className="h-20"></div>
 
         </div>
       </div>
