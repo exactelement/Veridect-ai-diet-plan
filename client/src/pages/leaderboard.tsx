@@ -202,9 +202,6 @@ export default function Leaderboard() {
                                 </h3>
                               )}
                             </div>
-                            <p className="text-ios-secondary text-sm">
-                              Weekly challenge participant
-                            </p>
                           </div>
                         </div>
                         <div className="flex flex-col items-end">
