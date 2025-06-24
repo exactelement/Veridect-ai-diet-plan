@@ -136,9 +136,9 @@ export default function Landing() {
       <section className="pt-24 pb-16 px-4">
         <div className="page-container text-center">
           <div className="animate-slide-up">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900">
               Bringing Awareness to{' '}
-              <span className="bg-gradient-to-r from-health-green to-ios-blue bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                 Healthier Nutrition
               </span>
             </h1>
