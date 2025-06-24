@@ -284,6 +284,26 @@ export default function Progress() {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
+                      <span className="text-indigo-700 font-medium">Analyze 10 foods today</span>
+                      {todaysStats.total >= 10 ? (
+                        <span className="text-xs bg-indigo-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/10</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-indigo-200 rounded-full h-3">
+                        <div 
+                          className="bg-indigo-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((todaysStats.total / 10) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-semibold text-indigo-700">{Math.min(todaysStats.total, 10)}/10</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
                       <span className="text-blue-700 font-medium">Zero BAD foods today</span>
                       {todaysStats.no === 0 && todaysStats.total > 0 && (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">PERFECT DAY!</span>
