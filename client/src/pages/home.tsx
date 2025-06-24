@@ -208,7 +208,8 @@ export default function Home() {
         "Dedicated account manager"
       ],
       icon: <Shield className="w-6 h-6" />,
-      color: "from-emerald-500 to-teal-600"
+      color: "from-emerald-500 to-teal-600",
+      comingSoon: true
     }
   ];
 
@@ -623,11 +624,19 @@ export default function Home() {
                 key={tier.id} 
                 className={`relative bg-white/80 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-200 ${
                   tier.popular ? 'border-blue-300 ring-2 ring-blue-200' : 'border-ios-separator'
-                } ${(user as any)?.subscriptionTier === tier.id ? 'ring-2 ring-green-200 border-green-300' : ''}`}
+                } ${(user as any)?.subscriptionTier === tier.id ? 'ring-2 ring-green-200 border-green-300' : ''} ${
+                  tier.id === 'advanced' ? 'opacity-50' : ''
+                }`}
               >
                 {tier.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-blue-600 text-white px-4 py-1">Most Popular</Badge>
+                  </div>
+                )}
+                
+                {tier.id === 'advanced' && (
+                  <div className="absolute -top-3 right-4">
+                    <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
                   </div>
                 )}
                 
