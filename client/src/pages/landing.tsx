@@ -270,8 +270,8 @@ export default function Landing() {
           
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="p-8 text-center ios-shadow animate-slide-up">
-              <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-2xl">1</span>
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-white font-bold text-2xl drop-shadow-lg">1</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">Snap or Describe</h3>
               <p className="text-ios-secondary mb-6">Take a photo of your food or simply describe what you're about to eat.</p>
@@ -283,8 +283,8 @@ export default function Landing() {
             </Card>
             
             <Card className="p-8 text-center ios-shadow animate-slide-up animation-delay-100">
-              <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-2xl">2</span>
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-white font-bold text-2xl drop-shadow-lg">2</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">Get Instant Verdict</h3>
               <p className="text-ios-secondary mb-6">Receive a clear Yes, No, or OK verdict with detailed explanation and reasoning.</p>
@@ -301,8 +301,8 @@ export default function Landing() {
             </Card>
             
             <Card className="p-8 text-center ios-shadow animate-slide-up animation-delay-200">
-              <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-2xl">3</span>
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span className="text-white font-bold text-2xl drop-shadow-lg">3</span>
               </div>
               <h3 className="text-xl font-semibold mb-4">Track Progress</h3>
               <p className="text-ios-secondary mb-6">Monitor your daily choices, streaks, and health improvements over time.</p>
