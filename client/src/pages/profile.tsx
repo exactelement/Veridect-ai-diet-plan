@@ -292,10 +292,6 @@ export default function Profile() {
                               Cancel Subscription
                             </Button>
                           )}
-                          {/* Debug info - remove in production */}
-                          <small className="text-xs text-gray-400">
-                            Status: {(user as any).subscriptionStatus || 'none'}
-                          </small>
                         </div>
                       )}
                     </div>
