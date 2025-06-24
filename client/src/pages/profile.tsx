@@ -17,6 +17,7 @@ import type { UpdateUserProfile, FoodLog } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { checkTierAccess } from "@/components/subscription-check";
 import { z } from "zod";
 
 const DIETARY_PREFERENCES = [
@@ -56,6 +57,8 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const userTier = user?.subscriptionTier || 'free';
+  const hasProAccess = checkTierAccess(userTier, 'pro');
 
   // Scroll to top when navigating to profile
   useEffect(() => {
@@ -398,20 +401,21 @@ export default function Profile() {
           </Card>
 
           {/* Personalization Dropdown */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
-            <Collapsible open={personalizationOpen} onOpenChange={setPersonalizationOpen}>
+          <Card className={`bg-white/80 backdrop-blur-sm border border-ios-separator ${!hasProAccess ? 'opacity-50' : ''}`}>
+            <Collapsible open={personalizationOpen} onOpenChange={hasProAccess ? setPersonalizationOpen : undefined}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Heart className="w-5 h-5 text-ios-blue" />
-                      <span>Personalization</span>
+                      <Heart className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-400'}>Personalization</span>
+                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
                     </div>
-                    {personalizationOpen ? (
+                    {hasProAccess && (personalizationOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-ios-secondary" />
-                    )}
+                    ))}
                   </CardTitle>
                 </CardHeader>
               </CollapsibleTrigger>
@@ -557,20 +561,21 @@ export default function Profile() {
           </Card>
 
           {/* App Interface Dropdown */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
-            <Collapsible open={interfaceOpen} onOpenChange={setInterfaceOpen}>
+          <Card className={`bg-white/80 backdrop-blur-sm border border-ios-separator ${!hasProAccess ? 'opacity-50' : ''}`}>
+            <Collapsible open={interfaceOpen} onOpenChange={hasProAccess ? setInterfaceOpen : undefined}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Monitor className="w-5 h-5 text-ios-blue" />
-                      <span>App Interface</span>
+                      <Monitor className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-400'}>App Interface</span>
+                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
                     </div>
-                    {interfaceOpen ? (
+                    {hasProAccess && (interfaceOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-ios-secondary" />
-                    )}
+                    ))}
                   </CardTitle>
                 </CardHeader>
               </CollapsibleTrigger>
@@ -646,20 +651,21 @@ export default function Profile() {
           </Card>
 
           {/* Food History Dropdown */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
-            <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
+          <Card className={`bg-white/80 backdrop-blur-sm border border-ios-separator ${!hasProAccess ? 'opacity-50' : ''}`}>
+            <Collapsible open={historyOpen} onOpenChange={hasProAccess ? setHistoryOpen : undefined}>
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                <CardHeader className={`cursor-pointer hover:bg-ios-gray-50 transition-colors ${!hasProAccess ? 'pointer-events-none' : ''}`}>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <History className="w-5 h-5 text-ios-blue" />
-                      <span>Food History</span>
+                      <History className={`w-5 h-5 ${hasProAccess ? 'text-ios-blue' : 'text-gray-400'}`} />
+                      <span className={hasProAccess ? '' : 'text-gray-400'}>Food History</span>
+                      {!hasProAccess && <Lock className="w-4 h-4 text-gray-400 ml-2" />}
                     </div>
-                    {historyOpen ? (
+                    {hasProAccess && (historyOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-ios-secondary" />
-                    )}
+                    ))}
                   </CardTitle>
                 </CardHeader>
               </CollapsibleTrigger>
