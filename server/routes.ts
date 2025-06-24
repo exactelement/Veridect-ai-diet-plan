@@ -284,10 +284,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Food logging endpoint for "Yum" button
+  // Food logging endpoint for "Yum" button - require Pro tier
   app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionTier || 'free';
+      
+      // Check if user has access to food logging
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodLogging');
+      if (!limitCheck.allowed) {
+        return res.status(403).json({ 
+          message: limitCheck.message,
+          upgradeRequired: limitCheck.upgradeRequired
+        });
+      }
+      
       const { foodName, verdict } = req.body;
       
       // Find the most recent analysis of this food that hasn't been logged yet
@@ -340,6 +352,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/food/logs', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionTier || 'free';
+      
+      // Check if user has access to food history
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory');
+      if (!limitCheck.allowed) {
+        return res.status(403).json({ 
+          message: limitCheck.message,
+          upgradeRequired: limitCheck.upgradeRequired
+        });
+      }
+      
       const { limit = 50, offset = 0 } = req.query;
       const logs = await storage.getFoodLogs(userId, parseInt(limit), parseInt(offset));
       res.json(logs);
@@ -352,6 +376,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/food/logs/today', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionTier || 'free';
+      
+      // Check if user has access to food history
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory');
+      if (!limitCheck.allowed) {
+        return res.status(403).json({ 
+          message: limitCheck.message,
+          upgradeRequired: limitCheck.upgradeRequired
+        });
+      }
+      
       const logs = await storage.getTodaysFoodLogs(userId);
       res.json(logs);
     } catch (error) {
@@ -372,8 +408,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Leaderboard routes
+  // Leaderboard routes - require Pro tier
   app.get('/api/leaderboard/weekly', isAuthenticated, async (req: any, res) => {
+    const userId = req.user?.claims?.sub || req.user?.id;
+    const user = await storage.getUser(userId);
+    const userTier = user?.subscriptionTier || 'free';
+    
+    // Check if user has access to leaderboard
+    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess');
+    if (!limitCheck.allowed) {
+      return res.status(403).json({ 
+        message: limitCheck.message,
+        upgradeRequired: limitCheck.upgradeRequired
+      });
+    }
     try {
       const leaderboard = await storage.getWeeklyLeaderboard();
       res.json(leaderboard);
@@ -384,6 +432,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/leaderboard/my-score', isAuthenticated, async (req: any, res) => {
+    const userId = req.user?.claims?.sub || req.user?.id;
+    const user = await storage.getUser(userId);
+    const userTier = user?.subscriptionTier || 'free';
+    
+    // Check if user has access to leaderboard
+    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess');
+    if (!limitCheck.allowed) {
+      return res.status(403).json({ 
+        message: limitCheck.message,
+        upgradeRequired: limitCheck.upgradeRequired
+      });
+    }
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
       const score = await storage.getUserWeeklyScore(userId);

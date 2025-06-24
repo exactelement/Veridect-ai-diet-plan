@@ -405,7 +405,7 @@ export async function analyzeFoodWithGemini(
     };
   }
   // Check smart cache for consistent verdicts per user profile
-  const cacheKey = getCacheKey(foodName, imageData, userProfile);
+  const cacheKey = getCacheKey(foodName, imageData, effectiveProfile);
   if (cacheKey && analysisCache.has(cacheKey)) {
     console.log(`Returning consistent cached analysis for: ${foodName || 'image'}`);
     return analysisCache.get(cacheKey)!;
@@ -415,8 +415,8 @@ export async function analyzeFoodWithGemini(
   // Don't clear cache - maintain consistency
 
   try {
-    // Try AI analysis first with user profile for personalization
-    const aiResult = await analyzeWithGemini(foodName, imageData, userProfile);
+    // Try AI analysis first with effective profile for personalization
+    const aiResult = await analyzeWithGemini(foodName, imageData, effectiveProfile);
     
     const nutritionFacts = {
       calories: aiResult.calories || 0,
@@ -432,7 +432,7 @@ export async function analyzeFoodWithGemini(
       ...aiResult,
       method: "ai",
       nutritionFacts,
-      alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, userProfile),
+      alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, effectiveProfile),
     };
 
     // Cache result for consistency (with user profile fingerprint)
