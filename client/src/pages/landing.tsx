@@ -336,15 +336,19 @@ export default function Landing() {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span>Instant Yes/No verdicts</span>
-                </li>
-                <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-health-green" />
-                  <span>Basic health explanations</span>
-                </li>
-                <li className="flex items-center space-x-3">
-                  <Check className="w-5 h-5 text-health-green" />
                   <span>5 analyses per day</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>Basic nutritional info</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>Simple yes/no verdicts</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Check className="w-5 h-5 text-health-green" />
+                  <span>Weekly progress tracking</span>
                 </li>
               </ul>
               <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">

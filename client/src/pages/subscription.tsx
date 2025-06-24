@@ -37,9 +37,10 @@ const subscriptionTiers: SubscriptionTier[] = [
     price: 0,
     description: "Perfect for trying Veridect",
     features: [
-      "Instant Yes/No verdicts",
-      "Basic health explanations", 
-      "5 analyses per day"
+      "5 analyses per day",
+      "Basic nutritional info",
+      "Simple yes/no verdicts",
+      "Weekly progress tracking"
     ],
     limitations: [
       "Limited to 5 analyses daily",

@@ -10,17 +10,23 @@ interface TierLimits {
   personalization: boolean;
   leaderboardAccess: boolean;
   foodHistory: boolean;
+  weeklyProgress: boolean;
 }
 
 const TIER_LIMITS: Record<string, TierLimits> = {
   free: {
     dailyAnalyses: 5,
-    detailedNutrition: false,
+    detailedNutrition: true, // Basic nutritional info included in free tier
     advancedAI: false,
     medicalFeatures: false,
     exportData: false,
     prioritySupport: false,
     unlimitedHistory: false,
+    foodLogging: false,
+    personalization: false,
+    leaderboardAccess: false,
+    foodHistory: false,
+    weeklyProgress: true, // Weekly progress tracking included in free tier
   },
   pro: {
     dailyAnalyses: -1, // unlimited
@@ -30,6 +36,11 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     exportData: true,
     prioritySupport: true,
     unlimitedHistory: true,
+    foodLogging: true,
+    personalization: true,
+    leaderboardAccess: true,
+    foodHistory: true,
+    weeklyProgress: true,
   },
   advanced: {
     dailyAnalyses: -1, // unlimited
@@ -39,6 +50,11 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     exportData: true,
     prioritySupport: true,
     unlimitedHistory: true,
+    foodLogging: true,
+    personalization: true,
+    leaderboardAccess: true,
+    foodHistory: true,
+    weeklyProgress: true,
   },
 };
 

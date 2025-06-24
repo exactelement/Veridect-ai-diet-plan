@@ -421,40 +421,52 @@ export default function Home() {
       <div className="container-padding mb-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5 text-ios-blue" />
-                  Instant Verdicts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Get immediate Yes/No answers about your food choices</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-health-green" />
-                  Basic Health Explanations
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Understand why foods are good or bad for your health</p>
-              </CardContent>
-            </Card>
-            
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-warning-orange" />
-                  5 Daily Analyses
+                  5 Analyses Per Day
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-ios-secondary">Analyze up to 5 foods per day with our AI</p>
+                <p className="text-ios-secondary">Analyze up to 5 foods daily with our AI</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-ios-blue" />
+                  Basic Nutritional Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Get essential nutrition information for your food</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-health-green" />
+                  Simple Yes/No Verdicts
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Clear yes or no answers about your food choices</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-purple-600" />
+                  Weekly Progress Tracking
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-ios-secondary">Monitor your nutrition progress throughout the week</p>
               </CardContent>
             </Card>
           </div>
@@ -524,8 +536,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Weekly Progress - only for Pro users */}
-      {checkTierAccess(userTier, 'pro') && (
+      {/* Weekly Progress - available for all users including free tier */}
+      {(
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
             <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
