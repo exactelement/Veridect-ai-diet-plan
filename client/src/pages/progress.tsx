@@ -17,39 +17,14 @@ export default function Progress() {
     window.scrollTo(0, 0);
   }, []);
 
-  // For free tier users, show a limited progress view instead of blocking entirely
+  // Check subscription access
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-ios-bg pb-20">
-        <div className="max-w-md mx-auto px-4 py-6 space-y-6 mt-16">
-          <Card className="border-yellow-200 bg-yellow-50">
-            <CardContent className="text-center p-6 space-y-4">
-              <div className="text-yellow-600 text-lg font-semibold">
-                Upgrade to Pro for Full Progress Tracking
-              </div>
-              <p className="text-yellow-700 text-sm">
-                Free tier users get basic food analysis. Upgrade to Pro (€1/month) for:
-              </p>
-              <ul className="text-left text-sm space-y-1 text-yellow-700">
-                <li>• Unlimited daily analyses</li>
-                <li>• Full progress tracking & charts</li>
-                <li>• Food logging history</li>
-                <li>• Leaderboard access</li>
-                <li>• Bonus points & challenges</li>
-              </ul>
-              <Button 
-                onClick={() => navigate('/subscription')}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
-              >
-                Upgrade to Pro - €1/month
-              </Button>
-              <p className="text-xs text-yellow-600">
-                You can still use your 5 daily analyses on the home page!
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <SubscriptionCheck
+        requiredTier="pro"
+        feature="Progress Tracking"
+        onUpgrade={() => navigate('/subscription')}
+      />
     );
   }
   
