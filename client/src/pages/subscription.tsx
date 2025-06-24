@@ -370,6 +370,9 @@ export default function Subscription() {
           </p>
         </div>
       )}
+      
+      {/* Bottom spacer to prevent footer overlap */}
+      <div className="h-32"></div>
     </div>
   );
 }
