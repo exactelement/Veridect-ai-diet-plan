@@ -12,23 +12,36 @@ import { apiRequest } from "@/lib/queryClient";
 import { Chrome, Apple, Mail, Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address")
+    .transform((email) => email.toLowerCase().trim()),
   password: z.string().min(1, "Password is required"),
 });
 
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address")
+    .transform((email) => email.toLowerCase().trim()),
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string(),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  firstName: z.string()
+    .min(1, "First name is required")
+    .transform((name) => name.trim()),
+  lastName: z.string()
+    .min(1, "Last name is required")
+    .transform((name) => name.trim()),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address")
+    .transform((email) => email.toLowerCase().trim()),
 });
 
 const resetPasswordSchema = z.object({
@@ -114,16 +127,42 @@ export default function Login() {
       if (response.ok) {
         toast({
           title: "Registration Successful",
-          description: "Welcome to YesNoApp!",
+          description: "Welcome to YesNoApp! Please complete your profile.",
         });
-        window.location.href = "/";
+        window.location.href = "/onboarding";
       } else {
         const error = await response.json();
+        const errorMessage = error.message || "Failed to create account";
+        
+        // Handle specific error cases with form field errors
+        if (response.status === 409 || errorMessage.includes("already exists")) {
+          registerForm.setError("email", {
+            type: "manual",
+            message: "This email is already registered. Try logging in instead."
+          });
+        } else if (errorMessage.includes("valid email")) {
+          registerForm.setError("email", {
+            type: "manual",
+            message: errorMessage
+          });
+        } else if (errorMessage.includes("First name") || errorMessage.includes("Last name")) {
+          if (errorMessage.includes("First name")) {
+            registerForm.setError("firstName", {
+              type: "manual",
+              message: "First name is required"
+            });
+          }
+          if (errorMessage.includes("Last name")) {
+            registerForm.setError("lastName", {
+              type: "manual",
+              message: "Last name is required"
+            });
+          }
+        }
+        
         toast({
           title: "Registration Failed",
-          description: error.message === "User already exists with this email" 
-            ? "This email is already registered. Try logging in instead or use a different email."
-            : error.message || "Failed to create account",
+          description: errorMessage,
           variant: "destructive",
           duration: 4000,
         });
@@ -458,8 +497,12 @@ export default function Login() {
                           <Input
                             {...field}
                             type="email"
-                            placeholder="Enter your email"
+                            placeholder="Enter your email address"
                             className="pl-10"
+                            onBlur={() => {
+                              // Trigger validation when user leaves the field
+                              registerForm.trigger("email");
+                            }}
                           />
                         </div>
                       </FormControl>

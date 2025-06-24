@@ -157,6 +157,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Enhanced Email Validation & User Registration (June 24, 2025)
+- **Email Validation**: Real-time email format validation on blur event
+- **Duplicate Detection**: Clear error messages when email already exists (409 status)
+- **Field-Level Errors**: Specific form field errors for better UX
+- **Server Validation**: Backend email regex validation and trimming
+- **Better Messages**: "Try logging in instead" for existing emails
+
 ### Data Consistency Fix - Registration vs Onboarding (June 24, 2025)
 - **UX Issue Resolved**: Removed duplicate name collection from onboarding flow
 - **Data Integrity**: Registration names are now authoritative source (no overwrite risk)

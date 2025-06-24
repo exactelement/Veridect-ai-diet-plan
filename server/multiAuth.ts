@@ -209,14 +209,24 @@ export async function setupMultiAuth(app: Express) {
         return res.status(400).json({ message: "Email and password are required" });
       }
 
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Please enter a valid email address" });
+      }
+
+      if (!firstName || !lastName) {
+        return res.status(400).json({ message: "First name and last name are required" });
+      }
+
       if (password.length < 8) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
       // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
+      const existingUser = await storage.getUserByEmail(email.toLowerCase().trim());
       if (existingUser) {
-        return res.status(400).json({ message: "User already exists with this email" });
+        return res.status(409).json({ message: "An account with this email already exists. Please try logging in instead." });
       }
 
       // Hash password
@@ -225,9 +235,9 @@ export async function setupMultiAuth(app: Express) {
       // Create user
       const user = await storage.upsertUser({
         id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        email,
-        firstName: firstName || "",
-        lastName: lastName || "",
+        email: email.toLowerCase().trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         passwordHash,
         authProvider: "email",
       });
