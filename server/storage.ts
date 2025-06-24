@@ -13,7 +13,7 @@ import {
   type InsertFailedWebhook,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, lt, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -280,8 +280,8 @@ export class DatabaseStorage implements IStorage {
     const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
 
     console.log(`Getting today's food logs for ${userId} (Madrid timezone):`);
-    console.log(`Madrid now: ${madridNow.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`);
-    console.log(`Madrid today start: ${madridTodayStart.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`);
+    console.log(`Madrid now: ${madridNow.toISOString()}`);
+    console.log(`Madrid today start: ${madridTodayStart.toISOString()}`);
     console.log(`UTC today start: ${utcTodayStart.toISOString()}`);
     console.log(`UTC tomorrow start: ${utcTomorrowStart.toISOString()}`);
 
@@ -698,15 +698,9 @@ export class DatabaseStorage implements IStorage {
 
   // Get Madrid time for consistent scheduling
   getMadridTime(): Date {
-    // Get current time in Madrid timezone properly
+    // Get current time in Madrid timezone using built-in methods
     const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    
-    // Madrid timezone: UTC+1 in winter (CET), UTC+2 in summer (CEST)
-    // June is summer, so UTC+2
-    const madridOffset = 2; // Summer time
-    
-    return new Date(utc + (madridOffset * 3600000));
+    return new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
   }
 }
 
