@@ -169,7 +169,7 @@ function getRequiredTierForFeature(feature: keyof TierLimits): string {
 
 export const TIER_PRICES = {
   free: 0,
-  pro: 1.00, // Promotional price (normally 10.00)
+  pro: 12.00, // €12/year (€1 per month)
   advanced: 50.00,
 } as const;
 

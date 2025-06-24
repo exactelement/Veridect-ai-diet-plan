@@ -150,7 +150,7 @@ Preferred communication style: Simple, everyday language.
 ## Development Status - Patent Pending
 
 ### Stripe Configuration Status (June 24, 2025)
-- **Pro Tier**: CONFIGURED ✅ - Ready for €1/month subscriptions
+- **Pro Tier**: CONFIGURED ✅ - Ready for €1/month (charged annually) subscriptions
 - **Webhook Processing**: CONFIGURED ✅ - Payment confirmations working
 - **Advanced Tier**: Coming Soon (€50/month) - Price ID not needed yet
 - **Current Status**: Pro subscriptions fully operational
@@ -159,7 +159,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Development Status - Patent Pending
 - **Build Status**: Production build completed successfully with optimized assets
-- **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro promotional)
+- **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro charged annually)
 - **Authentication Tier Control**: All new users (Google OAuth, email, Apple) default to free tier with proper restrictions
 - **Onboarding Flow**: 4-step process ending with subscription tier selection (Free vs Pro upgrade option)
 - **Frontend Protection**: Added subscription checks to Progress and Leaderboard page routes
