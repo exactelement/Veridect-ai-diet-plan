@@ -5,6 +5,61 @@ import { storage } from "./storage";
 import { setupMultiAuth, isAuthenticated } from "./multiAuth";
 import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
+import { analyzeFoodWithGemini } from "./services/foodAnalysis";
+
+// Helper function to check and award daily analysis challenges
+async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[]) {
+  // 5 analyses challenge
+  if (todaysAnalyses.length === 5) {
+    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
+    if (!bonusAlreadyAwarded) {
+      console.log("User completed 5 analyses challenge, awarding 25 bonus points");
+      await storage.updateUserPoints(userId, 25);
+      await storage.addBonusToWeeklyScore(userId, 25);
+      await storage.markBonusAwarded(userId, '5_analyses');
+    }
+  }
+  
+  // 10 analyses challenge
+  if (todaysAnalyses.length === 10) {
+    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
+    if (!bonusAlreadyAwarded) {
+      console.log("User completed 10 analyses challenge, awarding 50 bonus points");
+      await storage.updateUserPoints(userId, 50);
+      await storage.addBonusToWeeklyScore(userId, 50);
+      await storage.markBonusAwarded(userId, '10_analyses');
+    }
+  }
+}
+
+// Helper function to check and award food logging challenges
+async function checkAndAwardFoodLoggingChallenges(userId: string) {
+  const todaysLogs = await storage.getTodaysFoodLogs(userId);
+  
+  // Check for 3 YES foods in a row
+  const last3Logs = todaysLogs.slice(-3);
+  if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
+    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
+    if (!bonusAlreadyAwarded) {
+      console.log("User achieved 3 YES foods in a row, awarding 50 bonus points");
+      await storage.updateUserPoints(userId, 50);
+      await storage.addBonusToWeeklyScore(userId, 50);
+      await storage.markBonusAwarded(userId, '3_yes_streak');
+    }
+  }
+  
+  // Check for 5 YES foods today
+  const yesCount = todaysLogs.filter(log => log.verdict === "YES").length;
+  if (yesCount === 5) {
+    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_today');
+    if (!bonusAlreadyAwarded) {
+      console.log("User logged 5 YES foods today, awarding 100 bonus points");
+      await storage.updateUserPoints(userId, 100);
+      await storage.addBonusToWeeklyScore(userId, 100);
+      await storage.markBonusAwarded(userId, '5_yes_today');
+    }
+  }
+}
 
 // Stripe setup - will be enabled when API key is provided
 let stripe: Stripe | null = null;
@@ -189,19 +244,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: savedLog.userId 
       });
       
-      // Check for daily challenge completion bonus (5 analyses = 25 bonus points)
-      // ONLY award once when exactly reaching 5 analyses
+      // Award bonus points for completing daily challenges
       const todaysAnalyses = await storage.getTodaysAnalyzedFoods(userId);
-      if (todaysAnalyses.length === 5) {
-        // Check if bonus was already awarded today
-        const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
-        if (!bonusAlreadyAwarded) {
-          console.log("User completed 5 analyses challenge, awarding 25 bonus points");
-          await storage.updateUserPoints(userId, 25);
-          await storage.addBonusToWeeklyScore(userId, 25);
-          await storage.markBonusAwarded(userId, '5_analyses');
-        }
-      }
+      await checkAndAwardDailyChallenges(userId, todaysAnalyses);
       
       res.json({ analysis });
     } catch (error: any) {
@@ -252,6 +297,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       await storage.updateStreak(userId, verdict);
+      
+      // Check for food logging challenges (3 YES in a row, etc.)
+      await checkAndAwardFoodLoggingChallenges(userId);
       
       res.json({ success: true, log: foodLog });
     } catch (error: any) {
