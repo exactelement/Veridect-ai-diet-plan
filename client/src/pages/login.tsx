@@ -123,7 +123,13 @@ export default function Login() {
   const handleRegister = async (data: RegisterForm) => {
     setIsLoading(true);
     try {
-      const response = await apiRequest("POST", "/api/auth/register", data);
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+
       if (response.ok) {
         toast({
           title: "Registration Successful",
@@ -134,7 +140,6 @@ export default function Login() {
         const error = await response.json();
         const errorMessage = error.message || "Failed to create account";
         
-        // ALWAYS handle 409 status as duplicate email
         if (response.status === 409) {
           const friendlyMessage = "This email is already registered. Try logging in instead.";
           registerForm.setError("email", {
@@ -170,7 +175,7 @@ export default function Login() {
     } catch (error) {
       toast({
         title: "Registration Failed",
-        description: "An error occurred during registration",
+        description: "Network error occurred during registration",
         variant: "destructive",
         duration: 4000,
       });

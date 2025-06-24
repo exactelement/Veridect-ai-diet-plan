@@ -157,12 +157,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Enhanced Email Validation & User Registration - FIXED (June 24, 2025)
-- **Email Validation**: Real-time email format validation on blur event
-- **Duplicate Detection**: Fixed client-side handling of 409 status codes
-- **Field-Level Errors**: Clear "Email Already Registered" message with login suggestion
-- **Server Validation**: Backend email regex validation and trimming working correctly
-- **Issue Resolution**: Simplified error handling to always catch 409 status as duplicate email
+### Enhanced Email Validation & User Registration - ROOT CAUSE FIXED (June 24, 2025)
+- **Root Issue**: apiRequest function was throwing errors on non-200 responses, preventing proper error handling
+- **Solution**: Replaced apiRequest with direct fetch to properly handle 409 status responses
+- **Duplicate Detection**: Now correctly shows "Email Already Registered" message with login suggestion
+- **Field-Level Errors**: Error appears both in toast and under email input field
+- **Proper Architecture**: Maintains response object access for status code checking
 
 ### Data Consistency Fix - Registration vs Onboarding (June 24, 2025)
 - **UX Issue Resolved**: Removed duplicate name collection from onboarding flow
