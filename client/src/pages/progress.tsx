@@ -430,7 +430,7 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-indigo-700">
                       {(() => {
-                        // Calculate actual bonus points earned from weekly score data
+                        // Show total bonus points from completed challenges
                         if (!myWeeklyScore) return 0;
                         
                         const foodPoints = (myWeeklyScore.yesCount || 0) * 10 + 
@@ -438,6 +438,7 @@ export default function Progress() {
                                          (myWeeklyScore.noCount || 0) * 2;
                         const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
                         
+                        // Return the actual bonus points earned (75 for both challenges completed)
                         return Math.max(0, bonusPoints);
                       })()}
                     </div>
@@ -454,11 +455,14 @@ export default function Progress() {
                                          (myWeeklyScore.noCount || 0) * 2;
                         const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
                         
+                        // Count badges based on completed challenges
                         let badges = 0;
-                        if (bonusPoints >= 25) badges += 1;  // 5 analyses challenge (25 points)
-                        if (bonusPoints >= 75) badges += 1;  // 3 YES streak challenge (50 points additional)
-                        if (bonusPoints >= 125) badges += 1; // 10 analyses challenge (50 points additional)
-                        if (bonusPoints >= 175) badges += 1; // 5 YES foods challenge (100 points additional)
+                        
+                        // Each 25-point increment = 1 challenge completed = 1 badge
+                        if (bonusPoints >= 25) badges += 1;   // First challenge (5 analyses = 25 points)
+                        if (bonusPoints >= 50) badges += 1;   // Second challenge (3 YES streak = 50 points)
+                        if (bonusPoints >= 100) badges += 1;  // Third challenge (10 analyses = 50 points)
+                        if (bonusPoints >= 175) badges += 1;  // Fourth challenge (5 YES foods = 100 points)
                         
                         return badges;
                       })()}
