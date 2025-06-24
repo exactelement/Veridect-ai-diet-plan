@@ -87,7 +87,7 @@ export default function Onboarding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: "Welcome to YesNoApp!",
+        title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
       });
       navigate("/");

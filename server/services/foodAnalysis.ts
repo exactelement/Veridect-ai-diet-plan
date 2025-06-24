@@ -394,6 +394,16 @@ export async function analyzeFoodWithGemini(
     subscriptionTier?: string;
   }
 ): Promise<FoodAnalysisResult> {
+  // For free tier users, ignore personalization data except allergies (safety critical)
+  let effectiveProfile = userProfile;
+  if (userProfile?.subscriptionTier === 'free') {
+    effectiveProfile = {
+      ...userProfile,
+      healthGoals: [], // No personalization for free users
+      dietaryPreferences: [], // No personalization for free users
+      allergies: userProfile.allergies || [], // Keep allergies for safety
+    };
+  }
   // Check smart cache for consistent verdicts per user profile
   const cacheKey = getCacheKey(foodName, imageData, userProfile);
   if (cacheKey && analysisCache.has(cacheKey)) {
