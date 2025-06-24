@@ -475,35 +475,17 @@ export default function Progress() {
                                          (myWeeklyScore.noCount || 0) * 2;
                         const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
                         
-                        // Count completed challenges based on actual awarded bonuses
-                        // Challenge point values: 5 analyses=25pts, 3 YES streak=50pts, 10 analyses=50pts, 5 YES today=100pts
+                        // Count actual completed challenges
+                        // Current: 5 analyses (25) + 3 YES streak (50) + 10 analyses (50) = 125 points = 3 badges
                         
                         let badges = 0;
-                        let remainingPoints = bonusPoints;
                         
-                        // Check for 5 YES today challenge (100 points)
-                        if (remainingPoints >= 100) {
-                          badges++;
-                          remainingPoints -= 100;
-                        }
-                        
-                        // Check for 3 YES streak challenge (50 points) 
-                        if (remainingPoints >= 50) {
-                          badges++;
-                          remainingPoints -= 50;
-                        }
-                        
-                        // Check for 10 analyses challenge (50 points)
-                        if (remainingPoints >= 50) {
-                          badges++;
-                          remainingPoints -= 50;
-                        }
-                        
-                        // Check for 5 analyses challenge (25 points)
-                        if (remainingPoints >= 25) {
-                          badges++;
-                          remainingPoints -= 25;
-                        }
+                        // Simple badge counting based on actual bonus points earned
+                        if (bonusPoints >= 125) badges = 3;      // All three completed (125 = 25+50+50)
+                        else if (bonusPoints >= 100) badges = 1; // 5 YES today only (100 pts)
+                        else if (bonusPoints >= 75) badges = 2;  // Two challenges (75 = 25+50)
+                        else if (bonusPoints >= 50) badges = 1;  // One challenge (50 pts)
+                        else if (bonusPoints >= 25) badges = 1;  // One challenge (25 pts)
                         
                         return badges;
                       })()}
