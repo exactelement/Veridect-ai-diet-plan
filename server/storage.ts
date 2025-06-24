@@ -327,7 +327,7 @@ export class DatabaseStorage implements IStorage {
 
     try {
       const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      console.log(`Adding ${verdictPoints} weekly points for ${verdict} verdict`);
+      console.log(`Adding ${verdictPoints} weekly points for ${verdict} verdict (${verdict} = ${verdictPoints} points)`);
       
       await db
         .insert(weeklyScores)

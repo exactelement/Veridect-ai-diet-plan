@@ -165,6 +165,13 @@ Preferred communication style: Simple, everyday language.
 
 ### Weekly Challenge System Fixes (June 23, 2025)
 - **Fixed Total Score Display**: Homepage and leaderboard now correctly show weekly points (resets Monday)
+
+### Point System Accuracy Fix (June 24, 2025)
+- **Fixed Weekly Points Calculation**: Eliminated systematic 2-point error in weekly score updates
+- **Duplicate Bonus Prevention**: Added one-time-only bonus award system with tracking to prevent duplicate challenge rewards
+- **Point System Validation**: Both lifetime and weekly points now calculate accurately with YES=10, OK=5, NO=2 rules
+- **Challenge System Integrity**: 5-analyses bonus awarded exactly once per day with proper validation
+- **Mathematical Accuracy**: Point counters, challenges, and bonus systems all working correctly with precise calculations
 - **Corrected Point System**: Dual tracking - lifetime points (never reset) vs weekly points (reset Monday)
 - **Weekly Challenge Participation**: Users can opt out and be automatically removed from leaderboard
 - **Real-time Leaderboard Updates**: Toggling participation instantly refreshes leaderboard display
