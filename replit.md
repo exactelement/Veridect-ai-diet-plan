@@ -182,6 +182,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Auto-Capitalization for Name Fields (June 24, 2025)
+- **Registration Form**: First and last name fields automatically capitalize first letter and lowercase the rest
+- **Profile Page**: Name editing fields now apply proper capitalization formatting
+- **User Experience**: Consistent name formatting across all input fields without requiring manual correction
+- **Implementation**: Real-time capitalization as user types, ensuring proper name formatting
+
 ### UI/UX Improvements - Food Analysis Enhancement (June 24, 2025)
 - **Weekly Rank Display**: Fixed weekly rank calculation to show actual position numbers (#1, #2, #3) instead of "#-"
 - **Greeting Spacing**: Fixed trailing space issue in user greeting by trimming firstName field and updating database

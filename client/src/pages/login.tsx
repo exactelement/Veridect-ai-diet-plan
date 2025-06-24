@@ -654,7 +654,15 @@ export default function Login() {
                       <FormItem>
                         <FormLabel>First name</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="First name" />
+                          <Input 
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                              field.onChange(capitalized);
+                            }}
+                            placeholder="First name" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -667,7 +675,15 @@ export default function Login() {
                       <FormItem>
                         <FormLabel>Last name</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Last name" />
+                          <Input 
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                              field.onChange(capitalized);
+                            }}
+                            placeholder="Last name" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

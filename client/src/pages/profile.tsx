@@ -281,7 +281,14 @@ export default function Profile() {
                             <FormItem>
                               <FormLabel>First Name</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input 
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                                    field.onChange(capitalized);
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -294,7 +301,14 @@ export default function Profile() {
                             <FormItem>
                               <FormLabel>Last Name</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input 
+                                  {...field}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                                    field.onChange(capitalized);
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
