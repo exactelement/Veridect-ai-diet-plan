@@ -91,7 +91,16 @@ Optional:
 - `SENDGRID_API_KEY` - Email services
 - `VITE_GA_MEASUREMENT_ID` - Google Analytics
 
-See `SETUP.md` for detailed configuration instructions.
+## 📚 Documentation
+
+Essential development guides:
+
+- [iOS Development Guide](./ios-development-guide.md) - Native iOS app development
+- [Android Development Guide](./android-development-guide.md) - Native Android app development  
+- [iOS App Store Deployment](./ios-appstore-deployment-guide.md) - App Store submission guide
+- [Android Play Store Deployment](./android-playstore-deployment-guide.md) - Play Store submission guide
+
+Additional documentation available in `/info-files/` folder for reference.
 
 ## Development Commands
 

@@ -11,8 +11,42 @@ This guide will help you build a complete native iOS app for Veridect with Apple
 - Apple Developer Account ($99/year)
 - Basic Swift and SwiftUI knowledge
 - Veridect backend API running
-- Replit Auth integration
+- Multi-provider authentication system (Email/Password, Google, Apple)
 - Understanding of gamification UI patterns
+
+## Authentication Integration
+
+The iOS app must handle Veridect's comprehensive authentication system with intelligent error handling for method conflicts.
+
+### Authentication Providers
+- **Email/Password**: Traditional sign-up with validation
+- **Google OAuth**: Sign in with Google integration
+- **Apple Sign-In**: Native Apple ID authentication
+
+### Smart Error Handling
+When users attempt to sign in with the wrong method for their account, the app should display specific guidance:
+
+```swift
+enum AuthError: Error {
+    case useEmailLogin
+    case useGoogleLogin
+    case useAppleLogin
+    case invalidCredentials
+    
+    var userMessage: String {
+        switch self {
+        case .useEmailLogin:
+            return "This email is registered with a password. Please use email login instead."
+        case .useGoogleLogin:
+            return "This email is registered with Google. Please use 'Sign in with Google' instead."
+        case .useAppleLogin:
+            return "This email is registered with Apple ID. Please use 'Sign in with Apple' instead."
+        case .invalidCredentials:
+            return "Invalid email or password."
+        }
+    }
+}
+```
 
 ## Project Setup
 

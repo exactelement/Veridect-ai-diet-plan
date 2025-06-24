@@ -160,7 +160,12 @@ Preferred communication style: Simple, everyday language.
 ## Development Status - Patent Pending
 - **Build Status**: Production build completed successfully with optimized assets
 - **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro promotional - normally €10/month)
-- **Authentication Tier Control**: All new users (Google OAuth, email, Apple) default to free tier with proper restrictions
+- **Authentication System**: Comprehensive multi-provider authentication with intelligent conflict detection
+  - Email/Password ↔ Google ↔ Apple ID: Smart error messages guide users to correct sign-in method
+  - Database schema updated with authentication and privacy fields
+  - All authentication conflicts handled with specific user guidance
+- **Documentation Organization**: Non-essential files moved to `/info-files/` folder for cleanup
+- **Mobile Development**: Updated iOS and Android development guides with authentication integration
 - **Onboarding Flow**: 4-step process ending with subscription tier selection (Free vs Pro upgrade option)
 - **Frontend Protection**: Added subscription checks to Progress and Leaderboard page routes
 - **Backend Security**: All premium API endpoints require proper tier validation

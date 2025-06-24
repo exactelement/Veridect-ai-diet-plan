@@ -12,8 +12,43 @@ This guide will help you build a complete native Android app for Veridect with G
 - Basic Kotlin knowledge
 - Google Cloud Platform account (for APIs)
 - Veridect backend API running
-- Replit Auth integration
+- Multi-provider authentication system (Email/Password, Google, Apple)
 - Understanding of Material Design gamification patterns
+
+## Authentication Integration
+
+The Android app must handle Veridect's comprehensive authentication system with intelligent error handling for method conflicts.
+
+### Authentication Providers
+- **Email/Password**: Traditional sign-up with validation
+- **Google OAuth**: Sign in with Google integration
+- **Apple Sign-In**: Apple ID authentication (via web view)
+
+### Smart Error Handling
+When users attempt to sign in with the wrong method for their account, the app should display specific guidance:
+
+```kotlin
+sealed class AuthError(val message: String) {
+    object UseEmailLogin : AuthError("This email is registered with a password. Please use email login instead.")
+    object UseGoogleLogin : AuthError("This email is registered with Google. Please use 'Sign in with Google' instead.")
+    object UseAppleLogin : AuthError("This email is registered with Apple ID. Please use 'Sign in with Apple' instead.")
+    object InvalidCredentials : AuthError("Invalid email or password.")
+}
+
+@Composable
+fun AuthErrorDialog(error: AuthError, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Authentication Error") },
+        text = { Text(error.message) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+```
 
 ## Project Setup
 
