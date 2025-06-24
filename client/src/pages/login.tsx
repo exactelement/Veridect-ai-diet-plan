@@ -60,6 +60,8 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function Login() {
+  const { toast } = useToast();
+
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get('token');
@@ -145,8 +147,6 @@ export default function Login() {
       window.history.replaceState({}, document.title, newUrl);
     }
   }, [errorParam, toast]);
-
-  const { toast } = useToast();
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
