@@ -354,7 +354,7 @@ export default function Landing() {
             
             {/* Pro Tier */}
             <Card className="p-8 border-2 border-ios-blue bg-white tier-card transform scale-105 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <Badge className="bg-ios-blue text-white px-4 py-1">Most Popular</Badge>
               </div>
               <div className="text-center mb-6 mt-4">
