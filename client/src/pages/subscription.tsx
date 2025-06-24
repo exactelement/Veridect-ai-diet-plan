@@ -4,7 +4,9 @@ import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Shield, Check, Zap, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Crown, Shield, Check, Zap, ArrowLeft, Tag } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -197,6 +199,9 @@ export default function Subscription() {
   const queryClient = useQueryClient();
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [showCouponInput, setShowCouponInput] = useState(false);
 
   // Fetch current subscription status
   const { data: subscriptionStatus } = useQuery({
@@ -204,9 +209,36 @@ export default function Subscription() {
     staleTime: 30000, // 30 seconds
   });
 
+  const applyCouponMutation = useMutation({
+    mutationFn: async (code: string) => {
+      const response = await apiRequest("POST", "/api/subscription/validate-coupon", { 
+        couponCode: code 
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setAppliedCoupon(data.coupon);
+      toast({
+        title: "Coupon Applied!",
+        description: `${data.coupon.percent_off || data.coupon.amount_off}% discount applied`,
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Invalid Coupon",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const createSubscriptionMutation = useMutation({
     mutationFn: async (tierId: string) => {
-      const response = await apiRequest("POST", "/api/subscription/create", { tier: tierId });
+      const response = await apiRequest("POST", "/api/subscription/create", { 
+        tier: tierId,
+        couponCode: appliedCoupon?.id || undefined
+      });
       return response.json();
     },
     onSuccess: (data) => {
@@ -357,8 +389,75 @@ export default function Subscription() {
         </p>
       </div>
       
+      {/* Coupon Code Section */}
+      <Card className="mb-6 border-green-200 bg-green-50 max-w-md mx-auto">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Tag className="w-4 h-4 text-green-600" />
+              <span className="text-sm font-medium text-green-700">Have a coupon code?</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCouponInput(!showCouponInput)}
+              className="text-green-700 border-green-300 hover:bg-green-100"
+            >
+              {showCouponInput ? "Hide" : "Apply Coupon"}
+            </Button>
+          </div>
+          
+          {showCouponInput && (
+            <div className="mt-4 space-y-3">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={() => applyCouponMutation.mutate(couponCode)}
+                  disabled={!couponCode || applyCouponMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {applyCouponMutation.isPending ? "Validating..." : "Apply"}
+                </Button>
+              </div>
+              
+              {appliedCoupon && (
+                <div className="p-3 bg-green-100 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-700">
+                      Coupon Applied: {appliedCoupon.percent_off}% off
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {subscriptionTiers.map((tier) => (
+        {subscriptionTiers.map((tier) => {
+          // Calculate discounted price if coupon is applied
+          let displayPrice = tier.price;
+          let originalPrice = tier.price;
+          if (appliedCoupon && tier.id === 'pro') {
+            if (appliedCoupon.percent_off) {
+              displayPrice = tier.price * (1 - appliedCoupon.percent_off / 100);
+            } else if (appliedCoupon.amount_off) {
+              displayPrice = Math.max(0, tier.price - (appliedCoupon.amount_off / 100));
+            }
+          }
+          
+          const isCurrentTier = subscriptionStatus?.tier === tier.id;
+          const isActive = subscriptionStatus?.status === 'active';
+          const canUpgrade = tier.id === 'pro' && (subscriptionStatus?.tier === 'free' || !subscriptionStatus?.tier);
+          
+          return (
           <Card 
             key={tier.id} 
             className={`relative ${tier.color} hover:shadow-lg transition-all duration-200 ${
@@ -385,7 +484,15 @@ export default function Subscription() {
               <div className="text-2xl font-bold text-ios-blue">
                 {tier.id === "pro" ? (
                   <>
-                    €1<span className="text-sm font-normal text-ios-secondary">/month</span>
+                    {appliedCoupon && displayPrice !== originalPrice ? (
+                      <>
+                        <span className="line-through text-gray-400 text-lg">€{originalPrice}</span>
+                        <span className="ml-2 text-green-600">€{displayPrice.toFixed(2)}</span>
+                      </>
+                    ) : (
+                      <>€1</>
+                    )}
+                    <span className="text-sm font-normal text-ios-secondary">/month</span>
                     <div className="text-xs text-ios-secondary font-normal">charged annually (€12/year)</div>
                     <div className="text-xs text-red-600 font-medium">Limited offer! Normally €10/month</div>
                   </>
@@ -448,7 +555,8 @@ export default function Subscription() {
               </Button>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </div>
       
       {/* Current subscription status and management */}

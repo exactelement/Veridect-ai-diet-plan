@@ -452,6 +452,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Subscription routes
+  
+  // Validate coupon code
+  app.post('/api/subscription/validate-coupon', isAuthenticated, async (req: any, res) => {
+    try {
+      const { couponCode } = req.body;
+      
+      if (!couponCode) {
+        return res.status(400).json({ message: "Coupon code is required" });
+      }
+
+      // Retrieve coupon from Stripe
+      const coupon = await stripe.coupons.retrieve(couponCode);
+      
+      if (!coupon.valid) {
+        return res.status(400).json({ message: "This coupon code is no longer valid" });
+      }
+
+      res.json({
+        coupon: {
+          id: coupon.id,
+          percent_off: coupon.percent_off,
+          amount_off: coupon.amount_off,
+          currency: coupon.currency,
+          name: coupon.name,
+          valid: coupon.valid
+        }
+      });
+    } catch (error: any) {
+      if (error.code === 'resource_missing') {
+        return res.status(400).json({ message: "Invalid coupon code" });
+      }
+      res.status(500).json({ message: "Failed to validate coupon" });
+    }
+  });
+  
   app.post('/api/subscription/create', isAuthenticated, async (req: any, res) => {
     try {
       if (!stripe) {
@@ -459,7 +494,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const userId = req.user?.claims?.sub || req.user?.id;
-      const { tier } = req.body;
+      const { tier, couponCode } = req.body;
 
       if (!['pro', 'advanced'].includes(tier)) {
         return res.status(400).json({ message: "Invalid subscription tier" });
@@ -499,12 +534,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const priceId = process.env.STRIPE_PRO_PRICE_ID; // Only Pro tier available
 
-      const subscription = await stripe.subscriptions.create({
+      const subscriptionData: any = {
         customer: customerId,
         items: [{ price: priceId }],
         payment_behavior: 'default_incomplete',
         expand: ['latest_invoice.payment_intent'],
-      });
+      };
+
+      // Apply coupon if provided
+      if (couponCode) {
+        subscriptionData.coupon = couponCode;
+      }
+
+      const subscription = await stripe.subscriptions.create(subscriptionData);
 
       await storage.updateUserStripeInfo(userId, {
         stripeCustomerId: customerId,
