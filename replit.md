@@ -197,6 +197,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Authentication Account Linking Fix (June 24, 2025)
+- **Critical Fix**: Google OAuth now properly links to existing email accounts instead of creating duplicates
+- **Database Cleanup**: Removed duplicate Google user accounts for existing email users
+- **Schema Update**: Added googleId, authProvider, and profileImageUrl to updateUserProfile schema
+- **User Experience**: Users with existing email accounts can now seamlessly sign in with Google without losing data or being sent to onboarding
+- **Onboarding Flow**: Fixed issue where returning users were incorrectly sent to onboarding after Google sign-in
+
 ### Subscription Management with Stripe Integration (June 24, 2025)
 - **Pricing Structure**: Free (€0), Pro (€1/month promotional), Advanced (€50/month)
 - **Subscription Limits**: Free users limited to 5 daily analyses, paid tiers get unlimited access

@@ -175,6 +175,9 @@ export const updateUserProfileSchema = z.object({
     showFoodStats: z.boolean(),
     showNutritionDetails: z.boolean(),
   }).optional(),
+  googleId: z.string().optional(),
+  authProvider: z.string().optional(),
+  profileImageUrl: z.string().optional(),
 });
 
 // Types
