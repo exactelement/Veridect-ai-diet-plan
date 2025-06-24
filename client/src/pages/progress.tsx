@@ -504,8 +504,14 @@ export default function Progress() {
                                          (myWeeklyScore.noCount || 0) * 2;
                         const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
                         
-                        // Return the actual bonus points earned (75 for both challenges completed)
-                        return Math.max(0, bonusPoints);
+                        // Calculate today's bonus points based on completed challenges
+                        let todaysBonusPoints = Math.max(0, bonusPoints);
+                        
+                        // Check if analysis challenges were completed today
+                        if (todaysStats.total >= 5) todaysBonusPoints = Math.max(todaysBonusPoints, 25);
+                        if (todaysStats.total >= 10) todaysBonusPoints = Math.max(todaysBonusPoints, 75); // 25 + 50
+                        
+                        return todaysBonusPoints;
                       })()}
                     </div>
                     <div className="text-sm text-indigo-600">Bonus Points</div>
@@ -526,12 +532,14 @@ export default function Progress() {
                         
                         let badges = 0;
                         
-                        // Simple badge counting based on actual bonus points earned
-                        if (bonusPoints >= 125) badges = 3;      // All three completed (125 = 25+50+50)
-                        else if (bonusPoints >= 100) badges = 1; // 5 YES today only (100 pts)
-                        else if (bonusPoints >= 75) badges = 2;  // Two challenges (75 = 25+50)
-                        else if (bonusPoints >= 50) badges = 1;  // One challenge (50 pts)
-                        else if (bonusPoints >= 25) badges = 1;  // One challenge (25 pts)
+                        // Count badges based on completed daily challenges
+                        if (todaysStats.total >= 5) badges++;     // 5 analyses = 1 badge
+                        if (todaysStats.total >= 10) badges++;    // 10 analyses = 1 badge  
+                        if (todaysLoggedStats.yes >= 3 && 
+                            todaysLoggedStats.total >= 3 &&
+                            todaysLoggedFoods.slice(-3).every(log => log.verdict === "YES")) {
+                          badges++;  // 3 YES streak = 1 badge
+                        }
                         
                         return badges;
                       })()}
