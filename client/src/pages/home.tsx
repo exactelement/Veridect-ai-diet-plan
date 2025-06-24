@@ -41,21 +41,28 @@ export default function Home() {
   const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
 
+  // Only fetch data if user has Pro tier access
+  const hasProAccess = checkTierAccess(userTier, 'pro');
+
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
+    enabled: hasProAccess,
   });
 
   // Get ALL logged food for weekly calculations
   const { data: allLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs"],
+    enabled: hasProAccess,
   });
 
   const { data: weeklyScore } = useQuery<WeeklyScore>({
     queryKey: ["/api/leaderboard/my-score"],
+    enabled: hasProAccess,
   });
 
   const { data: leaderboard = [] } = useQuery({
     queryKey: ["/api/leaderboard/weekly"],
+    enabled: hasProAccess,
   });
 
   // Force refresh user data to get latest privacy settings
@@ -122,9 +129,8 @@ export default function Home() {
   // Weekly points from the weekly score API (same calculation as lifetime points)
   const weeklyPoints = weeklyScore?.weeklyPoints || 0;
 
-  // User interface preferences - use fresh user data directly
-  const activeUser = currentUser || user;
-  const privacySettings = (activeUser as any)?.privacySettings || {};
+  // User interface preferences
+  const privacySettings = (user as any)?.privacySettings || {};
   const showCalorieCounter = privacySettings.showCalorieCounter !== false;
   const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false;
   const showFoodStats = privacySettings.showFoodStats !== false;

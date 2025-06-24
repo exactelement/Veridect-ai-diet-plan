@@ -64,6 +64,9 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     leaderboardAccess: true,
     foodHistory: true,
     weeklyProgress: true,
+    challengesAccess: true,
+    progressTracking: true,
+    bonusPoints: true,
   },
 };
 
