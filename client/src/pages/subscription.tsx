@@ -355,8 +355,8 @@ export default function Subscription() {
             } ${tier.comingSoon ? 'opacity-75' : ''} overflow-hidden`}
           >
             {tier.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-yellow-500 text-white px-4 py-1">Most Popular</Badge>
+              <div className="absolute top-3 left-3">
+                <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs">Most Popular</Badge>
               </div>
             )}
             
