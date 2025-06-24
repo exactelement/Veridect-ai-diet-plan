@@ -165,12 +165,12 @@ Preferred communication style: Simple, everyday language.
 - **Badge Counter Enhancement**: Updated progress page to show accurate bonus points and achievement badges earned
 - **Challenge Detection Logic**: Implemented proper streak detection and challenge completion verification
 
-### Dual Point System Correction (June 24, 2025)
-- **System Clarification**: Lifetime points accumulate forever (level progression), weekly points reset every Monday (competition)
-- **Point Addition Logic**: Both systems receive same point additions during each week from food logging and bonuses
-- **Weekly Reset Functionality**: Weekly points start fresh every Monday while lifetime points continue growing
-- **Database Constraint Fix**: Replaced `onConflictDoUpdate` with explicit select/update to avoid constraint errors
-- **Proper Separation**: Level progression (lifetime) and weekly competition (resets) now work as designed
+### Double Counting Fix (June 24, 2025)
+- **Root Cause**: `updateUserPoints` was adding points to weekly scores, then `updateWeeklyScore` added same points again
+- **Solution**: Modified `updateUserPoints` to handle only lifetime points, kept `updateWeeklyScore` for food logging
+- **Challenge Fixes**: Updated all challenge functions to explicitly add bonus points to both lifetime and weekly
+- **Point Flow**: Food logging uses both functions, challenge bonuses use both functions, no double counting
+- **Verification**: Both counters now increase by exactly the same amounts during food logging and challenges
 
 ### Docker Container & Cloud Run Deployment (June 24, 2025)
 - **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment

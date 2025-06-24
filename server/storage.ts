@@ -367,7 +367,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Add bonus points to weekly score without affecting food counts
+  // Add BONUS points to weekly score without affecting food counts (for challenges only)
   async addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void> {
     const now = this.getMadridTime();
     const weekStart = new Date(now);
@@ -402,7 +402,7 @@ export class DatabaseStorage implements IStorage {
             weeklyPoints: bonusPoints,
           });
       }
-      console.log(`Added ${bonusPoints} bonus points to weekly competition (resets Monday)`);
+      console.log(`Added ${bonusPoints} bonus points to weekly score (challenges only)`);
     } catch (error) {
       console.error('Error adding bonus to weekly score:', error);
     }
@@ -546,7 +546,8 @@ export class DatabaseStorage implements IStorage {
     return score;
   }
 
-  // Points management - handles BOTH lifetime (never resets) and weekly (resets Monday) points
+  // Points management - handles ONLY lifetime points (for level progression)
+  // Weekly points are handled separately by updateWeeklyScore for food logging
   async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
@@ -565,10 +566,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    // Also add same points to weekly score (RESETS every Monday for competition)
-    await this.addBonusToWeeklyScore(userId, pointsToAdd);
-    
-    console.log(`Added ${pointsToAdd} points to both lifetime (${newTotalPoints}, Level ${newLevel}) and this week's competition`);
+    console.log(`Added ${pointsToAdd} lifetime points. Total: ${newTotalPoints}, Level: ${newLevel}`);
     return updatedUser;
   }
 
