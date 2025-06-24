@@ -127,7 +127,8 @@ export default function Progress() {
   };
 
   return (
-    <div className="pt-20 pb-24 container-padding">
+    <div className="pt-20 pb-24 bg-gradient-to-br from-ios-background via-blue-50 to-purple-50 min-h-screen">
+      <div className="container-padding">
       <div className="max-w-md mx-auto space-y-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Progress</h1>
@@ -497,6 +498,7 @@ export default function Progress() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

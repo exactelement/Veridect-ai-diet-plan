@@ -87,7 +87,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pt-20 pb-32">
       <div className="container-padding">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
