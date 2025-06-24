@@ -71,6 +71,7 @@ export default function Profile() {
   const [personalizationOpen, setPersonalizationOpen] = useState(false);
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   
   // App interface preferences - derive directly from user data instead of local state
   const privacySettings = (user as any)?.privacySettings;
