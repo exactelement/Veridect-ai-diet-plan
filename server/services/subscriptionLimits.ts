@@ -11,6 +11,9 @@ interface TierLimits {
   leaderboardAccess: boolean;
   foodHistory: boolean;
   weeklyProgress: boolean;
+  challengesAccess: boolean;
+  progressTracking: boolean;
+  bonusPoints: boolean;
 }
 
 const TIER_LIMITS: Record<string, TierLimits> = {
