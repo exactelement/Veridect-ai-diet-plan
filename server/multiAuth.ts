@@ -259,7 +259,7 @@ export async function setupMultiAuth(app: Express) {
       // Hash password
       const passwordHash = await bcrypt.hash(password, 12);
       
-      // Create user
+      // Create user with explicit free tier
       const user = await storage.upsertUser({
         id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         email: email.toLowerCase().trim(),
@@ -267,6 +267,8 @@ export async function setupMultiAuth(app: Express) {
         lastName: lastName.trim(),
         passwordHash,
         authProvider: "email",
+        subscriptionTier: "free",
+        subscriptionStatus: "inactive",
       });
 
       // Log them in

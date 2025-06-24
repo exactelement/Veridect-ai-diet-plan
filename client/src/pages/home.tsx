@@ -45,7 +45,10 @@ export default function Home() {
 
   // Only fetch data if user has Pro or Advanced tier access
   const hasProAccess = userTier === 'pro' || userTier === 'advanced';
-  console.log('Home: userTier =', userTier, 'hasProAccess =', hasProAccess);
+  
+  // Debug: Check tier restrictions
+  console.log('Home page tier check:', { userTier, hasProAccess, userId: user?.id });
+
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
