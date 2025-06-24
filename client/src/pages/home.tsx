@@ -691,9 +691,9 @@ export default function Home() {
                         navigate('/subscription');
                       }
                     }}
-                    disabled={tier.comingSoon ? false : (user as any)?.subscriptionTier === tier.id}
+                    disabled={(user as any)?.subscriptionTier === tier.id || tier.comingSoon}
                   >
-                    {tier.comingSoon ? 'Notify Me' : (user as any)?.subscriptionTier === tier.id ? 'Current Plan' : tier.price === 0 ? 'Get Started' : 'Upgrade Now'}
+                    {tier.comingSoon ? 'Coming Soon' : (user as any)?.subscriptionTier === tier.id ? 'Current Plan' : tier.price === 0 ? 'Get Started' : 'Upgrade Now'}
                   </Button>
                 </CardContent>
               </Card>

@@ -142,7 +142,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
           </div>
           <CardTitle className="text-2xl">{tier.name} Plan</CardTitle>
           <div className="text-3xl font-bold text-ios-blue">
-            €{tier.price.toFixed(2)}
+            €{tier.price}
             <span className="text-sm font-normal text-ios-secondary">/month</span>
             {tier.id === "pro" && (
               <div className="text-xs text-yellow-600 font-medium mt-1">
@@ -391,7 +391,7 @@ export default function Subscription() {
                   </>
                 ) : (
                   <>
-                    €{tier.price.toFixed(2)}
+                    €{tier.price}
                     <span className="text-sm font-normal text-ios-secondary">/month</span>
                   </>
                 )}
