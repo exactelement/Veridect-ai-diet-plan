@@ -645,8 +645,8 @@ export default function Home() {
                   </div>
                 )}
                 
-                {tier.id === 'advanced' && (
-                  <div className="absolute -top-3 right-4">
+                {tier.comingSoon && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
                   </div>
                 )}
@@ -676,7 +676,7 @@ export default function Home() {
                   <Button 
                     className={`w-full ${
                       tier.comingSoon 
-                        ? 'bg-gray-400 text-gray-600'
+                        ? 'bg-gray-600 hover:bg-gray-700 text-white'
                         : (user as any)?.subscriptionTier === tier.id 
                         ? 'bg-green-600 hover:bg-green-700 text-white' 
                         : tier.popular 
@@ -684,13 +684,16 @@ export default function Home() {
                         : 'bg-gray-600 hover:bg-gray-700 text-white'
                     }`}
                     onClick={() => {
-                      if ((user as any)?.subscriptionTier !== tier.id && !tier.comingSoon) {
+                      if (tier.comingSoon) {
+                        return; // Do nothing for coming soon items
+                      }
+                      if ((user as any)?.subscriptionTier !== tier.id) {
                         navigate('/subscription');
                       }
                     }}
-                    disabled={(user as any)?.subscriptionTier === tier.id || tier.comingSoon}
+                    disabled={tier.comingSoon ? false : (user as any)?.subscriptionTier === tier.id}
                   >
-                    {tier.comingSoon ? 'Coming Soon' : (user as any)?.subscriptionTier === tier.id ? 'Current Plan' : tier.price === 0 ? 'Get Started' : 'Upgrade Now'}
+                    {tier.comingSoon ? 'Notify Me' : (user as any)?.subscriptionTier === tier.id ? 'Current Plan' : tier.price === 0 ? 'Get Started' : 'Upgrade Now'}
                   </Button>
                 </CardContent>
               </Card>
