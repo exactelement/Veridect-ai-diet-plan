@@ -116,7 +116,7 @@ export default function Disclaimer() {
           {/* How to Use Responsibly */}
           <Card>
             <CardHeader>
-              <CardTitle>How to Use YesNoApp Responsibly</CardTitle>
+              <CardTitle>How to Use Veridect Responsibly</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -162,7 +162,7 @@ export default function Disclaimer() {
               <div className="bg-ios-gray-50 p-4 rounded-lg">
                 <h3 className="font-semibold mb-2">Our AI Technology</h3>
                 <p className="text-sm text-ios-secondary mb-3">
-                  YesNoApp uses Google's Gemini AI model for food recognition and analysis. The system:
+                  Veridect uses Google's Gemini AI model for food recognition and analysis. The system:
                 </p>
                 <ul className="space-y-1 text-sm text-ios-secondary">
                   <li>• Analyzes food images using computer vision</li>

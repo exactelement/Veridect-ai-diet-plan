@@ -77,7 +77,7 @@ export default function Privacy() {
           {/* Header */}
           <div className="text-center">
             <Shield className="w-16 h-16 text-ios-blue mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-ios-text mb-4">Privacy Policy & GDPR</h1>
+            <h1 className="text-4xl font-bold text-ios-text mb-4">Veridect Privacy Policy & GDPR</h1>
             <p className="text-xl text-ios-secondary">
               Your privacy and data protection are our top priorities
             </p>
@@ -96,7 +96,7 @@ export default function Privacy() {
             </CardHeader>
             <CardContent>
               <p className="text-orange-700 mb-4">
-                By continuing to use YesNoApp, you agree to our Terms of Service, which include 
+                By continuing to use Veridect, you agree to our Terms of Service, which include 
                 collecting essential data required for app functionality. This includes:
               </p>
               <ul className="space-y-2 text-orange-700 text-sm">
@@ -232,7 +232,7 @@ export default function Privacy() {
                 <h2 className="text-2xl font-bold">Our Privacy Commitment</h2>
               </div>
               <p className="text-lg leading-relaxed">
-                YesNoApp is built with privacy-first principles. We minimize data collection, 
+                Veridect is built with privacy-first principles. We minimize data collection, 
                 maximize on-device processing, and give you complete control over your information. 
                 Your health data belongs to you, and we're just here to help you make better choices.
               </p>
