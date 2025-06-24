@@ -40,6 +40,9 @@ export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
+  
+  // Debug logging
+  console.log('Home page - User tier:', userTier, 'Full user:', user);
 
   // Only fetch data if user has Pro or Advanced tier access
   const hasProAccess = userTier === 'pro' || userTier === 'advanced';
@@ -465,7 +468,7 @@ export default function Home() {
           </div>
 
           {/* Premium features - locked for free users */}
-          {!checkTierAccess(userTier, 'pro') && (
+          {userTier === 'free' && (
             <div className="mt-8">
               <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
                 Premium Features (Upgrade Required)

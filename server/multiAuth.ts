@@ -36,6 +36,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           authProvider: "google",
           googleId: profile.id,
           onboardingCompleted: false,
+          subscriptionTier: "free",
+          subscriptionStatus: "inactive",
         });
       } else if (!user.googleId) {
         // Link Google ID to existing account
