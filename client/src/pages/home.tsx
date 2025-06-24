@@ -270,8 +270,8 @@ export default function Home() {
               </Card>
             )}
 
-            {/* Daily Stats Cards */}
-            {showFoodStats && (
+            {/* Daily Stats Cards - Only for Pro users */}
+            {hasProAccess && showFoodStats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
                   <CardContent className="p-4 text-center">
@@ -307,8 +307,9 @@ export default function Home() {
               </div>
             )}
 
-            {/* Streak & Level Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {/* Streak & Level Cards - Only for Pro users */}
+            {hasProAccess && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -345,7 +346,8 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+              </div>
+            )}
 
             {/* Quick Action Button */}
             <div className="text-center mb-8">
@@ -361,10 +363,11 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Today's Food Logs */}
-      <div className="container-padding mb-8">
-        <div className="max-w-6xl mx-auto">
-          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
+      {/* Today's Food Logs - Only for Pro users */}
+      {hasProAccess && (
+        <div className="container-padding mb-8">
+          <div className="max-w-6xl mx-auto">
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-ios-blue" />
@@ -426,6 +429,7 @@ export default function Home() {
           </Card>
         </div>
       </div>
+      )}
 
       {/* Free tier features section */}
       <div className="container-padding mb-8">
