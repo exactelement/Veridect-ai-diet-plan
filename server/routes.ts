@@ -240,7 +240,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
       console.log(`Awarding ${foodPoints} points for logging ${foodName} (${verdict})`);
       await storage.updateUserPoints(userId, foodPoints);
-      await storage.updateWeeklyScore(userId, verdict);
+      
+      // Only update weekly score if this is a new food log (not from previous analysis)
+      const existingAnalysis = await storage.findRecentUnloggedAnalysis(userId, foodName, verdict);
+      if (!existingAnalysis) {
+        // This is a direct food log entry, add to weekly score
+        await storage.updateWeeklyScore(userId, verdict);
+        console.log(`Added ${verdict} to weekly score (direct food log)`);
+      } else {
+        console.log(`Skipped weekly score update - already counted during analysis for ${foodName}`);
+      }
+      
       await storage.updateStreak(userId, verdict);
       
       res.json({ success: true, log: foodLog });

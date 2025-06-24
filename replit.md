@@ -157,11 +157,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Weekly Points Calculation Fix (June 24, 2025)
-- **Mathematical Accuracy Restored**: Fixed weekly points calculation error showing 38 instead of correct 36 points
-- **Database Correction**: Reset weekly_points to accurate formula: (yes_count × 10 + ok_count × 5 + no_count × 2)
-- **Systematic Error Eliminated**: Removed accumulated calculation errors from bonus point additions
-- **Point System Integrity**: Verified all future calculations follow established YES=10, OK=5, NO=2 scoring rules
+### Weekly Points Double Counting Fix (June 24, 2025)
+- **Root Cause Resolution**: Fixed double counting in weekly points where food analysis AND food logging both added points for same item
+- **Function Logic Correction**: Modified food-logs endpoint to check for existing analysis before adding weekly points
+- **Duplicate Prevention**: Implemented logic to skip weekly score updates when points already counted during analysis
+- **Mathematical Integrity**: Ensured all future calculations follow established YES=10, OK=5, NO=2 scoring rules without duplicates
 
 ### Docker Container & Cloud Run Deployment (June 24, 2025)
 - **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment
