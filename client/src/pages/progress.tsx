@@ -440,8 +440,10 @@ export default function Progress() {
                           Health Expert
                         </span>
                       </div>
-                      {totalStats.yes >= 15 && (
+                      {totalStats.yes >= 15 ? (
                         <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">+250 pts</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/15</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">15 YES foods</div>
@@ -457,8 +459,10 @@ export default function Progress() {
                           Health Master
                         </span>
                       </div>
-                      {totalStats.yes >= 30 && (
+                      {totalStats.yes >= 30 ? (
                         <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded">+500 pts</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/30</span>
                       )}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">30 YES foods</div>
