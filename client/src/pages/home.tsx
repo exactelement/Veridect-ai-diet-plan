@@ -465,18 +465,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-4 text-center">
                 Premium Features (Upgrade Required)
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 opacity-50">
-                <Card className="bg-gray-100 border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>🍽️</span> Food Logging
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-xs text-gray-400">
-                    Track your daily food intake
-                  </CardContent>
-                </Card>
-                
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
                 <Card className="bg-gray-100 border-gray-200">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
