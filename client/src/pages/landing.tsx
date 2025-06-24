@@ -394,7 +394,7 @@ export default function Landing() {
                 </li>
               </ul>
               <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-ios-blue text-white py-3 rounded-xl font-medium ios-button hover:bg-blue-600">
-                Start Pro Trial
+                Upgrade to Pro
               </Button>
             </Card>
             
