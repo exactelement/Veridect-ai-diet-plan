@@ -160,6 +160,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Patent Documentation Enhancement (June 24, 2025)
+- **Updated Spanish Patent**: Enhanced PATENTE_VERIDECT_REVISADA_ES.md with "Pregunta a Veri" branding
+- **New English Patent**: Created comprehensive PATENT_VERIDECT_COMPREHENSIVE_EN.md for international markets
+- **Technical Innovations Documented**: Added 8 specific patent claims including conversational interface, accessibility optimization, and scientific research integration
+- **European Compliance**: Detailed WCAG 2.1, GDPR, and EU MDR regulatory compliance in patent documentation
+- **Cultural Adaptation**: Documented multilingual system with 20+ language support and cultural nutrition adaptation
+
 ### Repository Organization & Branding Update (June 24, 2025)
 - **Complete Rebranding**: Updated all "YesNoApp" references to "Veridect" across entire platform
 - **Contact Information**: Updated to Spanish market details (info@veridect.com, +34 672 810 584)
