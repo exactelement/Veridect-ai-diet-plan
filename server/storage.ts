@@ -53,6 +53,8 @@ export interface IStorage {
   findRecentUnloggedAnalysis(userId: string, foodName: string, verdict: string): Promise<FoodLog | undefined>;
   updateFoodLogToLogged(id: number): Promise<FoodLog>;
   addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void>;
+  wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean>;
+  markBonusAwarded(userId: string, bonusType: string): Promise<void>;
   
   // Leaderboard operations
   updateWeeklyScore(userId: string, verdict: string): Promise<void>;
@@ -376,6 +378,46 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error adding bonus to weekly score:', error);
     }
+  }
+
+  // Prevent duplicate bonus awards
+  async wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const [result] = await db
+      .select()
+      .from(foodLogs)
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          eq(foodLogs.foodName, `BONUS_${bonusType}`),
+          gte(foodLogs.createdAt, today),
+          lte(foodLogs.createdAt, tomorrow)
+        )
+      )
+      .limit(1);
+      
+    return !!result;
+  }
+
+  async markBonusAwarded(userId: string, bonusType: string): Promise<void> {
+    // Create a special entry to track bonus awards
+    await db
+      .insert(foodLogs)
+      .values({
+        userId,
+        foodName: `BONUS_${bonusType}`,
+        verdict: "YES",
+        explanation: "Bonus points tracker",
+        calories: 0,
+        protein: 0,
+        confidence: 100,
+        analysisMethod: "system",
+        isLogged: false,
+      });
   }
 
   private async updateWeeklyRanks(weekStart: Date): Promise<void> {

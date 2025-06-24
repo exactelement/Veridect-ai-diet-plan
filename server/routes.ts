@@ -187,12 +187,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Check for daily challenge completion bonus (5 analyses = 25 bonus points)
+      // ONLY award once when exactly reaching 5 analyses
       const todaysAnalyses = await storage.getTodaysAnalyzedFoods(userId);
       if (todaysAnalyses.length === 5) {
-        console.log("User completed 5 analyses challenge, awarding 25 bonus points");
-        await storage.updateUserPoints(userId, 25);
-        // Add bonus points to weekly score properly
-        await storage.addBonusToWeeklyScore(userId, 25);
+        // Check if bonus was already awarded today
+        const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
+        if (!bonusAlreadyAwarded) {
+          console.log("User completed 5 analyses challenge, awarding 25 bonus points");
+          await storage.updateUserPoints(userId, 25);
+          await storage.addBonusToWeeklyScore(userId, 25);
+          await storage.markBonusAwarded(userId, '5_analyses');
+        }
       }
       
       res.json({ analysis });
