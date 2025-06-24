@@ -57,7 +57,7 @@ export function generatePasswordResetEmail(email: string, resetToken: string, ba
   
   return {
     to: email,
-    from: 'michael@10xr.es', // Must be verified in SendGrid
+    from: 'noreply@10xr.es', // Must be verified in SendGrid
     subject: 'Reset Your Veridect Password',
     text: `
 Hello,

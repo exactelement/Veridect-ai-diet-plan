@@ -298,7 +298,10 @@ export async function setupMultiAuth(app: Express) {
       await storage.updatePasswordResetToken(user.id, resetToken, resetExpires);
 
       // Send password reset email
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const host = req.get('host');
+      const baseUrl = host?.includes('localhost') 
+        ? `https://workspace.yesnolifestylea.repl.co`
+        : `${req.protocol}://${host}`;
       const emailParams = generatePasswordResetEmail(email, resetToken, baseUrl);
       
       const emailSent = await sendEmail(emailParams);

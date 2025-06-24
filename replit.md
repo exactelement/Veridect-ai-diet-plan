@@ -163,6 +163,8 @@ Preferred communication style: Simple, everyday language.
 - **Development Mode**: Falls back to console logging when SendGrid API key not configured
 - **Security**: Proper token generation with 1-hour expiration
 - **User Experience**: Clear messaging about whether emails are sent or in development mode
+- **URL Generation**: Fixed to use proper Replit domain instead of localhost in email links
+- **Sender Verification**: Requires verified sender identity in SendGrid for email delivery
 
 ### Fixed Authentication Error Handling - Login & Registration (June 24, 2025)
 - **Root Issue**: apiRequest function was throwing errors on non-200 responses, breaking both login and registration error handling
