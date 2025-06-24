@@ -182,6 +182,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Subscription Management with Stripe Integration (June 24, 2025)
+- **Pricing Structure**: Free (€0), Pro (€1/month promotional), Advanced (€50/month)
+- **Subscription Limits**: Free users limited to 5 daily analyses, paid tiers get unlimited access
+- **Stripe Integration**: Complete payment processing with webhooks for subscription updates
+- **Usage Tracking**: Real-time usage limits display with upgrade prompts for free users
+- **Feature Gating**: Advanced AI features, detailed nutrition, and export capabilities tied to subscription tiers
+- **Promotional Pricing**: Pro tier at €1/month (normally €10) for 1-year promotional launch period
+
 ### Auto-Capitalization for Name Fields (June 24, 2025)
 - **Registration Form**: First and last name fields automatically capitalize first letter and lowercase the rest
 - **Profile Page**: Name editing fields now apply proper capitalization formatting

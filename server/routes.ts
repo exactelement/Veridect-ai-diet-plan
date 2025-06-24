@@ -6,6 +6,7 @@ import { setupMultiAuth, isAuthenticated } from "./multiAuth";
 import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { analyzeFoodWithGemini } from "./services/foodAnalysis";
+import { checkSubscriptionLimits, TIER_PRICES } from "./services/subscriptionLimits";
 
 // Helper function to check and award daily analysis challenges
 async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[]) {
@@ -65,7 +66,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
 let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-05-28.basil",
+    apiVersion: "2024-06-20",
   });
 }
 
@@ -223,12 +224,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user profile for personalized analysis
       const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionTier || 'free';
+      
+      // Check daily analysis limit
+      const currentAnalyses = await storage.getTodaysAnalyzedFoods(userId);
+      const limitCheck = checkSubscriptionLimits(userTier, 'dailyAnalyses', currentAnalyses.length);
+      
+      if (!limitCheck.allowed) {
+        return res.status(403).json({ 
+          message: limitCheck.message,
+          remainingAnalyses: limitCheck.remainingAnalyses,
+          upgradeRequired: limitCheck.upgradeRequired
+        });
+      }
+      
       const userProfile = {
         healthGoals: Array.isArray(user?.healthGoals) ? user.healthGoals as string[] : [],
         dietaryPreferences: Array.isArray(user?.dietaryPreferences) ? user.dietaryPreferences as string[] : [],
         allergies: Array.isArray(user?.allergies) ? user.allergies as string[] : [],
         fitnessLevel: 'Not specified',
-        subscriptionTier: user?.subscriptionTier || 'Free'
+        subscriptionTier: userTier
       };
 
       // Import food analysis service

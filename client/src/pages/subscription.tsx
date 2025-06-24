@@ -1,19 +1,22 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Shield, Zap, X } from "lucide-react";
+import { Crown, Shield, Check, Zap, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-// Stripe temporarily disabled for deployment compatibility
-// import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-// import { loadStripe } from "@stripe/stripe-js";
+import { useMutation } from "@tanstack/react-query";
 
-// const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
-//   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-//   : null;
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  console.warn('Missing VITE_STRIPE_PUBLIC_KEY - Stripe payments will not work');
+}
+
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
 
 interface SubscriptionTier {
   id: string;
@@ -24,361 +27,346 @@ interface SubscriptionTier {
   icon: React.ReactNode;
   popular?: boolean;
   color: string;
+  limitations: string[];
 }
 
-const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
+const subscriptionTiers: SubscriptionTier[] = [
   {
     id: "free",
     name: "Free",
     price: 0,
-    description: "Perfect for getting started",
+    description: "Perfect for trying Veridect",
     features: [
       "5 food analyses per day",
-      "Basic Yes/No verdicts",
-      "Simple explanations",
-      "Community access",
-      "Basic nutrition info"
+      "Basic nutritional guidance",
+      "Weekly leaderboard participation",
+      "Basic food logging"
     ],
-    icon: <Zap className="w-6 h-6" />,
-    color: "gray"
+    limitations: [
+      "Limited to 5 analyses daily",
+      "No detailed nutrition breakdown",
+      "No advanced AI insights",
+      "Basic support only"
+    ],
+    icon: <Check className="w-6 h-6 text-green-500" />,
+    color: "border-gray-200 bg-white"
   },
   {
     id: "pro",
     name: "Pro",
-    price: 19.99,
-    description: "For serious health enthusiasts",
+    price: 1.00,
+    description: "Launch promotion - normally €10/month",
     features: [
       "Unlimited food analyses",
-      "Detailed nutrition tracking",
-      "Goal-based recommendations",
-      "Weekly progress reports",
-      "Wearables integration",
+      "Detailed nutritional breakdown",
+      "Advanced AI insights",
+      "Personalized recommendations",
+      "Export food history",
       "Priority support",
-      "Advanced analytics",
-      "Custom meal plans"
+      "🎉 1-year promotional price"
     ],
-    icon: <Crown className="w-6 h-6" />,
+    limitations: [],
+    icon: <Crown className="w-6 h-6 text-yellow-500" />,
     popular: true,
-    color: "blue"
+    color: "border-yellow-200 bg-yellow-50"
   },
   {
-    id: "medical",
-    name: "Medical",
-    price: 99.99,
-    description: "Medical-grade precision",
+    id: "advanced",
+    name: "Advanced",
+    price: 50.00,
+    description: "For professionals & advanced users",
     features: [
       "Everything in Pro",
-      "Medical-grade analysis",
-      "Certified nutritionist access",
-      "Health provider integration",
-      "Medication interaction alerts",
-      "HIPAA compliance",
-      "Personal health coach",
-      "Lab results integration",
-      "Prescription diet plans"
+      "Professional-grade analysis",
+      "Advanced nutrition metrics",
+      "Clinical data integration",
+      "Team collaboration tools",
+      "API access",
+      "White-label options",
+      "Dedicated account manager"
     ],
-    icon: <Shield className="w-6 h-6" />,
-    color: "green"
+    limitations: [],
+    icon: <Shield className="w-6 h-6 text-purple-500" />,
+    color: "border-purple-200 bg-purple-50"
   }
 ];
 
-function SubscriptionForm({ tier }: { tier: SubscriptionTier }) {
+function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const createSubscriptionMutation = useMutation({
-    mutationFn: async (tierId: string) => {
-      const response = await apiRequest("POST", "/api/subscription/create", { tier: tierId });
-      return response.json();
-    },
-    onSuccess: async (data) => {
-      if (!stripe || !elements) return;
-
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/subscription?success=true`,
-        },
-      });
-
-      if (error) {
-        toast({
-          title: "Payment Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Subscription Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-    onSettled: () => {
-      setIsProcessing(false);
-    },
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    
+    if (!stripe || !elements) {
+      return;
+    }
 
     setIsProcessing(true);
-    createSubscriptionMutation.mutate(tier.id);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/?subscription=success`,
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Payment Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+
+    setIsProcessing(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 border rounded-lg">
-        <CardElement
-          options={{
-            style: {
-              base: {
-                fontSize: '16px',
-                color: '#424770',
-                '::placeholder': {
-                  color: '#aab7c4',
-                },
-              },
-            },
-          }}
-        />
-      </div>
-      
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        className="w-full bg-ios-blue text-white py-3 text-lg"
-      >
-        {isProcessing ? "Processing..." : `Subscribe to ${tier.name} - $${tier.price}/month`}
-      </Button>
-    </form>
+    <div className="max-w-md mx-auto">
+      <Card className="mb-6">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-2">
+            {tier.icon}
+          </div>
+          <CardTitle className="text-2xl">{tier.name} Plan</CardTitle>
+          <div className="text-3xl font-bold text-ios-blue">
+            €{tier.price.toFixed(2)}
+            <span className="text-sm font-normal text-ios-secondary">/month</span>
+            {tier.id === "pro" && (
+              <div className="text-xs text-yellow-600 font-medium mt-1">
+                Was €10/month - Limited time offer!
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <PaymentElement />
+            
+            <div className="flex gap-3">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onBack}
+                className="flex-1"
+                disabled={isProcessing}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={!stripe || isProcessing}
+                className="flex-1"
+              >
+                {isProcessing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Subscribe
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 export default function Subscription() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(null);
+  const [clientSecret, setClientSecret] = useState<string>("");
 
-  const cancelSubscriptionMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/subscription/cancel", {});
+  const createSubscriptionMutation = useMutation({
+    mutationFn: async (tierId: string) => {
+      const response = await apiRequest("POST", "/api/subscriptions/create", { tierId });
+      return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      toast({
-        title: "Subscription Cancelled",
-        description: "Your subscription has been cancelled successfully.",
-      });
+    onSuccess: (data) => {
+      setClientSecret(data.clientSecret);
     },
     onError: (error: Error) => {
       toast({
-        title: "Cancellation Failed",
+        title: "Subscription Error",
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  const currentTier = user?.subscriptionTier || "free";
-  const isActive = user?.subscriptionStatus === "active";
+  const handleSelectTier = (tier: SubscriptionTier) => {
+    if (tier.id === "free") {
+      toast({
+        title: "Already on Free Plan",
+        description: "You're currently using the free tier.",
+      });
+      return;
+    }
 
-  return (
-    <div className="pt-20 pb-8 container-padding">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
-          <p className="text-xl text-ios-secondary">
-            Upgrade your health journey with powerful features
-          </p>
-        </div>
+    if (tier.id === user?.subscriptionTier) {
+      toast({
+        title: "Current Plan",
+        description: `You're already subscribed to the ${tier.name} plan.`,
+      });
+      return;
+    }
 
-        {/* Current Subscription Status */}
-        {user && (
-          <Card className="bg-ios-blue/5 border-ios-blue/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">Current Plan</h3>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Badge className="capitalize">{currentTier}</Badge>
-                    {isActive && <Badge variant="secondary">Active</Badge>}
-                    {!isActive && currentTier !== "free" && <Badge variant="destructive">Cancelled</Badge>}
-                  </div>
-                </div>
-                {currentTier !== "free" && isActive && (
-                  <Button
-                    variant="outline"
-                    onClick={() => cancelSubscriptionMutation.mutate()}
-                    disabled={cancelSubscriptionMutation.isPending}
-                  >
-                    Cancel Subscription
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+    setSelectedTier(tier);
+    createSubscriptionMutation.mutate(tier.id);
+  };
 
-        {/* Subscription Tiers */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {SUBSCRIPTION_TIERS.map((tier) => {
-            const isCurrent = tier.id === currentTier;
-            const canUpgrade = tier.id !== "free" && tier.id !== currentTier;
-            
-            return (
-              <Card 
-                key={tier.id}
-                className={`relative tier-card ${
-                  tier.popular ? "border-2 border-ios-blue scale-105" : ""
-                } ${isCurrent ? "bg-gray-50" : ""}`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-ios-blue text-white">Most Popular</Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${
-                    tier.color === "blue" ? "bg-ios-blue text-white" :
-                    tier.color === "green" ? "bg-health-green text-white" :
-                    "bg-gray-200 text-gray-600"
-                  }`}>
-                    {tier.icon}
-                  </div>
-                  <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                  <div className="text-4xl font-bold">
-                    {tier.price === 0 ? 'Free' : `€${tier.price}`}
-                    {tier.price > 0 && <span className="text-lg font-normal text-ios-secondary">/month</span>}
-                  </div>
-                  <p className="text-ios-secondary">{tier.description}</p>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <Check className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="pt-4">
-                    {isCurrent ? (
-                      <Button disabled className="w-full">
-                        Current Plan
-                      </Button>
-                    ) : tier.id === "free" ? (
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        disabled={currentTier === "free"}
-                      >
-                        {currentTier === "free" ? "Current Plan" : "Downgrade"}
-                      </Button>
-                    ) : canUpgrade ? (
-                      <Button
-                        onClick={() => setSelectedTier(tier)}
-                        className={`w-full ${
-                          tier.color === "blue" ? "bg-ios-blue text-white" :
-                          tier.color === "green" ? "bg-health-green text-white" :
-                          ""
-                        }`}
-                      >
-                        Upgrade to {tier.name}
-                      </Button>
-                    ) : (
-                      <Button disabled className="w-full">
-                        Contact Sales
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Subscription Modal */}
-        {selectedTier && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Subscribe to {selectedTier.name}</CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSelectedTier(null)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-6">
-                  <p className="text-2xl font-bold">${selectedTier.price}/month</p>
-                  <p className="text-ios-secondary">{selectedTier.description}</p>
-                </div>
-
-                {stripePromise ? (
-                  <Elements stripe={stripePromise}>
-                    <SubscriptionForm tier={selectedTier} />
-                  </Elements>
-                ) : (
-                  <div className="text-center py-6">
-                    <p className="text-ios-secondary mb-4">
-                      Payment processing is temporarily unavailable.
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setSelectedTier(null)}
-                      className="w-full"
-                    >
-                      Back to Plans
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* FAQ */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Frequently Asked Questions</CardTitle>
+  if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-md mx-auto">
+          <CardHeader className="text-center">
+            <CardTitle>Subscription Unavailable</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h4 className="font-semibold mb-2">Can I change my plan anytime?</h4>
-              <p className="text-ios-secondary">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Is there a free trial?</h4>
-              <p className="text-ios-secondary">The Free plan is available forever. Paid plans come with a 14-day money-back guarantee.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">What payment methods do you accept?</h4>
-              <p className="text-ios-secondary">We accept all major credit cards and PayPal through our secure payment processor.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Is my data secure?</h4>
-              <p className="text-ios-secondary">Yes, we use bank-level encryption and are HIPAA compliant for Medical tier users.</p>
-            </div>
+          <CardContent className="text-center">
+            <p className="text-ios-secondary mb-4">
+              Stripe payment integration is not configured yet.
+            </p>
+            <p className="text-sm text-ios-secondary">
+              Please contact support for subscription options.
+            </p>
           </CardContent>
         </Card>
       </div>
+    );
+  }
+
+  if (selectedTier && clientSecret && stripePromise) {
+    const options = {
+      clientSecret,
+      appearance: {
+        theme: 'stripe' as const,
+      },
+    };
+
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Elements stripe={stripePromise} options={options}>
+          <CheckoutForm 
+            tier={selectedTier} 
+            onBack={() => {
+              setSelectedTier(null);
+              setClientSecret("");
+            }} 
+          />
+        </Elements>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-ios-primary mb-2">
+          Choose Your Plan
+        </h1>
+        <p className="text-ios-secondary">
+          Unlock the full potential of AI-powered nutrition analysis
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {subscriptionTiers.map((tier) => (
+          <Card 
+            key={tier.id} 
+            className={`relative ${tier.color} ${tier.popular ? 'ring-2 ring-ios-blue' : ''} transition-all hover:shadow-lg`}
+          >
+            {tier.popular && (
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-ios-blue text-white">
+                Most Popular
+              </Badge>
+            )}
+            
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-2">
+                {tier.icon}
+              </div>
+              <CardTitle className="text-xl">{tier.name}</CardTitle>
+              <div className="text-2xl font-bold text-ios-blue">
+                €{tier.price.toFixed(2)}
+                <span className="text-sm font-normal text-ios-secondary">/month</span>
+                {tier.id === "pro" && (
+                  <div className="text-xs text-yellow-600 font-medium mt-1">
+                    Was €10/month - Limited time offer!
+                  </div>
+                )}
+              </div>
+              <p className="text-sm text-ios-secondary">{tier.description}</p>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-green-600 mb-2">Features:</h4>
+                <ul className="space-y-1">
+                  {tier.features.map((feature, index) => (
+                    <li key={index} className="flex items-start text-sm">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {tier.limitations.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-red-600 mb-2">Limitations:</h4>
+                  <ul className="space-y-1">
+                    {tier.limitations.map((limitation, index) => (
+                      <li key={index} className="flex items-start text-sm text-red-600">
+                        <span className="mr-2 mt-0.5">•</span>
+                        {limitation}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <Button 
+                onClick={() => handleSelectTier(tier)}
+                className="w-full"
+                variant={user?.subscriptionTier === tier.id ? "outline" : "default"}
+                disabled={createSubscriptionMutation.isPending}
+              >
+                {createSubscriptionMutation.isPending && selectedTier?.id === tier.id ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : user?.subscriptionTier === tier.id ? (
+                  "Current Plan"
+                ) : tier.id === "free" ? (
+                  "Free Plan"
+                ) : (
+                  `Upgrade to ${tier.name}`
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      
+      {user?.subscriptionTier && user.subscriptionTier !== "free" && (
+        <div className="text-center mt-8">
+          <p className="text-sm text-ios-secondary">
+            Current plan: <strong>{subscriptionTiers.find(t => t.id === user.subscriptionTier)?.name}</strong>
+          </p>
+        </div>
+      )}
     </div>
   );
 }

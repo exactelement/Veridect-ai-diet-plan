@@ -44,7 +44,7 @@ export const users = pgTable("users", {
   // Subscription
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
-  subscriptionTier: varchar("subscription_tier").default("free"), // free, pro, medical
+  subscriptionTier: varchar("subscription_tier").default("free"), // free, pro, advanced
   subscriptionStatus: varchar("subscription_status").default("inactive"), // active, inactive, cancelled
   
   // User preferences and onboarding
