@@ -430,14 +430,15 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-indigo-700">
                       {(() => {
-                        // Calculate actual bonus points earned from database
-                        const currentWeeklyPoints = myWeeklyScore?.weeklyPoints || 0;
-                        const currentFoodPoints = (myWeeklyScore?.yesCount || 0) * 10 + 
-                                                (myWeeklyScore?.okCount || 0) * 5 + 
-                                                (myWeeklyScore?.noCount || 0) * 2;
-                        const actualBonusPoints = currentWeeklyPoints - currentFoodPoints;
+                        // Calculate actual bonus points earned from weekly score data
+                        if (!myWeeklyScore) return 0;
                         
-                        return Math.max(0, actualBonusPoints);
+                        const foodPoints = (myWeeklyScore.yesCount || 0) * 10 + 
+                                         (myWeeklyScore.okCount || 0) * 5 + 
+                                         (myWeeklyScore.noCount || 0) * 2;
+                        const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
+                        
+                        return Math.max(0, bonusPoints);
                       })()}
                     </div>
                     <div className="text-sm text-indigo-600">Bonus Points</div>
@@ -445,21 +446,19 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-700">
                       {(() => {
-                        // Calculate actual badges earned based on current data
+                        // Calculate badges based on actual bonus points earned this week
+                        if (!myWeeklyScore) return 0;
+                        
+                        const foodPoints = (myWeeklyScore.yesCount || 0) * 10 + 
+                                         (myWeeklyScore.okCount || 0) * 5 + 
+                                         (myWeeklyScore.noCount || 0) * 2;
+                        const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
+                        
                         let badges = 0;
-                        
-                        // Check if bonuses were actually awarded (based on actual bonus points earned)
-                        const currentWeeklyPoints = myWeeklyScore?.weeklyPoints || 0;
-                        const currentFoodPoints = (myWeeklyScore?.yesCount || 0) * 10 + 
-                                                (myWeeklyScore?.okCount || 0) * 5 + 
-                                                (myWeeklyScore?.noCount || 0) * 2;
-                        const actualBonusPoints = currentWeeklyPoints - currentFoodPoints;
-                        
-                        // Award badges based on actual bonus points earned
-                        if (actualBonusPoints >= 25) badges += 1;  // 5 analyses badge (25 points)
-                        if (actualBonusPoints >= 75) badges += 1;  // 3 YES streak badge (50 points) on top of 5 analyses
-                        if (actualBonusPoints >= 125) badges += 1; // 10 analyses badge (50 points) 
-                        if (actualBonusPoints >= 175) badges += 1; // 5 YES foods badge (100 points)
+                        if (bonusPoints >= 25) badges += 1;  // 5 analyses challenge (25 points)
+                        if (bonusPoints >= 75) badges += 1;  // 3 YES streak challenge (50 points additional)
+                        if (bonusPoints >= 125) badges += 1; // 10 analyses challenge (50 points additional)
+                        if (bonusPoints >= 175) badges += 1; // 5 YES foods challenge (100 points additional)
                         
                         return badges;
                       })()}
