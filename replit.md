@@ -166,6 +166,7 @@ Preferred communication style: Simple, everyday language.
   - All authentication conflicts handled with specific user guidance
 - **Documentation Organization**: Non-essential files moved to `/info-files/` folder for cleanup
 - **Mobile Development**: Updated iOS and Android development guides with authentication integration
+- **Custom Domain**: Configured application for `veridect.com` domain with proper OAuth redirects and email links
 - **Onboarding Flow**: 4-step process ending with subscription tier selection (Free vs Pro upgrade option)
 - **Frontend Protection**: Added subscription checks to Progress and Leaderboard page routes
 - **Backend Security**: All premium API endpoints require proper tier validation

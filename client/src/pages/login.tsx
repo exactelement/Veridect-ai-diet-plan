@@ -392,7 +392,7 @@ export default function Login() {
       await (window as any).AppleID.auth.init({
         clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
         scope: 'name email',
-        redirectURI: window.location.origin + '/api/auth/apple/callback',
+        redirectURI: (window.location.hostname === 'localhost' ? 'https://veridect.com' : window.location.origin) + '/api/auth/apple/callback',
         state: 'signin',
         usePopup: true
       });

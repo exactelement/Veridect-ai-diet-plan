@@ -15,7 +15,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `https://${process.env.REPLIT_DOMAINS}/api/auth/google/callback`
+    callbackURL: `https://${process.env.REPLIT_DOMAINS || 'veridect.com'}/api/auth/google/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       const email = profile.emails?.[0]?.value;
@@ -440,7 +440,7 @@ export async function setupMultiAuth(app: Express) {
       // Send password reset email
       const host = req.get('host');
       const baseUrl = host?.includes('localhost') 
-        ? `https://${process.env.REPLIT_DOMAINS?.split(',')[0] || 'e930017d-8dad-4af5-a1a8-a3a3f19c1d33-00-2g5wlhfsqnzid.janeway.replit.dev'}`
+        ? `https://veridect.com`
         : `${req.protocol}://${host}`;
       const emailParams = generatePasswordResetEmail(email, resetToken, baseUrl);
       
