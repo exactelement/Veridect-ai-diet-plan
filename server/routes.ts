@@ -217,6 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/food/analyze', 
     isAuthenticated, 
     validateRequest({ body: foodAnalysisSchema }),
+    rateLimit(20, 60 * 1000), // 20 requests per minute per user
     concurrencyProtection('analyze'), 
     rateLimit(10, 60 * 1000), 
     async (req: any, res) => {
@@ -283,12 +284,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ analysis });
     } catch (error: any) {
-      res.status(500).json({ message: error.message || "Failed to analyze food" });
+      console.error('Food analysis error:', error);
+      // Return user-friendly error message
+      res.status(500).json({ 
+        message: "Unable to analyze food right now. Please try again or contact support if the issue persists." 
+      });
     }
   });
 
   // Food logging endpoint for "Yum" button - require Pro tier
-  app.post('/api/food-logs', isAuthenticated, async (req: any, res) => {
+  app.post('/api/food-logs', 
+    isAuthenticated, 
+    rateLimit(30, 60 * 1000), // 30 food logs per minute
+    async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
       const user = await storage.getUser(userId);
@@ -573,7 +581,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         clientSecret: paymentIntent.client_secret,
       });
     } catch (error: any) {
-      res.status(500).json({ message: error.message || "Failed to create subscription" });
+      console.error('Subscription creation error:', error);
+      res.status(500).json({ 
+        message: "Unable to process subscription. Please try again or contact support." 
+      });
     }
   });
 
@@ -722,7 +733,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
       }
     } catch (error) {
-      // Error processing webhook - silent handling
+      // Log webhook processing errors for debugging
+      console.error('Webhook processing error:', error);
+      // Continue to return success to avoid webhook retries for permanent failures
     }
 
     res.json({ received: true });

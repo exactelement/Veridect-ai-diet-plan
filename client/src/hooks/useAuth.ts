@@ -4,10 +4,10 @@ export function useAuth() {
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
-    staleTime: 0, // Always consider data stale
-    gcTime: 0, // Don't cache data
-    refetchOnMount: true, // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+    staleTime: 5 * 60 * 1000, // 5 minutes - reduce excessive API calls
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    refetchOnMount: false, // Don't always refetch on mount
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   return {
