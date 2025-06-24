@@ -538,7 +538,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    console.log(`Added ${pointsToAdd} lifetime points only (total: ${newTotalPoints})`);
+    console.log(`Added ${pointsToAdd} lifetime points. Total: ${newTotalPoints}, Level: ${newLevel}`);
     return updatedUser;
   }
 

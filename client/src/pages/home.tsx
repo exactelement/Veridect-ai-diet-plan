@@ -110,8 +110,8 @@ export default function Home() {
   
   // Lifetime points for level calculation (1000 points per level)
   const totalLifetimePoints = (user as any)?.totalPoints || 0;
-  const pointsToNextLevel = ((currentLevel * 1000) - totalLifetimePoints);
-  const levelProgress = ((totalLifetimePoints % 1000) / 1000) * 100;
+  const pointsToNextLevel = Math.max(0, ((currentLevel * 1000) - totalLifetimePoints));
+  const levelProgress = Math.min(100, ((totalLifetimePoints % 1000) / 1000) * 100);
 
   // Weekly points from the weekly score API (same calculation as lifetime points)
   const weeklyPoints = weeklyScore?.weeklyPoints || 0;
