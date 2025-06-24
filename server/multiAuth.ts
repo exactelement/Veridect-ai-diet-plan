@@ -300,7 +300,7 @@ export async function setupMultiAuth(app: Express) {
       // Send password reset email
       const host = req.get('host');
       const baseUrl = host?.includes('localhost') 
-        ? `https://workspace.yesnolifestylea.repl.co`
+        ? `https://${process.env.REPLIT_DOMAINS?.split(',')[0] || 'e930017d-8dad-4af5-a1a8-a3a3f19c1d33-00-2g5wlhfsqnzid.janeway.replit.dev'}`
         : `${req.protocol}://${host}`;
       const emailParams = generatePasswordResetEmail(email, resetToken, baseUrl);
       
