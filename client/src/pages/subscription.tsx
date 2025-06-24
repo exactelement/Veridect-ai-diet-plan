@@ -77,6 +77,7 @@ const subscriptionTiers: SubscriptionTier[] = [
     name: "Advanced",
     price: 50.00,
     description: "For professionals & advanced users",
+    comingSoon: true,
     features: [
       "Everything in Pro",
       "Professional-grade analysis",
@@ -286,7 +287,7 @@ export default function Subscription() {
         {subscriptionTiers.map((tier) => (
           <Card 
             key={tier.id} 
-            className={`relative ${tier.color} ${tier.popular ? 'ring-2 ring-ios-blue' : ''} transition-all hover:shadow-lg`}
+            className={`relative ${tier.color} ${tier.popular ? 'ring-2 ring-ios-blue' : ''} ${tier.comingSoon ? 'opacity-50 grayscale' : ''} transition-all hover:shadow-lg`}
           >
             {tier.popular && (
               <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-ios-blue text-white">

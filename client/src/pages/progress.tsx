@@ -500,7 +500,7 @@ export default function Progress() {
         </Card>
         
         {/* Bottom spacer to prevent footer overlap */}
-        <div className="h-24"></div>
+        <div className="h-32"></div>
         </div>
       </div>
     </div>
