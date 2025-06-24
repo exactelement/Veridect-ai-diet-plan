@@ -43,8 +43,8 @@ export default function Home() {
   
 
 
-  // Only fetch data if user has Pro or Advanced tier access
-  const hasProAccess = userTier === 'pro' || userTier === 'advanced';
+  // Only fetch data if user has Pro or Advanced tier access (including admin override)
+  const hasProAccess = checkTierAccess(userTier, 'pro', user?.email);
   
 
 

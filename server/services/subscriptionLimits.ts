@@ -74,7 +74,13 @@ export function getTierLimits(tier: string = "free"): TierLimits {
   return TIER_LIMITS[tier] || TIER_LIMITS.free;
 }
 
-export function checkDailyAnalysisLimit(tier: string, todaysCount: number): boolean {
+export function checkDailyAnalysisLimit(tier: string, todaysCount: number, userEmail?: string): boolean {
+  // Admin override - admin emails get unlimited access
+  const adminEmails = ['10xr.co@gmail.com', 'yesnolifestyleapp@gmail.com', 'quantaalgo@gmail.com'];
+  if (userEmail && adminEmails.includes(userEmail)) {
+    return true; // Admin override
+  }
+  
   // Pro and Advanced tiers have unlimited access
   if (tier === 'pro' || tier === 'advanced') {
     return true;
@@ -89,7 +95,13 @@ export function checkDailyAnalysisLimit(tier: string, todaysCount: number): bool
   return todaysCount < limits.dailyAnalyses;
 }
 
-export function canAccessFeature(tier: string, feature: keyof TierLimits): boolean {
+export function canAccessFeature(tier: string, feature: keyof TierLimits, userEmail?: string): boolean {
+  // Admin override - admin emails get access to all features
+  const adminEmails = ['10xr.co@gmail.com', 'yesnolifestyleapp@gmail.com', 'quantaalgo@gmail.com'];
+  if (userEmail && adminEmails.includes(userEmail)) {
+    return true; // Admin override
+  }
+  
   // Pro and Advanced tiers have access to all features
   if (tier === 'pro' || tier === 'advanced') {
     return true;
@@ -99,7 +111,13 @@ export function canAccessFeature(tier: string, feature: keyof TierLimits): boole
   return limits[feature] === true;
 }
 
-export function getRemainingAnalyses(tier: string, todaysCount: number): number {
+export function getRemainingAnalyses(tier: string, todaysCount: number, userEmail?: string): number {
+  // Admin override - admin emails get unlimited access
+  const adminEmails = ['10xr.co@gmail.com', 'yesnolifestyleapp@gmail.com', 'quantaalgo@gmail.com'];
+  if (userEmail && adminEmails.includes(userEmail)) {
+    return -1; // unlimited for admins
+  }
+  
   // Pro and Advanced tiers have unlimited access
   if (tier === 'pro' || tier === 'advanced') {
     return -1; // unlimited
@@ -124,14 +142,15 @@ export interface SubscriptionCheckResult {
 export function checkSubscriptionLimits(
   tier: string,
   feature: keyof TierLimits,
-  todaysAnalyses?: number
+  todaysAnalyses?: number,
+  userEmail?: string
 ): SubscriptionCheckResult {
   const limits = getTierLimits(tier);
   
   // Check daily analysis limit
   if (feature === 'dailyAnalyses' && todaysAnalyses !== undefined) {
-    const canAnalyze = checkDailyAnalysisLimit(tier, todaysAnalyses);
-    const remaining = getRemainingAnalyses(tier, todaysAnalyses);
+    const canAnalyze = checkDailyAnalysisLimit(tier, todaysAnalyses, userEmail);
+    const remaining = getRemainingAnalyses(tier, todaysAnalyses, userEmail);
     
     return {
       allowed: canAnalyze,
@@ -144,7 +163,7 @@ export function checkSubscriptionLimits(
   }
   
   // Check feature access
-  const hasAccess = canAccessFeature(tier, feature);
+  const hasAccess = canAccessFeature(tier, feature, userEmail);
   
   return {
     allowed: hasAccess,

@@ -31,7 +31,7 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   const { user } = useAuth();
   
   const userTier = user?.subscriptionTier || "free";
-  const hasAccess = checkTierAccess(userTier, requiredTier);
+  const hasAccess = checkTierAccess(userTier, requiredTier, user?.email);
   
   if (hasAccess) {
     return null; // User has access, don't show anything
@@ -62,7 +62,13 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
   );
 }
 
-export function checkTierAccess(userTier: string = 'free', requiredTier: string): boolean {
+export function checkTierAccess(userTier: string = 'free', requiredTier: string, userEmail?: string): boolean {
+  // Admin override - admin emails get access to all tiers
+  const adminEmails = ['10xr.co@gmail.com', 'yesnolifestyleapp@gmail.com', 'quantaalgo@gmail.com'];
+  if (userEmail && adminEmails.includes(userEmail)) {
+    return true; // Admin override
+  }
+  
   // Normalize tiers to lowercase for consistent comparison
   const normalizedUserTier = userTier?.toLowerCase() || 'free';
   const normalizedRequiredTier = requiredTier?.toLowerCase() || 'free';

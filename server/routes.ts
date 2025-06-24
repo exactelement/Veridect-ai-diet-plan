@@ -237,7 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check daily analysis limit
       const currentAnalyses = await storage.getTodaysAnalyzedFoods(userId);
-      const limitCheck = checkSubscriptionLimits(userTier, 'dailyAnalyses', currentAnalyses.length);
+      const limitCheck = checkSubscriptionLimits(userTier, 'dailyAnalyses', currentAnalyses.length, user?.email);
       
       if (!limitCheck.allowed) {
         return res.status(403).json({ 
@@ -295,7 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userTier = user?.subscriptionTier || 'free';
       
       // Check if user has access to food logging
-      const limitCheck = checkSubscriptionLimits(userTier, 'foodLogging');
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodLogging', undefined, user?.email);
       if (!limitCheck.allowed) {
         return res.status(403).json({ 
           message: limitCheck.message,
@@ -358,7 +358,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userTier = user?.subscriptionTier || 'free';
       
       // Check if user has access to food history
-      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory');
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory', undefined, user?.email);
       if (!limitCheck.allowed) {
         return res.status(403).json({ 
           message: limitCheck.message,
@@ -381,7 +381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userTier = user?.subscriptionTier || 'free';
       
       // Check if user has access to food history
-      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory');
+      const limitCheck = checkSubscriptionLimits(userTier, 'foodHistory', undefined, user?.email);
       if (!limitCheck.allowed) {
         return res.status(403).json({ 
           message: limitCheck.message,
@@ -414,7 +414,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userTier = user?.subscriptionTier || 'free';
     
     // Check if user has access to leaderboard
-    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess');
+    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess', undefined, user?.email);
     if (!limitCheck.allowed) {
       return res.status(403).json({ 
         message: limitCheck.message,
@@ -435,7 +435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userTier = user?.subscriptionTier || 'free';
     
     // Check if user has access to leaderboard
-    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess');
+    const limitCheck = checkSubscriptionLimits(userTier, 'leaderboardAccess', undefined, user?.email);
     if (!limitCheck.allowed) {
       return res.status(403).json({ 
         message: limitCheck.message,
