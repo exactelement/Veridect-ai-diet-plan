@@ -19,7 +19,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
     if (todaysAnalyses.length === 5) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_analyses');
       if (!bonusAlreadyAwarded) {
-        // 25 bonus points to lifetime points only, weekly handled separately
+        // 25 bonus points to BOTH lifetime and weekly points
         await storage.updateUserPoints(userId, 25);
         await storage.addBonusToWeeklyScore(userId, 25);
         await storage.markBonusAwarded(userId, '5_analyses');
@@ -29,7 +29,7 @@ async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[
     if (todaysAnalyses.length === 10) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_analyses');
       if (!bonusAlreadyAwarded) {
-        // 50 bonus points to lifetime points only, weekly handled separately  
+        // 50 bonus points to BOTH lifetime and weekly points
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '10_analyses');
@@ -50,7 +50,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
     if (last3Logs.length === 3 && last3Logs.every(log => log.verdict === "YES")) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
       if (!bonusAlreadyAwarded) {
-        // 50 bonus points to lifetime points only, weekly handled separately
+        // 50 bonus points to BOTH lifetime and weekly points
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '3_yes_streak');
@@ -329,8 +329,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
       
       // Award to BOTH lifetime points (permanent) and weekly points (resets weekly)
-      await storage.updateUserPoints(userId, foodPoints);
-      await storage.updateWeeklyScore(userId, verdict); // Award same points to weekly system
+      await storage.updateUserPoints(userId, foodPoints); // Lifetime points
+      await storage.updateWeeklyScore(userId, verdict); // Weekly points system
       
       await storage.updateStreak(userId, verdict);
       
