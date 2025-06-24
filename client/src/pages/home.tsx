@@ -664,14 +664,16 @@ export default function Home() {
                   
                   <Button 
                     className={`w-full ${
-                      (user as any)?.subscriptionTier === tier.id 
-                        ? 'bg-green-600 hover:bg-green-700' 
+                      tier.comingSoon 
+                        ? 'bg-gray-400 text-gray-600'
+                        : (user as any)?.subscriptionTier === tier.id 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
                         : tier.popular 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-600 hover:bg-gray-700'
-                    } text-white`}
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : 'bg-gray-600 hover:bg-gray-700 text-white'
+                    }`}
                     onClick={() => {
-                      if ((user as any)?.subscriptionTier !== tier.id) {
+                      if ((user as any)?.subscriptionTier !== tier.id && !tier.comingSoon) {
                         navigate('/subscription');
                       }
                     }}
