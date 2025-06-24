@@ -26,6 +26,11 @@ export default function Progress() {
     queryKey: ["/api/food/logs/today"],
   });
 
+  // Get weekly score data for bonus points calculation
+  const { data: myWeeklyScore } = useQuery({
+    queryKey: ['/api/leaderboard/my-score'],
+  });
+
   // Calculate TODAY'S LOGGED stats for the progress wheel (resets daily at Madrid midnight)
   const todaysLoggedStats = todaysLoggedFoods.reduce(
     (acc: any, log: FoodLog) => {
@@ -425,22 +430,14 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-indigo-700">
                       {(() => {
-                        let bonusPoints = 0;
+                        // Calculate actual bonus points earned from database
+                        const currentWeeklyPoints = myWeeklyScore?.weeklyPoints || 0;
+                        const currentFoodPoints = (myWeeklyScore?.yesCount || 0) * 10 + 
+                                                (myWeeklyScore?.okCount || 0) * 5 + 
+                                                (myWeeklyScore?.noCount || 0) * 2;
+                        const actualBonusPoints = currentWeeklyPoints - currentFoodPoints;
                         
-                        // Calculate bonus points from challenges completed today
-                        if (todaysStats.total >= 5) bonusPoints += 25;  // 5 analyses challenge
-                        if (todaysStats.total >= 10) bonusPoints += 50; // 10 analyses challenge
-                        
-                        // Check for 3 YES foods in a row (last 3 logged foods)
-                        const last3Logged = todaysLoggedFoods.slice(-3);
-                        if (last3Logged.length === 3 && last3Logged.every(log => log.verdict === "YES")) {
-                          bonusPoints += 50; // 3 YES streak bonus
-                        }
-                        
-                        // Check for 5 YES foods today
-                        if (todaysLoggedStats.yes >= 5) bonusPoints += 100; // 5 YES foods bonus
-                        
-                        return bonusPoints;
+                        return Math.max(0, actualBonusPoints);
                       })()}
                     </div>
                     <div className="text-sm text-indigo-600">Bonus Points</div>
@@ -448,18 +445,21 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-700">
                       {(() => {
+                        // Calculate actual badges earned based on current data
                         let badges = 0;
                         
-                        // Analysis badges
-                        if (todaysStats.total >= 5) badges += 1;   // Analysis Explorer
-                        if (todaysStats.total >= 10) badges += 1;  // Analysis Master
+                        // Check if bonuses were actually awarded (based on actual bonus points earned)
+                        const currentWeeklyPoints = myWeeklyScore?.weeklyPoints || 0;
+                        const currentFoodPoints = (myWeeklyScore?.yesCount || 0) * 10 + 
+                                                (myWeeklyScore?.okCount || 0) * 5 + 
+                                                (myWeeklyScore?.noCount || 0) * 2;
+                        const actualBonusPoints = currentWeeklyPoints - currentFoodPoints;
                         
-                        // Food logging badges
-                        const last3Logged = todaysLoggedFoods.slice(-3);
-                        if (last3Logged.length === 3 && last3Logged.every(log => log.verdict === "YES")) {
-                          badges += 1; // Streak Master
-                        }
-                        if (todaysLoggedStats.yes >= 5) badges += 1; // Health Champion
+                        // Award badges based on actual bonus points earned
+                        if (actualBonusPoints >= 25) badges += 1;  // 5 analyses badge (25 points)
+                        if (actualBonusPoints >= 75) badges += 1;  // 3 YES streak badge (50 points) on top of 5 analyses
+                        if (actualBonusPoints >= 125) badges += 1; // 10 analyses badge (50 points) 
+                        if (actualBonusPoints >= 175) badges += 1; // 5 YES foods badge (100 points)
                         
                         return badges;
                       })()}
