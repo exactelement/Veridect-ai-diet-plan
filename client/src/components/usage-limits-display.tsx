@@ -13,7 +13,9 @@ export default function UsageLimitsDisplay() {
     enabled: !!user,
   });
 
-  if (!limits || limits.tier !== 'free') {
+  const userTier = user?.subscriptionTier || 'free';
+  
+  if (!limits || userTier !== 'free') {
     return null; // Only show for free users
   }
 

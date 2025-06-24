@@ -10,7 +10,7 @@ export default function Navigation() {
 
   const navItems = [
     { id: "home", icon: Home, label: "Home", path: "/home", requiredTier: "free" },
-    { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free", greyOut: true },
+    { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free" },
     { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress", requiredTier: "pro" },
     { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard", requiredTier: "pro" },
     { id: "profile", icon: User, label: "Profile", path: "/profile", requiredTier: "free" },
@@ -47,7 +47,7 @@ export default function Navigation() {
             const active = isActive(item.path);
             const hasAccess = checkTierAccess(userTier, item.requiredTier);
             const isLocked = !hasAccess;
-            const shouldGreyOut = item.greyOut && !checkTierAccess(userTier, 'pro');
+            const shouldGreyOut = !hasAccess;
             
             return (
               <button

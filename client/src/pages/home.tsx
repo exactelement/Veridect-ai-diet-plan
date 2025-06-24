@@ -41,11 +41,11 @@ export default function Home() {
   const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
   
-  // Debug logging
-  console.log('Home page - User tier:', userTier, 'Full user:', user);
+
 
   // Only fetch data if user has Pro or Advanced tier access
   const hasProAccess = userTier === 'pro' || userTier === 'advanced';
+  console.log('Home: userTier =', userTier, 'hasProAccess =', hasProAccess);
 
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
