@@ -162,6 +162,7 @@ Preferred communication style: Simple, everyday language.
 - **Authentication**: Replit Auth fully functional with session management and privacy controls
 - **Deployment Ready**: Cloud Run scripts and Docker configuration prepared for post-patent launch
 - **Patent Protection**: App remains private until Spanish patent application is filed
+- **Authentication Flow**: Fixed all landing page buttons to redirect to functional login page (/login) with Apple, Google, and email options
 - **Container Security**: Multi-stage build with non-root execution and health monitoring ready
 
 ## OAuth Authentication Status

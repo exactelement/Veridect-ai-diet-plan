@@ -50,7 +50,7 @@ export default function Landing() {
                   {item.label}
                 </a>
               ))}
-              <Button onClick={() => window.location.href = "/api/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
                 Get Started
               </Button>
             </div>
@@ -58,7 +58,7 @@ export default function Landing() {
             {/* Right side controls */}
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
-              <Button onClick={() => window.location.href = "/api/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
                 Login
               </Button>
 
@@ -116,7 +116,7 @@ export default function Landing() {
                         <Button 
                           onClick={() => {
                             setIsMenuOpen(false);
-                            window.location.href = "/api/login";
+                            window.location.href = "/login";
                           }}
                           className="w-full bg-ios-blue text-white rounded-lg ios-button ios-shadow"
                         >
@@ -144,7 +144,7 @@ export default function Landing() {
               Get instant health guidance that adapts to your goals and lifestyle.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button onClick={() => window.location.href = "/api/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
+              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
                 Try It Free
               </Button>
               <Button variant="outline" className="border-2 border-ios-blue text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button">
@@ -347,7 +347,7 @@ export default function Landing() {
                   <span>Simple yes/no verdicts</span>
                 </li>
               </ul>
-              <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
+              <Button onClick={() => window.location.href = "/login"} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
                 Get Started
               </Button>
             </Card>
@@ -393,7 +393,7 @@ export default function Landing() {
                   <span className="text-gray-800">Priority support</span>
                 </li>
               </ul>
-              <Button onClick={() => window.location.href = "/api/login"} className="w-full bg-ios-blue text-white py-3 rounded-xl font-medium ios-button hover:bg-blue-600">
+              <Button onClick={() => window.location.href = "/login"} className="w-full bg-ios-blue text-white py-3 rounded-xl font-medium ios-button hover:bg-blue-600">
                 Upgrade to Pro
               </Button>
             </Card>
@@ -456,7 +456,7 @@ export default function Landing() {
             Join thousands of users who are already making smarter food choices with AI-powered guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button onClick={() => window.location.href = "/api/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100">
+            <Button onClick={() => window.location.href = "/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100">
               Start Free Trial
             </Button>
             <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/20">
