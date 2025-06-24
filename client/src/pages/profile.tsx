@@ -203,6 +203,29 @@ export default function Profile() {
     },
   });
 
+  // Cancel subscription mutation
+  const cancelSubscription = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/subscription/cancel");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Subscription Cancelled",
+        description: "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setShowCancelDialog(false);
+    },
+    onError: (error: any) => {
+      const errorMessage = error.message || "Failed to cancel subscription.";
+      toast({
+        title: "Cancellation Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+  });
+
   const onPersonalSubmit = (data: PersonalInfoForm) => {
     updatePersonalMutation.mutate(data);
   };
