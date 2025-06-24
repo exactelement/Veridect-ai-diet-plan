@@ -1,99 +1,81 @@
 #!/bin/bash
 
 # Veridect Cloud Run Deployment Script
+# This script builds and deploys the Veridect app to Google Cloud Run
+
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
 # Configuration
-PROJECT_ID=${PROJECT_ID:-""}
-REGION=${REGION:-"europe-west1"}
-SERVICE_NAME=${SERVICE_NAME:-"veridect-app"}
-IMAGE_NAME="gcr.io/$PROJECT_ID/veridect"
+PROJECT_ID="${PROJECT_ID:-veridect-app}"
+REGION="europe-west1"
+SERVICE_NAME="veridect"
+REPOSITORY="veridect"
 
-echo -e "${BLUE}🚀 Veridect Cloud Run Deployment${NC}"
-echo "=================================="
+echo "🚀 Starting Veridect deployment to Cloud Run..."
+echo "Project ID: $PROJECT_ID"
+echo "Region: $REGION"
+echo "Service: $SERVICE_NAME"
 
-# Check if PROJECT_ID is set
-if [ -z "$PROJECT_ID" ]; then
-    echo -e "${RED}❌ Error: PROJECT_ID environment variable is not set${NC}"
-    echo "Please set it with: export PROJECT_ID=your-project-id"
+# Check if gcloud is installed
+if ! command -v gcloud &> /dev/null; then
+    echo "❌ Error: gcloud CLI is not installed. Please install it first."
     exit 1
 fi
 
-# Check if required tools are installed
-command -v gcloud >/dev/null 2>&1 || { echo -e "${RED}❌ gcloud CLI is required but not installed.${NC}" >&2; exit 1; }
-command -v docker >/dev/null 2>&1 || { echo -e "${RED}❌ Docker is required but not installed.${NC}" >&2; exit 1; }
-
-echo -e "${YELLOW}📋 Configuration:${NC}"
-echo "  Project ID: $PROJECT_ID"
-echo "  Region: $REGION"
-echo "  Service Name: $SERVICE_NAME"
-echo "  Image: $IMAGE_NAME"
-echo ""
-
-# Set the project
-echo -e "${BLUE}🔧 Setting Google Cloud project...${NC}"
-gcloud config set project $PROJECT_ID
+# Check if authenticated
+if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q .; then
+    echo "❌ Error: Not authenticated with gcloud. Run 'gcloud auth login' first."
+    exit 1
+fi
 
 # Enable required APIs
-echo -e "${BLUE}🔌 Enabling required APIs...${NC}"
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable run.googleapis.com
-gcloud services enable containerregistry.googleapis.com
+echo "🔧 Enabling required Google Cloud APIs..."
+gcloud services enable \
+    cloudbuild.googleapis.com \
+    run.googleapis.com \
+    artifactregistry.googleapis.com \
+    --project=$PROJECT_ID
 
-# Configure Docker for GCR
-echo -e "${BLUE}🐳 Configuring Docker for Google Container Registry...${NC}"
-gcloud auth configure-docker
+# Create Artifact Registry repository if it doesn't exist
+echo "📦 Setting up Artifact Registry..."
+if ! gcloud artifacts repositories describe $REPOSITORY \
+    --location=$REGION \
+    --project=$PROJECT_ID &> /dev/null; then
+    
+    gcloud artifacts repositories create $REPOSITORY \
+        --repository-format=docker \
+        --location=$REGION \
+        --description="Veridect Docker repository" \
+        --project=$PROJECT_ID
+    
+    echo "✅ Artifact Registry repository created"
+else
+    echo "✅ Artifact Registry repository already exists"
+fi
 
-# Build the Docker image
-echo -e "${BLUE}🏗️  Building Docker image...${NC}"
-docker build -t $IMAGE_NAME:latest .
+# Configure Docker authentication
+echo "🔐 Configuring Docker authentication..."
+gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
-# Tag the image with timestamp
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-docker tag $IMAGE_NAME:latest $IMAGE_NAME:$TIMESTAMP
+# Build and push using Cloud Build
+echo "🏗️ Building and deploying with Cloud Build..."
+gcloud builds submit \
+    --config=cloudbuild.yaml \
+    --project=$PROJECT_ID \
+    --region=$REGION
 
-# Push images to Container Registry
-echo -e "${BLUE}📤 Pushing images to Container Registry...${NC}"
-docker push $IMAGE_NAME:latest
-docker push $IMAGE_NAME:$TIMESTAMP
+echo "🎉 Deployment completed successfully!"
 
-# Deploy to Cloud Run
-echo -e "${BLUE}🚀 Deploying to Cloud Run...${NC}"
-gcloud run deploy $SERVICE_NAME \
-    --image $IMAGE_NAME:latest \
-    --region $REGION \
-    --platform managed \
-    --allow-unauthenticated \
-    --port 8080 \
-    --memory 1Gi \
-    --cpu 1 \
-    --max-instances 10 \
-    --min-instances 1 \
-    --concurrency 80 \
-    --timeout 300 \
-    --set-env-vars NODE_ENV=production,PORT=8080
+# Get service URL
+SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+    --region=$REGION \
+    --project=$PROJECT_ID \
+    --format="value(status.url)")
 
-# Get the service URL
-SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format="value(status.url)")
-
+echo "🌐 Your Veridect app is available at: $SERVICE_URL"
 echo ""
-echo -e "${GREEN}✅ Deployment completed successfully!${NC}"
-echo "=================================="
-echo -e "${GREEN}🌐 Service URL: $SERVICE_URL${NC}"
-echo -e "${YELLOW}📝 Next steps:${NC}"
-echo "  1. Configure environment variables in Cloud Run"
-echo "  2. Set up custom domain (optional)"
-echo "  3. Configure monitoring and alerts"
+echo "📊 To view logs:"
+echo "gcloud logs tail --service=$SERVICE_NAME --project=$PROJECT_ID"
 echo ""
-echo -e "${BLUE}📊 To view logs:${NC}"
-echo "  gcloud logs tail $SERVICE_NAME --region=$REGION"
-echo ""
-echo -e "${BLUE}🔧 To update environment variables:${NC}"
-echo "  gcloud run services update $SERVICE_NAME --region=$REGION --set-env-vars KEY=VALUE"
+echo "🔧 To update environment variables:"
+echo "gcloud run services update $SERVICE_NAME --region=$REGION --project=$PROJECT_ID --set-env-vars=KEY=VALUE"

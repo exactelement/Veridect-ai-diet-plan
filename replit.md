@@ -104,12 +104,26 @@ Veridect is a health-focused web application that provides instant AI-powered fo
 - **Container**: Multi-stage Docker build for optimized production images
 - **Deployment**: Google Cloud Run with autoscaling and health checks
 
+### Container Configuration
+- **Base Image**: Node.js 20 Alpine for minimal footprint
+- **Security**: Non-root user execution with proper signal handling
+- **Health Checks**: Built-in health endpoint monitoring
+- **Resource Limits**: 2Gi memory, 2 vCPU for optimal performance
+- **Auto-scaling**: 0-20 instances based on demand
+
+### Cloud Run Deployment
+- **Region**: europe-west1 (optimal for European users)
+- **Container Registry**: Artifact Registry with automated builds
+- **CI/CD**: Cloud Build integration with automated deployment
+- **Environment**: Production-ready with proper environment variable management
+- **Monitoring**: Cloud Logging and health check integration
+
 ### Configuration Management
 - **Environment Variables**: Centralized configuration for API keys and database URLs
 - **Build Scripts**: Automated build process with dependency installation
 - **Port Configuration**: Port 5000 for development, port 8080 for Cloud Run production
-- **Container Configuration**: Docker multi-stage builds with security hardening
-- **Cloud Deployment**: Automated Cloud Run deployment with CI/CD integration
+- **Deployment Scripts**: `deploy-cloudrun.sh` for automated deployment
+- **Local Testing**: `docker-build-test.sh` for container validation
 
 ## User Preferences
 
@@ -131,14 +145,32 @@ Preferred communication style: Simple, everyday language.
 
 ## Deployment Ready Status
 - **Build Status**: Successfully building with npm run build
-- **Docker Configuration**: Multi-stage Dockerfile optimized for Cloud Run
-- **Stripe Integration**: Temporarily disabled for deployment compatibility
+- **Docker Configuration**: Production-ready multi-stage Dockerfile optimized for Cloud Run
+- **Container Security**: Non-root user execution with proper signal handling and health checks
+- **Cloud Build**: Automated CI/CD pipeline with Artifact Registry integration
+- **Deployment Scripts**: Complete automation with `deploy-cloudrun.sh` and local testing tools
+- **Resource Optimization**: 2Gi memory, 2 vCPU configuration for AI processing workloads
 - **Gamification System**: Weekly leaderboards and dual point tracking fully operational
 - **Authentication**: Replit Auth integration working with privacy controls
 - **Database**: PostgreSQL schema with weekly reset system and constraints
 - **Scheduler System**: Madrid timezone daily/weekly reset automation active
 
 ## Recent Changes
+
+### Weekly Points Calculation Fix (June 24, 2025)
+- **Mathematical Accuracy Restored**: Fixed weekly points calculation error showing 38 instead of correct 36 points
+- **Database Correction**: Reset weekly_points to accurate formula: (yes_count × 10 + ok_count × 5 + no_count × 2)
+- **Systematic Error Eliminated**: Removed accumulated calculation errors from bonus point additions
+- **Point System Integrity**: Verified all future calculations follow established YES=10, OK=5, NO=2 scoring rules
+
+### Docker Container & Cloud Run Deployment (June 24, 2025)
+- **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment
+- **Security Hardening**: Non-root user execution, proper signal handling with dumb-init, health checks
+- **Cloud Build Integration**: Automated CI/CD pipeline with Google Cloud Build and Artifact Registry
+- **Deployment Automation**: Complete deployment scripts with `deploy-cloudrun.sh` and local testing tools
+- **Resource Configuration**: Optimized for AI workloads with 2Gi memory, 2 vCPU, 0-20 auto-scaling
+- **European Deployment**: europe-west1 region for optimal performance and GDPR compliance
+- **Environment Management**: Production-ready configuration with secure environment variable handling
 
 ### Authentication System Fix (June 24, 2025)
 - **API Authentication Resolution**: Fixed all 400 status code errors across food analysis, logging, and user endpoints

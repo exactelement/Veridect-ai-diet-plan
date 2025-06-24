@@ -1,410 +1,294 @@
-# Veridect Docker & Cloud Run Deployment Guide
+# Docker Deployment Guide for Veridect
 
 ## Overview
 
-This guide covers deploying Veridect as a Docker container to Google Cloud Run for production use.
+This guide covers building and deploying the Veridect application using Docker containers, with specific focus on Google Cloud Run deployment.
 
-## Prerequisites
+## Container Architecture
 
-### Required Tools
-- Docker Desktop or Docker Engine
-- Google Cloud SDK (gcloud CLI)
-- Node.js 20+ (for local development)
+### Multi-Stage Build
 
-### Google Cloud Setup
-1. **Create Google Cloud Project**
-   ```bash
-   gcloud projects create your-project-id
-   gcloud config set project your-project-id
-   ```
+The Dockerfile uses a multi-stage build process for optimal production deployment:
 
-2. **Enable Billing**
-   - Enable billing for your project in Google Cloud Console
-   - Required for Cloud Run usage
+1. **Builder Stage**: Installs all dependencies and builds the application
+2. **Production Stage**: Creates minimal runtime image with only production dependencies
 
-3. **Enable APIs**
-   ```bash
-   gcloud services enable cloudbuild.googleapis.com
-   gcloud services enable run.googleapis.com
-   gcloud services enable containerregistry.googleapis.com
-   ```
+### Security Features
 
-## Local Docker Development
+- **Non-root User**: Application runs as `veridect` user (UID 1001)
+- **Signal Handling**: Uses `dumb-init` for proper signal handling
+- **Health Checks**: Built-in health endpoint monitoring
+- **Minimal Base**: Alpine Linux for reduced attack surface
 
-### Build Docker Image
+## Local Development
+
+### Build and Test Locally
+
 ```bash
-# Build the image
-npm run docker:build
+# Build the container
+docker build -t veridect:latest .
 
-# Run locally
-npm run docker:run
+# Test locally
+./docker-build-test.sh
+
+# Manual local run
+docker run -d \
+  --name veridect-local \
+  -p 8080:8080 \
+  -e NODE_ENV=production \
+  -e DATABASE_URL=your_db_url \
+  veridect:latest
 ```
 
-### Manual Docker Commands
+### Development Workflow
+
 ```bash
-# Build image
-docker build -t veridect .
+# Build development version
+docker build -t veridect:dev --target builder .
 
-# Run with environment variables
-docker run -p 8080:8080 \
-  -e DATABASE_URL="your_database_url" \
-  -e SESSION_SECRET="your_session_secret" \
-  -e GOOGLE_GEMINI_API_KEY="your_api_key" \
-  veridect
-
-# Check logs
-docker logs <container_id>
-
-# Execute shell in container
-docker exec -it <container_id> /bin/sh
+# Run with volume mounts for development
+docker run -it \
+  -v $(pwd):/app \
+  -p 8080:8080 \
+  veridect:dev npm run dev
 ```
 
-## Cloud Run Deployment
+## Production Deployment
 
-### Quick Deployment
+### Environment Variables
+
+Required environment variables for production:
+
 ```bash
-# Set your project ID
-export PROJECT_ID=your-project-id
-
-# Deploy using automated script
-npm run deploy:cloudrun
-```
-
-### Manual Deployment Steps
-
-1. **Configure gcloud**
-   ```bash
-   gcloud auth login
-   gcloud config set project your-project-id
-   gcloud auth configure-docker
-   ```
-
-2. **Build and Push Image**
-   ```bash
-   # Build image
-   docker build -t gcr.io/your-project-id/veridect .
-   
-   # Push to Container Registry
-   docker push gcr.io/your-project-id/veridect
-   ```
-
-3. **Deploy to Cloud Run**
-   ```bash
-   gcloud run deploy veridect-app \
-     --image gcr.io/your-project-id/veridect \
-     --region europe-west1 \
-     --platform managed \
-     --allow-unauthenticated \
-     --port 8080 \
-     --memory 1Gi \
-     --cpu 1 \
-     --max-instances 10 \
-     --min-instances 1 \
-     --concurrency 80 \
-     --timeout 300
-   ```
-
-## Environment Variables Configuration
-
-### Required Environment Variables
-```bash
-# Database
-DATABASE_URL=postgresql://username:password@host:5432/database
-PGDATABASE=your_database
-PGHOST=your_db_host
-PGPASSWORD=your_db_password
-PGPORT=5432
-PGUSER=your_db_user
-
-# Authentication
-SESSION_SECRET=your_secure_session_secret_minimum_32_chars
-REPL_ID=your_replit_app_id
-REPLIT_DOMAINS=your-cloudrun-service-url.run.app
-ISSUER_URL=https://replit.com/oidc
-
-# AI Integration
-GOOGLE_GEMINI_API_KEY=your_gemini_api_key
-
-# Production Settings
 NODE_ENV=production
 PORT=8080
+DATABASE_URL=postgresql://...
+GOOGLE_GEMINI_API_KEY=your_key
+SESSION_SECRET=your_secret
+REPL_ID=your_repl_id
+REPLIT_DOMAINS=your_domains
 ```
 
-### Set Environment Variables in Cloud Run
+### Resource Requirements
+
+**Minimum Requirements:**
+- Memory: 1Gi
+- CPU: 1 vCPU
+- Storage: 10Gi
+
+**Recommended (AI workloads):**
+- Memory: 2Gi
+- CPU: 2 vCPU
+- Storage: 20Gi
+
+## Google Cloud Run
+
+### Automated Deployment
+
 ```bash
-gcloud run services update veridect-app \
+# Set project
+export PROJECT_ID="your-project-id"
+
+# Deploy using script
+./deploy-cloudrun.sh
+```
+
+### Manual Cloud Run Deployment
+
+```bash
+# Build and push
+gcloud builds submit --config=cloudbuild.yaml
+
+# Deploy service
+gcloud run deploy veridect \
+  --image europe-west1-docker.pkg.dev/$PROJECT_ID/veridect/app:latest \
   --region europe-west1 \
-  --set-env-vars \
-  DATABASE_URL="your_database_url",\
-  SESSION_SECRET="your_session_secret",\
-  GOOGLE_GEMINI_API_KEY="your_api_key",\
-  NODE_ENV="production",\
-  PORT="8080"
+  --platform managed \
+  --allow-unauthenticated \
+  --port 8080 \
+  --memory 2Gi \
+  --cpu 2 \
+  --min-instances 0 \
+  --max-instances 20
 ```
 
-## Database Setup for Cloud Run
+### Cloud Run Configuration
 
-### Option 1: Google Cloud SQL
+**Service Settings:**
+- **Region**: europe-west1 (GDPR compliance)
+- **Concurrency**: 100 requests per instance
+- **Timeout**: 900 seconds (for AI processing)
+- **Auto-scaling**: 0-20 instances
+- **Execution Environment**: Gen2
+
+**Security:**
+- **Authentication**: Allow unauthenticated (app handles auth)
+- **HTTPS**: Automatic TLS termination
+- **Container Security**: Non-root execution
+
+## Other Cloud Platforms
+
+### AWS ECS/Fargate
+
 ```bash
-# Create Cloud SQL instance
-gcloud sql instances create veridect-db \
-  --database-version=POSTGRES_15 \
-  --tier=db-f1-micro \
-  --region=europe-west1
+# Build for AWS
+docker build -t veridect:aws .
 
-# Create database
-gcloud sql databases create veridect \
-  --instance=veridect-db
+# Tag for ECR
+docker tag veridect:aws $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/veridect:latest
 
-# Create user
-gcloud sql users create veridect-user \
-  --instance=veridect-db \
-  --password=your_secure_password
-
-# Get connection string
-gcloud sql instances describe veridect-db
+# Push to ECR
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/veridect:latest
 ```
 
-### Option 2: External Database (Neon, Supabase, etc.)
-Use your existing database connection string in environment variables.
+### Azure Container Instances
 
-## Production Configuration
-
-### Cloud Run Service Configuration
-```yaml
-# service.yaml example
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: veridect-app
-  annotations:
-    run.googleapis.com/ingress: all
-    run.googleapis.com/ingress-status: all
-spec:
-  template:
-    metadata:
-      annotations:
-        run.googleapis.com/cpu-throttling: "false"
-        run.googleapis.com/execution-environment: gen2
-    spec:
-      containerConcurrency: 80
-      timeoutSeconds: 300
-      containers:
-      - image: gcr.io/your-project-id/veridect
-        ports:
-        - containerPort: 8080
-        resources:
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: PORT
-          value: "8080"
-```
-
-### Monitoring and Logging
 ```bash
-# View logs
-gcloud logs tail veridect-app --region=europe-west1
+# Build for Azure
+docker build -t veridect:azure .
 
-# Monitor metrics
-gcloud monitoring dashboards list
+# Tag for ACR
+docker tag veridect:azure $REGISTRY_NAME.azurecr.io/veridect:latest
 
-# Set up alerts
-gcloud alpha monitoring policies create \
-  --policy-from-file=alert-policy.yaml
+# Push to ACR
+docker push $REGISTRY_NAME.azurecr.io/veridect:latest
 ```
 
-## Security Configuration
+### DigitalOcean App Platform
 
-### IAM and Security
 ```bash
-# Create service account for Cloud Run
-gcloud iam service-accounts create veridect-service \
-  --display-name="Veridect Service Account"
-
-# Grant necessary permissions
-gcloud projects add-iam-policy-binding your-project-id \
-  --member="serviceAccount:veridect-service@your-project-id.iam.gserviceaccount.com" \
-  --role="roles/cloudsql.client"
-
-# Deploy with service account
-gcloud run services update veridect-app \
-  --service-account=veridect-service@your-project-id.iam.gserviceaccount.com
+# Use the Dockerfile directly
+# App Platform will build from source
 ```
 
-### Secrets Management
-```bash
-# Store secrets in Secret Manager
-gcloud secrets create database-url --data-file=-
-gcloud secrets create session-secret --data-file=-
-gcloud secrets create gemini-api-key --data-file=-
+## Container Optimization
 
-# Grant access to secrets
-gcloud secrets add-iam-policy-binding database-url \
-  --member="serviceAccount:veridect-service@your-project-id.iam.gserviceaccount.com" \
-  --role="roles/secretmanager.secretAccessor"
-```
+### Image Size Optimization
 
-## Custom Domain Setup
+- **Alpine Base**: Minimal Linux distribution
+- **Multi-stage Build**: Excludes development dependencies
+- **Layer Caching**: Optimized layer order for build cache
+- **Clean Installation**: Removes package manager cache
 
-### Domain Configuration
-```bash
-# Map custom domain
-gcloud run domain-mappings create \
-  --service veridect-app \
-  --domain your-domain.com \
-  --region europe-west1
+### Performance Tuning
 
-# Verify domain ownership in Google Cloud Console
-# Update DNS records as instructed
-```
-
-## Performance Optimization
-
-### Cloud Run Settings
-- **CPU**: 1 vCPU for production workloads
-- **Memory**: 1Gi minimum, 2Gi for high traffic
-- **Concurrency**: 80 requests per instance
-- **Min Instances**: 1 to avoid cold starts
-- **Max Instances**: 10-100 based on traffic
-
-### Image Optimization
 ```dockerfile
-# Multi-stage build for smaller images
-FROM node:20-alpine AS builder
-# ... build stage
+# Memory optimization
+ENV NODE_OPTIONS="--max-old-space-size=1536"
 
-FROM node:20-alpine AS production
-# ... production stage with minimal dependencies
+# CPU optimization
+ENV UV_THREADPOOL_SIZE=4
+
+# Disable source maps in production
+ENV GENERATE_SOURCEMAP=false
 ```
 
-## Continuous Deployment
+## Monitoring and Logging
 
-### GitHub Actions Integration
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Cloud Run
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: google-github-actions/setup-gcloud@v1
-      with:
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-    - run: |
-        gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/veridect
-        gcloud run deploy veridect-app --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/veridect --region europe-west1
-```
+### Health Checks
 
-### Cloud Build Triggers
+The container includes a built-in health check:
+
 ```bash
-# Connect repository to Cloud Build
-gcloud builds triggers create github \
-  --repo-name=your-repo \
-  --repo-owner=your-username \
-  --branch-pattern="^main$" \
-  --build-config=cloudbuild.yaml
+# Manual health check
+curl http://localhost:8080/health
 ```
+
+### Logging Configuration
+
+```bash
+# View container logs
+docker logs veridect-container
+
+# Cloud Run logs
+gcloud logs tail --service=veridect --project=$PROJECT_ID
+```
+
+### Monitoring Metrics
+
+- **Memory Usage**: Monitor for memory leaks
+- **CPU Usage**: Watch for AI processing spikes
+- **Request Latency**: Track response times
+- **Error Rates**: Monitor 4xx/5xx responses
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Container Fails to Start**
+1. **Build Failures**
    ```bash
-   # Check logs
-   gcloud logs tail veridect-app --region=europe-west1
-   
-   # Verify health endpoint
-   curl https://your-service-url/health
+   # Check build logs
+   docker build --no-cache -t veridect:debug .
    ```
 
-2. **Database Connection Issues**
+2. **Runtime Errors**
+   ```bash
+   # Check container logs
+   docker logs veridect-container
+   ```
+
+3. **Memory Issues**
+   ```bash
+   # Increase memory limit
+   docker run --memory=2g veridect:latest
+   ```
+
+4. **Database Connection**
    ```bash
    # Test database connectivity
-   gcloud sql connect veridect-db --user=veridect-user
-   
-   # Check Cloud SQL proxy configuration
-   cloud_sql_proxy -instances=your-project:europe-west1:veridect-db=tcp:5432
+   docker run --rm veridect:latest node -e "console.log(process.env.DATABASE_URL)"
    ```
 
-3. **Environment Variables Not Set**
-   ```bash
-   # List current environment variables
-   gcloud run services describe veridect-app --region=europe-west1
-   
-   # Update environment variables
-   gcloud run services update veridect-app \
-     --region=europe-west1 \
-     --set-env-vars KEY=VALUE
-   ```
+### Debug Mode
 
-4. **Authentication Issues**
-   - Verify REPLIT_DOMAINS includes Cloud Run service URL
-   - Check SESSION_SECRET is properly set
-   - Ensure database user has correct permissions
-
-### Performance Monitoring
 ```bash
-# CPU and memory usage
-gcloud monitoring metrics list --filter="resource.type=cloud_run_revision"
+# Run with debug output
+docker run -e DEBUG=* veridect:latest
 
-# Request latency
-gcloud logging read "resource.type=cloud_run_revision" --limit=50
-
-# Error rate monitoring
-gcloud logging read "resource.type=cloud_run_revision AND severity>=ERROR" --limit=20
+# Interactive shell
+docker run -it --entrypoint /bin/sh veridect:latest
 ```
 
-## Cost Optimization
+## Security Best Practices
 
-### Pricing Considerations
-- **CPU allocation**: Only charged when processing requests
-- **Memory**: Charged for allocated memory while running
-- **Requests**: First 2 million requests per month are free
-- **Data transfer**: Egress charges apply
+### Container Security
 
-### Cost Optimization Tips
-1. Use minimum required memory allocation
-2. Set appropriate max instances to control costs
-3. Implement request batching where possible
-4. Use Cloud CDN for static assets
-5. Monitor and set budget alerts
+- **Non-root Execution**: All processes run as non-root user
+- **Read-only Filesystem**: Consider read-only root filesystem
+- **Secrets Management**: Use environment variables or secret managers
+- **Network Security**: Limit exposed ports
 
-## Maintenance
+### Production Hardening
 
-### Regular Tasks
-```bash
-# Update base image
-docker build -t gcr.io/your-project-id/veridect . --no-cache
+```dockerfile
+# Additional security measures
+RUN apk --no-cache add ca-certificates && \
+    apk --no-cache upgrade && \
+    rm -rf /var/cache/apk/*
 
-# Deploy new version
-gcloud run deploy veridect-app --image gcr.io/your-project-id/veridect
-
-# Clean up old images
-gcloud container images list-tags gcr.io/your-project-id/veridect --filter='-tags:*' --format='get(digest)' --limit=10 | xargs -I {} gcloud container images delete gcr.io/your-project-id/veridect@{}
+# Set security headers
+ENV NODE_ENV=production
+ENV SECURE_HEADERS=true
 ```
 
-### Backup Strategy
-```bash
-# Database backup
-gcloud sql export sql veridect-db gs://your-backup-bucket/backup-$(date +%Y%m%d).sql --database=veridect
+## Backup and Recovery
 
-# Image backup
-gcloud container images add-tag gcr.io/your-project-id/veridect gcr.io/your-project-id/veridect:backup-$(date +%Y%m%d)
+### Database Backups
+
+```bash
+# Automated backups with Cloud SQL
+gcloud sql backups create --instance=veridect-db
+
+# Manual backup
+pg_dump $DATABASE_URL > backup.sql
 ```
 
----
+### Container Recovery
 
-**Deployment Guide Version**: 1.0  
-**Last Updated**: June 23, 2025  
-**Platform**: Google Cloud Run  
-**Next Review**: Monthly maintenance cycle
+```bash
+# Rollback to previous version
+gcloud run services update veridect \
+  --image europe-west1-docker.pkg.dev/$PROJECT_ID/veridect/app:previous-tag
+```
+
+This deployment guide ensures secure, scalable, and maintainable container deployment for the Veridect platform.
