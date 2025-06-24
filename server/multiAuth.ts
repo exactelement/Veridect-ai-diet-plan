@@ -35,7 +35,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           profileImageUrl: profile.photos?.[0]?.value || null,
           authProvider: "google",
           googleId: profile.id,
+          onboardingCompleted: false,
         });
+      } else if (!user.googleId) {
+        // Link Google ID to existing account
+        user = await storage.updateUserProfile(user.id, { googleId: profile.id });
       }
 
       return done(null, user);
@@ -43,6 +47,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       return done(error);
     }
   }));
+} else {
+  console.log("Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
 }
 
 // Local Strategy (Email/Password)
@@ -118,17 +124,26 @@ export async function setupMultiAuth(app: Express) {
     }
   });
 
-  // Google OAuth routes
-  app.get('/api/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-  );
+  // Google OAuth routes (only if Google is configured)
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    app.get('/api/auth/google',
+      passport.authenticate('google', { scope: ['profile', 'email'] })
+    );
 
-  app.get('/api/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
-    (req, res) => {
-      res.redirect('/?login=success');
-    }
-  );
+    app.get('/api/auth/google/callback',
+      passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
+      (req, res) => {
+        const user = req.user as any;
+        const redirect = user?.onboardingCompleted ? '/' : '/onboarding';
+        res.redirect(redirect);
+      }
+    );
+  } else {
+    // Fallback routes when Google OAuth is not configured
+    app.get('/api/auth/google', (req, res) => {
+      res.redirect('/login?error=google_not_configured');
+    });
+  }
 
   // Replit Auth redirect
   app.get('/api/login', (req, res) => {
