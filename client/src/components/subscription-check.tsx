@@ -63,8 +63,16 @@ export function SubscriptionCheck({ requiredTier, feature, onUpgrade }: Subscrip
 }
 
 export function checkTierAccess(userTier: string, requiredTier: string): boolean {
-  const tierHierarchy = ["free", "pro", "advanced"];
-  const userLevel = tierHierarchy.indexOf(userTier);
-  const requiredLevel = tierHierarchy.indexOf(requiredTier);
-  return userLevel >= requiredLevel;
+  // Pro and Advanced have access to everything
+  if (userTier === 'pro' || userTier === 'advanced') {
+    return true;
+  }
+  
+  // Free tier only has access to free features
+  if (requiredTier === 'free') {
+    return true;
+  }
+  
+  // Free tier cannot access pro/advanced features
+  return false;
 }

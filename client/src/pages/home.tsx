@@ -65,11 +65,7 @@ export default function Home() {
     enabled: hasProAccess,
   });
 
-  // Force refresh user data to get latest privacy settings
-  const { data: currentUser } = useQuery({
-    queryKey: ["/api/auth/user"],
-    staleTime: 0, // Always fetch fresh data
-  });
+  // Remove duplicate user query - using user from useAuth hook
 
   // Calculate today's stats
   const todaysStats = todaysLogs.reduce(
