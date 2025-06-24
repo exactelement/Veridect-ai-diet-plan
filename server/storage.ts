@@ -331,25 +331,37 @@ export class DatabaseStorage implements IStorage {
       const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
       console.log(`Adding ${verdictPoints} weekly points for ${verdict} verdict (${verdict} = ${verdictPoints} points)`);
       
-      await db
-        .insert(weeklyScores)
-        .values({
-          userId,
-          weekStart,
-          yesCount: verdict === "YES" ? 1 : 0,
-          noCount: verdict === "NO" ? 1 : 0,
-          okCount: verdict === "OK" ? 1 : 0,
-          weeklyPoints: verdictPoints
-        })
-        .onConflictDoUpdate({
-          target: [weeklyScores.userId, weeklyScores.weekStart],
-          set: {
-            yesCount: sql`${weeklyScores.yesCount} + ${verdict === "YES" ? 1 : 0}`,
-            noCount: sql`${weeklyScores.noCount} + ${verdict === "NO" ? 1 : 0}`,
-            okCount: sql`${weeklyScores.okCount} + ${verdict === "OK" ? 1 : 0}`,
-            weeklyPoints: sql`${weeklyScores.weeklyPoints} + ${verdictPoints}`
-          }
-        });
+      // Use explicit select/update to avoid constraint issues
+      const [existing] = await db
+        .select()
+        .from(weeklyScores)
+        .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)))
+        .limit(1);
+
+      if (existing) {
+        // Update existing record
+        await db
+          .update(weeklyScores)
+          .set({
+            yesCount: verdict === "YES" ? existing.yesCount + 1 : existing.yesCount,
+            noCount: verdict === "NO" ? existing.noCount + 1 : existing.noCount,
+            okCount: verdict === "OK" ? existing.okCount + 1 : existing.okCount,
+            weeklyPoints: existing.weeklyPoints + verdictPoints,
+          })
+          .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
+      } else {
+        // Insert new record
+        await db
+          .insert(weeklyScores)
+          .values({
+            userId,
+            weekStart,
+            yesCount: verdict === "YES" ? 1 : 0,
+            noCount: verdict === "NO" ? 1 : 0,
+            okCount: verdict === "OK" ? 1 : 0,
+            weeklyPoints: verdictPoints,
+          });
+      }
     } catch (error) {
       console.error('Error updating weekly score:', error);
     }
@@ -528,17 +540,56 @@ export class DatabaseStorage implements IStorage {
     const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
     const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
     
+    // Update lifetime points
     const [updatedUser] = await db
       .update(users)
       .set({ 
-        totalPoints: newTotalPoints, // Lifetime accumulation only
+        totalPoints: newTotalPoints,
         currentLevel: newLevel,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
       .returning();
     
-    console.log(`Added ${pointsToAdd} lifetime points. Total: ${newTotalPoints}, Level: ${newLevel}`);
+    // CRITICAL FIX: Also update weekly points to keep both counters synchronized
+    const now = this.getMadridTime();
+    const weekStart = new Date(now);
+    const day = weekStart.getDay();
+    const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart.setDate(diff);
+    weekStart.setHours(0, 0, 0, 0);
+
+    try {
+      const [existing] = await db
+        .select()
+        .from(weeklyScores)
+        .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)))
+        .limit(1);
+
+      if (existing) {
+        await db
+          .update(weeklyScores)
+          .set({
+            weeklyPoints: existing.weeklyPoints + pointsToAdd,
+          })
+          .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
+      } else {
+        await db
+          .insert(weeklyScores)
+          .values({
+            userId,
+            weekStart,
+            yesCount: 0,
+            noCount: 0,
+            okCount: 0,
+            weeklyPoints: pointsToAdd,
+          });
+      }
+      console.log(`Added ${pointsToAdd} points to both lifetime (${newTotalPoints}) and weekly counters`);
+    } catch (error) {
+      console.error('Error updating weekly points during bonus award:', error);
+    }
+    
     return updatedUser;
   }
 

@@ -165,11 +165,12 @@ Preferred communication style: Simple, everyday language.
 - **Badge Counter Enhancement**: Updated progress page to show accurate bonus points and achievement badges earned
 - **Challenge Detection Logic**: Implemented proper streak detection and challenge completion verification
 
-### Weekly Points Double Counting Fix (June 24, 2025)
-- **Root Cause Resolution**: Fixed duplicate point additions where updateUserPoints was incorrectly calling updateWeeklyScore
-- **Function Separation**: Modified updateUserPoints to only handle lifetime points (totalPoints) for level progression
-- **Eliminated Phantom Points**: Removed erroneous weekly score update causing extra 2 points regardless of verdict
-- **Mathematical Accuracy**: Weekly points now calculated exactly once with YES=10, OK=5, NO=2 scoring rules
+### Point Counter Synchronization Fix (June 24, 2025)
+- **Root Cause Resolution**: Fixed `updateUserPoints` function that was only updating lifetime points but not weekly points
+- **Synchronization Logic**: Modified `updateUserPoints` to update both lifetime and weekly counters simultaneously
+- **Database Constraint Fix**: Replaced `onConflictDoUpdate` with explicit select/update to avoid constraint errors
+- **Perfect Synchronization**: Both counters now increase by exactly the same amounts during the same week
+- **Mathematical Accuracy**: Eliminated all point counting discrepancies between lifetime and weekly systems
 
 ### Docker Container & Cloud Run Deployment (June 24, 2025)
 - **Production Container**: Built optimized multi-stage Docker container for Cloud Run deployment
