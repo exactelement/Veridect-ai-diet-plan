@@ -169,6 +169,12 @@ Preferred communication style: Simple, everyday language.
 - **Prior Art Analysis**: Created PRIOR_ART_ANALYSIS_COMPREHENSIVE.md with risk assessment and safety recommendations
 - **Professional Disclaimers**: Added proper validation requirements and limitations to both patent documents
 
+### Madrid Timezone Consistency Fix (June 24, 2025)
+- **Fixed Today's Food Log Issue**: Food logs were showing in Profile but not Home tab due to timezone mismatch
+- **Unified Timezone System**: All daily resets now use Madrid timezone (00:00 Madrid time) consistently
+- **Streak System Update**: Day streak calculation now uses Madrid timezone instead of UTC for daily boundaries
+- **Database Query Fix**: Added missing 'lt' import and corrected getTodaysFoodLogs timezone conversion
+
 ### Repository Organization & Branding Update (June 24, 2025)
 - **Complete Rebranding**: Updated all "YesNoApp" references to "Veridect" across entire platform
 - **Contact Information**: Updated to Spanish market details (info@veridect.com, +34 672 810 584)

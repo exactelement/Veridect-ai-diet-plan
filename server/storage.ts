@@ -627,24 +627,33 @@ export class DatabaseStorage implements IStorage {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Use Madrid timezone for consistent daily reset behavior
+    const madridToday = this.getMadridTime();
+    madridToday.setHours(0, 0, 0, 0);
     
     const lastStreakDate = user.lastStreakDate ? new Date(user.lastStreakDate) : null;
     let newStreak = user.currentStreak || 0;
     
-    // Check if we need to update streak
-    if (!lastStreakDate || lastStreakDate < today) {
+    console.log(`Updating streak for ${userId}: verdict=${verdict}, currentStreak=${user.currentStreak}`);
+    console.log(`Madrid today: ${madridToday.toISOString()}, lastStreakDate: ${lastStreakDate?.toISOString()}`);
+    
+    // Check if we need to update streak based on Madrid timezone
+    if (!lastStreakDate || lastStreakDate < madridToday) {
       if (verdict === "NO") {
         // Reset streak to 0 if user logs a "NO" food
         newStreak = 0;
+        console.log(`Streak reset to 0 due to NO verdict on new day`);
       } else {
         // Increment streak if it's a new day and not a "NO" verdict
         newStreak = (user.currentStreak || 0) + 1;
+        console.log(`Streak incremented to ${newStreak} for new day with ${verdict} verdict`);
       }
     } else if (verdict === "NO") {
       // Reset streak even on same day if "NO" verdict
       newStreak = 0;
+      console.log(`Streak reset to 0 due to NO verdict on same day`);
+    } else {
+      console.log(`No streak change - same day, non-NO verdict`);
     }
     
     const newLongestStreak = Math.max(user.longestStreak || 0, newStreak);
@@ -654,12 +663,13 @@ export class DatabaseStorage implements IStorage {
       .set({ 
         currentStreak: newStreak,
         longestStreak: newLongestStreak,
-        lastStreakDate: today,
+        lastStreakDate: madridToday, // Store Madrid timezone date
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
       .returning();
     
+    console.log(`Streak updated: ${user.currentStreak} -> ${newStreak}`);
     return updatedUser;
   }
 
