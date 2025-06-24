@@ -187,3 +187,5 @@ export type InsertFoodLog = z.infer<typeof insertFoodLogSchema>;
 export type FoodLog = typeof foodLogs.$inferSelect;
 export type WeeklyScore = typeof weeklyScores.$inferSelect;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
+export type FailedWebhook = typeof failedWebhooks.$inferSelect;
+export type InsertFailedWebhook = typeof failedWebhooks.$inferInsert;

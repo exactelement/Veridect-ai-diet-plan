@@ -588,6 +588,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Subscription sync endpoint - manually check Stripe status if webhook fails
+  app.post('/api/subscription/sync', isAuthenticated, async (req: any, res) => {
+    if (!stripe) {
+      return res.status(503).json({ message: "Payment processing temporarily unavailable" });
+    }
+
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user?.stripeCustomerId) {
+        return res.status(400).json({ message: "No payment information found" });
+      }
+
+      // Get all subscriptions for this customer
+      const subscriptions = await stripe.subscriptions.list({
+        customer: user.stripeCustomerId,
+        status: 'all'
+      });
+
+      let activeSubscription = null;
+      let userTier = 'free';
+      let status = 'none';
+
+      // Find the most recent active subscription
+      for (const sub of subscriptions.data) {
+        if (sub.status === 'active' || sub.status === 'trialing') {
+          activeSubscription = sub;
+          // Determine tier from price ID
+          const priceId = sub.items.data[0]?.price?.id;
+          if (priceId === process.env.STRIPE_PRO_PRICE_ID) {
+            userTier = 'pro';
+          } else if (priceId === process.env.STRIPE_ADVANCED_PRICE_ID) {
+            userTier = 'advanced';
+          }
+          status = sub.status;
+          break;
+        }
+      }
+
+      // Update user subscription info in database
+      await storage.updateUserStripeInfo(userId, {
+        stripeCustomerId: user.stripeCustomerId,
+        stripeSubscriptionId: activeSubscription?.id || null,
+        subscriptionTier: userTier,
+        subscriptionStatus: status,
+      });
+
+      res.json({
+        success: true,
+        tier: userTier,
+        status: status,
+        synced: true,
+        message: activeSubscription ? "Subscription synced successfully" : "No active subscription found"
+      });
+    } catch (error: any) {
+      console.error('Subscription sync error:', error);
+      res.status(500).json({ 
+        message: "Unable to sync subscription status. Please contact support if the issue persists." 
+      });
+    }
+  });
+
   // Get current subscription status
   app.get('/api/subscription/status', isAuthenticated, async (req: any, res) => {
     try {
@@ -735,7 +798,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       // Log webhook processing errors for debugging
       console.error('Webhook processing error:', error);
-      // Continue to return success to avoid webhook retries for permanent failures
+      
+      // Store failed webhook for manual retry
+      try {
+        await storage.createFailedWebhook({
+          stripeEventId: event.id,
+          eventType: event.type,
+          eventData: JSON.stringify(event.data),
+          error: error instanceof Error ? error.message : 'Unknown error',
+          retryCount: 0
+        });
+      } catch (dbError) {
+        console.error('Failed to store webhook error:', dbError);
+      }
     }
 
     res.json({ received: true });

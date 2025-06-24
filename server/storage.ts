@@ -2,12 +2,15 @@ import {
   users,
   foodLogs,
   weeklyScores,
+  failedWebhooks,
   type User,
   type UpsertUser,
   type InsertFoodLog,
   type FoodLog,
   type WeeklyScore,
   type UpdateUserProfile,
+  type FailedWebhook,
+  type InsertFailedWebhook,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -64,6 +67,11 @@ export interface IStorage {
   
   // User count
   getUserCount(): Promise<number>;
+  
+  // Failed webhook operations
+  createFailedWebhook(webhook: InsertFailedWebhook): Promise<FailedWebhook>;
+  getFailedWebhooks(): Promise<FailedWebhook[]>;
+  markWebhookResolved(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
