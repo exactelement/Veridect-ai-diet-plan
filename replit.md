@@ -157,6 +157,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Leaderboard Position Rankings - Visual Enhancement (June 24, 2025)
+- **Position Indicators**: Added numbered position badges (#1, #2, #3, etc.) to each leaderboard entry
+- **Visual Hierarchy**: Enhanced rank icons with position overlays for clear ranking display
+- **User Experience**: Users can now clearly see their exact position in weekly competition
+- **Ranking Logic**: Frontend calculates positions from sorted backend data for accurate display
+
 ### App Icon & PWA Setup - Veridect Branding (June 24, 2025)
 - **App Icon**: Implemented Veridect logo as favicon and app icon across all platforms
 - **PWA Manifest**: Added Progressive Web App manifest for mobile installation

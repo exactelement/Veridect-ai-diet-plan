@@ -151,7 +151,7 @@ export default function Leaderboard() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-ios-blue">
-                      #{myScore.rank || '-'}
+                      #{leaderboard.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
                     </div>
                     <div className="text-sm text-ios-secondary">
                       {myScore.weeklyPoints || 0} weekly points
@@ -173,15 +173,20 @@ export default function Leaderboard() {
             <CardContent>
               <div className="space-y-4">
                 {leaderboard.length > 0 ? (
-                  leaderboard.map((entry: any, index: number) => (
+                  leaderboard.map((entry: any, index: number) => {
+                    const position = index + 1; // Calculate position from array index
+                    return (
                     <div
                       key={index}
-                      className={`p-4 rounded-lg border ${getRankColor(entry.rank)} transition-all duration-200 hover:shadow-md`}
+                      className={`p-4 rounded-lg border ${getRankColor(position)} transition-all duration-200 hover:shadow-md`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                          <div className="flex items-center justify-center w-12 h-12">
-                            {getRankIcon(entry.rank)}
+                          <div className="flex items-center justify-center w-12 h-12 relative">
+                            {getRankIcon(position)}
+                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-gray-200">
+                              <span className="text-xs font-bold text-gray-700">#{position}</span>
+                            </div>
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
@@ -196,37 +201,26 @@ export default function Leaderboard() {
                                   {entry.firstName || 'Anonymous'} {entry.lastName ? entry.lastName[0] + '.' : ''}
                                 </h3>
                               )}
-                              {entry.rank === 1 && <span className="text-yellow-500 text-lg">🏆</span>}
-                              {entry.rank === 2 && <span className="text-gray-400 text-lg">🥈</span>}
-                              {entry.rank === 3 && <span className="text-amber-600 text-lg">🥉</span>}
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge className="bg-health-green/10 text-health-green border-health-green/20">
-                                {entry.yesCount} YES
-                              </Badge>
-                              <Badge className="bg-warning-orange/10 text-warning-orange border-warning-orange/20">
-                                {entry.okCount} OK
-                              </Badge>
-                              <Badge className="bg-danger-red/10 text-danger-red border-danger-red/20">
-                                {entry.noCount} NO
-                              </Badge>
-                            </div>
+                            <p className="text-ios-secondary text-sm">
+                              Weekly challenge participant
+                            </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className={`text-2xl font-bold ${
-                            entry.rank === 1 ? 'text-yellow-500' :
-                            entry.rank === 2 ? 'text-gray-400' :
-                            entry.rank === 3 ? 'text-amber-600' :
-                            'text-ios-text'
-                          }`}>
-                            {entry.weeklyPoints || 0}
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {entry.weeklyPoints} pts
+                            </Badge>
                           </div>
-                          <div className="text-sm text-ios-secondary">weekly points</div>
+                          <div className="text-sm text-ios-secondary">
+                            {entry.yesCount}Y • {entry.okCount}O • {entry.noCount}N
+                          </div>
                         </div>
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="text-center py-12">
                     <Trophy className="w-16 h-16 text-ios-secondary/50 mx-auto mb-4" />
