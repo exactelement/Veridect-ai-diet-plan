@@ -134,7 +134,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto mb-24">
       <Card className="mb-6">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-2">
@@ -334,7 +334,7 @@ export default function Subscription() {
     };
 
     return (
-      <div className="container mx-auto px-4 py-8 mt-16">
+      <div className="container mx-auto px-4 py-8 mt-16 pb-32">
         <Elements stripe={stripePromise} options={options}>
           <CheckoutForm 
             tier={selectedTier} 
