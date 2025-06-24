@@ -134,11 +134,12 @@ export default function Login() {
         const error = await response.json();
         const errorMessage = error.message || "Failed to create account";
         
-        console.log("Registration error:", { status: response.status, message: errorMessage });
+        console.log("Registration error:", { status: response.status, message: errorMessage, fullError: error });
         
         // Handle specific error cases with form field errors
-        if (response.status === 409 || errorMessage.includes("already exists")) {
+        if (response.status === 409 || errorMessage.includes("already exists") || errorMessage.includes("An account with this email")) {
           const friendlyMessage = "This email is already registered. Try logging in instead.";
+          console.log("Handling duplicate email error");
           registerForm.setError("email", {
             type: "manual",
             message: friendlyMessage
@@ -149,6 +150,7 @@ export default function Login() {
             variant: "destructive",
             duration: 5000,
           });
+          return; // Exit early to prevent other error handling
         } else if (errorMessage.includes("valid email")) {
           registerForm.setError("email", {
             type: "manual",
@@ -180,6 +182,7 @@ export default function Login() {
             duration: 4000,
           });
         } else {
+          console.log("Showing generic error for:", errorMessage);
           toast({
             title: "Registration Failed",
             description: errorMessage,

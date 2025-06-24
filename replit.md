@@ -157,12 +157,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Enhanced Email Validation & User Registration (June 24, 2025)
+### Enhanced Email Validation & User Registration - Debugging (June 24, 2025)
 - **Email Validation**: Real-time email format validation on blur event
-- **Duplicate Detection**: Clear error messages when email already exists (409 status)
-- **Field-Level Errors**: Specific form field errors for better UX
-- **Server Validation**: Backend email regex validation and trimming
-- **Better Messages**: "Try logging in instead" for existing emails
+- **Duplicate Detection**: Server returns 409 with proper message, debugging client-side handling
+- **Field-Level Errors**: Added console logging to track error handling flow
+- **Server Validation**: Backend email regex validation and trimming working correctly
+- **Issue Investigation**: Testing why duplicate email errors show generic message instead of specific handling
 
 ### Data Consistency Fix - Registration vs Onboarding (June 24, 2025)
 - **UX Issue Resolved**: Removed duplicate name collection from onboarding flow
