@@ -403,7 +403,7 @@ export default function Landing() {
             <Card className="p-8 border-2 border-gray-200 tier-card opacity-50">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold mb-2">Advanced</h3>
-                <div className="text-4xl font-bold mb-2">€50.00<span className="text-lg font-normal text-gray-700">/month</span></div>
+                <div className="text-4xl font-bold mb-2">€50<span className="text-lg font-normal text-gray-700">/month</span></div>
                 <p className="text-ios-secondary">For professionals & advanced users</p>
                 <Badge className="bg-gray-600 text-white mt-2">Coming Soon</Badge>
               </div>

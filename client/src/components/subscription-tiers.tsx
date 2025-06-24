@@ -38,7 +38,7 @@ const TIERS: SubscriptionTier[] = [
   {
     id: "pro",
     name: "Pro",
-    price: 1.00,
+    price: 1,
     description: "€1/month promotional - normally €10/month",
     features: [
       "Unlimited analyses",
@@ -57,7 +57,7 @@ const TIERS: SubscriptionTier[] = [
   {
     id: "advanced",
     name: "Advanced",
-    price: 50.00,
+    price: 50,
     description: "For professionals & advanced users",
     features: [
       "Everything in Pro",
