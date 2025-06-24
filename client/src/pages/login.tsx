@@ -420,15 +420,13 @@ export default function Login() {
                   Continue with Google
                 </Button>
                 <Button
-                  onClick={handleReplitLogin}
+                  onClick={handleAppleLogin}
                   variant="outline"
-                  className="w-full h-12 text-base font-medium bg-ios-blue text-white hover:bg-ios-blue/90 transition-colors shadow-lg"
+                  className="w-full h-12 text-base font-medium"
                   disabled={isLoading}
                 >
-                  <div className="w-5 h-5 mr-2 bg-white rounded flex items-center justify-center">
-                    <span className="text-ios-blue font-bold text-xs">R</span>
-                  </div>
-                  Continue with Replit
+                  <Apple className="mr-2 h-5 w-5" />
+                  Continue with Apple
                 </Button>
               </div>
 
@@ -440,6 +438,18 @@ export default function Login() {
                   <span className="bg-white px-2 text-ios-secondary">Or continue with email</span>
                 </div>
               </div>
+
+              {/* Replit Login - Primary Option */}
+              <Button
+                onClick={handleReplitLogin}
+                className="w-full h-12 text-base font-medium bg-ios-blue text-white hover:bg-ios-blue/90 transition-colors shadow-lg"
+                disabled={isLoading}
+              >
+                <div className="w-5 h-5 mr-2 bg-white rounded flex items-center justify-center">
+                  <span className="text-ios-blue font-bold text-xs">R</span>
+                </div>
+                Continue with Replit
+              </Button>
             </>
           )}
 
