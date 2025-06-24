@@ -205,6 +205,8 @@ export async function setupMultiAuth(app: Express) {
           lastName: lastName,
           authProvider: "apple",
           appleId: appleId,
+          subscriptionTier: "free",
+          subscriptionStatus: "inactive",
         });
       }
 

@@ -19,8 +19,7 @@ export default function Navigation() {
   const handleNavigation = (path: string, requiredTier: string) => {
     const hasAccess = checkTierAccess(userTier, requiredTier);
     
-    // Debug: Check navigation restrictions
-    console.log('Navigation check:', { path, userTier, requiredTier, hasAccess });
+
     
     if (!hasAccess) {
       // Navigate to subscription page for upgrade

@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Heart, Target, ShieldCheck } from "lucide-react";
+import { Heart, Target, ShieldCheck, Star, Zap, Crown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -68,7 +68,8 @@ export default function Onboarding() {
       });
     },
     onSuccess: () => {
-      completeOnboardingMutation.mutate();
+      // Move to subscription step after profile update
+      setStep(4);
     },
     onError: (error: Error) => {
       toast({
@@ -107,8 +108,14 @@ export default function Onboarding() {
       setStep(step + 1);
     } else if (step === 3) {
       updateProfileMutation.mutate(data);
+    }
+  };
+
+  const handleSubscriptionChoice = (tier: string) => {
+    if (tier === 'pro') {
+      navigate('/subscription');
     } else {
-      // Step 4 - handle subscription choice
+      // Continue with free tier
       completeOnboardingMutation.mutate();
     }
   };
@@ -316,6 +323,71 @@ export default function Onboarding() {
               {step === 4 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
+                    <Crown className="w-12 h-12 text-ios-blue mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold mb-2">Choose Your Plan</h2>
+                    <p className="text-ios-secondary">Start with Free or unlock everything with Pro</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Free Tier */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 bg-gray-50">
+                      <div className="text-center">
+                        <Zap className="w-10 h-10 text-gray-500 mx-auto mb-3" />
+                        <h3 className="text-xl font-bold mb-2">Free</h3>
+                        <div className="text-3xl font-bold text-gray-900 mb-4">€0<span className="text-base font-normal">/month</span></div>
+                        <ul className="space-y-2 text-sm text-left mb-6">
+                          <li>• 5 analyses per day</li>
+                          <li>• Basic nutritional info</li>
+                          <li>• Simple yes/no verdicts</li>
+                        </ul>
+                        <Button 
+                          onClick={() => handleSubscriptionChoice('free')}
+                          variant="outline"
+                          className="w-full"
+                          disabled={completeOnboardingMutation.isPending}
+                        >
+                          Continue with Free
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Pro Tier */}
+                    <div className="border-2 border-ios-blue rounded-xl p-6 bg-ios-blue/5 relative">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-ios-blue text-white px-3 py-1 rounded-full text-xs font-medium">RECOMMENDED</span>
+                      </div>
+                      <div className="text-center">
+                        <Star className="w-10 h-10 text-ios-blue mx-auto mb-3" />
+                        <h3 className="text-xl font-bold mb-2">Pro</h3>
+                        <div className="text-3xl font-bold text-ios-blue mb-1">€1<span className="text-base font-normal">/month</span></div>
+                        <p className="text-xs text-ios-secondary mb-4">Promotional - normally €10/month</p>
+                        <ul className="space-y-2 text-sm text-left mb-6">
+                          <li>• Unlimited analyses</li>
+                          <li>• Food logging & progress tracking</li>
+                          <li>• Challenges and bonus points</li>
+                          <li>• Leaderboard & community access</li>
+                          <li>• Personalised AI analysis</li>
+                          <li>• Priority support</li>
+                        </ul>
+                        <Button 
+                          onClick={() => handleSubscriptionChoice('pro')}
+                          className="w-full bg-ios-blue hover:bg-ios-blue/90"
+                        >
+                          Upgrade to Pro
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-center">
+                    <p className="text-xs text-ios-secondary">You can always upgrade later from your profile</p>
+                  </div>
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="space-y-6">
+                  <div className="text-center mb-6">
                     <ShieldCheck className="w-12 h-12 text-ios-blue mx-auto mb-4" />
                     <h2 className="text-2xl font-bold mb-2">Unlock your full potential!</h2>
                     <p className="text-ios-secondary">Choose the plan that fits your nutrition journey</p>
@@ -393,7 +465,7 @@ export default function Onboarding() {
               )}
 
               <div className="flex justify-between">
-                {step > 1 && (
+                {step > 1 && step < 4 && (
                   <Button
                     type="button"
                     variant="outline"
@@ -402,13 +474,15 @@ export default function Onboarding() {
                     Back
                   </Button>
                 )}
-                <Button
-                  type="submit"
-                  className="ml-auto bg-ios-blue text-white"
-                  disabled={updateProfileMutation.isPending || completeOnboardingMutation.isPending}
-                >
-                  {step === 3 ? "Continue" : step === 4 ? "Skip" : "Continue"}
-                </Button>
+                {step < 4 && (
+                  <Button
+                    type="submit"
+                    className="ml-auto bg-ios-blue text-white"
+                    disabled={updateProfileMutation.isPending || completeOnboardingMutation.isPending}
+                  >
+                    {step === 3 ? "Continue" : "Continue"}
+                  </Button>
+                )}
               </div>
             </form>
           </Form>
