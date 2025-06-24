@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Chrome, Apple, Mail, Eye, EyeOff } from "lucide-react";
+import { Chrome, Apple, Mail, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const loginSchema = z.object({
   email: z.string()
@@ -67,6 +68,34 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Auto-focus email field on load
+  useEffect(() => {
+    const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+    if (emailInput) {
+      emailInput.focus();
+    }
+  }, [mode]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt + R to switch to register mode
+      if (e.altKey && e.key === 'r' && mode === 'login') {
+        e.preventDefault();
+        setMode('register');
+      }
+      // Alt + L to switch to login mode
+      if (e.altKey && e.key === 'l' && mode === 'register') {
+        e.preventDefault();
+        setMode('login');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mode]);
   const { toast } = useToast();
 
   const loginForm = useForm<LoginForm>({
@@ -100,11 +129,20 @@ export default function Login() {
       });
 
       if (response.ok) {
+        // Save remember me preference
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+        }
+        
         toast({
           title: "Welcome back!",
           description: "You've been signed in successfully.",
         });
-        window.location.href = "/";
+        
+        // Smooth transition instead of hard reload
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 500);
       } else {
         const error = await response.json();
         toast({
@@ -138,10 +176,15 @@ export default function Login() {
 
       if (response.ok) {
         toast({
-          title: "Registration Successful",
-          description: "Welcome to YesNoApp! Please complete your profile.",
+          title: "Account Created!",
+          description: "Welcome to Veridect! Setting up your profile...",
+          duration: 3000,
         });
-        window.location.href = "/onboarding";
+        
+        // Smooth transition to onboarding
+        setTimeout(() => {
+          window.location.href = "/onboarding";
+        }, 800);
       } else {
         const error = await response.json();
         const errorMessage = error.message || "Failed to create account";
@@ -341,10 +384,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ios-bg to-ios-gray-50 p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-xl border-0">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">Y</span>
+            <img 
+              src="/veridect-logo.png" 
+              alt="Veridect Logo" 
+              className="w-10 h-10 object-contain filter brightness-0 invert"
+            />
           </div>
           <CardTitle className="text-2xl font-bold">
             {mode === 'login' ? "Welcome back" : 
@@ -352,7 +399,7 @@ export default function Login() {
              mode === 'forgot' ? "Reset password" : "Set new password"}
           </CardTitle>
           <p className="text-ios-secondary">
-            {mode === 'login' ? "Sign in to your YesNoApp account" : 
+            {mode === 'login' ? "Sign in to your Veridect account" : 
              mode === 'register' ? "Join thousands making healthier choices" :
              mode === 'forgot' ? "Enter your email to reset your password" : "Enter your new password"}
           </p>
@@ -366,20 +413,22 @@ export default function Login() {
                 <Button
                   onClick={handleGoogleLogin}
                   variant="outline"
-                  className="w-full h-12 text-base font-medium"
+                  className="w-full h-12 text-base font-medium hover:bg-gray-50 transition-colors"
                   disabled={isLoading}
                 >
                   <Chrome className="mr-2 h-5 w-5" />
                   Continue with Google
                 </Button>
                 <Button
-                  onClick={handleAppleLogin}
+                  onClick={handleReplitLogin}
                   variant="outline"
-                  className="w-full h-12 text-base font-medium"
+                  className="w-full h-12 text-base font-medium bg-ios-blue text-white hover:bg-ios-blue/90 transition-colors shadow-lg"
                   disabled={isLoading}
                 >
-                  <Apple className="mr-2 h-5 w-5" />
-                  Continue with Apple
+                  <div className="w-5 h-5 mr-2 bg-white rounded flex items-center justify-center">
+                    <span className="text-ios-blue font-bold text-xs">R</span>
+                  </div>
+                  Continue with Replit
                 </Button>
               </div>
 
@@ -454,8 +503,32 @@ export default function Login() {
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign in"}
+                {/* Remember Me Checkbox */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="rememberMe" 
+                      checked={rememberMe} 
+                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    />
+                    <label htmlFor="rememberMe" className="text-sm text-ios-secondary cursor-pointer">
+                      Remember me
+                    </label>
+                  </div>
+                </div>
+
+                <Button type="submit" className="w-full flex items-center justify-center gap-2" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Sign in
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </Button>
 
                 <div className="text-center">
@@ -598,8 +671,18 @@ export default function Login() {
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Create account"}
+                <Button type="submit" className="w-full flex items-center justify-center gap-2" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Creating account...
+                    </>
+                  ) : (
+                    <>
+                      Create account
+                      <CheckCircle className="w-4 h-4" />
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
