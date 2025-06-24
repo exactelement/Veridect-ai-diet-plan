@@ -56,20 +56,20 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
         await storage.markBonusAwarded(userId, '3_yes_streak');
       }
     }
+    
+    // Check for 5 YES foods today - moved inside try block and use todaysLogs from scope
+    const yesCount = todaysLogs.filter(log => log.verdict === "YES").length;
+    if (yesCount === 5) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_today');
+      if (!bonusAlreadyAwarded) {
+        // Awarding 100 bonus points for 5 YES foods today
+        await storage.updateUserPoints(userId, 100);
+        await storage.addBonusToWeeklyScore(userId, 100);
+        await storage.markBonusAwarded(userId, '5_yes_today');
+      }
+    }
   } catch (error) {
     // Food logging challenge error handling - non-critical
-  }
-  
-  // Check for 5 YES foods today
-  const yesCount = todaysLogs.filter(log => log.verdict === "YES").length;
-  if (yesCount === 5) {
-    const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_today');
-    if (!bonusAlreadyAwarded) {
-      // Awarding 100 bonus points for 5 YES foods today
-      await storage.updateUserPoints(userId, 100);
-      await storage.addBonusToWeeklyScore(userId, 100);
-      await storage.markBonusAwarded(userId, '5_yes_today');
-    }
   }
 }
 

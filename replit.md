@@ -165,6 +165,7 @@ Preferred communication style: Simple, everyday language.
   - Email/Password ↔ Google ↔ Apple ID: Smart error messages guide users to correct sign-in method
   - Database schema updated with authentication and privacy fields
   - All authentication conflicts handled with specific user guidance
+- **Bug Fixes**: Fixed food logging scope error in challenge function (June 24, 2025)
 - **Documentation Organization**: Non-essential files moved to `/info-files/` folder for cleanup
 - **Mobile Development**: Updated iOS and Android development guides with authentication integration
 - **Custom Domain**: Configured application for `veridect.com` domain with proper OAuth redirects and email links
