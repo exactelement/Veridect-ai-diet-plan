@@ -299,14 +299,25 @@ export default function Subscription() {
       <div className="container mx-auto px-4 py-8 mt-16">
         <Card className="max-w-md mx-auto">
           <CardHeader className="text-center">
-            <CardTitle>Subscription Unavailable</CardTitle>
+            <CardTitle>Subscription Setup In Progress</CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center space-y-4">
             <p className="text-ios-secondary mb-4">
-              Stripe payment integration is not configured yet.
+              We're setting up the payment system for Pro subscriptions.
             </p>
-            <p className="text-sm text-ios-secondary">
-              Please contact support for subscription options.
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800 font-medium mb-2">
+                Coming Very Soon: €1/month Pro Tier
+              </p>
+              <ul className="text-sm text-blue-700 text-left space-y-1">
+                <li>• Unlimited food analyses</li>
+                <li>• Progress tracking & challenges</li>
+                <li>• Leaderboard access</li>
+                <li>• Personalized AI recommendations</li>
+              </ul>
+            </div>
+            <p className="text-xs text-ios-secondary">
+              You can still enjoy 5 free analyses daily while we finalize payments!
             </p>
           </CardContent>
         </Card>

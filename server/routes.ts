@@ -502,13 +502,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateStripeCustomerId(userId, customerId);
       }
 
+      // Check for required Stripe configuration
+      if (!process.env.STRIPE_PRO_PRICE_ID || !process.env.STRIPE_ADVANCED_PRICE_ID) {
+        return res.status(503).json({ 
+          message: "Subscription service is temporarily unavailable. Stripe configuration is incomplete.",
+          details: "Please contact support or try again later."
+        });
+      }
+
       const priceId = tier === 'pro' 
         ? process.env.STRIPE_PRO_PRICE_ID 
         : process.env.STRIPE_ADVANCED_PRICE_ID;
-
-      if (!priceId) {
-        throw new Error(`Missing price ID for ${tier} tier`);
-      }
 
       const subscription = await stripe.subscriptions.create({
         customer: customerId,
@@ -622,16 +626,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Webhook for Stripe events
   app.post('/api/webhook/stripe', async (req, res) => {
     if (!stripe) {
+      console.error('Stripe not initialized');
       return res.status(503).json({ message: "Payment processing temporarily unavailable" });
     }
 
     const sig = req.headers['stripe-signature'] as string;
+    
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error('STRIPE_WEBHOOK_SECRET not configured');
+      return res.status(400).json({ message: "Webhook secret not configured" });
+    }
+
     let event: Stripe.Event;
 
     try {
-      if (!process.env.STRIPE_WEBHOOK_SECRET) {
-        return res.status(400).json({ message: "Webhook secret not configured" });
-      }
       event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err: any) {
       console.error('Webhook signature verification failed:', err.message);

@@ -148,6 +148,19 @@ Preferred communication style: Simple, everyday language.
 3. Future: Daily challenges, referral bonuses, subscription perks
 
 ## Development Status - Patent Pending
+
+### Critical Issue Identified (June 24, 2025)
+- **Stripe Configuration Incomplete**: Missing required Price IDs and Webhook Secret
+- **Current Impact**: Pro/Advanced subscriptions temporarily unavailable
+- **User Experience**: Graceful fallback messages implemented
+- **Required Setup**: 
+  - STRIPE_WEBHOOK_SECRET (for payment confirmation)
+  - STRIPE_PRO_PRICE_ID (€1/month pricing)
+  - STRIPE_ADVANCED_PRICE_ID (€50/month pricing)
+- **Security Status**: Fixed payment flow prevents unauthorized access
+- **Next Steps**: Complete Stripe Dashboard configuration to enable subscriptions
+
+## Development Status - Patent Pending
 - **Build Status**: Production build completed successfully with optimized assets
 - **Tier System**: Complete subscription tier enforcement with consistent pricing (€1/month Pro promotional)
 - **Authentication Tier Control**: All new users (Google OAuth, email, Apple) default to free tier with proper restrictions
