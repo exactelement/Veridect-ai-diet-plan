@@ -329,9 +329,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
       
       // Award to BOTH lifetime points (permanent) and weekly points (resets weekly)
-      // BUT updateWeeklyScore already calculates the points, so don't double-count
       await storage.updateUserPoints(userId, foodPoints);
-      await storage.updateWeeklyScore(userId, verdict, false); // Pass false to skip point calculation
+      await storage.updateWeeklyScore(userId, verdict); // Award same points to weekly system
       
       await storage.updateStreak(userId, verdict);
       
