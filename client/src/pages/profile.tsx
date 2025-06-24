@@ -723,6 +723,70 @@ export default function Profile() {
           </Card>
 
         </div>
+
+        {/* Cancel Subscription Dialog */}
+        <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                Cancel Pro Subscription
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to cancel your Pro subscription? You'll lose access to:
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-3 py-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <XCircle className="w-4 h-4 text-red-500" />
+                Unlimited food analyses
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <XCircle className="w-4 h-4 text-red-500" />
+                Detailed nutrition insights
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <XCircle className="w-4 h-4 text-red-500" />
+                Food logging and history
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <XCircle className="w-4 h-4 text-red-500" />
+                Leaderboard participation
+              </div>
+              
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> You'll retain Pro access until the end of your current billing period, then revert to the Free plan.
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowCancelDialog(false)}
+                disabled={cancelSubscription.isPending}
+              >
+                Keep Pro
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => cancelSubscription.mutate()}
+                disabled={cancelSubscription.isPending}
+              >
+                {cancelSubscription.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  'Yes, Cancel'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
