@@ -177,8 +177,8 @@ export default function Home() {
     {
       id: "pro",
       name: "Pro",
-      price: 19.99,
-      description: "Advanced nutrition tracking for health enthusiasts",
+      price: 1.00,
+      description: "1-year promotional deal - normally €10/month",
       features: [
         "Unlimited analyses",
         "Food logging & progress tracking",
