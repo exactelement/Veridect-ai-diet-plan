@@ -28,6 +28,7 @@ interface SubscriptionTier {
   popular?: boolean;
   color: string;
   limitations: string[];
+  comingSoon?: boolean;
 }
 
 const subscriptionTiers: SubscriptionTier[] = [
@@ -122,6 +123,11 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
         description: error.message,
         variant: "destructive",
       });
+    } else {
+      toast({
+        title: "Payment Successful",
+        description: "Welcome to Pro! Your subscription is now active.",
+      });
     }
 
     setIsProcessing(false);
@@ -188,12 +194,19 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
 export default function Subscription() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
 
+  // Fetch current subscription status
+  const { data: subscriptionStatus } = useQuery({
+    queryKey: ["/api/subscription/status"],
+    staleTime: 30000, // 30 seconds
+  });
+
   const createSubscriptionMutation = useMutation({
     mutationFn: async (tierId: string) => {
-      const response = await apiRequest("POST", "/api/subscriptions/create", { tierId });
+      const response = await apiRequest("POST", "/api/subscription/create", { tier: tierId });
       return response.json();
     },
     onSuccess: (data) => {
@@ -203,6 +216,50 @@ export default function Subscription() {
       toast({
         title: "Subscription Error",
         description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/subscription/cancel");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Subscription Cancelled",
+        description: data.message,
+        variant: "default",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel subscription",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const reactivateSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/subscription/reactivate");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Subscription Reactivated",
+        description: data.message,
+        variant: "default",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reactivate subscription",
         variant: "destructive",
       });
     },
@@ -221,6 +278,14 @@ export default function Subscription() {
       toast({
         title: "Current Plan",
         description: `You're already subscribed to the ${tier.name} plan.`,
+      });
+      return;
+    }
+
+    if (tier.comingSoon) {
+      toast({
+        title: "Coming Soon",
+        description: `${tier.name} tier will be available soon.`,
       });
       return;
     }
@@ -275,75 +340,75 @@ export default function Subscription() {
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-ios-primary mb-2">
-          Choose Your Plan
-        </h1>
+        <h1 className="text-3xl font-bold text-ios-primary mb-2">Choose Your Plan</h1>
         <p className="text-ios-secondary">
-          Unlock the full potential of AI-powered nutrition analysis
+          Unlock advanced features to supercharge your nutrition journey
         </p>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      
+      <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {subscriptionTiers.map((tier) => (
           <Card 
             key={tier.id} 
-            className={`relative ${tier.color} ${tier.popular ? 'ring-2 ring-ios-blue' : ''} ${tier.comingSoon ? 'opacity-50 grayscale' : ''} transition-all hover:shadow-lg`}
+            className={`relative ${tier.color} hover:shadow-lg transition-all duration-200 ${
+              tier.popular ? 'ring-2 ring-yellow-400' : ''
+            } ${tier.comingSoon ? 'opacity-75' : ''}`}
           >
             {tier.popular && (
-              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-ios-blue text-white">
-                Most Popular
-              </Badge>
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-yellow-500 text-white px-4 py-1">Most Popular</Badge>
+              </div>
+            )}
+            
+            {tier.comingSoon && (
+              <div className="absolute -top-3 right-4">
+                <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
+              </div>
             )}
             
             <CardHeader className="text-center">
-              <div className="flex justify-center mb-2">
+              <div className="flex justify-center mb-3">
                 {tier.icon}
               </div>
               <CardTitle className="text-xl">{tier.name}</CardTitle>
               <div className="text-2xl font-bold text-ios-blue">
                 €{tier.price.toFixed(2)}
                 <span className="text-sm font-normal text-ios-secondary">/month</span>
-                {tier.id === "pro" && (
-                  <div className="text-xs text-yellow-600 font-medium mt-1">
-                    Limited time offer!
-                  </div>
-                )}
               </div>
               <p className="text-sm text-ios-secondary">{tier.description}</p>
             </CardHeader>
-            
             <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-green-600 mb-2">Features:</h4>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-ios-primary">Features:</h4>
                 <ul className="space-y-1">
                   {tier.features.map((feature, index) => (
                     <li key={index} className="flex items-start text-sm">
                       <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      {feature}
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               
               {tier.limitations.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-red-600 mb-2">Limitations:</h4>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-ios-secondary">Limitations:</h4>
                   <ul className="space-y-1">
                     {tier.limitations.map((limitation, index) => (
-                      <li key={index} className="flex items-start text-sm text-red-600">
-                        <span className="mr-2 mt-0.5">•</span>
-                        {limitation}
+                      <li key={index} className="flex items-start text-sm text-ios-secondary">
+                        <span className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0">•</span>
+                        <span>{limitation}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
               
-              <Button 
-                onClick={() => tier.comingSoon ? null : handleSelectTier(tier)}
-                className={`w-full ${tier.comingSoon ? 'bg-gray-400 text-gray-600' : ''}`}
-                variant={user?.subscriptionTier === tier.id ? "outline" : "default"}
+              <Button
+                onClick={() => handleSelectTier(tier)}
                 disabled={createSubscriptionMutation.isPending || tier.comingSoon}
+                className="w-full"
+                variant={tier.id === "free" ? "outline" : "default"}
               >
                 {tier.comingSoon ? (
                   "Coming Soon"
