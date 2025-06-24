@@ -157,6 +157,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Email Service Implementation - Password Reset (June 24, 2025)
+- **Email Service**: Implemented SendGrid email service for password reset functionality
+- **Professional Templates**: HTML and text email templates with Veridect branding
+- **Development Mode**: Falls back to console logging when SendGrid API key not configured
+- **Security**: Proper token generation with 1-hour expiration
+- **User Experience**: Clear messaging about whether emails are sent or in development mode
+
 ### Fixed Authentication Error Handling - Login & Registration (June 24, 2025)
 - **Root Issue**: apiRequest function was throwing errors on non-200 responses, breaking both login and registration error handling
 - **Login Fix**: Replaced apiRequest with direct fetch for login to properly handle 401 responses

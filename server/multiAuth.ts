@@ -8,6 +8,7 @@ import type { Express } from "express";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { sendEmail, generatePasswordResetEmail } from "./services/email";
 
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
@@ -296,11 +297,23 @@ export async function setupMultiAuth(app: Express) {
 
       await storage.updatePasswordResetToken(user.id, resetToken, resetExpires);
 
-      // TODO: Send email with reset link
-      // For now, return the token (in production, this should be sent via email)
-      console.log(`Password reset token for ${email}: ${resetToken}`);
+      // Send password reset email
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const emailParams = generatePasswordResetEmail(email, resetToken, baseUrl);
       
-      res.json({ message: "If the email exists, a password reset link has been sent." });
+      const emailSent = await sendEmail(emailParams);
+      
+      if (!emailSent) {
+        // Development mode: log token to console
+        console.log(`Password reset token for ${email}: ${resetToken}`);
+        console.log(`Reset URL: ${baseUrl}/login?token=${resetToken}`);
+      }
+      
+      res.json({ 
+        message: emailSent 
+          ? "If the email exists, a password reset link has been sent."
+          : "Password reset initiated. Check server console for reset link (development mode)."
+      });
     } catch (error) {
       console.error("Forgot password error:", error);
       res.status(500).json({ message: "Internal server error" });
