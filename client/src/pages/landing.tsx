@@ -137,15 +137,18 @@ export default function Landing() {
         <div className="page-container text-center">
           <div className="animate-slide-up">
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="gradient-text">Yes</span> or <span className="gradient-text">No</span>?
+              Bringing Awareness to{' '}
+              <span className="bg-gradient-to-r from-health-green to-ios-blue bg-clip-text text-transparent">
+                Healthier Nutrition
+              </span>
             </h1>
             <p className="text-xl md:text-2xl text-ios-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform complex nutritional decisions into simple, AI-powered verdicts. 
-              Get instant health guidance that adapts to your goals and lifestyle.
+              AI-powered nutrition guidance for healthier living. Ask Veri about any food and get instant 
+              <strong className="text-health-green"> YES</strong>, <strong className="text-warning-orange"> OK</strong>, or <strong className="text-danger-red"> NO</strong> verdicts.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-8 py-4 rounded-full text-lg font-medium ios-button ios-shadow">
-                Try It Free
+                Ask Veri
               </Button>
               <Button variant="outline" className="border-2 border-ios-blue text-ios-blue px-8 py-4 rounded-full text-lg font-medium ios-button">
                 Watch Demo
