@@ -270,7 +270,7 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-green-700 font-medium">5 YES streak (Health Champion)</span>
-                      {totalStats.yes >= 5 && (
+                      {consecutiveYesStreak >= 5 && (
                         <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-full">GOLD BADGE!</span>
                       )}
                     </div>
@@ -278,10 +278,10 @@ export default function Progress() {
                       <div className="w-16 bg-green-200 rounded-full h-3">
                         <div 
                           className="bg-gradient-to-r from-green-500 to-yellow-500 h-3 rounded-full transition-all duration-500 shadow-sm"
-                          style={{ width: `${Math.min((totalStats.yes / 5) * 100, 100)}%` }}
+                          style={{ width: `${Math.min((consecutiveYesStreak / 5) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-semibold text-green-700">{Math.min(totalStats.yes, 5)}/5</span>
+                      <span className="text-sm font-semibold text-green-700">{Math.min(consecutiveYesStreak, 5)}/5</span>
                     </div>
                   </div>
 
@@ -289,7 +289,7 @@ export default function Progress() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-green-700 font-medium">10 YES perfectionist streak</span>
-                      {totalStats.yes >= 10 && (
+                      {consecutiveYesStreak >= 10 && (
                         <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">DIAMOND LEVEL!</span>
                       )}
                     </div>
@@ -297,10 +297,10 @@ export default function Progress() {
                       <div className="w-16 bg-green-200 rounded-full h-3">
                         <div 
                           className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500 shadow-lg"
-                          style={{ width: `${Math.min((totalStats.yes / 10) * 100, 100)}%` }}
+                          style={{ width: `${Math.min((consecutiveYesStreak / 10) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-semibold text-green-700">{Math.min(totalStats.yes, 10)}/10</span>
+                      <span className="text-sm font-semibold text-green-700">{Math.min(consecutiveYesStreak, 10)}/10</span>
                     </div>
                   </div>
                 </div>
