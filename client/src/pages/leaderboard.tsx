@@ -199,7 +199,7 @@ export default function Leaderboard() {
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center justify-center w-12 h-12 relative">
                             {getRankIcon(position)}
-                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 bg-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-gray-200">
+                            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-10 bg-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-gray-200">
                               <span className="text-xs font-bold text-gray-700">#{position}</span>
                             </div>
                           </div>

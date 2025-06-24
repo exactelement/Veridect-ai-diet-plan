@@ -366,13 +366,13 @@ export default function Subscription() {
             } ${tier.comingSoon ? 'opacity-75' : ''} overflow-hidden`}
           >
             {tier.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
                 <Badge className="bg-blue-600 text-white px-4 py-1">Most Popular</Badge>
               </div>
             )}
             
             {tier.comingSoon && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
                 <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
               </div>
             )}
