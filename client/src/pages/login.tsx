@@ -59,15 +59,15 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function Login() {
-  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
+  // Get reset token from URL if present
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetToken = urlParams.get('token');
+  
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(resetToken ? 'reset' : 'login');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  // Get reset token from URL if present
-  const urlParams = new URLSearchParams(window.location.search);
-  const resetToken = urlParams.get('token');
 
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -224,12 +224,20 @@ export default function Login() {
   const handleResetPassword = async (data: ResetPasswordForm) => {
     setIsLoading(true);
     try {
-      const response = await apiRequest("POST", "/api/auth/reset-password", data);
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+
       if (response.ok) {
         toast({
           title: "Password Reset Successful",
           description: "Your password has been updated. Please log in.",
         });
+        // Clear the token from URL and switch to login mode
+        window.history.replaceState({}, '', '/login');
         setMode('login');
       } else {
         const error = await response.json();
@@ -243,7 +251,7 @@ export default function Login() {
     } catch (error) {
       toast({
         title: "Reset Failed",
-        description: "An error occurred during password reset",
+        description: "Network error occurred during password reset",
         variant: "destructive",
         duration: 4000,
       });
