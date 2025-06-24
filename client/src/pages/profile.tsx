@@ -278,7 +278,7 @@ export default function Profile() {
                         <div className="flex items-center gap-2">
                           {(user as any).subscriptionStatus === 'cancelling' ? (
                             <Badge variant="outline" className="text-orange-600 border-orange-300 bg-orange-50">
-                              Cancelled - Access until period end
+                              ⚠️ Cancelled - Access until period end
                             </Badge>
                           ) : (
                             <Button
@@ -290,6 +290,10 @@ export default function Profile() {
                               Cancel Subscription
                             </Button>
                           )}
+                          {/* Debug info - remove in production */}
+                          <small className="text-xs text-gray-400">
+                            Status: {(user as any).subscriptionStatus || 'none'}
+                          </small>
                         </div>
                       )}
                     </div>
