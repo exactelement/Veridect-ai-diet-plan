@@ -178,7 +178,7 @@ export default function Home() {
       id: "pro",
       name: "Pro",
       price: 1.00,
-      description: "1-year promotional deal - normally €10/month",
+      description: "Was €10/month - Limited time offer!",
       features: [
         "Unlimited analyses",
         "Food logging & progress tracking",

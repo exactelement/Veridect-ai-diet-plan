@@ -330,7 +330,7 @@ export default function Landing() {
             <Card className="p-8 border-2 border-gray-200 tier-card">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold mb-2">Free</h3>
-                <div className="text-4xl font-bold mb-2">€0</div>
+                <div className="text-4xl font-bold mb-2">€0<span className="text-lg font-normal text-gray-700">/month</span></div>
                 <p className="text-ios-secondary">Forever free</p>
               </div>
               <ul className="space-y-4 mb-8">
@@ -359,8 +359,8 @@ export default function Landing() {
               </div>
               <div className="text-center mb-6 mt-4">
                 <h3 className="text-2xl font-bold mb-2 text-gray-900">Pro</h3>
-                <div className="text-4xl font-bold mb-2 text-gray-900">€1.00</div>
-                <p className="text-gray-600">1-year promotional deal - normally €10/month</p>
+                <div className="text-4xl font-bold mb-2 text-gray-900">€1.00<span className="text-lg font-normal text-gray-700">/month</span></div>
+                <p className="text-gray-600">Was €10/month - Limited time offer!</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
@@ -401,7 +401,7 @@ export default function Landing() {
             <Card className="p-8 border-2 border-gray-200 tier-card opacity-50">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold mb-2">Advanced</h3>
-                <div className="text-4xl font-bold mb-2">€50.00</div>
+                <div className="text-4xl font-bold mb-2">€50.00<span className="text-lg font-normal text-gray-700">/month</span></div>
                 <p className="text-ios-secondary">For professionals & advanced users</p>
                 <Badge className="bg-gray-600 text-white mt-2">Coming Soon</Badge>
               </div>
