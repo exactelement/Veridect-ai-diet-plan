@@ -1,6 +1,6 @@
-# Veridect - AI-Powered Food Analysis Platform
+# Veridect - AI-Powered Nutrition Guidance for Healthier Living
 
-A modern health-focused web application that provides instant AI-powered food analysis with simple "Yes", "No", or "OK" verdicts. Features comprehensive gamification including weekly leaderboards, level progression, and dual point tracking system. Built with React, Express.js, and Google Gemini AI.
+Veridect food analyser bringing awareness to healthier nutrition. AI-powered nutrition guidance for healthier living with simple "Yes", "No", or "OK" verdicts. Features comprehensive gamification including weekly leaderboards, level progression, and dual point tracking system. Built with React, Express.js, and Google Gemini AI.
 
 ## Key Features
 

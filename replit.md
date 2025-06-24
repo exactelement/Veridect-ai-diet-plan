@@ -2,7 +2,7 @@
 
 ## Overview
 
-Veridect is a health-focused web application that provides instant AI-powered food analysis and nutritional guidance with comprehensive multi-language support. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations in 20+ languages. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, comprehensive food logging capabilities, and real-time translation across all pages and components.
+Veridect food analyser bringing awareness to healthier nutrition. AI-powered nutrition guidance for healthier living. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations in 20+ languages. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, comprehensive food logging capabilities, and real-time translation across all pages and components.
 
 ## System Architecture
 
