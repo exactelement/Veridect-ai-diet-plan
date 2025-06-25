@@ -115,7 +115,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/food-analysis?subscription=success`,
+        return_url: `${window.location.origin}/?subscription=success`,
       },
     });
 
@@ -127,7 +127,7 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
       });
       // Redirect to food analysis tab even on payment failure
       setTimeout(() => {
-        window.location.href = '/food-analysis?subscription=failed';
+        window.location.href = '/?subscription=failed';
       }, 2000);
     } else {
       toast({
