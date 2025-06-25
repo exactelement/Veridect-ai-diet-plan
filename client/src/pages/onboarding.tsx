@@ -87,6 +87,7 @@ export default function Onboarding() {
         title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
       });
+      // Redirect to main app - GDPR banner will show there after onboarding completion
       navigate("/");
     },
     onError: (error: Error) => {
@@ -116,7 +117,7 @@ export default function Onboarding() {
         navigate('/subscription');
       }, 1000);
     } else {
-      // Continue with free tier
+      // Continue with free tier - complete onboarding and redirect to main app
       completeOnboardingMutation.mutate();
     }
   };

@@ -175,7 +175,7 @@ Preferred communication style: Simple, everyday language.
 - **Admin Dashboard Integration**: Updated admin panel to show GDPR consent structure with proper field mappings
 - **Storage Layer Cleanup**: Fixed duplicate methods and compilation errors in storage interface
 - **Routing Structure**: Corrected Switch/Route JSX structure enabling proper page navigation
-- **GDPR Banner Status**: ✅ ACTIVE - Shows after registration before onboarding for lifetime consent tracking
+- **GDPR Banner Status**: ✅ ACTIVE - Shows after onboarding completion on main app route (/) for lifetime consent tracking
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

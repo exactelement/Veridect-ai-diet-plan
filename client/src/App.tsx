@@ -39,12 +39,14 @@ function Router() {
   const [showGdprBanner, setShowGdprBanner] = useState(false);
   const queryClient = useQueryClient();
 
-  // Check if GDPR banner should be shown
+  // Check if GDPR banner should be shown - after onboarding completion on main app
   useEffect(() => {
-    if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && !(user as any).onboardingCompleted) {
+    // Show GDPR banner on main route after onboarding completion (including subscription success/failure)
+    const isMainRoute = location === '/' || location.startsWith('/?');
+    if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && (user as any).onboardingCompleted && isMainRoute) {
       setShowGdprBanner(true);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, location]);
 
   const handleGdprComplete = () => {
     setShowGdprBanner(false);
