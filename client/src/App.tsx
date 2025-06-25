@@ -24,6 +24,7 @@ import About from "@/pages/about";
 import Investor from "@/pages/investor";
 import Disclaimer from "@/pages/disclaimer";
 import AdminEmailPreferences from "@/pages/admin-email-preferences";
+import SecurityDashboard from "@/pages/security-dashboard";
 import Unsubscribe from "@/pages/unsubscribe";
 import RefundPolicy from "@/pages/refund-policy";
 import Navigation from "@/components/navigation";
@@ -66,6 +67,7 @@ function Router() {
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/refund-policy" component={RefundPolicy} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
+            <Route path="/admin/security" component={SecurityDashboard} />
           </>
         ) : user && (user as any).onboardingCompleted ? (
           <>
@@ -85,6 +87,7 @@ function Router() {
             <Route path="/disclaimer" component={Disclaimer} />
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
+            <Route path="/admin/security" component={SecurityDashboard} />
           </>
         ) : (
           <Route path="*" component={Onboarding} />
