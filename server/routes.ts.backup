@@ -913,15 +913,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
-  // GDPR Data Export - SECURITY CRITICAL
+  // GDPR Data Export as ZIP
   app.get('/api/auth/export-data', isAuthenticated, async (req, res) => {
     try {
-      // SECURITY FIX: Only use authenticated user's ID - NO FALLBACK
+      // SECURITY FIX: Only use the authenticated user's ID from claims
       const userId = req.user?.claims?.sub;
       
       if (!userId) {
-        console.error('SECURITY: Export attempted without valid user ID');
-        return res.status(401).json({ message: "Authentication required" });
+        return res.status(401).json({ message: "User not properly authenticated" });
       }
       
       const user = await storage.getUser(userId);
