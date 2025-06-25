@@ -49,13 +49,25 @@ export default function AdminEmailPreferences() {
       ...csvData.map(row => Object.values(row).map(value => `"${value}"`).join(','))
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `email-preferences-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    // Use proper download method with timeout handling
+    try {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `veridect-email-preferences-${new Date().toISOString().split('T')[0]}.csv`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      // Clean up URL after download
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
   };
 
   if (isLoading) {

@@ -11,6 +11,10 @@ import { rateLimit } from "./middleware/validation";
 import { HealthCheckService } from "./services/healthChecks";
 import { concurrencyProtection } from "./middleware/concurrencyProtection";
 import { validateRequest, foodAnalysisSchema, foodLogSchema } from "./middleware/dataValidation";
+import { createWriteStream } from "fs";
+import { pipeline } from "stream";
+import { promisify } from "util";
+import { createGzip } from "zlib";
 
 // Helper function to check and award daily analysis challenges with race condition protection
 async function checkAndAwardDailyChallenges(userId: string, todaysAnalyses: any[]) {
@@ -872,7 +876,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
-  // GDPR Data Export
+  // GDPR Data Export as ZIP
   app.get('/api/auth/export-data', isAuthenticated, async (req, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
@@ -895,14 +899,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         foodLogs: foodLogs,
         weeklyScore: weeklyScore,
         exportDate: new Date().toISOString(),
-        exportedBy: 'YesNoApp GDPR Export'
+        exportedBy: 'Veridect GDPR Export'
       };
 
+      // Create comprehensive JSON export with proper streaming
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `veridect-data-export-${timestamp}.json`;
+      
+      // Set proper headers for JSON download
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="yesnoapp-data-export.json"');
-      res.json(exportData);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Pragma', 'no-cache');
+      
+      // Stream the JSON response properly
+      const jsonString = JSON.stringify(exportData, null, 2);
+      res.setHeader('Content-Length', Buffer.byteLength(jsonString, 'utf8'));
+      
+      // Send the complete JSON response
+      res.send(jsonString);
+      
     } catch (error) {
-      res.status(500).json({ message: "Failed to export data" });
+      console.error('Export error:', error);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Failed to export data" });
+      }
     }
   });
 
