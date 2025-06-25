@@ -140,14 +140,15 @@ Preferred communication style: Simple, everyday language.
 **Dual Point Tracking System:**
 - **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression (1000 points per level)
 - **Weekly Points**: RESET every Monday - used for leaderboard competition and weekly progress tracking
-- **Point Addition Rule**: Same points added to both systems during each week (food logging + bonus challenges)
+- **Point Synchronization**: First-week users maintain synchronized totals, existing users accumulate separately
 - **Weekly Reset Behavior**: Weekly points start at 0 every Monday, lifetime points continue accumulating
 - **Consistent Scoring**: YES=10, OK=5, NO=2 points plus bonus points from challenges added to both systems
 
 **Point Sources:**
-1. Food Analysis: Points added to both lifetime and weekly when user clicks "Yum" button
-2. Bonus Points: Challenges, streaks, achievements (via updateUserPoints function) - added to both systems
-3. Future: Daily challenges, referral bonuses, subscription perks
+1. Food Logging: `updateWeeklyScore()` automatically handles both weekly and total point addition
+2. Bonus Challenges: Dual award system - `updateUserPoints()` + `addBonusToWeeklyScore()` for both counters
+3. Challenge Types: 3 YES streak (50pts), 5 analyses (25pts), 10 analyses (50pts), 5 YES in day (100pts)
+4. Duplicate Prevention: Madrid timezone-based daily tracking prevents multiple awards
 
 ## Development Status - Patent Pending
 
@@ -164,11 +165,18 @@ Preferred communication style: Simple, everyday language.
 - **AI Analysis**: Google Gemini integration functional, processing food analysis requests
 - **Gamification**: Dual point system operational, leaderboards active (Pro tier only)
 - **Content Accuracy**: Free tier properly limited, Advanced tier naming consistent
-- **Application Status**: ✅ FULLY OPERATIONAL - Fixed point synchronization: weekly and total points now match for first-week users
+- **Application Status**: ✅ FULLY OPERATIONAL - Point system pipeline corrected: eliminated double counting, fixed duplicate awards, synchronized first-week users
 
 ## Recent Changes
 
-### Application Recovery & GDPR System (June 25, 2025)
+### Point System Pipeline Correction (June 25, 2025)
+- **Critical Pipeline Fix**: Eliminated double point addition in food logging flow - `updateWeeklyScore()` now handles both systems
+- **Duplicate Award Prevention**: Enhanced bonus challenge detection using Madrid timezone for accurate daily tracking
+- **Point Synchronization**: Corrected first-week user logic to maintain weekly/total point parity until Monday reset
+- **Database Cleanup**: Removed duplicate bonus award entries and recalculated accurate point totals
+- **Consistent Flow**: Single source of truth for point awards with automatic dual-system updates
+
+### Application Recovery & GDPR System (June 24, 2025)
 - **Critical Bug Fix**: Resolved blank page issue caused by malformed React routing structure in App.tsx
 - **GDPR System Implementation**: Complete GDPR consent banner with database integration (temporarily disabled)
 - **Database Schema**: Added gdprConsent (JSONB) and hasSeenGdprBanner (boolean) columns for compliance

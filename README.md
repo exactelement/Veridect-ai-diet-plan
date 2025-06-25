@@ -1,38 +1,71 @@
-# Veridect - AI-Powered Nutrition Guidance for Healthier Living
+# Veridect - AI-Powered Food Analysis Platform
 
-Veridect food analyser bringing awareness to healthier nutrition. AI-powered nutrition guidance for healthier living with simple "Yes", "No", or "OK" verdicts. Features comprehensive gamification including weekly leaderboards, level progression, and dual point tracking system. Built with React, Express.js, and Google Gemini AI.
+A live revenue-generating nutrition analysis platform providing personalized "Yes/No/OK" food verdicts using Google Gemini AI. Currently serving paying customers with operational Pro tier subscriptions and patent-pending AI technology.
 
-## Key Features
+## 🚀 Live Status
+- **Revenue**: Active payment processing via Stripe
+- **Users**: 30+ registered users, 2 active Pro subscribers  
+- **AI Analysis**: Google Gemini integration operational
+- **Gamification**: Dual point system with weekly competitions
 
-- **Instant Food Analysis**: Camera, upload, or text-based food analysis with beverage support
-- **Personalized AI Verdicts**: AI considers health goals, dietary preferences, allergies, and subscription tier
-- **Witty AI Responses**: Dynamic, humorous responses for non-food items with creative humor styles
-- **Dual Point System**: Lifetime points (never reset) for levels + weekly points (reset Monday) for competition
-- **Weekly Leaderboards**: Position rankings (#1, #2, #3) with optional participation, Madrid timezone resets
-- **Level Progression**: 1000 points per level using lifetime points accumulation
-- **Privacy Controls**: Customizable participation in challenges and data display
-- **Multi-Authentication**: Replit Auth with session-based security
-- **GDPR Compliance**: Granular privacy consent management
-- **Subscription Tiers**: Free, Pro ($19.99), and Medical ($49.99) plans
+## Features
 
-## Quick Start
+- 📸 **Food Analysis**: Analyze food through photos, uploads, or text descriptions
+- 🤖 **AI-Powered**: Google Gemini AI with full personalization based on health goals
+- 🏆 **Gamification**: Dual point system (weekly competition + lifetime progression)
+- 💳 **Subscription Tiers**: Free (5/day), Pro (€1/month), Advanced (€50/month)
+- 🔐 **Authentication**: Secure Replit Auth with session management
+- 🌐 **Multi-language**: 20+ languages with real-time translation widget
+- 📱 **Mobile-First**: iOS-inspired responsive design
+- 🎯 **Challenges**: Streak tracking, daily challenges, bonus point system
 
+## Point System Architecture
+
+### Dual Tracking System
+- **Weekly Points**: Reset every Monday, used for leaderboard competition
+- **Total Points**: Accumulate forever for level progression (1000 points per level)
+- **Scoring**: YES=10, OK=5, NO=2 points plus bonus challenges
+- **Challenges**: 3 YES streak (50pts), 5 analyses (25pts), 10 analyses (50pts), 5 YES in day (100pts)
+
+### Badge System
+- Each completed challenge = 1 badge earned
+- Progress tracking with achievement milestones
+- Pro tier exclusive leaderboard participation
+
+## Development
+
+### Prerequisites
+- Node.js 20+
+- PostgreSQL database (Replit/Neon)
+- Required API keys (Google Gemini, Stripe, etc.)
+
+### Getting Started
+
+1. Install dependencies:
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Set up environment (see SETUP.md for details)
-cp .env.example .env
-# Edit .env with your database URL and API keys
-
-# 3. Initialize database
-npm run db:push
-
-# 4. Start development server
-npm run dev
 ```
 
-Visit `http://localhost:5000` to see your app running.
+2. Set up environment variables in Replit Secrets:
+```
+DATABASE_URL=<neon_database_url>
+GOOGLE_GEMINI_API_KEY=<gemini_api_key>
+STRIPE_SECRET_KEY=<stripe_secret_key>
+VITE_STRIPE_PUBLIC_KEY=<stripe_public_key>
+STRIPE_PRO_PRICE_ID=<stripe_price_id>
+STRIPE_WEBHOOK_SECRET=<webhook_secret>
+SENDGRID_API_KEY=<sendgrid_api_key>
+```
+
+3. Run database migrations:
+```bash
+npm run db:push
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
 
 ## Tech Stack
 
@@ -48,112 +81,98 @@ Visit `http://localhost:5000` to see your app running.
 - **Node.js 20** with Express.js
 - **TypeScript** with ES modules
 - **PostgreSQL** with Drizzle ORM
-- **Google Gemini AI** for food analysis
-- **Stripe** for payment processing
-- **SendGrid** for email services
-
-### Authentication
+- **Google Gemini AI** integration
+- **Stripe** payment processing (yearly billing)
 - **Replit Auth** with OpenID Connect
-- **Google OAuth** integration
-- **Apple Sign-In** support
-- **Email/Password** with bcrypt hashing
+- **Session-based** authentication with PostgreSQL storage
 
-## Project Structure
+### Database Schema
+- **Users**: Profiles, preferences, subscription data, point tracking
+- **Sessions**: Authentication session storage
+- **Food Logs**: Analysis history and logging
+- **Weekly Scores**: Leaderboard and competition tracking
+- **Failed Webhooks**: Payment processing monitoring
 
+## Architecture
+
+### Data Flow
+1. **Authentication**: Replit Auth → Session creation → User profile
+2. **Food Analysis**: User input → Gemini AI → Result storage → Point awards
+3. **Subscription**: Stripe checkout → Webhook processing → Tier update
+4. **Gamification**: Analysis results → Point calculation → Leaderboard update
+
+### Point System Pipeline
 ```
-yesnoapp/
-├── client/                 # React frontend application
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/         # Application pages
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── lib/           # Utility functions
-│   │   └── services/      # API service layers
-├── server/                # Express.js backend
-│   ├── services/          # Business logic services
-│   ├── db.ts             # Database connection
-│   ├── routes.ts         # API route definitions
-│   └── storage.ts        # Data access layer
-├── shared/               # Shared TypeScript schemas
-│   └── schema.ts         # Database and validation schemas
-└── package.json         # Dependencies and scripts
+Food Logging → updateWeeklyScore() → Dual point addition → Challenge detection → Bonus awards
 ```
 
-## Environment Variables
+### Available Scripts
 
-Required:
-- `DATABASE_URL` - PostgreSQL connection string
-- `GOOGLE_GEMINI_API_KEY` - For AI food analysis
-- `SESSION_SECRET` - Random string for session security
-
-Optional:
-- `STRIPE_SECRET_KEY` / `VITE_STRIPE_PUBLIC_KEY` - Payment processing
-- `SENDGRID_API_KEY` - Email services
-- `VITE_GA_MEASUREMENT_ID` - Google Analytics
-
-## 📚 Documentation
-
-Essential development guides:
-
-- [iOS Development Guide](./ios-development-guide.md) - Native iOS app development
-- [Android Development Guide](./android-development-guide.md) - Native Android app development  
-- [iOS App Store Deployment](./ios-appstore-deployment-guide.md) - App Store submission guide
-- [Android Play Store Deployment](./android-playstore-deployment-guide.md) - Play Store submission guide
-
-Additional documentation available in `/info-files/` folder for reference.
-
-## Development Commands
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run db:push      # Sync database schema
-npm run db:studio    # Open database management UI
-npm run type-check   # TypeScript type checking
-```
-
-## Core User Flow
-
-1. **Authentication**: Users sign in via multiple providers or create email accounts
-2. **Onboarding**: Set health goals, dietary preferences, and allergies
-3. **Food Analysis**: Analyze food via camera, upload, or text description
-4. **AI Verdict**: Receive personalized YES/NO/OK verdict with explanation
-5. **Action Choice**: Click "Yum" to log food and earn points, or "Nah" to discard
-6. **Progress Tracking**: View weekly scores and compete on leaderboards
-
-## AI Personalization
-
-The AI analysis considers:
-- **Health Goals**: Weight loss, muscle gain, general health
-- **Dietary Preferences**: Vegan, vegetarian, keto, paleo, etc.
-- **Allergies**: Automatic safety warnings for allergens
-- **Subscription Tier**: Casual explanations vs detailed scientific analysis
+- `npm run dev` - Start development server (client + server)
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run db:push` - Push database schema changes
+- `npm run db:studio` - Open Drizzle Studio
 
 ## Deployment
 
-### Replit (Recommended)
-1. Import project to Replit
-2. Add environment variables in Secrets tab
-3. Run `npm run dev`
-4. Deploy using Replit's one-click deployment
+### Google Cloud Run Production
+The application is deployed on Google Cloud Run with:
+- Multi-stage Docker build
+- Auto-scaling 0-20 instances
+- 2Gi memory, 2 vCPU allocation
+- Health checks and monitoring
+- Artifact Registry integration
 
-### Other Platforms
-1. Build: `npm run build`
-2. Set environment variables
-3. Deploy built application
+### Container Configuration
+```bash
+# Build production image
+docker build -t veridect .
 
-## Contributing
+# Run locally
+docker run -p 8080:8080 veridect
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### Environment Configuration
+- **Development**: Port 5000, Replit environment
+- **Production**: Port 8080, Cloud Run environment
+- **Build**: Automated via Cloud Build integration
+
+## Business Model
+
+### Subscription Tiers
+- **Free**: 5 analyses/day, basic features
+- **Pro**: €1/month (€12/year) - Unlimited analyses, full gamification
+- **Advanced**: €50/month - Enterprise features (coming soon)
+
+### Revenue Status
+- **Live Payments**: Stripe processing active
+- **Current Revenue**: €24/year from active subscriptions
+- **Growth**: 30+ registered users, expanding user base
+
+### Performance Optimizations
+- Subscription status caching (5-minute TTL)
+- Reduced client polling (5-minute intervals)
+- Optimized database queries
+- Memory management improvements
+
+## Support & Maintenance
+
+### Monitoring
+- Daily cleanup: Midnight Madrid time
+- Weekly reset: Monday midnight Madrid time
+- Health checks: Database, environment, memory
+- Failed webhook tracking and resolution
+
+### Documentation
+- `replit.md` - Technical architecture and user preferences
+- `SYSTEM_STATUS.md` - Current operational status
+- Code comments and type definitions
 
 ## License
 
-This project is proprietary software. All rights reserved.
+This project is proprietary and confidential. Patent pending on AI analysis methodology.
 
-## Support
+---
 
-For setup issues, see `SETUP.md` or check the console for error messages. Ensure all environment variables are properly configured and the database is accessible.
+**Status**: ✅ FULLY OPERATIONAL - Live revenue-generating platform with active subscriptions and growing user base.
