@@ -34,6 +34,29 @@ export default function FoodAnalysis() {
   // Always scroll to top when component mounts or refreshes
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Handle subscription success/failure from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const subscriptionStatus = urlParams.get('subscription');
+    
+    if (subscriptionStatus === 'success') {
+      toast({
+        title: "Welcome to Pro!",
+        description: "Your subscription is now active. Enjoy unlimited analyses!",
+        duration: 5000,
+      });
+      // Clean up URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (subscriptionStatus === 'failed') {
+      toast({
+        title: "Payment unsuccessful",
+        description: "No worries! You can still enjoy 5 free analyses daily.",
+        variant: "destructive",
+        duration: 5000,
+      });
+      // Clean up URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
