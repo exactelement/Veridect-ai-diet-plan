@@ -247,7 +247,9 @@ export async function setupMultiAuth(app: Express) {
           return res.status(400).json({ message: "Invalid Apple identity token" });
         }
       } catch (error) {
-        console.error("Apple token verification failed:", error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Apple token verification failed:", error);
+        }
         return res.status(400).json({ message: "Invalid Apple identity token" });
       }
 
@@ -315,7 +317,9 @@ export async function setupMultiAuth(app: Express) {
       });
 
     } catch (error) {
-      console.error("Apple Sign-In error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Apple Sign-In error:", error);
+      }
       res.status(500).json({ message: "Apple Sign-In failed" });
     }
   });
@@ -391,7 +395,9 @@ export async function setupMultiAuth(app: Express) {
         res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
-      console.error("Registration error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Registration error:", error);
+      }
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -471,7 +477,9 @@ export async function setupMultiAuth(app: Express) {
           : "Password reset initiated. Check server console for reset link (development mode)."
       });
     } catch (error) {
-      console.error("Forgot password error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Forgot password error:", error);
+      }
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -501,7 +509,9 @@ export async function setupMultiAuth(app: Express) {
 
       res.json({ message: "Password reset successful" });
     } catch (error) {
-      console.error("Reset password error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Reset password error:", error);
+      }
       res.status(500).json({ message: "Internal server error" });
     }
   });
