@@ -110,7 +110,16 @@ passport.use(new LocalStrategy({
       return done(null, false, { message: 'Incorrect password for this email address' });
     }
 
-    return done(null, user);
+    // Create session-compatible user object with claims structure
+    const sessionUser = {
+      ...user,
+      claims: {
+        sub: user.id,
+        email: user.email
+      }
+    };
+
+    return done(null, sessionUser);
   } catch (error) {
     return done(error);
   }
@@ -148,9 +157,11 @@ export async function setupMultiAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Passport serialization
+  // Passport serialization - store original user ID 
   passport.serializeUser((user: any, done) => {
-    done(null, user.id);
+    // Always use the original user.id, not user.claims.sub
+    const userId = user.id || user.claims?.sub;
+    done(null, userId);
   });
 
   passport.deserializeUser(async (id: string, done) => {
@@ -164,7 +175,16 @@ export async function setupMultiAuth(app: Express) {
         return done(null, false);
       }
       
-      done(null, user);
+      // Recreate session-compatible user object with claims
+      const sessionUser = {
+        ...user,
+        claims: {
+          sub: user.id,
+          email: user.email
+        }
+      };
+      
+      done(null, sessionUser);
     } catch (error) {
       done(null, false);
     }
@@ -435,7 +455,16 @@ export async function setupMultiAuth(app: Express) {
         return res.status(401).json({ message });
       }
 
-      req.login(user, (err) => {
+      // Create session-compatible user object for login
+      const sessionUser = {
+        ...user,
+        claims: {
+          sub: user.id,
+          email: user.email
+        }
+      };
+
+      req.login(sessionUser, (err) => {
         if (err) {
           return res.status(500).json({ message: "Login failed" });
         }
