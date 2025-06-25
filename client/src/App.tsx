@@ -77,8 +77,11 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/investor" component={Investor} />
             <Route path="/disclaimer" component={Disclaimer} />
+            <Route path="/unsubscribe" component={Unsubscribe} />
+            <Route path="/refund-policy" component={RefundPolicy} />
+            <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
           </>
-        ) : user && user.onboardingCompleted ? (
+        ) : user && (user as any).onboardingCompleted ? (
           <>
             <Route path="/" component={FoodAnalysis} />
             <Route path="/home" component={Home} />

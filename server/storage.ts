@@ -167,18 +167,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updatePrivacyBannerSeen(userId: string, gdprConsent: any): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        hasSeenPrivacyBanner: true,
-        gdprConsent: gdprConsent,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
+
 
   async getUserByResetToken(token: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.passwordResetToken, token));
