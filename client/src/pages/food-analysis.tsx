@@ -33,6 +33,12 @@ export default function FoodAnalysis() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [showGdprBanner, setShowGdprBanner] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   // Always scroll to top when component mounts or refreshes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -50,11 +56,6 @@ export default function FoodAnalysis() {
     setShowGdprBanner(false);
     queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
   };
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
   const userTier = user?.subscriptionTier || 'free';
   const canLogFood = checkTierAccess(userTier, 'pro', user?.email);
 
