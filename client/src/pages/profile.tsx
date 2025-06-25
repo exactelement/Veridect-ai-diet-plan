@@ -206,6 +206,13 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Fetch real-time subscription status from Stripe
+  const { data: subscriptionStatus } = useQuery({
+    queryKey: ["/api/subscription/status"],
+    enabled: !!user && user.subscriptionTier === 'pro',
+    refetchInterval: 30000, // Refresh every 30 seconds for real-time status
+  });
   const userTier = user?.subscriptionTier || 'free';
   const hasProAccess = checkTierAccess(userTier, 'pro', user?.email);
 
@@ -363,9 +370,11 @@ export default function Profile() {
         title: "Cancellation Scheduled",
         description: "Your subscription will be cancelled at the end of your billing period. You'll retain Pro access until then.",
       });
-      // Force refetch user data to get updated subscription status
+      // Force refetch both user data and subscription status
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
       queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.refetchQueries({ queryKey: ["/api/subscription/status"] });
       setShowCancelDialog(false);
     },
     onError: (error: any) => {
