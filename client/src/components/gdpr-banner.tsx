@@ -63,7 +63,7 @@ export default function GDPRBanner() {
           timestamp: new Date().toISOString(),
           version: "1.0",
         },
-        has_seen_privacy_banner: true
+        hasSeenPrivacyBanner: true
       });
 
       // Save preferences to localStorage as backup

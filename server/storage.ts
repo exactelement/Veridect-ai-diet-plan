@@ -160,7 +160,7 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({
         gdprConsent: consentData.gdprConsent,
-        hasSeenPrivacyBanner: consentData.has_seen_privacy_banner || true,
+        hasSeenPrivacyBanner: true,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
