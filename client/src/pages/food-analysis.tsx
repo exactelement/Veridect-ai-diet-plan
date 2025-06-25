@@ -636,7 +636,7 @@ export default function FoodAnalysis() {
               <div>
                 <h3 className="font-semibold text-blue-800 mb-2 text-base sm:text-lg">Pro Tip</h3>
                 <p className="text-blue-700 text-sm sm:text-base">
-                  For better accuracy, ensure good lighting and capture the entire meal. Include any sauces or dressings!
+                  For better accuracy, ensure good lighting and capture the entire meal. Or describe including any sauces or dressings!
                 </p>
               </div>
             </div>
