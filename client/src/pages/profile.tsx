@@ -55,7 +55,117 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 
+// Email Preferences Component
+function EmailPreferencesSection({ user }: { user: any }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [preferences, setPreferences] = useState({
+    nutritionInsightsEmails: user.gdprConsent?.nutritionInsightsEmails || false,
+    improveAIRecommendations: user.gdprConsent?.improveAIRecommendations || false,
+    anonymousUsageAnalytics: user.gdprConsent?.anonymousUsageAnalytics || false,
+  });
 
+  const updateEmailPreferences = useMutation({
+    mutationFn: async (newPreferences: any) => {
+      return await apiRequest("POST", "/api/user/gdpr-consent", {
+        gdprConsent: {
+          ...newPreferences,
+          timestamp: new Date().toISOString(),
+          version: "1.0",
+        },
+        hasSeenPrivacyBanner: true
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email Preferences Updated",
+        description: "Your email preferences have been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update email preferences.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePreferenceChange = (key: string, value: boolean) => {
+    const newPreferences = { ...preferences, [key]: value };
+    setPreferences(newPreferences);
+    updateEmailPreferences.mutate(newPreferences);
+  };
+
+  return (
+    <div className="space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <h3 className="font-medium text-ios-text">Weekly Nutrition Insights</h3>
+              <p className="text-sm text-ios-secondary mt-1">
+                Receive weekly progress summaries, nutrition tips, and personalized insights based on your food analysis
+              </p>
+            </div>
+            <Switch
+              checked={preferences.nutritionInsightsEmails}
+              onCheckedChange={(checked) => handlePreferenceChange('nutritionInsightsEmails', checked)}
+              disabled={updateEmailPreferences.isPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <h3 className="font-medium text-ios-text">AI Improvement Participation</h3>
+              <p className="text-sm text-ios-secondary mt-1">
+                Help improve our AI by sharing anonymized food analysis data to enhance accuracy for everyone
+              </p>
+            </div>
+            <Switch
+              checked={preferences.improveAIRecommendations}
+              onCheckedChange={(checked) => handlePreferenceChange('improveAIRecommendations', checked)}
+              disabled={updateEmailPreferences.isPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <h3 className="font-medium text-ios-text">Usage Analytics</h3>
+              <p className="text-sm text-ios-secondary mt-1">
+                Allow anonymous usage data collection to help us improve app performance and user experience
+              </p>
+            </div>
+            <Switch
+              checked={preferences.anonymousUsageAnalytics}
+              onCheckedChange={(checked) => handlePreferenceChange('anonymousUsageAnalytics', checked)}
+              disabled={updateEmailPreferences.isPending}
+            />
+          </div>
+        </div>
+
+        <div className="bg-ios-gray-50 p-4 rounded-lg">
+          <h4 className="font-medium text-ios-text mb-2">Email Unsubscribe Options</h4>
+          <div className="text-sm text-ios-secondary space-y-2">
+            <p>• Toggle any preference above to instantly update your email settings</p>
+            <p>• All preference changes take effect immediately</p>
+            <p>• You can re-enable emails anytime by returning to this page</p>
+            <p>• For email support, contact: <span className="text-ios-blue">support@veridect.com</span></p>
+            <p>• Available to all users regardless of subscription tier</p>
+          </div>
+        </div>
+
+        {updateEmailPreferences.isPending && (
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-2 text-ios-secondary">
+              <div className="animate-spin w-4 h-4 border-2 border-ios-blue border-t-transparent rounded-full" />
+              <span>Updating preferences...</span>
+            </div>
+          </div>
+        )}
+    </div>
+  );
+}
 
 export default function Profile() {
   const { user } = useAuth();
@@ -71,6 +181,7 @@ export default function Profile() {
   
   // Collapsible section states
   const [personalOpen, setPersonalOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
   const [personalizationOpen, setPersonalizationOpen] = useState(false);
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -445,6 +556,32 @@ export default function Profile() {
                       </Button>
                     </form>
                   </Form>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Email Preferences Dropdown - Available to All Users */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={emailOpen} onOpenChange={setEmailOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-5 h-5 text-ios-blue" />
+                      <span>Email Preferences</span>
+                    </div>
+                    {emailOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <EmailPreferencesSection user={user} />
                 </CardContent>
               </CollapsibleContent>
             </Collapsible>
