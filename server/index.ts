@@ -1,4 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { dailyScheduler } from "./scheduler";
@@ -10,10 +12,34 @@ import path from "path";
 validateEnvironment();
 
 const app = express();
+
+// Security headers - configured to allow essential services like Stripe
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP temporarily to ensure Stripe works
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  frameguard: { action: 'deny' },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://veridect.com', 'https://www.veridect.com'] 
+    : ['http://localhost:5000', 'http://localhost:3000', 'http://127.0.0.1:5000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
-// Security middleware
+// Additional security middleware
 app.use(sanitizeInput);
 
 // Serve static files from public directory

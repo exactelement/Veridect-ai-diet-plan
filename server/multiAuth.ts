@@ -7,6 +7,7 @@ import connectPg from "connect-pg-simple";
 import type { Express } from "express";
 import { storage } from "./storage";
 import jwt from "jsonwebtoken";
+import jwksClient from "jwks-client";
 import crypto from "crypto";
 import { sendEmail, generatePasswordResetEmail } from "./services/email";
 
@@ -137,8 +138,9 @@ export async function setupMultiAuth(app: Express) {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      secure: process.env.NODE_ENV === 'production', // Secure cookies in production
       maxAge: sessionTtl,
+      sameSite: 'lax', // CSRF protection
     },
   }));
 
@@ -237,10 +239,15 @@ export async function setupMultiAuth(app: Express) {
         return res.status(400).json({ message: "Apple identity token is required" });
       }
 
-      // Decode Apple JWT token (without verification for now - in production you'd verify with Apple's public key)
-      const decoded = jwt.decode(identityToken) as any;
-      
-      if (!decoded || !decoded.sub) {
+      // Verify Apple JWT token with Apple's public keys
+      let decoded: any;
+      try {
+        decoded = await verifyAppleIdToken(identityToken);
+        if (!decoded || !decoded.sub) {
+          return res.status(400).json({ message: "Invalid Apple identity token" });
+        }
+      } catch (error) {
+        console.error("Apple token verification failed:", error);
         return res.status(400).json({ message: "Invalid Apple identity token" });
       }
 
@@ -452,8 +459,10 @@ export async function setupMultiAuth(app: Express) {
       
       if (!emailSent) {
         // Development mode: log token to console
-        console.log(`Password reset token for ${email}: ${resetToken}`);
-        console.log(`Reset URL: ${baseUrl}/login?token=${resetToken}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Password reset token for ${email}: ${resetToken}`);
+          console.log(`Reset URL: ${baseUrl}/login?token=${resetToken}`);
+        }
       }
       
       res.json({ 
@@ -529,6 +538,40 @@ export async function setupMultiAuth(app: Express) {
         res.clearCookie('connect.sid');
         res.json({ success: true, message: "Logged out successfully" });
       });
+    });
+  });
+}
+
+// Apple JWT verification with public key validation
+async function verifyAppleIdToken(identityToken: string): Promise<any> {
+  const client = jwksClient({
+    jwksUri: 'https://appleid.apple.com/auth/keys',
+    cache: true,
+    cacheMaxEntries: 5,
+    cacheMaxAge: 600000, // 10 minutes
+  });
+
+  function getKey(header: any, callback: any) {
+    client.getSigningKey(header.kid, (err, key) => {
+      if (err) {
+        return callback(err);
+      }
+      const signingKey = key?.getPublicKey();
+      callback(null, signingKey);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    jwt.verify(identityToken, getKey, {
+      issuer: 'https://appleid.apple.com',
+      audience: process.env.VITE_APPLE_CLIENT_ID,
+      algorithms: ['RS256'],
+    }, (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(decoded);
+      }
     });
   });
 }

@@ -56,8 +56,12 @@ export function rateLimit(maxRequests: number, windowMs: number) {
   };
 }
 
-// Input sanitization middleware
+// Enhanced input sanitization middleware
 export function sanitizeInput(req: Request, res: Response, next: NextFunction) {
+  // Skip sanitization for Stripe webhook (raw body needed)
+  if (req.path === '/api/webhook/stripe') {
+    return next();
+  }
   if (req.body) {
     // Remove potential XSS payloads
     const sanitized = JSON.parse(JSON.stringify(req.body, (key, value) => {

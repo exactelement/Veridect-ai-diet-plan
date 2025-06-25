@@ -22,17 +22,22 @@ interface EmailParams {
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
   if (!mailService) {
-    console.log('SendGrid not configured, logging email instead:');
-    console.log(`To: ${params.to}`);
-    console.log(`Subject: ${params.subject}`);
-    console.log(`Body: ${params.text || params.html}`);
+    // Development mode: log email details
+    if (process.env.NODE_ENV === 'development') {
+      console.log('SendGrid not configured, logging email instead:');
+      console.log(`To: ${params.to}`);
+      console.log(`Subject: ${params.subject}`);
+      console.log(`Body: ${params.text || params.html}`);
+    }
     return false;
   }
 
   try {
-    console.log(`Attempting to send email to ${params.to} via SendGrid...`);
-    console.log(`From: ${params.from}`);
-    console.log(`Subject: ${params.subject}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Attempting to send email to ${params.to} via SendGrid...`);
+      console.log(`From: ${params.from}`);
+      console.log(`Subject: ${params.subject}`);
+    }
     
     const result = await mailService.send({
       to: params.to,
@@ -41,7 +46,10 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
       text: params.text,
       html: params.html,
     });
-    console.log('SendGrid email sent successfully! Status:', result[0].statusCode);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('SendGrid email sent successfully! Status:', result[0].statusCode);
+    }
     return true;
   } catch (error) {
     console.error('SendGrid email failed:', error.message);
