@@ -79,11 +79,13 @@ function Router() {
             <Route path="/disclaimer" component={Disclaimer} />
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
+            <Route path="*" component={NotFound} />
           </>
         ) : (
-          <Route path="*" component={Onboarding} />
+          <>
+            <Route path="*" component={Onboarding} />
+          </>
         )}
-        <Route path="*" component={NotFound} />
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
