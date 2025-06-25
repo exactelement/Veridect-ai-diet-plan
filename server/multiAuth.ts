@@ -387,12 +387,24 @@ export async function setupMultiAuth(app: Express) {
         subscriptionStatus: "inactive",
       });
 
-      // Log them in
+      // Log them in immediately after registration
       req.login(user, (err) => {
         if (err) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Login after registration failed:", err);
+          }
           return res.status(500).json({ message: "Registration successful but login failed" });
         }
-        res.json({ success: true, user: { id: user.id, email: user.email } });
+        // Ensure session is saved before responding
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            if (process.env.NODE_ENV === 'development') {
+              console.error("Session save failed:", saveErr);
+            }
+            return res.status(500).json({ message: "Registration successful but session failed" });
+          }
+          res.json({ success: true, user: { id: user.id, email: user.email } });
+        });
       });
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
