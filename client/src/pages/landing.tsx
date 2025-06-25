@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,15 +14,100 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const navigationItems = [
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
     { label: "How It Works", href: "#how-it-works" },
   ];
+
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      setIsLoggingIn(true);
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // Force refresh of auth state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      
+      setShowLogin(false);
+      
+    } catch (error: any) {
+      setIsLoggingIn(false);
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRegister = async (email: string, password: string, firstName: string, lastName: string) => {
+    try {
+      setIsRegistering(true);
+      
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, firstName, lastName })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Force refresh of auth state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+
+      toast({
+        title: "Registration successful",
+        description: "Welcome to Veridect!",
+      });
+      
+      setShowRegister(false);
+      
+    } catch (error: any) {
+      setIsRegistering(false);
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-ios-bg text-ios-text">
@@ -50,7 +139,7 @@ export default function Landing() {
                   {item.label}
                 </a>
               ))}
-              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
+              <Button onClick={() => setShowRegister(true)} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
                 Get Started
               </Button>
             </div>
@@ -58,7 +147,7 @@ export default function Landing() {
             {/* Right side controls */}
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
-              <Button onClick={() => window.location.href = "/login"} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
+              <Button onClick={() => setShowLogin(true)} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
                 Login
               </Button>
 
@@ -351,7 +440,7 @@ export default function Landing() {
                   <span>Simple yes/no verdicts</span>
                 </li>
               </ul>
-              <Button onClick={() => window.location.href = "/login"} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
+              <Button onClick={() => setShowRegister(true)} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
                 Get Started
               </Button>
             </Card>
@@ -461,7 +550,7 @@ export default function Landing() {
             Join thousands of users who are already making smarter food choices with AI-powered guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button onClick={() => window.location.href = "/login"} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100">
+            <Button onClick={() => setShowRegister(true)} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100">
               Start Free Trial
             </Button>
             <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/20">
@@ -541,6 +630,188 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Login Dialog */}
+      <Dialog open={showLogin} onOpenChange={setShowLogin}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Login to Veridect</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            handleLogin(
+              formData.get('email') as string,
+              formData.get('password') as string
+            );
+          }} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input
+                id="login-email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+                disabled={isLoggingIn}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Password</Label>
+              <Input
+                id="login-password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                required
+                disabled={isLoggingIn}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowLogin(false)}
+                className="flex-1"
+                disabled={isLoggingIn}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-ios-blue hover:bg-ios-blue/90"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? (
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Logging in...
+                  </div>
+                ) : (
+                  'Login'
+                )}
+              </Button>
+            </div>
+            <div className="text-center text-sm text-gray-600">
+              Don't have an account?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogin(false);
+                  setShowRegister(true);
+                }}
+                className="text-ios-blue hover:underline font-medium"
+                disabled={isLoggingIn}
+              >
+                Sign up
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Register Dialog */}
+      <Dialog open={showRegister} onOpenChange={setShowRegister}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Your Account</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            handleRegister(
+              formData.get('email') as string,
+              formData.get('password') as string,
+              formData.get('firstName') as string,
+              formData.get('lastName') as string
+            );
+          }} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="register-firstName">First Name</Label>
+                <Input
+                  id="register-firstName"
+                  name="firstName"
+                  placeholder="First name"
+                  required
+                  disabled={isRegistering}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="register-lastName">Last Name</Label>
+                <Input
+                  id="register-lastName"
+                  name="lastName"
+                  placeholder="Last name"
+                  required
+                  disabled={isRegistering}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="register-email">Email</Label>
+              <Input
+                id="register-email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+                disabled={isRegistering}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="register-password">Password</Label>
+              <Input
+                id="register-password"
+                name="password"
+                type="password"
+                placeholder="Create a password"
+                required
+                disabled={isRegistering}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowRegister(false)}
+                className="flex-1"
+                disabled={isRegistering}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-ios-blue hover:bg-ios-blue/90"
+                disabled={isRegistering}
+              >
+                {isRegistering ? (
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Creating account...
+                  </div>
+                ) : (
+                  'Create Account'
+                )}
+              </Button>
+            </div>
+            <div className="text-center text-sm text-gray-600">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowRegister(false);
+                  setShowLogin(true);
+                }}
+                className="text-ios-blue hover:underline font-medium"
+                disabled={isRegistering}
+              >
+                Sign in
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
