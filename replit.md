@@ -169,6 +169,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Daily Challenge Counter & Timezone Fixes (June 25, 2025)
+- **Fixed Daily Power Challenges Counter**: Daily food analysis counter now properly shows accurate count using correct Madrid timezone conversion
+- **Timezone Consistency**: Fixed `getTodaysAnalyzedFoods()` and `wasBonusAwardedToday()` functions to properly convert Madrid time boundaries to UTC for database queries
+- **Challenge Reset Logic**: All daily counters now reset consistently at 00:00 Madrid time as intended
+- **Bonus Points Card**: Removed "Today's" from card title for cleaner, more general presentation
+- **Madrid Time Calculation**: Updated `getMadridTime()` function to use reliable UTC+2 offset calculation instead of locale-based conversion
+
 ### UI Enhancement & Production Polish (June 25, 2025)
 - **Pro Tip Refinement**: Replaced detailed tips list with concise Pro Tip focused on lighting and complete meal capture for better AI accuracy
 - **Accessibility Fixes**: Added proper DialogDescription components to all dialog content, eliminating browser accessibility warnings

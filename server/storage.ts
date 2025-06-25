@@ -791,9 +791,11 @@ export class DatabaseStorage implements IStorage {
 
   // Get Madrid time for consistent scheduling
   getMadridTime(): Date {
-    // Get current time in Madrid timezone using built-in methods
+    // Get current UTC time and add Madrid offset
     const now = new Date();
-    return new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+    // Madrid is UTC+1 in winter, UTC+2 in summer (currently summer, so UTC+2)
+    // For June 2025, Madrid is UTC+2 (CEST)
+    return new Date(now.getTime() + (2 * 60 * 60 * 1000));
   }
 
   // Get all completed challenges for badge counting (all-time)
