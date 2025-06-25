@@ -94,7 +94,7 @@ export default function Home() {
   const weeklyStats = (() => {
     // Use Madrid timezone for consistent weekly reset behavior (Monday midnight)
     const madridNow = new Date();
-    madridNow.setTime(madridNow.getTime() + (1 * 60 * 60 * 1000)); // Madrid timezone offset
+    madridNow.setTime(madridNow.getTime() + (2 * 60 * 60 * 1000)); // Madrid timezone offset UTC+2 (CEST)
     
     const currentWeekStart = new Date(madridNow);
     const day = currentWeekStart.getDay();
