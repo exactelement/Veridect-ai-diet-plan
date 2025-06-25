@@ -7,19 +7,8 @@ export default function RefundPolicy() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-ios-bg p-4 pb-32">
+    <div className="min-h-screen bg-ios-bg p-4 pb-32 pt-20">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => setLocation("/")}
-            className="text-ios-blue"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Button>
-        </div>
 
         {/* Main Policy Content */}
         <Card>

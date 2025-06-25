@@ -133,9 +133,9 @@ export default function Terms() {
             <div>
               <h4 className="font-semibold mb-2">Billing</h4>
               <ul className="space-y-1 text-sm text-ios-secondary">
-                <li>• Subscriptions are billed monthly in advance</li>
+                <li>• Subscriptions are billed yearly in advance</li>
                 <li>• Payment is due at the start of each billing cycle</li>
-                <li>• We accept major credit cards and PayPal</li>
+                <li>• We accept major credit cards via Stripe</li>
                 <li>• Failed payments may result in service suspension</li>
               </ul>
             </div>
