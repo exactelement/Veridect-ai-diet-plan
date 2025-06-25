@@ -156,19 +156,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateGdprConsent(userId: string, consentData: any): Promise<User> {
+    console.log('Updating GDPR consent for user:', userId, consentData);
     const [user] = await db
       .update(users)
       .set({
-        gdprConsent: consentData.gdprConsent,
-        hasSeenPrivacyBanner: true,
+        gdprConsent: consentData,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
       .returning();
+    console.log('GDPR consent updated successfully');
     return user;
   }
 
   async updatePrivacyBannerSeen(userId: string, gdprConsent: any): Promise<User> {
+    console.log('Marking privacy banner as seen for user:', userId);
     const [user] = await db
       .update(users)
       .set({
@@ -178,6 +180,7 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(users.id, userId))
       .returning();
+    console.log('Privacy banner marked as seen successfully');
     return user;
   }
 

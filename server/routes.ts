@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SINGLE GDPR consent endpoint - handles banner interaction
-  app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
+  app.put('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
       const { gdprConsent, hasSeenPrivacyBanner } = req.body;
