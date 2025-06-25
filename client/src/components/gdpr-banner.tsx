@@ -21,10 +21,14 @@ export default function GDPRBanner() {
   useEffect(() => {
     // Only show banner for authenticated users who haven't seen it before
     // Also ensure they've completed onboarding to avoid conflicts
-    // Double-check localStorage to prevent multiple showings
+    // Prioritize database state over localStorage to handle edge cases
     const hasSeenBefore = localStorage.getItem('gdpr-banner-shown');
     
-    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted && !hasSeenBefore) {
+    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted) {
+      // If database says user hasn't seen banner, clear localStorage and show banner
+      if (hasSeenBefore) {
+        localStorage.removeItem('gdpr-banner-shown');
+      }
       setIsVisible(true);
     }
   }, [user]);
