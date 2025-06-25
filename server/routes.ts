@@ -134,8 +134,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // Always fetch fresh user data from database instead of cached session data
-      const userId = req.user?.claims?.sub || req.user?.id;
+      // SECURITY FIX: Only use authenticated user's ID
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const freshUser = await storage.getUser(userId);
       if (!freshUser) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -157,7 +160,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR consent route
   app.patch('/api/auth/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const { gdprConsent } = req.body;
       
       const updatedUser = await storage.updatePrivacyBannerSeen(userId, gdprConsent);
@@ -170,7 +176,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       
       // Get current user to merge with existing data
       const currentUser = await storage.getUser(userId);
@@ -204,7 +213,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/user/complete-onboarding', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const updatedUser = await storage.completeOnboarding(userId);
       res.json(updatedUser);
     } catch (error) {
@@ -215,7 +227,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Consent route - handles both initial banner and profile updates
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const { consent, hasSeenGdprBanner } = req.body;
       
       // Update GDPR consent with unified format
@@ -242,7 +257,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     rateLimit(10, 60 * 1000), 
     async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       if (!userId) {
         return res.status(400).json({ message: "User ID not found" });
       }
@@ -318,7 +336,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     rateLimit(30, 60 * 1000), // 30 food logs per minute
     async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       const userTier = user?.subscriptionTier || 'free';
       
@@ -369,7 +390,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       const userTier = user?.subscriptionTier || 'free';
       
@@ -392,7 +416,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs/today', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       const userTier = user?.subscriptionTier || 'free';
       
@@ -415,7 +442,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get ALL analyzed foods today (for challenges)
   app.get('/api/food/analyzed/today', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const logs = await storage.getTodaysAnalyzedFoods(userId);
       res.json(logs);
     } catch (error) {
@@ -426,7 +456,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current consecutive YES streak for today
   app.get('/api/food/yes-streak', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const todaysLogs = await storage.getTodaysFoodLogs(userId);
       
       // Calculate consecutive YES streak (resets on any NO/OK food)
@@ -449,7 +482,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all completed challenges for badge counting
   app.get('/api/challenges/completed', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const challenges = await storage.getAllCompletedChallenges(userId);
       res.json(challenges);
     } catch (error) {
@@ -460,7 +496,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Leaderboard routes - require Pro tier
   app.get('/api/leaderboard/weekly', isAuthenticated, async (req: any, res) => {
-    const userId = req.user?.claims?.sub || req.user?.id;
+    const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
     const user = await storage.getUser(userId);
     const userTier = user?.subscriptionTier || 'free';
     
@@ -481,7 +520,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/leaderboard/my-score', isAuthenticated, async (req: any, res) => {
-    const userId = req.user?.claims?.sub || req.user?.id;
+    const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
     const user = await storage.getUser(userId);
     const userTier = user?.subscriptionTier || 'free';
     
@@ -494,7 +536,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const score = await storage.getUserWeeklyScore(userId);
       res.json(score);
     } catch (error) {
@@ -544,7 +589,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const { tier, couponCode } = req.body;
 
       if (!['pro', 'advanced'].includes(tier)) {
@@ -646,7 +694,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.stripeCustomerId) {
@@ -709,7 +760,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current subscription status with caching
   app.get('/api/subscription/status', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const cacheKey = `sub_${userId}`;
       const now = Date.now();
       
@@ -765,7 +819,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.stripeSubscriptionId) {
@@ -810,7 +867,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.stripeSubscriptionId) {
@@ -921,10 +981,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!userId) {
         console.error('SECURITY: Export attempted without valid user ID');
-        return res.status(401).json({ message: "Authentication required" });
+        return res.status(401).json({ message: "User not properly authenticated" });
       }
       
+      // Log all data export attempts for security audit
+      console.log(`Data export requested by user: ${userId} at ${new Date().toISOString()}`);
+      
       const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
       const foodLogs = await storage.getFoodLogs(userId, 1000, 0);
       const weeklyScore = await storage.getUserWeeklyScore(userId);
 
@@ -976,7 +1042,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoint to view GDPR email preferences
   app.get('/api/admin/email-preferences', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       const user = await storage.getUser(userId);
       
       // Check if user is admin (you can modify this check as needed)
@@ -1050,7 +1119,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.claims?.sub || req.user?.id;
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
       
       // Mark user as deleted (anonymize data)
       await storage.updateUserProfile(userId, {
