@@ -139,7 +139,21 @@ export default function Landing() {
                   {item.label}
                 </a>
               ))}
-              <Button onClick={() => setShowRegister(true)} className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow">
+              <Button 
+                onClick={() => {
+                  // Show immediate loading state
+                  const btn = event?.currentTarget;
+                  if (btn) {
+                    btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
+                    btn.disabled = true;
+                  }
+                  // Small delay to show loading, then redirect
+                  setTimeout(() => {
+                    window.location.href = "/login";
+                  }, 300);
+                }} 
+                className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
+              >
                 Get Started
               </Button>
             </div>
@@ -147,7 +161,19 @@ export default function Landing() {
             {/* Right side controls */}
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
-              <Button onClick={() => setShowLogin(true)} className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow">
+              <Button 
+                onClick={(event) => {
+                  // Show immediate loading state
+                  const btn = event.currentTarget;
+                  btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
+                  btn.disabled = true;
+                  // Small delay to show loading, then redirect
+                  setTimeout(() => {
+                    window.location.href = "/login";
+                  }, 300);
+                }} 
+                className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
+              >
                 Login
               </Button>
 
@@ -440,7 +466,19 @@ export default function Landing() {
                   <span>Simple yes/no verdicts</span>
                 </li>
               </ul>
-              <Button onClick={() => setShowRegister(true)} className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button">
+              <Button 
+                onClick={(event) => {
+                  // Show immediate loading state
+                  const btn = event.currentTarget;
+                  btn.innerHTML = '<div class="flex items-center justify-center"><div class="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
+                  btn.disabled = true;
+                  // Small delay to show loading, then redirect
+                  setTimeout(() => {
+                    window.location.href = "/login";
+                  }, 300);
+                }} 
+                className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button hover:bg-gray-200 transition-all"
+              >
                 Get Started
               </Button>
             </Card>
@@ -550,7 +588,19 @@ export default function Landing() {
             Join thousands of users who are already making smarter food choices with AI-powered guidance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Button onClick={() => setShowRegister(true)} className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100">
+            <Button 
+              onClick={(event) => {
+                // Show immediate loading state
+                const btn = event.currentTarget;
+                btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-ios-blue border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
+                btn.disabled = true;
+                // Small delay to show loading, then redirect
+                setTimeout(() => {
+                  window.location.href = "/login";
+                }, 300);
+              }} 
+              className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100 transition-all"
+            >
               Start Free Trial
             </Button>
             <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-white/20">
