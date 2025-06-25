@@ -86,11 +86,13 @@ export default function Onboarding() {
       await apiRequest("POST", "/api/user/complete-onboarding", {});
     },
     onSuccess: () => {
+      console.log('Onboarding completed successfully');
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
       });
+      console.log('About to show GDPR banner - staying on onboarding page');
       // Stay on current page for both free and Pro users to show GDPR banner first
       // Navigation will happen after GDPR banner completion
     },

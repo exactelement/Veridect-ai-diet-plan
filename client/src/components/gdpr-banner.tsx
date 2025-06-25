@@ -21,21 +21,38 @@ export default function GDPRBanner() {
 
   // Determine if banner should show
   const shouldShowBanner = useMemo(() => {
-    if (authLoading || !user) return false;
+    if (authLoading || !user) {
+      console.log('GDPR shouldShow: false (loading or no user)', { authLoading, user: !!user });
+      return false;
+    }
     
-
+    const hasSeenBanner = user.hasSeenPrivacyBanner;
+    const onboardingDone = user.onboardingCompleted;
+    const shouldShow = !hasSeenBanner && onboardingDone;
     
-    return !user.hasSeenPrivacyBanner && user.onboardingCompleted;
+    console.log('GDPR shouldShow decision:', {
+      userId: user.id,
+      email: user.email,
+      hasSeenPrivacyBanner: hasSeenBanner,
+      onboardingCompleted: onboardingDone,
+      shouldShow
+    });
+    
+    return shouldShow;
   }, [user?.hasSeenPrivacyBanner, user?.onboardingCompleted, authLoading]);
 
   // Handle banner visibility
   useEffect(() => {
     mountedRef.current = true;
     
+    console.log('GDPR Effect:', { shouldShowBanner, authLoading, user: !!user });
+    
     if (shouldShowBanner) {
       localStorage.removeItem('gdpr-banner-shown');
+      console.log('Setting GDPR banner visible');
       setIsVisible(true);
     } else {
+      console.log('Setting GDPR banner hidden');
       setIsVisible(false);
     }
     
@@ -135,9 +152,12 @@ export default function GDPRBanner() {
   };
 
   // Only render when we have determined the banner should be visible
+  console.log('GDPR Render check:', { shouldShowBanner, isVisible });
   if (!shouldShowBanner || !isVisible) {
     return null;
   }
+  
+  console.log('GDPR Banner RENDERING!');
 
   return (
     <div
