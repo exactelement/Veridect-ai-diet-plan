@@ -2,7 +2,7 @@
 
 **Date:** June 25, 2025, 4:00 PM CET
 **Severity:** CRITICAL
-**Status:** FIXING IN PROGRESS
+**Status:** RESOLVED - All endpoints secured
 
 ## Incident Summary
 
@@ -49,11 +49,20 @@ if (!userId) {
 }
 ```
 
-## Data Breach Scope
+## Data Breach Analysis
 
-- **Affected Users:** test12@10xr.es (unauthorized access), hardmusicparty@gmail.com (data exposed)
+**Initial Assessment:** test12@10xr.es exported hardmusicparty@gmail.com's data
+
+**Investigation Results:**
+- Food log storage functions correctly filter by userId
+- No systemic data mixing found in database queries
+- Vulnerability confirmed as authentication fallback pattern: `req.user?.claims?.sub || req.user?.id`
+- The fallback to `req.user?.id` could pick up cached/incorrect session data
+
+**Actual Breach Scope:**
+- **Affected Users:** test12@10xr.es (unauthorized access), hardmusicparty@gmail.com (data exposed)  
 - **Data Exposed:** User profile, food logs, weekly scores, subscription status
-- **Access Method:** GDPR data export endpoint vulnerability
+- **Root Cause:** Authentication fallback allowing session confusion, not database data mixing
 
 ## Compliance Impact
 
