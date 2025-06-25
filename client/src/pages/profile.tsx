@@ -73,7 +73,7 @@ function EmailPreferencesSection({ user }: { user: any }) {
           timestamp: new Date().toISOString(),
           version: "1.0",
         },
-        hasSeenPrivacyBanner: user?.hasSeenPrivacyBanner || false
+        hasSeenPrivacyBanner: true
       });
     },
     onSuccess: () => {

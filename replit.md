@@ -68,15 +68,13 @@ Veridect is a live revenue-generating AI-powered nutrition analysis platform bri
 - **Multi-language Support**: Real-time text replacement across all pages and components
 - **Leaderboard Rankings**: Clear position indicators (#1, #2, #3) with rank calculations
 - **Proper Spacing**: Fixed button visibility issues with appropriate bottom margins
-- **Sequential Onboarding**: Unified GDPR consent flow for all user types prevents UI conflicts
 
 ## Data Flow
 
 1. **User Authentication**: Replit Auth → Session creation → User profile retrieval
-2. **Onboarding Process**: Profile setup → GDPR consent → Tier selection → Main app access
-3. **Food Analysis**: User input → AI processing → Result storage → UI update
-4. **Subscription Flow**: Stripe checkout → Webhook processing → User tier update
-5. **Progress Tracking**: Analysis results → Weekly scoring → Leaderboard updates
+2. **Food Analysis**: User input → AI processing → Result storage → UI update
+3. **Subscription Flow**: Stripe checkout → Webhook processing → User tier update
+4. **Progress Tracking**: Analysis results → Weekly scoring → Leaderboard updates
 
 ## External Dependencies
 
@@ -168,14 +166,6 @@ Preferred communication style: Simple, everyday language.
 - **Content Accuracy**: Free tier properly limited, Advanced tier naming consistent
 
 ## Recent Changes
-
-### Moved Privacy Consent to Beginning of Onboarding (June 25, 2025)
-- **Privacy-First Onboarding**: Privacy consent is now step 0 of onboarding flow before any profile setup
-- **Integrated Flow**: Privacy → profile setup (steps 1-3) → subscription choice → completion
-- **Database Integration**: Privacy preferences saved during onboarding completion and mapped to profile settings
-- **Clean UX**: No popup banners, privacy handled upfront in onboarding
-- **Progress Tracking**: Privacy step doesn't count in progress bar, starts from actual profile steps
-- **Smart Redirect**: After completion, redirect based on subscription choice with privacy already saved
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

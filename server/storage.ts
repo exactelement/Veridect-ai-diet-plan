@@ -156,51 +156,28 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateGdprConsent(userId: string, consentData: any): Promise<User> {
-    console.log('Updating GDPR consent for user:', userId, consentData);
     const [user] = await db
       .update(users)
       .set({
-        gdprConsent: consentData,
+        gdprConsent: consentData.gdprConsent,
+        hasSeenPrivacyBanner: consentData.has_seen_privacy_banner || true,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
       .returning();
-    console.log('GDPR consent updated successfully');
     return user;
   }
 
   async updatePrivacyBannerSeen(userId: string, gdprConsent: any): Promise<User> {
-    console.log('Marking privacy banner as seen for user:', userId);
-    console.log('Privacy consent data:', gdprConsent);
-    
-    // Get current user to merge privacy settings
-    const currentUser = await this.getUser(userId);
-    
-    // Map privacy consent to privacy settings
-    const privacySettings = {
-      showCalorieCounter: true,
-      participateInWeeklyChallenge: true,
-      showFoodStats: true,
-      showNutritionDetails: true,
-      shareDataForResearch: gdprConsent.analytics || false,
-      allowMarketing: gdprConsent.marketing || false,
-      shareWithHealthProviders: gdprConsent.personalization || false,
-      ...currentUser?.privacySettings
-    };
-    
-    console.log('Mapped privacy settings:', privacySettings);
-    
     const [user] = await db
       .update(users)
       .set({
         hasSeenPrivacyBanner: true,
         gdprConsent: gdprConsent,
-        privacySettings: privacySettings,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
       .returning();
-    console.log('Privacy banner marked as seen successfully with mapped settings');
     return user;
   }
 

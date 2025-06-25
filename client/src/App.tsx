@@ -27,7 +27,7 @@ import Unsubscribe from "@/pages/unsubscribe";
 import RefundPolicy from "@/pages/refund-policy";
 import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
-import GDPRBannerFinal from "@/components/gdpr-banner-final";
+import GDPRBanner from "@/components/gdpr-banner";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
 
@@ -64,7 +64,6 @@ function Router() {
         ) : user && user.onboardingCompleted ? (
           <>
             <Route path="/" component={FoodAnalysis} />
-            <Route path="/analyze" component={FoodAnalysis} />
             <Route path="/home" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />
             <Route path="/progress" component={Progress} />
@@ -80,20 +79,15 @@ function Router() {
             <Route path="/disclaimer" component={Disclaimer} />
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
-            <Route path="/onboarding" component={FoodAnalysis} />
-          </>
-        ) : isAuthenticated ? (
-          <>
-            <Route path="/onboarding" component={Onboarding} />
-            <Route path="*" component={Onboarding} />
           </>
         ) : (
-          <Route path="*" component={Landing} />
+          <Route path="*" component={Onboarding} />
         )}
+        <Route component={NotFound} />
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      <GDPRBannerFinal />
+      {isAuthenticated && <GDPRBanner />}
       
 
     </div>
