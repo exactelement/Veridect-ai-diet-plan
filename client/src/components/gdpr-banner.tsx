@@ -90,6 +90,9 @@ export default function GDPRBanner() {
           } else if (pendingFreeTier === 'true') {
             localStorage.removeItem('pending-free-tier');
             window.location.href = '/';
+          } else {
+            // Default redirect to analyze tab for completed onboarding users
+            window.location.href = '/';
           }
         }, 300);
       } else {
@@ -100,6 +103,9 @@ export default function GDPRBanner() {
           window.location.href = '/subscription';
         } else if (pendingFreeTier === 'true') {
           localStorage.removeItem('pending-free-tier');
+          window.location.href = '/';
+        } else {
+          // Default redirect to analyze tab for completed onboarding users
           window.location.href = '/';
         }
       }
