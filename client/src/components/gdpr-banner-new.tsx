@@ -13,6 +13,7 @@ export default function GDPRBannerNew() {
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [preferences, setPreferences] = useState({
+    essentialDataCollection: true, // Always true, required for app functionality
     improveAIRecommendations: true,
     nutritionInsightsEmails: true,
     anonymousUsageAnalytics: true,
@@ -88,6 +89,7 @@ export default function GDPRBannerNew() {
 
   const handleAcceptAll = () => {
     const allConsent = {
+      essentialDataCollection: true, // Always required
       improveAIRecommendations: true,
       nutritionInsightsEmails: true,
       anonymousUsageAnalytics: true,
@@ -98,6 +100,7 @@ export default function GDPRBannerNew() {
 
   const handleRejectAll = () => {
     const noConsent = {
+      essentialDataCollection: true, // Always required, cannot be rejected
       improveAIRecommendations: false,
       nutritionInsightsEmails: false,
       anonymousUsageAnalytics: false,
@@ -147,19 +150,26 @@ export default function GDPRBannerNew() {
             </div>
           </div>
 
-          <p className="text-gray-700 mb-6 leading-relaxed">
+          <p className="text-gray-700 mb-4 leading-relaxed">
             We value your privacy and want to be transparent about how we use your data to improve your Veridect experience. 
             Please review and customize your privacy preferences below.
           </p>
+          
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-800 font-medium">
+              <strong>Note:</strong> Essential data collection is required to use Veridect and cannot be disabled. 
+              This includes data necessary for user authentication, food analysis functionality, and core app features.
+            </p>
+          </div>
 
           {!showDetails ? (
             <div className="space-y-4">
               <div className="flex gap-3">
                 <Button onClick={handleAcceptAll} className="flex-1">
-                  Accept All
+                  Accept All & Continue
                 </Button>
                 <Button onClick={handleRejectAll} variant="outline" className="flex-1">
-                  Reject All
+                  Essential Only
                 </Button>
               </div>
               <Button 
@@ -169,6 +179,9 @@ export default function GDPRBannerNew() {
               >
                 Customize Preferences
               </Button>
+              <p className="text-xs text-gray-500 text-center">
+                By continuing, you accept our essential data collection required for app functionality.
+              </p>
             </div>
           ) : (
             <div className="space-y-6">
