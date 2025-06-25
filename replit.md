@@ -160,6 +160,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Email Preference Management System (June 25, 2025)
+- **Profile Email Tab**: Added dedicated email preferences section in user profile with instant toggle updates
+- **Public Unsubscribe Page**: Created `/unsubscribe` route for email link access without login requirement
+- **Admin Dashboard**: Comprehensive admin panel at `/admin/email-preferences` showing user consent choices and CSV export
+- **Multiple Opt-out Methods**: Users can manage preferences via profile, email links, or contacting support
+- **Granular Controls**: Separate toggles for weekly emails, AI participation, and usage analytics
+- **Token-based Security**: Secure unsubscribe tokens for email link validation without exposing user data
+
 ### GDPR One-Time Banner Protection (June 25, 2025)
 - **Enhanced GDPR Compliance**: Implemented triple-layer protection ensuring GDPR banner shows only once per user lifetime
 - **Unified API Endpoint**: Consolidated to single `/api/user/gdpr-consent` endpoint to prevent conflicts and maintain consistency

@@ -944,6 +944,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public unsubscribe endpoint (no auth required for email links)
+  app.post('/api/unsubscribe', async (req, res) => {
+    try {
+      const { email, token, preferences, unsubscribeAll } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email address is required" });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Simple token validation (in production, use signed tokens with expiration)
+      const expectedToken = Buffer.from(`unsubscribe:${email}:${user.id}`).toString('base64');
+      if (token && token !== expectedToken) {
+        return res.status(400).json({ message: "Invalid unsubscribe token" });
+      }
+
+      let updatedConsent;
+      if (unsubscribeAll) {
+        // Unsubscribe from everything
+        updatedConsent = {
+          nutritionInsightsEmails: false,
+          improveAIRecommendations: false,
+          anonymousUsageAnalytics: false,
+          timestamp: new Date().toISOString(),
+          version: "1.0",
+          unsubscribedAt: new Date().toISOString()
+        };
+      } else {
+        // Update specific preferences
+        updatedConsent = {
+          ...preferences,
+          timestamp: new Date().toISOString(),
+          version: "1.0",
+          lastModified: new Date().toISOString()
+        };
+      }
+
+      await storage.updatePrivacyBannerSeen(user.id, updatedConsent);
+      
+      res.json({ 
+        success: true, 
+        message: unsubscribeAll ? "Successfully unsubscribed from all emails" : "Email preferences updated" 
+      });
+    } catch (error) {
+      console.error("Unsubscribe error:", error);
+      res.status(500).json({ message: "Failed to update email preferences" });
+    }
+  });
+
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {

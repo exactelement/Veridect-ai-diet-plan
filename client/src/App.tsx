@@ -23,6 +23,7 @@ import About from "@/pages/about";
 import Investor from "@/pages/investor";
 import Disclaimer from "@/pages/disclaimer";
 import AdminEmailPreferences from "@/pages/admin-email-preferences";
+import Unsubscribe from "@/pages/unsubscribe";
 import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
 import GDPRBanner from "@/components/gdpr-banner";
@@ -73,6 +74,7 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/investor" component={Investor} />
             <Route path="/disclaimer" component={Disclaimer} />
+            <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
           </>
         ) : (
