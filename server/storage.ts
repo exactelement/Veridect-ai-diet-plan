@@ -312,10 +312,20 @@ export class DatabaseStorage implements IStorage {
   // Get ALL analyzed foods today (for challenges) - both logged and not logged
   // Uses Madrid timezone for consistent daily reset behavior
   async getTodaysAnalyzedFoods(userId: string): Promise<FoodLog[]> {
-    const madridToday = this.getMadridTime();
-    madridToday.setHours(0, 0, 0, 0);
-    const madridTomorrow = new Date(madridToday);
-    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
+    // Use Madrid timezone for consistent daily reset behavior
+    const madridNow = this.getMadridTime();
+    
+    // Get Madrid day boundaries (midnight to midnight in Madrid time)
+    const madridTodayStart = new Date(madridNow);
+    madridTodayStart.setHours(0, 0, 0, 0);
+    
+    const madridTomorrowStart = new Date(madridTodayStart);
+    madridTomorrowStart.setDate(madridTomorrowStart.getDate() + 1);
+    
+    // Convert Madrid boundaries to UTC for database query
+    // Madrid is UTC+1 in winter, UTC+2 in summer (currently summer, so UTC+2)
+    const utcTodayStart = new Date(madridTodayStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
+    const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
 
     return await db
       .select()
@@ -324,8 +334,8 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(foodLogs.userId, userId),
           // No isLogged filter - return ALL analyzed foods
-          gte(foodLogs.createdAt, madridToday),
-          lte(foodLogs.createdAt, madridTomorrow)
+          gte(foodLogs.createdAt, utcTodayStart),
+          lt(foodLogs.createdAt, utcTomorrowStart)
         )
       )
       .orderBy(desc(foodLogs.createdAt));

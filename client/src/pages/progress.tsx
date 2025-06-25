@@ -504,7 +504,7 @@ export default function Progress() {
 
               {/* Today's Rewards Earned - Shows actual bonus points from challenges */}
               <div className="bg-gradient-to-r from-indigo-50 to-purple-100 rounded-lg p-4 shadow-sm border border-indigo-200">
-                <h3 className="font-semibold text-lg mb-3 text-indigo-800">🎁 Today's Rewards Earned</h3>
+                <h3 className="font-semibold text-lg mb-3 text-indigo-800">🎁 Rewards Earned</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-indigo-700">
