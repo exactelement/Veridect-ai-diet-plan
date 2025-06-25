@@ -601,16 +601,37 @@ export class DatabaseStorage implements IStorage {
     return score;
   }
 
-  // Points management - handles ONLY lifetime points (for level progression)
-  // Weekly points are handled separately by updateWeeklyScore for food logging
+  // Points management - handles lifetime points that reset weekly for new users
+  // CORRECTED: Total points should match weekly points for users in their first week
   async updateUserPoints(userId: string, pointsToAdd: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
     
-    const newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
+    // Get current week start to check if user is in first week
+    const now = this.getMadridTime();
+    const weekStart = new Date(now);
+    const day = weekStart.getDay();
+    const diff = weekStart.getDate() - day + (day === 0 ? -6 : 1);
+    weekStart.setDate(diff);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    // Check if user was created after current week start
+    const userCreated = new Date(user.createdAt);
+    const isInFirstWeek = userCreated >= weekStart;
+    
+    let newTotalPoints;
+    if (isInFirstWeek) {
+      // For first week users, total points should equal weekly points
+      const weeklyScore = await this.getUserWeeklyScore(userId);
+      const weeklyPoints = weeklyScore?.weeklyPoints || 0;
+      newTotalPoints = weeklyPoints + pointsToAdd;
+    } else {
+      // For existing users, accumulate normally
+      newTotalPoints = (user.totalPoints || 0) + pointsToAdd;
+    }
+    
     const newLevel = Math.floor(newTotalPoints / 1000) + 1; // 1000 points per level
     
-    // Update lifetime points (NEVER RESET - accumulates forever for level progression)
     const [updatedUser] = await db
       .update(users)
       .set({ 
@@ -621,7 +642,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    // Points updated successfully
     return updatedUser;
   }
 
