@@ -68,6 +68,17 @@ export interface IStorage {
   // User count
   getUserCount(): Promise<number>;
   
+  // Email preferences for admin
+  getEmailPreferences(): Promise<Array<{
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    gdprConsent: any;
+    hasSeenPrivacyBanner: boolean;
+    createdAt: Date;
+  }>>;
+  
   // Failed webhook operations
   createFailedWebhook(webhook: InsertFailedWebhook): Promise<FailedWebhook>;
   getFailedWebhooks(): Promise<FailedWebhook[]>;
@@ -700,6 +711,33 @@ export class DatabaseStorage implements IStorage {
         sql`COALESCE(${users.privacySettings}->>'participateInWeeklyChallenge', 'true') = 'true'`
       );
     return Number(result[0].count);
+  }
+
+  async getEmailPreferences(): Promise<Array<{
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    gdprConsent: any;
+    hasSeenPrivacyBanner: boolean;
+    createdAt: Date;
+  }>> {
+    const result = await db.select({
+      id: users.id,
+      email: users.email,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      gdprConsent: users.gdprConsent,
+      hasSeenPrivacyBanner: users.hasSeenPrivacyBanner,
+      createdAt: users.createdAt,
+    }).from(users)
+    .where(eq(users.hasSeenPrivacyBanner, true))
+    .orderBy(desc(users.createdAt));
+    
+    return result.map(user => ({
+      ...user,
+      createdAt: user.createdAt || new Date(),
+    }));
   }
 
   // Reset weekly points every Monday (Madrid time)

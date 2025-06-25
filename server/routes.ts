@@ -924,6 +924,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to view GDPR email preferences
+  app.get('/api/admin/email-preferences', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const user = await storage.getUser(userId);
+      
+      // Check if user is admin (you can modify this check as needed)
+      const adminEmails = ['10xr.co@gmail.com', 'yesnolifestyleapp@gmail.com', 'quantaalgo@gmail.com'];
+      if (!adminEmails.includes(user?.email || '')) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const emailPreferences = await storage.getEmailPreferences();
+      res.json(emailPreferences);
+    } catch (error) {
+      console.error("Error fetching email preferences:", error);
+      res.status(500).json({ message: "Failed to fetch email preferences" });
+    }
+  });
+
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {
