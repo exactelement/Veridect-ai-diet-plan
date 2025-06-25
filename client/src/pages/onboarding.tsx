@@ -113,7 +113,13 @@ export default function Onboarding() {
 
   const handleSubscriptionChoice = (tier: string) => {
     if (tier === 'pro') {
-      navigate('/subscription');
+      // Complete onboarding first, then navigate to subscription
+      // This ensures GDPR flow is properly triggered
+      completeOnboardingMutation.mutate();
+      // Navigate to subscription after a brief delay to allow onboarding completion
+      setTimeout(() => {
+        navigate('/subscription');
+      }, 1000);
     } else {
       // Continue with free tier
       completeOnboardingMutation.mutate();
@@ -378,9 +384,10 @@ export default function Onboarding() {
                         <Button 
                           type="button"
                           className="w-full mt-4 bg-ios-blue hover:bg-blue-600"
-                          onClick={() => navigate('/subscription')}
+                          onClick={() => handleSubscriptionChoice('pro')}
+                          disabled={completeOnboardingMutation.isPending}
                         >
-                          Upgrade to Pro
+                          {completeOnboardingMutation.isPending ? "Setting up..." : "Upgrade to Pro"}
                         </Button>
                       </CardContent>
                     </Card>

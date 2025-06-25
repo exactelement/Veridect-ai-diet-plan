@@ -21,7 +21,8 @@ export default function GDPRBanner() {
 
   useEffect(() => {
     // Only show banner for authenticated users who haven't seen it before
-    if (user && !user.hasSeenPrivacyBanner) {
+    // Also ensure they've completed onboarding to avoid conflicts
+    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted) {
       setIsVisible(true);
     }
   }, [user]);
