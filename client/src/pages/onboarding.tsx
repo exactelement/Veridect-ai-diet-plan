@@ -91,12 +91,8 @@ export default function Onboarding() {
         title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
       });
-      // For Pro upgrade: stay on current page to show GDPR banner first
-      // For free tier: go home immediately
-      if (!pendingSubscriptionUpgrade) {
-        navigate("/");
-      }
-      // If pendingSubscriptionUpgrade is true, we stay here and let GDPR banner show
+      // Stay on current page for both free and Pro users to show GDPR banner first
+      // Navigation will happen after GDPR banner completion
     },
     onError: (error: Error) => {
       toast({
@@ -123,7 +119,8 @@ export default function Onboarding() {
       localStorage.setItem('pending-pro-upgrade', 'true');
       completeOnboardingMutation.mutate();
     } else {
-      // Continue with free tier
+      // Set flag for free tier to redirect to food analysis after GDPR
+      localStorage.setItem('pending-free-tier', 'true');
       completeOnboardingMutation.mutate();
     }
   };
@@ -356,7 +353,7 @@ export default function Onboarding() {
                           type="button"
                           variant="outline" 
                           className="w-full mt-4"
-                          onClick={() => completeOnboardingMutation.mutate()}
+                          onClick={() => handleSubscriptionChoice('free')}
                           disabled={completeOnboardingMutation.isPending}
                         >
                           Continue with Free

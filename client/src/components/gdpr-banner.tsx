@@ -69,8 +69,9 @@ export default function GDPRBanner() {
       // Save preferences to localStorage as backup
       localStorage.setItem('gdpr-consents', JSON.stringify(consentData));
       
-      // Check if user was planning to upgrade to Pro
-      const pendingUpgrade = localStorage.getItem('pending-pro-upgrade');
+      // Check what the user was planning to do after GDPR
+      const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
+      const pendingFreeTier = localStorage.getItem('pending-free-tier');
       
       // Animate out
       const banner = document.getElementById('gdpr-banner');
@@ -78,18 +79,24 @@ export default function GDPRBanner() {
         banner.classList.add('animate-slide-down');
         setTimeout(() => {
           setIsVisible(false);
-          // After GDPR completion, redirect to subscription if Pro upgrade was pending
-          if (pendingUpgrade === 'true') {
+          // After GDPR completion, redirect based on user's choice
+          if (pendingProUpgrade === 'true') {
             localStorage.removeItem('pending-pro-upgrade');
             window.location.href = '/subscription';
+          } else if (pendingFreeTier === 'true') {
+            localStorage.removeItem('pending-free-tier');
+            window.location.href = '/food-analysis';
           }
         }, 300);
       } else {
         setIsVisible(false);
-        // After GDPR completion, redirect to subscription if Pro upgrade was pending
-        if (pendingUpgrade === 'true') {
+        // After GDPR completion, redirect based on user's choice
+        if (pendingProUpgrade === 'true') {
           localStorage.removeItem('pending-pro-upgrade');
           window.location.href = '/subscription';
+        } else if (pendingFreeTier === 'true') {
+          localStorage.removeItem('pending-free-tier');
+          window.location.href = '/food-analysis';
         }
       }
     } catch (error) {
