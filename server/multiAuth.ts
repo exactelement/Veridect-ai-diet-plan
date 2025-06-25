@@ -387,8 +387,16 @@ export async function setupMultiAuth(app: Express) {
         subscriptionStatus: "inactive",
       });
 
-      // Log them in immediately after registration
-      req.login(user, (err) => {
+      // Create session-compatible user object and log them in
+      const sessionUser = {
+        ...user,
+        claims: {
+          sub: user.id,
+          email: user.email
+        }
+      };
+
+      req.login(sessionUser, (err) => {
         if (err) {
           if (process.env.NODE_ENV === 'development') {
             console.error("Login after registration failed:", err);
