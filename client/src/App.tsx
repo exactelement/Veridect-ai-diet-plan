@@ -60,6 +60,7 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/investor" component={Investor} />
             <Route path="/disclaimer" component={Disclaimer} />
+            <Route path="*" component={NotFound} />
           </>
         ) : user && user.onboardingCompleted ? (
           <>
@@ -79,17 +80,16 @@ function Router() {
             <Route path="/disclaimer" component={Disclaimer} />
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
-            <Route path="/onboarding" component={() => {
-              window.location.href = '/';
-              return <div>Redirecting...</div>;
-            }} />
+            <Route path="/onboarding" component={FoodAnalysis} />
             <Route path="*" component={NotFound} />
           </>
-        ) : (
+        ) : isAuthenticated ? (
           <>
             <Route path="/onboarding" component={Onboarding} />
             <Route path="*" component={Onboarding} />
           </>
+        ) : (
+          <Route path="*" component={Landing} />
         )}
       </Switch>
       
