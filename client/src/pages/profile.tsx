@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -59,21 +60,45 @@ type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 function EmailPreferencesSection({ user }: { user: any }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [preferences, setPreferences] = useState({
-    nutritionInsightsEmails: user.gdprConsent?.nutritionInsightsEmails || false,
-    improveAIRecommendations: user.gdprConsent?.improveAIRecommendations || false,
-    anonymousUsageAnalytics: user.gdprConsent?.anonymousUsageAnalytics || false,
-  });
+  // Initialize preferences from user's GDPR consent data
+  const [preferences, setPreferences] = useState(() => ({
+    nutritionInsightsEmails: user.gdprConsent?.nutritionEmails || user.gdprConsent?.nutritionInsightsEmails || false,
+    improveAIRecommendations: user.gdprConsent?.aiImprovement || user.gdprConsent?.improveAIRecommendations || false,
+    anonymousUsageAnalytics: user.gdprConsent?.analytics || user.gdprConsent?.anonymousUsageAnalytics || false,
+    marketingEmails: user.gdprConsent?.marketing || user.gdprConsent?.marketingEmails || false,
+  }));
+
+  // Update local state when user data changes
+  React.useEffect(() => {
+    setPreferences({
+      nutritionInsightsEmails: user.gdprConsent?.nutritionEmails || user.gdprConsent?.nutritionInsightsEmails || false,
+      improveAIRecommendations: user.gdprConsent?.aiImprovement || user.gdprConsent?.improveAIRecommendations || false,
+      anonymousUsageAnalytics: user.gdprConsent?.analytics || user.gdprConsent?.anonymousUsageAnalytics || false,
+      marketingEmails: user.gdprConsent?.marketing || user.gdprConsent?.marketingEmails || false,
+    });
+  }, [user.gdprConsent]);
 
   const updateEmailPreferences = useMutation({
     mutationFn: async (newPreferences: any) => {
+      // Map profile preferences to unified GDPR format
+      const gdprData = {
+        essential: true, // Always true
+        analytics: newPreferences.anonymousUsageAnalytics,
+        marketing: newPreferences.marketingEmails,
+        aiImprovement: newPreferences.improveAIRecommendations,
+        nutritionEmails: newPreferences.nutritionInsightsEmails,
+        // Keep both field names for compatibility
+        nutritionInsightsEmails: newPreferences.nutritionInsightsEmails,
+        improveAIRecommendations: newPreferences.improveAIRecommendations,
+        anonymousUsageAnalytics: newPreferences.anonymousUsageAnalytics,
+        marketingEmails: newPreferences.marketingEmails,
+        timestamp: new Date().toISOString(),
+        version: "1.0",
+      };
+
       return await apiRequest("POST", "/api/user/gdpr-consent", {
-        gdprConsent: {
-          ...newPreferences,
-          timestamp: new Date().toISOString(),
-          version: "1.0",
-        },
-        hasSeenPrivacyBanner: true
+        consent: gdprData,
+        hasSeenGdprBanner: true
       });
     },
     onSuccess: () => {
@@ -139,6 +164,20 @@ function EmailPreferencesSection({ user }: { user: any }) {
             <Switch
               checked={preferences.anonymousUsageAnalytics}
               onCheckedChange={(checked) => handlePreferenceChange('anonymousUsageAnalytics', checked)}
+              disabled={updateEmailPreferences.isPending}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex-1">
+              <h3 className="font-medium text-ios-text">Marketing Communications</h3>
+              <p className="text-sm text-ios-secondary mt-1">
+                Receive promotional emails about new features, special offers, and Veridect updates
+              </p>
+            </div>
+            <Switch
+              checked={preferences.marketingEmails}
+              onCheckedChange={(checked) => handlePreferenceChange('marketingEmails', checked)}
               disabled={updateEmailPreferences.isPending}
             />
           </div>

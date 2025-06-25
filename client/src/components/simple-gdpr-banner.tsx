@@ -24,7 +24,27 @@ export default function SimpleGDPRBanner({ onComplete }: SimpleGDPRBannerProps) 
   const saveConsent = async (consentData: any) => {
     try {
       setIsSubmitting(true);
-      await apiRequest("POST", "/api/user/gdpr-consent", { consent: consentData });
+      
+      // Map GDPR banner preferences to unified format
+      const gdprData = {
+        essential: consentData.essential,
+        analytics: consentData.analytics,
+        marketing: consentData.marketing,
+        aiImprovement: consentData.aiImprovement,
+        nutritionEmails: consentData.nutritionEmails,
+        // Map to profile page field names for consistency
+        nutritionInsightsEmails: consentData.nutritionEmails,
+        improveAIRecommendations: consentData.aiImprovement,
+        anonymousUsageAnalytics: consentData.analytics,
+        timestamp: new Date().toISOString(),
+        version: "1.0"
+      };
+
+      await apiRequest("POST", "/api/user/gdpr-consent", { 
+        consent: gdprData,
+        hasSeenGdprBanner: true
+      });
+      
       toast({
         title: "Privacy preferences saved",
         description: "Your privacy choices have been recorded.",
