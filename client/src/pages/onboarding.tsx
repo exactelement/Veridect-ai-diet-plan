@@ -60,11 +60,7 @@ export default function Onboarding() {
         dietaryPreferences: data.dietaryPreferences,
         healthGoals: data.healthGoals,
         allergies: data.allergies,
-        privacySettings: {
-          shareDataForResearch: false,
-          allowMarketing: false,
-          shareWithHealthProviders: false
-        }
+
       });
     },
     onSuccess: () => {
@@ -114,7 +110,6 @@ export default function Onboarding() {
   const handleSubscriptionChoice = (tier: string) => {
     if (tier === 'pro') {
       // Complete onboarding first, then navigate to subscription
-      // This ensures GDPR flow is properly triggered
       completeOnboardingMutation.mutate();
       // Navigate to subscription after a brief delay to allow onboarding completion
       setTimeout(() => {
@@ -149,7 +144,7 @@ export default function Onboarding() {
             </div>
             <div className="w-20"></div> {/* Spacer for centering */}
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome to YesNoApp</CardTitle>
+          <CardTitle className="text-3xl font-bold">Welcome to Veridect</CardTitle>
           <p className="text-ios-secondary">Let's personalize your nutrition journey</p>
           <Progress value={progress} className="mt-4" />
           <p className="text-sm text-ios-secondary">Step {step} of 4</p>
@@ -354,7 +349,7 @@ export default function Onboarding() {
                           type="button"
                           variant="outline" 
                           className="w-full mt-4"
-                          onClick={() => completeOnboardingMutation.mutate()}
+                          onClick={() => handleSubscriptionChoice('free')}
                           disabled={completeOnboardingMutation.isPending}
                         >
                           Continue with Free

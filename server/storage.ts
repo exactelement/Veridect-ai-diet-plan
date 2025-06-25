@@ -26,8 +26,6 @@ export interface IStorage {
   // Profile operations
   updateUserProfile(id: string, profile: UpdateUserProfile): Promise<User>;
   completeOnboarding(id: string): Promise<User>;
-  updateGdprConsent(userId: string, consent: any): Promise<User>;
-  updatePrivacyBannerSeen(userId: string, gdprConsent: any): Promise<User>;
   
   // Gamification operations
   updateUserPoints(userId: string, pointsToAdd: number): Promise<User>;

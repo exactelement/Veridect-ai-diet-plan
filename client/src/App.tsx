@@ -27,7 +27,7 @@ import Unsubscribe from "@/pages/unsubscribe";
 import RefundPolicy from "@/pages/refund-policy";
 import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
-import GDPRBanner from "@/components/gdpr-banner";
+
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
 
@@ -87,7 +87,6 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      {isAuthenticated && <GDPRBanner />}
       
 
     </div>
