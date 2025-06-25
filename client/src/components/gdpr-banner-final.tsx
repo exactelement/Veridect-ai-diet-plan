@@ -30,20 +30,17 @@ export default function GDPRBannerFinal() {
       authLoading,
       hasUser: !!user,
       onboardingCompleted: user?.onboardingCompleted,
-      hasSeenBanner: user?.hasSeenPrivacyBanner,
-      localStorage: localStorage.getItem('gdpr-banner-shown')
+      hasSeenBanner: user?.hasSeenPrivacyBanner
     });
 
     // Show banner if:
     // 1. User is authenticated and loaded
-    // 2. Onboarding is completed
-    // 3. User hasn't seen banner yet (database check)
-    // 4. No localStorage flag set
+    // 2. Onboarding is completed  
+    // 3. User hasn't seen banner yet (database check only)
     if (!authLoading && 
         user && 
         user.onboardingCompleted && 
-        !user.hasSeenPrivacyBanner && 
-        !localStorage.getItem('gdpr-banner-shown')) {
+        !user.hasSeenPrivacyBanner) {
       
       console.log("GDPR Banner: SHOWING");
       setIsVisible(true);
@@ -83,9 +80,6 @@ export default function GDPRBannerFinal() {
         gdprConsent: finalPreferences,
         hasSeenPrivacyBanner: true
       });
-
-      // Set localStorage flag to prevent re-showing
-      localStorage.setItem('gdpr-banner-shown', 'true');
       
       // Hide banner immediately
       setIsVisible(false);
