@@ -4,34 +4,42 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
-import Home from "@/pages/home";
-import Onboarding from "@/pages/onboarding";
-import Profile from "@/pages/profile";
 import FoodAnalysis from "@/pages/food-analysis";
-import Progress from "@/pages/progress";
-import Leaderboard from "@/pages/leaderboard";
-import Subscription from "@/pages/subscription";
-import Privacy from "@/pages/privacy";
-import Terms from "@/pages/terms";
-import HowToUse from "@/pages/how-to-use";
+import Onboarding from "@/pages/onboarding";
 
-import About from "@/pages/about";
-import Investor from "@/pages/investor";
-import Disclaimer from "@/pages/disclaimer";
-import AdminEmailPreferences from "@/pages/admin-email-preferences";
-import Unsubscribe from "@/pages/unsubscribe";
-import RefundPolicy from "@/pages/refund-policy";
+// Lazy load heavy components
+const Home = lazy(() => import("@/pages/home"));
+const Profile = lazy(() => import("@/pages/profile"));
+const Progress = lazy(() => import("@/pages/progress"));
+const Leaderboard = lazy(() => import("@/pages/leaderboard"));
+const Subscription = lazy(() => import("@/pages/subscription"));
+const Privacy = lazy(() => import("@/pages/privacy"));
+const Terms = lazy(() => import("@/pages/terms"));
+const HowToUse = lazy(() => import("@/pages/how-to-use"));
+const About = lazy(() => import("@/pages/about"));
+const Investor = lazy(() => import("@/pages/investor"));
+const Disclaimer = lazy(() => import("@/pages/disclaimer"));
+const AdminEmailPreferences = lazy(() => import("@/pages/admin-email-preferences"));
+const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
+const RefundPolicy = lazy(() => import("@/pages/refund-policy"));
+
 import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
-
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
 import GDPRBannerWrapper from "@/components/gdpr-banner-wrapper";
+
+// Loading component for lazy routes
+const LazyPageLoader = () => (
+  <div className="min-h-screen bg-ios-bg flex items-center justify-center">
+    <div className="w-6 h-6 border-2 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
