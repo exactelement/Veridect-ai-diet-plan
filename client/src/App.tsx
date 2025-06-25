@@ -42,11 +42,8 @@ function Router() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-ios-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Loading Veridect...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
