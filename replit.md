@@ -160,6 +160,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### GDPR One-Time Banner Protection (June 25, 2025)
+- **Enhanced GDPR Compliance**: Implemented triple-layer protection ensuring GDPR banner shows only once per user lifetime
+- **Server-Side Validation**: Both `/api/user/gdpr-consent` and `/api/auth/gdpr-consent` endpoints validate existing consent before accepting new submissions
+- **Client-Side Safeguards**: Added localStorage checks and immediate marking to prevent race conditions and duplicate showings
+- **Onboarding Flow Fixed**: Upgrade to Pro button now completes onboarding first, ensures GDPR consent, then navigates to subscription page
+- **Data Integrity Protection**: Error handling prevents database corruption from duplicate consent records
+- **Comprehensive Coverage**: Protection works across browser refreshes, network interruptions, and multiple authentication sessions
+
 ### Patent Documentation Enhancement (June 24, 2025)
 - **Updated Spanish Patent**: Enhanced PATENTE_VERIDECT_REVISADA_ES.md with "Pregunta a Veri" branding
 - **New English Patent**: Created comprehensive PATENT_VERIDECT_COMPREHENSIVE_EN.md for international markets

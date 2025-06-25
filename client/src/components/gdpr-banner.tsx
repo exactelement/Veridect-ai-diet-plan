@@ -22,7 +22,10 @@ export default function GDPRBanner() {
   useEffect(() => {
     // Only show banner for authenticated users who haven't seen it before
     // Also ensure they've completed onboarding to avoid conflicts
-    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted) {
+    // Double-check localStorage to prevent multiple showings
+    const hasSeenBefore = localStorage.getItem('gdpr-banner-shown');
+    
+    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted && !hasSeenBefore) {
       setIsVisible(true);
     }
   }, [user]);
@@ -53,8 +56,11 @@ export default function GDPRBanner() {
 
   const savePrefencesAndDismiss = async () => {
     try {
+      // Mark as shown immediately to prevent multiple submissions
+      localStorage.setItem('gdpr-banner-shown', 'true');
+      
       // Save GDPR consent to server and mark banner as seen
-      await apiRequest("PATCH", "/api/auth/gdpr-consent", {
+      const response = await apiRequest("PATCH", "/api/auth/gdpr-consent", {
         gdprConsent: consents,
         hasSeenPrivacyBanner: true
       });
@@ -72,6 +78,10 @@ export default function GDPRBanner() {
       }
     } catch (error) {
       console.error('Error saving privacy preferences:', error);
+      
+      // Remove localStorage marker if server save failed
+      localStorage.removeItem('gdpr-banner-shown');
+      
       toast({
         title: "Error",
         description: "Failed to save privacy preferences. Please try again.",
