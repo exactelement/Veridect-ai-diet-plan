@@ -85,7 +85,7 @@ export default function GDPRBanner() {
             window.location.href = '/subscription';
           } else if (pendingFreeTier === 'true') {
             localStorage.removeItem('pending-free-tier');
-            window.location.href = '/food-analysis';
+            window.location.href = '/';
           }
         }, 300);
       } else {
@@ -96,7 +96,7 @@ export default function GDPRBanner() {
           window.location.href = '/subscription';
         } else if (pendingFreeTier === 'true') {
           localStorage.removeItem('pending-free-tier');
-          window.location.href = '/food-analysis';
+          window.location.href = '/';
         }
       }
     } catch (error) {
