@@ -60,7 +60,7 @@ export default function GDPRBanner() {
       localStorage.setItem('gdpr-banner-shown', 'true');
       
       // Save GDPR consent to server and mark banner as seen
-      const response = await apiRequest("PATCH", "/api/auth/gdpr-consent", {
+      const response = await apiRequest("POST", "/api/user/gdpr-consent", {
         gdprConsent: consents,
         hasSeenPrivacyBanner: true
       });

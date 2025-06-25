@@ -162,7 +162,7 @@ Preferred communication style: Simple, everyday language.
 
 ### GDPR One-Time Banner Protection (June 25, 2025)
 - **Enhanced GDPR Compliance**: Implemented triple-layer protection ensuring GDPR banner shows only once per user lifetime
-- **Server-Side Validation**: Both `/api/user/gdpr-consent` and `/api/auth/gdpr-consent` endpoints validate existing consent before accepting new submissions
+- **Unified API Endpoint**: Consolidated to single `/api/user/gdpr-consent` endpoint to prevent conflicts and maintain consistency
 - **Client-Side Safeguards**: Added localStorage checks and immediate marking to prevent race conditions and duplicate showings
 - **Onboarding Flow Fixed**: Upgrade to Pro button now completes onboarding first, ensures GDPR consent, then navigates to subscription page
 - **Data Integrity Protection**: Error handling prevents database corruption from duplicate consent records
