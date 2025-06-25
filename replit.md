@@ -169,11 +169,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Unified Onboarding Flow (June 25, 2025)
-- **GDPR Banner Consistency**: Fixed flow so both free and Pro users see GDPR banner on onboarding page before navigation
-- **Sequential Navigation**: Free users: Onboarding → GDPR Banner → Food Analysis; Pro users: Onboarding → GDPR Banner → Subscription → Food Analysis
-- **localStorage Coordination**: Added `pending-free-tier` flag to manage free user navigation intent after GDPR completion
-- **Eliminated UI Confusion**: Removed overlapping banners and modals by ensuring all privacy consent happens before main app access
+### Fixed GDPR Banner and Onboarding Flow (June 25, 2025)
+- **GDPR Banner Flash Fix**: Completely rewrote GDPR banner with stable authentication handling and proper render conditions
+- **Authentication System**: Fixed 401 error handling in useAuth hook to prevent excessive API retries
+- **Onboarding Navigation**: Free users: Onboarding → GDPR Banner → Analyze Tab; Pro users: Onboarding → GDPR Banner → Subscription
+- **Redirect Paths**: Fixed free tier users redirecting to `/analyze` instead of home page after GDPR completion
+- **Stable Rendering**: Eliminated all flashing behavior with memoized banner logic and proper loading states
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

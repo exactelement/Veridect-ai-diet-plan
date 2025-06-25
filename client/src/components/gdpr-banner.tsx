@@ -22,6 +22,9 @@ export default function GDPRBanner() {
   // Determine if banner should show
   const shouldShowBanner = useMemo(() => {
     if (authLoading || !user) return false;
+    
+
+    
     return !user.hasSeenPrivacyBanner && user.onboardingCompleted;
   }, [user?.hasSeenPrivacyBanner, user?.onboardingCompleted, authLoading]);
 
@@ -100,10 +103,10 @@ export default function GDPRBanner() {
             window.location.href = '/subscription';
           } else if (pendingFreeTier === 'true') {
             localStorage.removeItem('pending-free-tier');
-            window.location.href = '/';
+            window.location.href = '/analyze';
           } else {
             // Default redirect to analyze tab for completed onboarding users
-            window.location.href = '/';
+            window.location.href = '/analyze';
           }
         }, 300);
       } else {
@@ -114,10 +117,10 @@ export default function GDPRBanner() {
           window.location.href = '/subscription';
         } else if (pendingFreeTier === 'true') {
           localStorage.removeItem('pending-free-tier');
-          window.location.href = '/';
+          window.location.href = '/analyze';
         } else {
           // Default redirect to analyze tab for completed onboarding users
-          window.location.href = '/';
+          window.location.href = '/analyze';
         }
       }
       
