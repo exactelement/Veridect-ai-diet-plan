@@ -8,61 +8,14 @@ import { Shield, Eye, Lock, UserCheck, FileText, Mail } from "lucide-react";
 export default function Privacy() {
   const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-ios-bg">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <Shield className="w-16 h-16 text-ios-blue mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-ios-text">Privacy Policy</h1>
-              <p className="text-ios-secondary mt-2">How we protect and handle your data</p>
-            </div>
-            
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Eye className="w-5 h-5 mr-2" />
-                  Data Collection
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">
-                  We collect minimal data necessary to provide our nutrition analysis service:
-                  email, name, food photos you choose to analyze, and your nutrition preferences.
-                </p>
-              </CardContent>
-            </Card>
+  // Show content regardless of auth status to fix blank page
+  const isLoggedIn = isAuthenticated;
 
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Lock className="w-5 h-5 mr-2" />
-                  Data Security
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">
-                  Your data is encrypted and stored securely. We never share your personal 
-                  information with third parties without your consent.
-                </p>
-              </CardContent>
-            </Card>
 
-            <div className="text-center mt-8">
-              <Button onClick={() => window.location.href = "/"}>
-                Back to Home
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-ios-bg">
-      <TopHeader />
+      {isLoggedIn && <TopHeader />}
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -172,9 +125,17 @@ export default function Privacy() {
             </CardContent>
           </Card>
 
+          {!isLoggedIn && (
+            <div className="text-center mt-8">
+              <Button onClick={() => window.location.href = "/"}>
+                Back to Home
+              </Button>
+            </div>
+          )}
+
         </div>
       </div>
-      <Navigation />
+      {isLoggedIn && <Navigation />}
     </div>
   );
 }
