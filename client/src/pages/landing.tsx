@@ -140,17 +140,19 @@ export default function Landing() {
                 </a>
               ))}
               <Button 
-                onClick={() => {
-                  // Show immediate loading state
-                  const btn = event?.currentTarget;
-                  if (btn) {
-                    btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
-                    btn.disabled = true;
-                  }
-                  // Small delay to show loading, then redirect
+                onClick={(event) => {
+                  // Show page transition overlay immediately
+                  if (window.showPageTransition) window.showPageTransition();
+                  
+                  // Show button loading state
+                  const btn = event.currentTarget;
+                  btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
+                  btn.disabled = true;
+                  
+                  // Navigate after brief delay
                   setTimeout(() => {
                     window.location.href = "/login";
-                  }, 300);
+                  }, 200);
                 }} 
                 className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
@@ -163,14 +165,18 @@ export default function Landing() {
               {/* Login button - always visible */}
               <Button 
                 onClick={(event) => {
-                  // Show immediate loading state
+                  // Show page transition overlay immediately
+                  if (window.showPageTransition) window.showPageTransition();
+                  
+                  // Show button loading state
                   const btn = event.currentTarget;
                   btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
                   btn.disabled = true;
-                  // Small delay to show loading, then redirect
+                  
+                  // Navigate after brief delay
                   setTimeout(() => {
                     window.location.href = "/login";
-                  }, 300);
+                  }, 200);
                 }} 
                 className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
@@ -468,14 +474,18 @@ export default function Landing() {
               </ul>
               <Button 
                 onClick={(event) => {
-                  // Show immediate loading state
+                  // Show page transition overlay immediately
+                  if (window.showPageTransition) window.showPageTransition();
+                  
+                  // Show button loading state
                   const btn = event.currentTarget;
                   btn.innerHTML = '<div class="flex items-center justify-center"><div class="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
                   btn.disabled = true;
-                  // Small delay to show loading, then redirect
+                  
+                  // Navigate after brief delay
                   setTimeout(() => {
                     window.location.href = "/login";
-                  }, 300);
+                  }, 200);
                 }} 
                 className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button hover:bg-gray-200 transition-all"
               >
@@ -590,14 +600,18 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button 
               onClick={(event) => {
-                // Show immediate loading state
+                // Show page transition overlay immediately
+                if (window.showPageTransition) window.showPageTransition();
+                
+                // Show button loading state
                 const btn = event.currentTarget;
                 btn.innerHTML = '<div class="flex items-center"><div class="w-4 h-4 border-2 border-ios-blue border-t-transparent rounded-full animate-spin mr-2"></div>Loading...</div>';
                 btn.disabled = true;
-                // Small delay to show loading, then redirect
+                
+                // Navigate after brief delay
                 setTimeout(() => {
                   window.location.href = "/login";
-                }, 300);
+                }, 200);
               }} 
               className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100 transition-all"
             >
