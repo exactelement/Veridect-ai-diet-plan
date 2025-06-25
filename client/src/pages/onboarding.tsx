@@ -91,7 +91,13 @@ export default function Onboarding() {
         title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
       });
-      navigate("/");
+      // Check if we should redirect to subscription or home
+      if (pendingSubscriptionUpgrade) {
+        setPendingSubscriptionUpgrade(false);
+        navigate("/subscription");
+      } else {
+        navigate("/");
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -113,13 +119,9 @@ export default function Onboarding() {
 
   const handleSubscriptionChoice = (tier: string) => {
     if (tier === 'pro') {
-      // Complete onboarding first, then navigate to subscription
-      // This ensures GDPR flow is properly triggered
+      // Set flag to redirect to subscription after onboarding completes
+      setPendingSubscriptionUpgrade(true);
       completeOnboardingMutation.mutate();
-      // Navigate to subscription after a brief delay to allow onboarding completion
-      setTimeout(() => {
-        navigate('/subscription');
-      }, 1000);
     } else {
       // Continue with free tier
       completeOnboardingMutation.mutate();
