@@ -989,28 +989,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const user = await storage.getUser(userId);
       if (!user) {
+        console.error(`SECURITY: Export failed - user ${userId} not found`);
         return res.status(404).json({ message: "User not found" });
       }
+      
+      console.log(`SECURITY AUDIT: Exporting data for user ${user.email} (ID: ${userId})`);
+      
+      // SECURITY: Each user gets ONLY their own data
       const foodLogs = await storage.getFoodLogs(userId, 1000, 0);
       const weeklyScore = await storage.getUserWeeklyScore(userId);
+      
+      console.log(`SECURITY AUDIT: Retrieved ${foodLogs.length} food logs for user ${user.email}`);
 
+      // SECURITY: Create export data containing ONLY this user's information
       const exportData = {
         user: {
-          id: user?.id,
-          email: user?.email,
-          firstName: user?.firstName,
-          lastName: user?.lastName,
-          createdAt: user?.createdAt,
-          healthGoals: user?.healthGoals,
-          dietaryPreferences: user?.dietaryPreferences,
-          allergies: user?.allergies,
-          subscriptionTier: user?.subscriptionTier,
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          healthGoals: user.healthGoals,
+          dietaryPreferences: user.dietaryPreferences,
+          allergies: user.allergies,
+          subscriptionTier: user.subscriptionTier,
         },
-        foodLogs: foodLogs,
-        weeklyScore: weeklyScore,
+        foodLogs: foodLogs, // Already filtered by userId in storage.getFoodLogs()
+        weeklyScore: weeklyScore, // Already filtered by userId in storage.getUserWeeklyScore()
         exportDate: new Date().toISOString(),
-        exportedBy: 'Veridect GDPR Export'
+        exportedBy: `Veridect GDPR Export for ${user.email}`,
+        securityNote: `This export contains data exclusively for user ID: ${userId}`
       };
+      
+      console.log(`SECURITY AUDIT: Export data prepared for ${user.email} - ${foodLogs.length} food logs, weekly score: ${weeklyScore?.weeklyPoints || 0}`);
 
       // Create comprehensive JSON export with proper streaming
       const timestamp = new Date().toISOString().split('T')[0];
