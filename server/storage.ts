@@ -477,10 +477,20 @@ export class DatabaseStorage implements IStorage {
 
   // Prevent duplicate bonus awards (Madrid timezone)
   async wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean> {
-    const madridToday = this.getMadridTime();
-    madridToday.setHours(0, 0, 0, 0);
-    const madridTomorrow = new Date(madridToday);
-    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
+    // Use Madrid timezone for consistent daily reset behavior
+    const madridNow = this.getMadridTime();
+    
+    // Get Madrid day boundaries (midnight to midnight in Madrid time)
+    const madridTodayStart = new Date(madridNow);
+    madridTodayStart.setHours(0, 0, 0, 0);
+    
+    const madridTomorrowStart = new Date(madridTodayStart);
+    madridTomorrowStart.setDate(madridTomorrowStart.getDate() + 1);
+    
+    // Convert Madrid boundaries to UTC for database query
+    // Madrid is UTC+1 in winter, UTC+2 in summer (currently summer, so UTC+2)
+    const utcTodayStart = new Date(madridTodayStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
+    const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
 
     const [result] = await db
       .select()
@@ -489,8 +499,8 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(foodLogs.userId, userId),
           eq(foodLogs.foodName, `BONUS_${bonusType}`),
-          gte(foodLogs.createdAt, madridToday),
-          lt(foodLogs.createdAt, madridTomorrow)
+          gte(foodLogs.createdAt, utcTodayStart),
+          lt(foodLogs.createdAt, utcTomorrowStart)
         )
       )
       .limit(1);
