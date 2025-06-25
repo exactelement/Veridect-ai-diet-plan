@@ -24,7 +24,7 @@ export default function GDPRBanner() {
     // Double-check localStorage to prevent multiple showings
     const hasSeenBefore = localStorage.getItem('gdpr-banner-shown');
     
-    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted && !hasSeenBefore) {
+    if (user && !user.has_seen_privacy_banner && user.onboardingCompleted && !hasSeenBefore) {
       setIsVisible(true);
     }
   }, [user]);
@@ -63,7 +63,7 @@ export default function GDPRBanner() {
           timestamp: new Date().toISOString(),
           version: "1.0",
         },
-        hasSeenPrivacyBanner: true
+        has_seen_privacy_banner: true
       });
 
       // Save preferences to localStorage as backup
