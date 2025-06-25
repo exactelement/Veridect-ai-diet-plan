@@ -63,9 +63,8 @@ export const users = pgTable("users", {
   lastStreakDate: timestamp("last_streak_date"), // Last date streak was updated
   
   // GDPR and Privacy
-  gdprConsent: jsonb("gdpr_consent"), // stores consent details and timestamps
-  gdprBannerShown: boolean("gdpr_banner_shown").default(false), // tracks if initial GDPR banner was shown
-  hasSeenPrivacyBanner: boolean("has_seen_privacy_banner").default(false), // tracks if user has seen privacy banner
+  gdprConsent: jsonb("gdpr_consent"),
+  hasSeenGdprBanner: boolean("has_seen_gdpr_banner").default(false),
   privacySettings: jsonb("privacy_settings").default({
     showCalorieCounter: true,
     participateInWeeklyChallenge: true,

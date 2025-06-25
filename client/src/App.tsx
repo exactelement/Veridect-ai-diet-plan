@@ -41,7 +41,7 @@ function Router() {
 
   // Check if GDPR banner should be shown
   useEffect(() => {
-    if (isAuthenticated && user && !user.hasSeenGdprBanner && !user.onboardingCompleted) {
+    if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && !(user as any).onboardingCompleted) {
       setShowGdprBanner(true);
     }
   }, [isAuthenticated, user]);

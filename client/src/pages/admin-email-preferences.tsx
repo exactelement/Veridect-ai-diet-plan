@@ -11,9 +11,10 @@ interface UserEmailPreference {
   firstName: string;
   lastName: string;
   gdprConsent: {
-    improveAIRecommendations?: boolean;
-    nutritionInsightsEmails?: boolean;
-    anonymousUsageAnalytics?: boolean;
+    aiImprovement?: boolean;
+    nutritionEmails?: boolean;
+    analytics?: boolean;
+    marketing?: boolean;
     timestamp?: string;
     version?: string;
   };
@@ -35,9 +36,10 @@ export default function AdminEmailPreferences() {
     const csvData = preferences.map((user: UserEmailPreference) => ({
       Email: user.email,
       Name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-      'Weekly Nutrition Emails': user.gdprConsent?.nutritionInsightsEmails ? 'Yes' : 'No',
-      'AI Improvements': user.gdprConsent?.improveAIRecommendations ? 'Yes' : 'No',
-      'Usage Analytics': user.gdprConsent?.anonymousUsageAnalytics ? 'Yes' : 'No',
+      'Weekly Nutrition Emails': user.gdprConsent?.nutritionEmails ? 'Yes' : 'No',
+      'AI Improvements': user.gdprConsent?.aiImprovement ? 'Yes' : 'No',
+      'Usage Analytics': user.gdprConsent?.analytics ? 'Yes' : 'No',
+      'Marketing Emails': user.gdprConsent?.marketing ? 'Yes' : 'No',
       'Consent Date': new Date(user.createdAt).toLocaleDateString(),
       'GDPR Version': user.gdprConsent?.version || '1.0'
     }));
@@ -81,15 +83,15 @@ export default function AdminEmailPreferences() {
   }
 
   const emailSubscribers = preferences?.filter((user: UserEmailPreference) => 
-    user.gdprConsent?.nutritionInsightsEmails
+    user.gdprConsent?.nutritionEmails
   ) || [];
 
   const aiOptIns = preferences?.filter((user: UserEmailPreference) => 
-    user.gdprConsent?.improveAIRecommendations
+    user.gdprConsent?.aiImprovement
   ) || [];
 
   const analyticsOptIns = preferences?.filter((user: UserEmailPreference) => 
-    user.gdprConsent?.anonymousUsageAnalytics
+    user.gdprConsent?.analytics
   ) || [];
 
   return (
@@ -230,7 +232,7 @@ export default function AdminEmailPreferences() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-1">
-                      {user.gdprConsent?.nutritionInsightsEmails ? 
+                      {user.gdprConsent?.nutritionEmails ? 
                         <Check className="w-4 h-4 text-green-500" /> : 
                         <X className="w-4 h-4 text-red-500" />
                       }

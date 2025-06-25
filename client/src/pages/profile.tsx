@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock, AlertCircle, XCircle, Loader2, Crown, Mail } from "lucide-react";
+import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock, AlertCircle, XCircle, Loader2, Crown, Mail, Shield, CheckCircle } from "lucide-react";
 import { updateUserProfileSchema } from "@shared/schema";
 import type { UpdateUserProfile, FoodLog } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";

@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Ensure user hasn't already given consent (lifetime check)
       const user = await storage.getUser(userId);
-      if (user?.hasSeenGdprBanner) {
+      if ((user as any)?.hasSeenGdprBanner) {
         return res.status(400).json({ 
           message: "GDPR consent already recorded for this user" 
         });
