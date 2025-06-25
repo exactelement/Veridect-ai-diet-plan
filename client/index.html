@@ -20,6 +20,15 @@
     <link rel="dns-prefetch" href="//appleid.cdn-apple.com" />
     <link rel="dns-prefetch" href="//replit.com" />
     
+    <!-- Preconnect to speed up font/resource loading -->
+    <link rel="preconnect" href="https://appleid.cdn-apple.com" />
+    
+    <!-- Critical CSS inline -->
+    <style>
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+      #root { min-height: 100vh; }
+    </style>
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#10b981" />
@@ -44,7 +53,7 @@
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        transition: opacity 0.15s ease-out;
+        transition: opacity 0.1s ease-out;
       }
       
       #initial-loader.fade-out {
@@ -53,12 +62,12 @@
       }
       
       .loader-spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid #e5e7eb;
-        border-top: 3px solid #3b82f6;
+        width: 28px;
+        height: 28px;
+        border: 2px solid #e5e7eb;
+        border-top: 2px solid #3b82f6;
         border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+        animation: spin 0.6s linear infinite;
       }
       
       @keyframes spin {
@@ -76,12 +85,12 @@
       }
     </style>
     <script>
-      // Optimized page transition
+      // Ultra-fast page transition
       window.fastNavigate = function(url) {
         document.body.classList.add('page-transitioning');
         setTimeout(() => {
           window.location.href = url;
-        }, 50);
+        }, 25);
       };
     </script>
   </head>

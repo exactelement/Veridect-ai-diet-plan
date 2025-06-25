@@ -2,16 +2,18 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Fast loader removal
+// Immediate loader removal
 function hideInitialLoader() {
   const loader = document.getElementById('initial-loader');
   if (loader) {
     loader.classList.add('fade-out');
-    setTimeout(() => loader.remove(), 150);
+    setTimeout(() => loader.remove(), 100);
   }
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Create root and render immediately
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
 
-// Hide loader immediately when React is ready
-hideInitialLoader();
+// Hide loader as soon as React starts rendering
+requestAnimationFrame(hideInitialLoader);
