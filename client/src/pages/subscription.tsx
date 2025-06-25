@@ -615,6 +615,31 @@ export default function Subscription() {
         </Card>
       )}
       
+      {/* Legal footer links */}
+      <div className="text-center text-xs text-ios-secondary space-x-4 mt-8 mb-4">
+        <span>By subscribing, you agree to our </span>
+        <button 
+          onClick={() => window.open('/terms', '_blank')}
+          className="text-ios-blue hover:underline"
+        >
+          Terms of Service
+        </button>
+        <span>•</span>
+        <button 
+          onClick={() => window.open('/refund-policy', '_blank')}
+          className="text-ios-blue hover:underline"
+        >
+          Refund Policy
+        </button>
+        <span>•</span>
+        <button 
+          onClick={() => window.open('/privacy', '_blank')}
+          className="text-ios-blue hover:underline"
+        >
+          Privacy Policy
+        </button>
+      </div>
+      
       {/* Bottom spacer to prevent footer overlap */}
       <div className="h-20"></div>
     </div>

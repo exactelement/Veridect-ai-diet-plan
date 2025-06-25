@@ -145,8 +145,9 @@ export default function Terms() {
               <ul className="space-y-1 text-sm text-ios-secondary">
                 <li>• You may cancel your subscription at any time</li>
                 <li>• Cancellation takes effect at the end of the current billing period</li>
-                <li>• 14-day money-back guarantee for new subscriptions</li>
-                <li>• No refunds for partial billing periods</li>
+                <li>• Given our €1/month pricing and free tier, refunds are typically not provided</li>
+                <li>• Contact info@veridect.com for exceptional circumstances</li>
+                <li>• See our Refund Policy for complete details</li>
               </ul>
             </div>
 
