@@ -382,7 +382,10 @@ export default function Onboarding() {
                         <Button 
                           type="button"
                           className="w-full mt-4 bg-ios-blue hover:bg-blue-600"
-                          onClick={() => handleSubscriptionChoice('pro')}
+                          onClick={() => {
+                            localStorage.setItem('pending-pro-upgrade', 'true');
+                            completeOnboardingMutation.mutate();
+                          }}
                           disabled={completeOnboardingMutation.isPending}
                         >
                           {completeOnboardingMutation.isPending ? "Setting up..." : "Upgrade to Pro"}
