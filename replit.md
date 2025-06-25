@@ -2,7 +2,7 @@
 
 ## Overview
 
-Veridect food analyser bringing awareness to healthier nutrition. AI-powered nutrition guidance for healthier living. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations in 20+ languages. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, comprehensive food logging capabilities, and real-time translation across all pages and components.
+Veridect is a live revenue-generating AI-powered nutrition analysis platform bringing awareness to healthier nutrition. Users can analyze food through photos, uploads, or text descriptions to receive simple "Yes", "No", or "OK" verdicts with detailed explanations in 20+ languages. The platform combines modern React frontend with Express.js backend, featuring user authentication, subscription management, comprehensive food logging capabilities, real-time translation, and patent-pending AI technology. Currently serving paying customers with operational Pro tier subscriptions.
 
 ## System Architecture
 
@@ -149,14 +149,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Development Status - Patent Pending
 
-### Stripe Configuration Status (June 24, 2025)
+### System Status (June 25, 2025)
 - **Live Mode Status**: CONFIRMED LIVE ✅ - Real payment processing active
 - **Pro Tier**: OPERATIONAL ✅ - €1/month subscriptions being processed
-- **Active Subscriptions**: 2 users with pending Pro upgrades in system
+- **Active Subscriptions**: 2 users with confirmed Pro tier status
 - **Webhook Processing**: LIVE WEBHOOKS ✅ - Real payment confirmations working
 - **Advanced Tier**: Coming Soon (€50/month) - Price ID not needed yet
 - **Revenue Status**: COLLECTING REAL REVENUE - Payment system fully operational
 - **Security**: Live payment flow secure with proper webhook verification
+- **Database Health**: 9 total users, 8 with GDPR consent recorded, all systems operational
+- **Authentication**: Replit Auth working, session management stable
+- **AI Analysis**: Google Gemini integration functional, processing food analysis requests
+- **Gamification**: Dual point system operational, leaderboards active
 
 ## Recent Changes
 
@@ -167,6 +171,8 @@ Preferred communication style: Simple, everyday language.
 - **Multiple Opt-out Methods**: Users can manage preferences via profile, email links, or contacting support
 - **Granular Controls**: Separate toggles for weekly emails, AI participation, and usage analytics
 - **Token-based Security**: Secure unsubscribe tokens for email link validation without exposing user data
+- **Simplified Messaging**: Removed verbose preference update text, kept essential re-enable and contact information
+- **Database Status**: 8/9 users with recorded GDPR consent, all preferences properly stored and enforced for emails
 
 ### GDPR One-Time Banner Protection (June 25, 2025)
 - **Enhanced GDPR Compliance**: Implemented triple-layer protection ensuring GDPR banner shows only once per user lifetime
@@ -174,6 +180,7 @@ Preferred communication style: Simple, everyday language.
 - **Single Banner Component**: Removed duplicate `GDPRInitialBanner` component to eliminate confusion and potential conflicts
 - **Client-Side Safeguards**: Added localStorage checks and immediate marking to prevent race conditions and duplicate showings
 - **Onboarding Flow Fixed**: Upgrade to Pro button now completes onboarding first, ensures GDPR consent, then navigates to subscription page
+- **Beta-Appropriate Enforcement**: Consent collection functional, strict data usage enforcement deferred until post-beta for development velocity
 - **Data Integrity Protection**: Error handling prevents database corruption from duplicate consent records
 - **Comprehensive Coverage**: Protection works across browser refreshes, network interruptions, and multiple authentication sessions
 
