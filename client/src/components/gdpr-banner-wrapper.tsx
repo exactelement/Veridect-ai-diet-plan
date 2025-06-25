@@ -8,18 +8,21 @@ export default function GDPRBannerWrapper() {
   const { isAuthenticated, user, isLoading } = useAuth();
   const [location] = useLocation();
   const [showGdprBanner, setShowGdprBanner] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Only run when auth state is stable (not loading)
-    if (isLoading) return;
+    // Only run once when conditions are right and haven't checked yet
+    if (isLoading || hasChecked) return;
     
     try {
       // Early returns to prevent errors
       if (!isAuthenticated || !user) {
-        setShowGdprBanner(false);
         return;
       }
+
+      // Mark as checked to prevent re-runs
+      setHasChecked(true);
 
       // Safe property access with defaults
       const hasSeenBanner = Boolean((user as any)?.hasSeenGdprBanner);
@@ -30,15 +33,14 @@ export default function GDPRBannerWrapper() {
       
       // Show banner only when all conditions are met
       if (!hasSeenBanner && onboardingComplete && isMainRoute) {
-        setShowGdprBanner(true);
-      } else {
-        setShowGdprBanner(false);
+        // Small delay to ensure app is fully loaded
+        setTimeout(() => setShowGdprBanner(true), 500);
       }
     } catch (error) {
       console.warn('GDPR banner check failed:', error);
-      setShowGdprBanner(false); // Always fail safely
+      setShowGdprBanner(false);
     }
-  }, [isAuthenticated, user, location, isLoading]);
+  }, [isAuthenticated, user, location, isLoading, hasChecked]);
 
   const handleGdprComplete = useCallback(() => {
     try {

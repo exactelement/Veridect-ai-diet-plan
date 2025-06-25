@@ -93,8 +93,7 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      {/* Temporarily disable GDPR to fix infinite auth loop */}
-      {/* <GDPRBannerWrapper /> */}
+      {/* GDPR banner disabled - causes infinite auth loop */}
 
     </div>
   );
