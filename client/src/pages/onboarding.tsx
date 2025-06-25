@@ -395,10 +395,14 @@ export default function Onboarding() {
                     <button 
                       type="button"
                       className="text-sm text-gray-500 underline"
-                      onClick={() => completeOnboardingMutation.mutate()}
+                      onClick={() => {
+                        // Set free tier choice for GDPR redirect
+                        localStorage.setItem('pending-free-tier', 'true');
+                        completeOnboardingMutation.mutate();
+                      }}
                       disabled={completeOnboardingMutation.isPending}
                     >
-                      I'll decide later
+                      Continue with Free
                     </button>
                   </div>
                 </div>
