@@ -53,9 +53,10 @@ Veridect is a live revenue-generating AI-powered nutrition analysis platform bri
 - **Result Processing**: Structured JSON responses with nutritional data and confidence scores
 
 ### Subscription Management
-- **Payment Processor**: Stripe integration
-- **Tiers**: Free (5 analyses/day), Pro ($19.99), Medical ($49.99)
+- **Payment Processor**: Stripe integration (yearly billing in advance)
+- **Tiers**: Free (5 analyses/day), Pro (€1/month billed yearly), Advanced (€50/month)
 - **Features**: Usage tracking, tier-based feature access, subscription webhooks
+- **Free Tier Limitations**: Only basic nutritional info, simple verdicts, no community/leaderboard access
 
 ### User Interface
 - **Design System**: iOS-inspired with custom CSS variables
@@ -151,7 +152,7 @@ Preferred communication style: Simple, everyday language.
 
 ### System Status (June 25, 2025)
 - **Live Mode Status**: CONFIRMED LIVE ✅ - Real payment processing active
-- **Pro Tier**: OPERATIONAL ✅ - €1/month subscriptions being processed
+- **Pro Tier**: OPERATIONAL ✅ - €1/month subscriptions being processed (billed yearly)
 - **Active Subscriptions**: 2 users with confirmed Pro tier status
 - **Webhook Processing**: LIVE WEBHOOKS ✅ - Real payment confirmations working
 - **Advanced Tier**: Coming Soon (€50/month) - Price ID not needed yet
@@ -160,9 +161,17 @@ Preferred communication style: Simple, everyday language.
 - **Database Health**: 9 total users, 8 with GDPR consent recorded, all systems operational
 - **Authentication**: Replit Auth working, session management stable
 - **AI Analysis**: Google Gemini integration functional, processing food analysis requests
-- **Gamification**: Dual point system operational, leaderboards active
+- **Gamification**: Dual point system operational, leaderboards active (Pro tier only)
+- **Content Accuracy**: Free tier properly limited, Advanced tier naming consistent
 
 ## Recent Changes
+
+### Platform Content Updates (June 25, 2025)
+- **Free Tier Clarification**: Updated all pages to consistently show free tier includes only: 5 analyses per day, basic nutritional info, simple yes/no verdicts (removed community features)
+- **Tier Naming Standardization**: Changed all "Medical Tier" references to "Advanced Tier" across platform (terms, disclaimer, subscription pages)
+- **Billing Model Updates**: Updated Terms of Service to reflect yearly billing in advance (not monthly) and Stripe-only payments (removed PayPal)
+- **UI Improvements**: Fixed refund policy page spacing with proper top margin (pt-20) and removed unnecessary back button
+- **Content Consistency**: Ensured leaderboard and community access are clearly Pro tier features only
 
 ### Email Preference Management System (June 25, 2025)
 - **Profile Email Tab**: Added dedicated email preferences section in user profile with instant toggle updates
