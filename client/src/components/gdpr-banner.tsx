@@ -22,6 +22,7 @@ export default function GDPRBanner() {
   // Determine if banner should show - LIFETIME ONCE ONLY
   const shouldShowBanner = useMemo(() => {
     if (authLoading || !user) {
+      console.log('GDPR shouldShow: false (loading or no user)', { authLoading, user: !!user });
       return false;
     }
     
@@ -30,9 +31,18 @@ export default function GDPRBanner() {
     const onboardingDone = user.onboardingCompleted;
     const shouldShow = !hasSeenBanner && onboardingDone;
     
+    console.log('GDPR shouldShow decision:', {
+      userId: user.id,
+      email: user.email,
+      hasSeenPrivacyBanner: hasSeenBanner,
+      onboardingCompleted: onboardingDone,
+      shouldShow
+    });
+    
     // Extra protection: check localStorage as backup
     const localStorageCheck = localStorage.getItem('gdpr-banner-shown');
     if (localStorageCheck === 'true' && hasSeenBanner) {
+      console.log('GDPR blocked by localStorage check');
       return false;
     }
     
@@ -149,9 +159,12 @@ export default function GDPRBanner() {
   };
 
   // Only render when we have determined the banner should be visible
+  console.log('GDPR Render check:', { shouldShowBanner, isVisible });
   if (!shouldShowBanner || !isVisible) {
     return null;
   }
+  
+  console.log('GDPR Banner RENDERING!');
 
   return (
     <div

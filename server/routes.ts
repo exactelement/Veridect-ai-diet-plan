@@ -197,15 +197,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // GDPR Consent route
+  // SINGLE GDPR consent endpoint - handles banner interaction
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
-      const consentData = req.body;
+      const { gdprConsent, hasSeenPrivacyBanner } = req.body;
       
-      const updatedUser = await storage.updateGdprConsent(userId, consentData);
+      console.log('GDPR API called:', { userId, hasSeenPrivacyBanner });
+      
+      // Check if user already submitted GDPR consent - LIFETIME protection
+      const user = await storage.getUser(userId);
+      
+      if (user?.hasSeenPrivacyBanner && hasSeenPrivacyBanner) {
+        console.log('GDPR consent already submitted for user:', userId);
+        return res.status(400).json({ 
+          message: "GDPR consent already recorded for this user",
+          alreadyRecorded: true
+        });
+      }
+      
+      // Save GDPR consent and mark privacy banner as seen PERMANENTLY
+      const updatedUser = await storage.updatePrivacyBannerSeen(userId, gdprConsent);
+      
+      console.log('GDPR consent saved permanently for user:', userId);
       res.json({ success: true, user: updatedUser });
-    } catch (error: any) {
+    } catch (error) {
+      console.error("GDPR consent error:", error);
       res.status(500).json({ message: "Failed to update consent preferences" });
     }
   });
