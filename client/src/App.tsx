@@ -79,10 +79,15 @@ function Router() {
             <Route path="/disclaimer" component={Disclaimer} />
             <Route path="/unsubscribe" component={Unsubscribe} />
             <Route path="/admin/email-preferences" component={AdminEmailPreferences} />
+            <Route path="/onboarding" component={() => {
+              window.location.href = '/';
+              return <div>Redirecting...</div>;
+            }} />
             <Route path="*" component={NotFound} />
           </>
         ) : (
           <>
+            <Route path="/onboarding" component={Onboarding} />
             <Route path="*" component={Onboarding} />
           </>
         )}
