@@ -384,9 +384,8 @@ export class DatabaseStorage implements IStorage {
 
     try {
       const verdictPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      // Adding weekly points for verdict
       
-      // Use explicit select/update to avoid constraint issues
+      // Update weekly score
       const [existing] = await db
         .select()
         .from(weeklyScores)
@@ -394,7 +393,6 @@ export class DatabaseStorage implements IStorage {
         .limit(1);
 
       if (existing) {
-        // Update existing record
         await db
           .update(weeklyScores)
           .set({
@@ -405,7 +403,6 @@ export class DatabaseStorage implements IStorage {
           })
           .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
       } else {
-        // Insert new record
         await db
           .insert(weeklyScores)
           .values({
@@ -417,6 +414,11 @@ export class DatabaseStorage implements IStorage {
             weeklyPoints: verdictPoints,
           });
       }
+
+      // Also update total points for level progression (dual system)
+      await this.updateUserPoints(userId, verdictPoints);
+      
+      await this.updateWeeklyRanks(weekStart);
     } catch (error) {
       // Error updating weekly score
     }
@@ -463,12 +465,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Prevent duplicate bonus awards
+  // Prevent duplicate bonus awards (Madrid timezone)
   async wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const madridToday = this.getMadridTime();
+    madridToday.setHours(0, 0, 0, 0);
+    const madridTomorrow = new Date(madridToday);
+    madridTomorrow.setDate(madridTomorrow.getDate() + 1);
 
     const [result] = await db
       .select()
@@ -477,8 +479,8 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(foodLogs.userId, userId),
           eq(foodLogs.foodName, `BONUS_${bonusType}`),
-          gte(foodLogs.createdAt, today),
-          lte(foodLogs.createdAt, tomorrow)
+          gte(foodLogs.createdAt, madridToday),
+          lt(foodLogs.createdAt, madridTomorrow)
         )
       )
       .limit(1);

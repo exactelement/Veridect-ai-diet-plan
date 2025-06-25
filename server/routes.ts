@@ -353,12 +353,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Created new food log entry
       }
       
-      // Award food logging points - SINGLE SOURCE OF POINTS
-      const foodPoints = verdict === "YES" ? 10 : verdict === "OK" ? 5 : 2;
-      
-      // Award to BOTH lifetime points (permanent) and weekly points (resets weekly)
-      await storage.updateUserPoints(userId, foodPoints); // Lifetime points
-      await storage.updateWeeklyScore(userId, verdict); // Weekly points system
+      // Award food logging points - updateWeeklyScore handles both systems
+      await storage.updateWeeklyScore(userId, verdict); // Handles both weekly AND total points
       
       await storage.updateStreak(userId, verdict);
       
