@@ -169,6 +169,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Privacy Page Simplification (June 25, 2025)
+- **Privacy Page Architecture**: Removed complex GDPR export/delete functionality, simplified to basic privacy information with contact-based account deletion
+- **Performance Optimization**: Extended auth cache to 10 minutes, reduced API spam from 200ms intervals to minimal requests
+- **UI Improvements**: Fixed blank page issues, added proper spacing (pt-20 pb-24), updated contact email to info@veridect.com
+- **User Experience**: Single unified privacy page accessible to both logged-in and anonymous users
+
 ### Comprehensive Security & Data Handling Audit (June 25, 2025)
 - **CRITICAL SECURITY FIX**: Eliminated dangerous authentication fallback patterns across 22+ endpoints that allowed user data access confusion
 - **SECURITY REGRESSION FIXED**: Immediately reverted dangerous fallback user ID pattern that could have allowed cross-user data access

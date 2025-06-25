@@ -85,7 +85,7 @@ export default function Privacy() {
                 • Correct or update your information
               </p>
               <p className="text-ios-secondary">
-                • Delete your account and all associated data
+                • Delete your account - contact support at <strong>info@veridect.com</strong>
               </p>
               <p className="text-ios-secondary">
                 • Opt out of non-essential communications
