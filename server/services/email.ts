@@ -52,9 +52,11 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     }
     return true;
   } catch (error) {
-    console.error('SendGrid email failed:', error.message);
-    if (error.response && error.response.body) {
-      console.error('SendGrid error details:', JSON.stringify(error.response.body, null, 2));
+    if (process.env.NODE_ENV === 'development') {
+      console.error('SendGrid email failed:', error.message);
+      if (error.response && error.response.body) {
+        console.error('SendGrid error details:', JSON.stringify(error.response.body, null, 2));
+      }
     }
     return false;
   }

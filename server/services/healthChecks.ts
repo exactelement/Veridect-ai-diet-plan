@@ -10,7 +10,9 @@ export class HealthCheckService {
       const result = await db.select({ count: count() }).from(users);
       return { status: 'healthy' };
     } catch (error) {
-      console.error('Database health check failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Database health check failed:', error);
+      }
       return { 
         status: 'unhealthy', 
         message: 'Database connection failed' 
