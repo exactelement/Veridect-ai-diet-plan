@@ -27,13 +27,19 @@ export default function GDPRBanner() {
     console.log('FRONTEND: GDPR Banner Check:', {
       user: !!user,
       hasSeenPrivacyBanner: user?.hasSeenPrivacyBanner,
+      has_seen_privacy_banner: user?.has_seen_privacy_banner,
       onboardingCompleted: user?.onboardingCompleted,
+      onboarding_completed: user?.onboarding_completed,
       hasSeenBefore,
       userKeys: user ? Object.keys(user) : 'no user',
       userObject: user
     });
     
-    if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted) {
+    // Check both camelCase and snake_case field names
+    const hasSeenBanner = user?.hasSeenPrivacyBanner || user?.has_seen_privacy_banner;
+    const onboardingDone = user?.onboardingCompleted || user?.onboarding_completed;
+    
+    if (user && !hasSeenBanner && onboardingDone) {
       console.log('FRONTEND: GDPR Banner: Should show banner');
       // If database says user hasn't seen banner, clear localStorage and show banner
       if (hasSeenBefore) {
@@ -43,8 +49,12 @@ export default function GDPRBanner() {
     } else {
       console.log('FRONTEND: GDPR Banner: Not showing banner', {
         hasUser: !!user,
+        hasSeenBanner,
+        onboardingDone,
         hasSeenPrivacyBanner: user?.hasSeenPrivacyBanner,
-        onboardingCompleted: user?.onboardingCompleted
+        has_seen_privacy_banner: user?.has_seen_privacy_banner,
+        onboardingCompleted: user?.onboardingCompleted,
+        onboarding_completed: user?.onboarding_completed
       });
     }
   }, [user]);
