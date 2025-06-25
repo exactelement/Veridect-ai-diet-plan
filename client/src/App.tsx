@@ -31,28 +31,23 @@ import TopHeader from "@/components/top-header";
 
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
-import GDPRConsentBanner from "@/components/gdpr-consent-banner";
+// import GDPRConsentBanner from "@/components/gdpr-consent-banner"; // Temporarily disabled
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [location] = useLocation();
-  const [showGdprBanner, setShowGdprBanner] = useState(false);
-  const queryClient = useQueryClient();
+  // Temporarily disable GDPR banner to debug blank page issue
+  // const [showGdprBanner, setShowGdprBanner] = useState(false);
+  // const queryClient = useQueryClient();
 
-  // Check if GDPR banner should be shown - after onboarding completion on main app
-  useEffect(() => {
-    // Show GDPR banner on main route after onboarding completion (including subscription success/failure)
-    const isMainRoute = location === '/' || location.startsWith('/?');
-    if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && (user as any).onboardingCompleted && isMainRoute) {
-      setShowGdprBanner(true);
-    }
-  }, [isAuthenticated, user, location]);
-
-  const handleGdprComplete = () => {
-    setShowGdprBanner(false);
-    // Refresh user data to get updated GDPR status
-    queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-  };
+  // const handleGdprComplete = () => {
+  //   try {
+  //     setShowGdprBanner(false);
+  //     queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+  //   } catch (error) {
+  //     console.error('GDPR complete handler error:', error);
+  //   }
+  // };
 
 
 
@@ -109,7 +104,8 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      {showGdprBanner && <GDPRConsentBanner onComplete={handleGdprComplete} />}
+      {/* GDPR Banner temporarily disabled for debugging */}
+      {/* {showGdprBanner && <GDPRConsentBanner onComplete={handleGdprComplete} />} */}
 
     </div>
   );
