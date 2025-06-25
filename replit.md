@@ -169,14 +169,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Fixed GDPR Banner and Onboarding Flow (June 25, 2025)
-- **GDPR Banner Final Implementation**: Created gdpr-banner-final.tsx with bulletproof logic and proper database integration
-- **Essential Data Collection**: Added mandatory essential data toggle (always ON) with clear legal compliance messaging  
-- **Lifetime Banner Protection**: Banner shows only once per user lifetime, never appears again after any interaction
-- **Smart Redirect Flow**: Free tier users → `/` (food analysis), Pro upgrade users → `/subscription` page after GDPR consent
-- **Database Integration**: Proper hasSeenPrivacyBanner field checking and localStorage backup protection
-- **API Endpoint**: Enhanced /api/user/gdpr-consent endpoint with comprehensive logging and error handling
-- **Onboarding Integration**: Both "Upgrade to Pro" and "Continue with Free" buttons properly set localStorage flags
+### Moved Privacy Consent to Beginning of Onboarding (June 25, 2025)
+- **Privacy-First Onboarding**: Created privacy-consent-step.tsx as step 0 of onboarding flow
+- **Essential Data Collection**: Users see privacy preferences before any profile setup
+- **Integrated Flow**: Privacy consent → profile setup (steps 1-4) → subscription choice → completion
+- **Smart Redirect**: After onboarding completion, redirect based on subscription choice made in step 4
+- **Database Integration**: Privacy preferences saved during onboarding completion, not as separate banner
+- **Disabled Banner**: Old privacy banner component disabled since privacy is now handled in onboarding
+- **Clean UX**: No popup banners after onboarding, privacy handled upfront transparently
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

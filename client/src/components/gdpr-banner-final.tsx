@@ -24,30 +24,17 @@ export default function GDPRBannerFinal() {
     personalization: false,
   });
 
-  // Check if banner should be visible
+  // Check if banner should be visible - DISABLED because privacy is now in onboarding
   useEffect(() => {
-    console.log("GDPR Banner Check:", {
+    console.log("Privacy Banner Check (disabled - now in onboarding):", {
       authLoading,
       hasUser: !!user,
       onboardingCompleted: user?.onboardingCompleted,
       hasSeenBanner: user?.hasSeenPrivacyBanner
     });
 
-    // Show banner if:
-    // 1. User is authenticated and loaded
-    // 2. Onboarding is completed  
-    // 3. User hasn't seen banner yet (database check only)
-    if (!authLoading && 
-        user && 
-        user.onboardingCompleted && 
-        !user.hasSeenPrivacyBanner) {
-      
-      console.log("GDPR Banner: SHOWING");
-      setIsVisible(true);
-    } else {
-      console.log("GDPR Banner: HIDDEN");
-      setIsVisible(false);
-    }
+    // Privacy consent is now handled in onboarding flow, so banner is always hidden
+    setIsVisible(false);
   }, [authLoading, user]);
 
   const handleConsentSubmission = async (consentType: 'all' | 'essential' | 'custom') => {
