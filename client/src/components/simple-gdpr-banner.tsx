@@ -16,7 +16,7 @@ export default function SimpleGDPRBanner({ onComplete }: SimpleGDPRBannerProps) 
   const [preferences, setPreferences] = useState({
     essential: true,
     analytics: true,
-    marketing: false,
+    marketing: true,
     aiImprovement: true,
     nutritionEmails: true,
   });
