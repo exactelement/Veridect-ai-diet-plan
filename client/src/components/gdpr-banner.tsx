@@ -19,15 +19,22 @@ export default function GDPRBanner() {
     anonymousUsageAnalytics: true,
   });
 
-  // Determine if banner should show
+  // Determine if banner should show - LIFETIME ONCE ONLY
   const shouldShowBanner = useMemo(() => {
     if (authLoading || !user) {
       return false;
     }
     
+    // CRITICAL: Banner shows only if user has NEVER seen it AND completed onboarding
     const hasSeenBanner = user.hasSeenPrivacyBanner;
     const onboardingDone = user.onboardingCompleted;
     const shouldShow = !hasSeenBanner && onboardingDone;
+    
+    // Extra protection: check localStorage as backup
+    const localStorageCheck = localStorage.getItem('gdpr-banner-shown');
+    if (localStorageCheck === 'true' && hasSeenBanner) {
+      return false;
+    }
     
     return shouldShow;
   }, [user?.hasSeenPrivacyBanner, user?.onboardingCompleted, authLoading]);
@@ -80,11 +87,12 @@ export default function GDPRBanner() {
     try {
       console.log('Saving GDPR preferences:', finalPreferences);
       
-      await apiRequest("POST", "/api/auth/update-gdpr-consent", {
+      await apiRequest("POST", "/api/user/gdpr-consent", {
         gdprConsent: finalPreferences,
         hasSeenPrivacyBanner: true
       });
 
+      // Mark permanently - banner will NEVER show again for this user
       localStorage.setItem('gdpr-banner-shown', 'true');
       
       toast({
