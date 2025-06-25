@@ -107,6 +107,8 @@ export default function GDPRBanner() {
       const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
       const pendingFreeTier = localStorage.getItem('pending-free-tier');
 
+      console.log('GDPR banner completing, redirect flags:', { pendingProUpgrade, pendingFreeTier });
+
       // Animate out
       const banner = document.getElementById('gdpr-banner');
       if (banner) {
@@ -116,12 +118,15 @@ export default function GDPRBanner() {
           setIsVisible(false);
           // After GDPR completion, redirect based on user's choice
           if (pendingProUpgrade === 'true') {
+            console.log('Redirecting to subscription page');
             localStorage.removeItem('pending-pro-upgrade');
             window.location.href = '/subscription';
           } else if (pendingFreeTier === 'true') {
+            console.log('Redirecting to analyze tab');
             localStorage.removeItem('pending-free-tier');
             window.location.href = '/analyze';
           } else {
+            console.log('Default redirect to analyze tab');
             // Default redirect to analyze tab for completed onboarding users
             window.location.href = '/analyze';
           }
@@ -130,12 +135,15 @@ export default function GDPRBanner() {
         setIsVisible(false);
         // After GDPR completion, redirect based on user's choice
         if (pendingProUpgrade === 'true') {
+          console.log('Redirecting to subscription page (no animation)');
           localStorage.removeItem('pending-pro-upgrade');
           window.location.href = '/subscription';
         } else if (pendingFreeTier === 'true') {
+          console.log('Redirecting to analyze tab (no animation)');
           localStorage.removeItem('pending-free-tier');
           window.location.href = '/analyze';
         } else {
+          console.log('Default redirect to analyze tab (no animation)');
           // Default redirect to analyze tab for completed onboarding users
           window.location.href = '/analyze';
         }

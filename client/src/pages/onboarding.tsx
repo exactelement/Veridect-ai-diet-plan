@@ -117,11 +117,13 @@ export default function Onboarding() {
   const handleSubscriptionChoice = (tier: string) => {
     if (tier === 'pro') {
       // Set flag to redirect to subscription after GDPR banner completes
+      console.log('User chose Pro plan - setting pending-pro-upgrade flag');
       setPendingSubscriptionUpgrade(true);
       localStorage.setItem('pending-pro-upgrade', 'true');
       completeOnboardingMutation.mutate();
     } else {
       // Set flag for free tier to redirect to food analysis after GDPR
+      console.log('User chose Free plan - setting pending-free-tier flag');
       localStorage.setItem('pending-free-tier', 'true');
       completeOnboardingMutation.mutate();
     }
