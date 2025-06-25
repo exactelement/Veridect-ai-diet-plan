@@ -109,15 +109,16 @@ export default function Onboarding() {
   };
 
   const handleSubscriptionChoice = (tier: string) => {
-    // Complete onboarding first for any choice
-    completeOnboardingMutation.mutate();
-    
-    // If they chose Pro, navigate to subscription after onboarding completes
     if (tier === 'pro') {
-      // Use the mutation success callback to navigate
+      // Complete onboarding first, then navigate to subscription
+      completeOnboardingMutation.mutate();
+      // Navigate to subscription after a brief delay to allow onboarding completion
       setTimeout(() => {
         navigate('/subscription');
-      }, 2000); // Give more time for completion
+      }, 1000);
+    } else {
+      // Continue with free tier - complete onboarding and redirect to main app
+      completeOnboardingMutation.mutate();
     }
   };
 

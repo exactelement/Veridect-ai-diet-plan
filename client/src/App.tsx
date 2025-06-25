@@ -34,10 +34,10 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
 import GDPRBannerWrapper from "@/components/gdpr-banner-wrapper";
 
-// Minimal loading component for lazy routes
+// Loading component for lazy routes
 const LazyPageLoader = () => (
   <div className="min-h-screen bg-ios-bg flex items-center justify-center">
-    <div className="w-5 h-5 border-2 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
+    <div className="w-6 h-6 border-2 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
   </div>
 );
 
@@ -51,7 +51,7 @@ function Router() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-3 border-ios-blue border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
