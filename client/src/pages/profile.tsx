@@ -147,11 +147,8 @@ function EmailPreferencesSection({ user }: { user: any }) {
         <div className="bg-ios-gray-50 p-4 rounded-lg">
           <h4 className="font-medium text-ios-text mb-2">Email Unsubscribe Options</h4>
           <div className="text-sm text-ios-secondary space-y-2">
-            <p>• Toggle any preference above to instantly update your email settings</p>
-            <p>• All preference changes take effect immediately</p>
             <p>• You can re-enable emails anytime by returning to this page</p>
             <p>• For email support, contact: <span className="text-ios-blue">info@veridect.com</span></p>
-            <p>• Available to all users regardless of subscription tier</p>
           </div>
         </div>
 
