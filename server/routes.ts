@@ -902,13 +902,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/user/gdpr-consent", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
-      const { gdprConsent, gdprBannerShown, hasSeenPrivacyBanner } = req.body;
+      const { gdprConsent, hasSeenPrivacyBanner } = req.body;
       
       // Ensure GDPR banner can only be marked as shown once per user lifetime
       const user = await storage.getUser(userId);
-      const markingAsSeen = gdprBannerShown || hasSeenPrivacyBanner;
       
-      if (user?.hasSeenPrivacyBanner && markingAsSeen) {
+      if (user?.hasSeenPrivacyBanner && hasSeenPrivacyBanner) {
         return res.status(400).json({ 
           message: "GDPR consent already recorded for this user" 
         });
