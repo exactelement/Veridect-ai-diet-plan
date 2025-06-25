@@ -144,6 +144,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'Expires': '0'
       });
       
+      console.log('SERVER: User data sent to frontend:', {
+        userId,
+        hasSeenPrivacyBanner: freshUser.hasSeenPrivacyBanner,
+        onboardingCompleted: freshUser.onboardingCompleted,
+        email: freshUser.email
+      });
       res.json(freshUser);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user" });
