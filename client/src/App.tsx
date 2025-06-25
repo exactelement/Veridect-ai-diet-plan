@@ -92,7 +92,7 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      {isAuthenticated && <GDPRBanner />}
+      <GDPRBanner />
       
 
     </div>
