@@ -68,13 +68,15 @@ Veridect is a live revenue-generating AI-powered nutrition analysis platform bri
 - **Multi-language Support**: Real-time text replacement across all pages and components
 - **Leaderboard Rankings**: Clear position indicators (#1, #2, #3) with rank calculations
 - **Proper Spacing**: Fixed button visibility issues with appropriate bottom margins
+- **Sequential Onboarding**: Unified GDPR consent flow for all user types prevents UI conflicts
 
 ## Data Flow
 
 1. **User Authentication**: Replit Auth → Session creation → User profile retrieval
-2. **Food Analysis**: User input → AI processing → Result storage → UI update
-3. **Subscription Flow**: Stripe checkout → Webhook processing → User tier update
-4. **Progress Tracking**: Analysis results → Weekly scoring → Leaderboard updates
+2. **Onboarding Process**: Profile setup → GDPR consent → Tier selection → Main app access
+3. **Food Analysis**: User input → AI processing → Result storage → UI update
+4. **Subscription Flow**: Stripe checkout → Webhook processing → User tier update
+5. **Progress Tracking**: Analysis results → Weekly scoring → Leaderboard updates
 
 ## External Dependencies
 
@@ -166,6 +168,12 @@ Preferred communication style: Simple, everyday language.
 - **Content Accuracy**: Free tier properly limited, Advanced tier naming consistent
 
 ## Recent Changes
+
+### Unified Onboarding Flow (June 25, 2025)
+- **GDPR Banner Consistency**: Fixed flow so both free and Pro users see GDPR banner on onboarding page before navigation
+- **Sequential Navigation**: Free users: Onboarding → GDPR Banner → Food Analysis; Pro users: Onboarding → GDPR Banner → Subscription → Food Analysis
+- **localStorage Coordination**: Added `pending-free-tier` flag to manage free user navigation intent after GDPR completion
+- **Eliminated UI Confusion**: Removed overlapping banners and modals by ensuring all privacy consent happens before main app access
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support
