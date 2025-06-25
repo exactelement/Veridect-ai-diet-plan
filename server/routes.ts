@@ -134,8 +134,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // SECURITY FIX: Only use authenticated user's ID
-      const userId = req.user?.id || req.user?.claims?.sub;
+      // SECURITY: Only use authenticated user's ID
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -160,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR consent route
   app.patch('/api/auth/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.put('/api/user/profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -213,7 +213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/user/complete-onboarding', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -227,7 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Consent route - handles both initial banner and profile updates
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -257,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     rateLimit(10, 60 * 1000), 
     async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -336,7 +336,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     rateLimit(30, 60 * 1000), // 30 food logs per minute
     async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -390,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -416,7 +416,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/food/logs/today', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -442,7 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get ALL analyzed foods today (for challenges)
   app.get('/api/food/analyzed/today', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -456,7 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current consecutive YES streak for today
   app.get('/api/food/yes-streak', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -482,7 +482,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all completed challenges for badge counting
   app.get('/api/challenges/completed', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -496,7 +496,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Leaderboard routes - require Pro tier
   app.get('/api/leaderboard/weekly', isAuthenticated, async (req: any, res) => {
-    const userId = req.user?.id || req.user?.claims?.sub;
+    const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -520,7 +520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/leaderboard/my-score', isAuthenticated, async (req: any, res) => {
-    const userId = req.user?.id || req.user?.claims?.sub;
+    const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -536,7 +536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -589,7 +589,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -694,7 +694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -760,7 +760,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current subscription status with caching
   app.get('/api/subscription/status', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -819,7 +819,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -867,7 +867,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Payment processing temporarily unavailable" });
       }
 
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -977,7 +977,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/export-data', isAuthenticated, async (req, res) => {
     try {
       // SECURITY FIX: Only use authenticated user's ID - NO FALLBACK
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       
       if (!userId) {
         console.error('SECURITY: Export attempted without valid user ID');
@@ -1053,7 +1053,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoint to view GDPR email preferences
   app.get('/api/admin/email-preferences', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
@@ -1130,7 +1130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GDPR Account Deletion
   app.delete('/api/auth/delete-account', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
+      const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "User not properly authenticated" });
       }
