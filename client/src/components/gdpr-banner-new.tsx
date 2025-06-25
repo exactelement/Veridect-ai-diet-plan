@@ -23,7 +23,7 @@ export default function GDPRBannerNew() {
                     user && 
                     user.onboardingCompleted && 
                     !user.hasSeenPrivacyBanner &&
-                    !localStorage.getItem('gdpr-banner-completed');
+                    !localStorage.getItem('gdpr-banner-shown');
 
   // Show banner immediately when conditions are met
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function GDPRBannerNew() {
         hasUser: !!user,
         onboardingCompleted: user?.onboardingCompleted,
         hasSeenBanner: user?.hasSeenPrivacyBanner,
-        localStorage: localStorage.getItem('gdpr-banner-completed')
+        localStorage: localStorage.getItem('gdpr-banner-shown')
       });
     }
   }, [shouldShow, user?.id]);
@@ -52,7 +52,7 @@ export default function GDPRBannerNew() {
       });
 
       // Mark completed permanently
-      localStorage.setItem('gdpr-banner-completed', 'true');
+      localStorage.setItem('gdpr-banner-shown', 'true');
       setIsVisible(false);
       
       toast({
