@@ -140,10 +140,7 @@ export default function Landing() {
                 </a>
               ))}
               <Button 
-                onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
-                }} 
+                onClick={() => window.location.href = "/login"}
                 className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
                 Get Started
@@ -154,10 +151,7 @@ export default function Landing() {
             <div className="flex items-center space-x-4">
               {/* Login button - always visible */}
               <Button 
-                onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
-                }} 
+                onClick={() => window.location.href = "/login"}
                 className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
                 Login
@@ -453,10 +447,7 @@ export default function Landing() {
                 </li>
               </ul>
               <Button 
-                onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
-                }} 
+                onClick={() => window.location.href = "/login"}
                 className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button hover:bg-gray-200 transition-all"
               >
                 Get Started
@@ -569,10 +560,7 @@ export default function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button 
-              onClick={() => {
-                if (window.fastNavigate) window.fastNavigate("/login");
-                else window.location.href = "/login";
-              }} 
+              onClick={() => window.location.href = "/login"}
               className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100 transition-all"
             >
               Start Free Trial

@@ -85,12 +85,12 @@
       }
     </style>
     <script>
-      // Ultra-fast page transition
-      window.fastNavigate = function(url) {
-        document.body.classList.add('page-transitioning');
+      // Simple page transition for landing/login only
+      window.smoothNavigate = function(url) {
+        document.body.style.opacity = '0.9';
         setTimeout(() => {
           window.location.href = url;
-        }, 25);
+        }, 100);
       };
     </script>
   </head>
