@@ -22,21 +22,12 @@ export default function GDPRBanner() {
   // Determine if banner should show
   const shouldShowBanner = useMemo(() => {
     if (authLoading || !user) {
-      console.log('GDPR shouldShow: false (loading or no user)', { authLoading, user: !!user });
       return false;
     }
     
     const hasSeenBanner = user.hasSeenPrivacyBanner;
     const onboardingDone = user.onboardingCompleted;
     const shouldShow = !hasSeenBanner && onboardingDone;
-    
-    console.log('GDPR shouldShow decision:', {
-      userId: user.id,
-      email: user.email,
-      hasSeenPrivacyBanner: hasSeenBanner,
-      onboardingCompleted: onboardingDone,
-      shouldShow
-    });
     
     return shouldShow;
   }, [user?.hasSeenPrivacyBanner, user?.onboardingCompleted, authLoading]);
@@ -45,14 +36,10 @@ export default function GDPRBanner() {
   useEffect(() => {
     mountedRef.current = true;
     
-    console.log('GDPR Effect:', { shouldShowBanner, authLoading, user: !!user });
-    
     if (shouldShowBanner) {
       localStorage.removeItem('gdpr-banner-shown');
-      console.log('Setting GDPR banner visible');
       setIsVisible(true);
     } else {
-      console.log('Setting GDPR banner hidden');
       setIsVisible(false);
     }
     
@@ -91,6 +78,8 @@ export default function GDPRBanner() {
     if (!mountedRef.current) return;
     
     try {
+      console.log('Saving GDPR preferences:', finalPreferences);
+      
       await apiRequest("POST", "/api/auth/update-gdpr-consent", {
         gdprConsent: finalPreferences,
         hasSeenPrivacyBanner: true
@@ -107,8 +96,6 @@ export default function GDPRBanner() {
       const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
       const pendingFreeTier = localStorage.getItem('pending-free-tier');
 
-      console.log('GDPR banner completing, redirect flags:', { pendingProUpgrade, pendingFreeTier });
-
       // Animate out
       const banner = document.getElementById('gdpr-banner');
       if (banner) {
@@ -118,15 +105,12 @@ export default function GDPRBanner() {
           setIsVisible(false);
           // After GDPR completion, redirect based on user's choice
           if (pendingProUpgrade === 'true') {
-            console.log('Redirecting to subscription page');
             localStorage.removeItem('pending-pro-upgrade');
             window.location.href = '/subscription';
           } else if (pendingFreeTier === 'true') {
-            console.log('Redirecting to analyze tab');
             localStorage.removeItem('pending-free-tier');
             window.location.href = '/analyze';
           } else {
-            console.log('Default redirect to analyze tab');
             // Default redirect to analyze tab for completed onboarding users
             window.location.href = '/analyze';
           }
@@ -135,15 +119,12 @@ export default function GDPRBanner() {
         setIsVisible(false);
         // After GDPR completion, redirect based on user's choice
         if (pendingProUpgrade === 'true') {
-          console.log('Redirecting to subscription page (no animation)');
           localStorage.removeItem('pending-pro-upgrade');
           window.location.href = '/subscription';
         } else if (pendingFreeTier === 'true') {
-          console.log('Redirecting to analyze tab (no animation)');
           localStorage.removeItem('pending-free-tier');
           window.location.href = '/analyze';
         } else {
-          console.log('Default redirect to analyze tab (no animation)');
           // Default redirect to analyze tab for completed onboarding users
           window.location.href = '/analyze';
         }
@@ -160,12 +141,9 @@ export default function GDPRBanner() {
   };
 
   // Only render when we have determined the banner should be visible
-  console.log('GDPR Render check:', { shouldShowBanner, isVisible });
   if (!shouldShowBanner || !isVisible) {
     return null;
   }
-  
-  console.log('GDPR Banner RENDERING!');
 
   return (
     <div
