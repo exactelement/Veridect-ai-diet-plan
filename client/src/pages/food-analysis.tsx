@@ -474,21 +474,6 @@ export default function FoodAnalysis() {
           </p>
         </div>
 
-        {/* Pro Tip */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-3">
-              <div className="text-blue-500 text-xl">💡</div>
-              <div>
-                <h3 className="font-semibold text-blue-800 mb-2">Pro Tip</h3>
-                <p className="text-blue-700">
-                  For better accuracy, ensure good lighting and capture the entire Food. Or describe including any sauces or dressings!
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Analysis Interface */}
         <Card>
           <CardContent className="p-8">
@@ -644,14 +629,26 @@ export default function FoodAnalysis() {
         </Card>
 
         {/* Tips */}
-        <Card className="bg-ios-blue/5 border-ios-blue/20">
-          <CardContent className="p-6">
-            <h3 className="font-semibold mb-3">💡 Tips for Better Analysis</h3>
-            <ul className="space-y-2 text-sm text-ios-secondary">
-              <li>• Make sure the food is well-lit and clearly visible</li>
-              <li>• Include any sauces, seasonings, or cooking methods in descriptions</li>
-              <li>• For packaged foods, try to include the brand name</li>
-              <li>• Multiple angles or close-up shots can improve accuracy</li>
+        <Card className="bg-blue-50 border-blue-200 shadow-sm">
+          <CardContent className="p-4 sm:p-6">
+            <h3 className="font-semibold mb-4 text-blue-800 text-base sm:text-lg">💡 Tips for Better Analysis</h3>
+            <ul className="space-y-3 text-sm sm:text-base text-gray-700">
+              <li className="flex items-start">
+                <span className="text-blue-600 font-medium mr-2">•</span>
+                <span>Make sure the food is well-lit and clearly visible</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 font-medium mr-2">•</span>
+                <span>Include any sauces, seasonings, or cooking methods in descriptions</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 font-medium mr-2">•</span>
+                <span>For packaged foods, try to include the brand name</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-blue-600 font-medium mr-2">•</span>
+                <span>Multiple angles or close-up shots can improve accuracy</span>
+              </li>
             </ul>
           </CardContent>
         </Card>
