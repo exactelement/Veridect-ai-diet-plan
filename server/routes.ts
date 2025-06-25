@@ -999,7 +999,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const foodLogs = await storage.getFoodLogs(userId, 1000, 0);
       const weeklyScore = await storage.getUserWeeklyScore(userId);
       
-      console.log(`SECURITY AUDIT: Retrieved ${foodLogs.length} food logs for user ${user.email}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`SECURITY AUDIT: Retrieved ${foodLogs.length} food logs for user ${user.email}`);
+      }
 
       // SECURITY: Create export data containing ONLY this user's information
       const exportData = {
@@ -1021,7 +1023,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         securityNote: `This export contains data exclusively for user ID: ${userId}`
       };
       
-      console.log(`SECURITY AUDIT: Export data prepared for ${user.email} - ${foodLogs.length} food logs, weekly score: ${weeklyScore?.weeklyPoints || 0}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`SECURITY AUDIT: Export data prepared for ${user.email} - ${foodLogs.length} food logs, weekly score: ${weeklyScore?.weeklyPoints || 0}`);
+      }
 
       // Create comprehensive JSON export with proper streaming
       const timestamp = new Date().toISOString().split('T')[0];

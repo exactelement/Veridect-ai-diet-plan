@@ -676,9 +676,13 @@ export class DatabaseStorage implements IStorage {
     } else if (verdict === "NO") {
       // Reset streak even on same day if "NO" verdict
       newStreak = 0;
-      console.log(`Streak reset to 0 due to NO verdict on same day`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Streak reset to 0 due to NO verdict on same day`);
+      }
     } else {
-      console.log(`No streak change - same day, non-NO verdict`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`No streak change - same day, non-NO verdict`);
+      }
     }
     
     const newLongestStreak = Math.max(user.longestStreak || 0, newStreak);
@@ -694,8 +698,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    console.log(`Streak updated: ${user.currentStreak} -> ${newStreak}`);
-    console.log(`=== STREAK UPDATE COMPLETE ===\n`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Streak updated: ${user.currentStreak} -> ${newStreak}`);
+      console.log(`=== STREAK UPDATE COMPLETE ===\n`);
+    }
     return updatedUser;
   }
 
@@ -753,9 +759,13 @@ export class DatabaseStorage implements IStorage {
   async resetWeeklyPoints(): Promise<void> {
     try {
       await db.delete(weeklyScores);
-      console.log("Weekly points reset completed");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Weekly points reset completed");
+      }
     } catch (error) {
-      console.error("Error resetting weekly points:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error resetting weekly points:", error);
+      }
     }
   }
 

@@ -447,7 +447,9 @@ export async function analyzeFoodWithGemini(
 
     return result;
   } catch (error) {
-    console.warn("AI analysis failed, using fallback:", error);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("AI analysis failed, using fallback:", error);
+    }
     
     // Use fallback analysis
     const fallbackResult = getFallbackAnalysis(foodName || "Unknown Food");

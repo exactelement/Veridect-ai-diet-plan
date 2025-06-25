@@ -68,8 +68,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     }
   }));
 } else {
-  console.log("⚠️  Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
-  console.log("📖 To enable Google login, see OAUTH_SETUP_GUIDE.md for detailed instructions");
+  if (process.env.NODE_ENV === 'development') {
+    console.log("⚠️  Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
+    console.log("📖 To enable Google login, see OAUTH_SETUP_GUIDE.md for detailed instructions");
+  }
 }
 
 // Local Strategy (Email/Password)
@@ -268,7 +270,9 @@ export async function setupMultiAuth(app: Express) {
         }
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.error("Apple token verification failed:", error);
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Apple token verification failed:", error);
+          }
         }
         return res.status(400).json({ message: "Invalid Apple identity token" });
       }
