@@ -24,12 +24,23 @@ export default function GDPRBanner() {
     // Prioritize database state over localStorage to handle edge cases
     const hasSeenBefore = localStorage.getItem('gdpr-banner-shown');
     
+    console.log('GDPR Banner Check:', {
+      user: !!user,
+      hasSeenPrivacyBanner: user?.hasSeenPrivacyBanner,
+      onboardingCompleted: user?.onboardingCompleted,
+      hasSeenBefore,
+      userObject: user
+    });
+    
     if (user && !user.hasSeenPrivacyBanner && user.onboardingCompleted) {
+      console.log('GDPR Banner: Should show banner');
       // If database says user hasn't seen banner, clear localStorage and show banner
       if (hasSeenBefore) {
         localStorage.removeItem('gdpr-banner-shown');
       }
       setIsVisible(true);
+    } else {
+      console.log('GDPR Banner: Not showing banner');
     }
   }, [user]);
 
