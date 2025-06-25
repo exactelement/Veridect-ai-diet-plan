@@ -118,8 +118,8 @@ export default function PrivacyConsentStep({ onComplete, isSubmitting }: Privacy
 
               <div className="flex items-center justify-between">
                 <div>
-                  <Label className="text-sm font-medium">Marketing Communications</Label>
-                  <p className="text-xs text-gray-600">Receive updates about new features and tips</p>
+                  <Label className="text-sm font-medium">Marketing Communications & Email Updates</Label>
+                  <p className="text-xs text-gray-600">Receive email updates about new features, tips, and progress reports</p>
                 </div>
                 <Switch 
                   checked={preferences.marketing}

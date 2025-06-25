@@ -171,16 +171,36 @@ export class DatabaseStorage implements IStorage {
 
   async updatePrivacyBannerSeen(userId: string, gdprConsent: any): Promise<User> {
     console.log('Marking privacy banner as seen for user:', userId);
+    console.log('Privacy consent data:', gdprConsent);
+    
+    // Get current user to merge privacy settings
+    const currentUser = await this.getUser(userId);
+    
+    // Map privacy consent to privacy settings
+    const privacySettings = {
+      showCalorieCounter: true,
+      participateInWeeklyChallenge: true,
+      showFoodStats: true,
+      showNutritionDetails: true,
+      shareDataForResearch: gdprConsent.analytics || false,
+      allowMarketing: gdprConsent.marketing || false,
+      shareWithHealthProviders: gdprConsent.personalization || false,
+      ...currentUser?.privacySettings
+    };
+    
+    console.log('Mapped privacy settings:', privacySettings);
+    
     const [user] = await db
       .update(users)
       .set({
         hasSeenPrivacyBanner: true,
         gdprConsent: gdprConsent,
+        privacySettings: privacySettings,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
       .returning();
-    console.log('Privacy banner marked as seen successfully');
+    console.log('Privacy banner marked as seen successfully with mapped settings');
     return user;
   }
 
