@@ -41,8 +41,9 @@ export default function GDPRBanner() {
     
     // Extra protection: check localStorage as backup
     const localStorageCheck = localStorage.getItem('gdpr-banner-shown');
-    if (localStorageCheck === 'true' && hasSeenBanner) {
-      console.log('GDPR blocked by localStorage check');
+    console.log('localStorage check:', { localStorageCheck, hasSeenBanner });
+    if (localStorageCheck === 'true') {
+      console.log('GDPR blocked by localStorage - banner was already shown');
       return false;
     }
     
@@ -56,8 +57,9 @@ export default function GDPRBanner() {
     console.log('GDPR Effect:', { shouldShowBanner, authLoading, user: !!user });
     
     if (shouldShowBanner) {
+      // Clear any localStorage blocking
       localStorage.removeItem('gdpr-banner-shown');
-      console.log('Setting GDPR banner visible');
+      console.log('Setting GDPR banner visible - clearing localStorage');
       setIsVisible(true);
     } else {
       console.log('Setting GDPR banner hidden');
@@ -165,18 +167,36 @@ export default function GDPRBanner() {
   // Only render when we have determined the banner should be visible
   console.log('GDPR Render check:', { shouldShowBanner, isVisible, user: user ? { id: user.id, onboardingCompleted: user.onboardingCompleted, hasSeenPrivacyBanner: user.hasSeenPrivacyBanner } : null });
   
-  if (!shouldShowBanner || !isVisible) {
-    console.log('GDPR Banner NOT rendering - conditions not met');
+  if (!shouldShowBanner) {
+    console.log('GDPR Banner NOT rendering - shouldShowBanner is false');
     return null;
   }
   
-  console.log('GDPR Banner RENDERING!!!');
+  if (!isVisible) {
+    console.log('GDPR Banner NOT rendering - isVisible is false');
+    return null;
+  }
+  
+  console.log('GDPR Banner RENDERING!!! - All conditions met');
 
+  // Force render with emergency inline styles
   return (
     <div
       id="gdpr-banner"
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in"
-      style={{ isolation: 'isolate' }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+      style={{ 
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(4px)'
+      }}
     >
       <Card className="w-full max-w-2xl bg-white dark:bg-gray-900 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
         <CardContent className="p-6">
