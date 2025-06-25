@@ -290,12 +290,6 @@ export class DatabaseStorage implements IStorage {
     const utcTodayStart = new Date(madridTodayStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
     const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
 
-    console.log(`Getting today's food logs for ${userId} (Madrid timezone):`);
-    console.log(`Madrid now: ${madridNow.toISOString()}`);
-    console.log(`Madrid today start: ${madridTodayStart.toISOString()}`);
-    console.log(`UTC today start: ${utcTodayStart.toISOString()}`);
-    console.log(`UTC tomorrow start: ${utcTomorrowStart.toISOString()}`);
-
     const logs = await db
       .select()
       .from(foodLogs)
@@ -308,12 +302,6 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(foodLogs.createdAt));
-
-    console.log(`Found ${logs.length} logged food items for today`);
-    logs.forEach(log => {
-      const logMadridTime = new Date(log.createdAt!).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
-      console.log(`- ${log.foodName} (${log.verdict}) at ${logMadridTime} Madrid time`);
-    });
     
     return logs;
   }
@@ -630,7 +618,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     
-    console.log(`Added ${pointsToAdd} lifetime points. Total: ${newTotalPoints}, Level: ${newLevel}`);
+    // Points updated successfully
     return updatedUser;
   }
 
@@ -654,11 +642,11 @@ export class DatabaseStorage implements IStorage {
       if (verdict === "NO") {
         // Reset streak to 0 if user logs a "NO" food
         newStreak = 0;
-        console.log(`Streak reset to 0 due to NO verdict on new day`);
+        // Streak reset for NO verdict
       } else {
         // Increment streak if it's a new day and not a "NO" verdict
         newStreak = (user.currentStreak || 0) + 1;
-        console.log(`Streak incremented to ${newStreak} for new day with ${verdict} verdict`);
+        // Streak incremented for positive verdict
       }
     } else if (verdict === "NO") {
       // Reset streak even on same day if "NO" verdict

@@ -694,29 +694,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get current subscription status
+  // In-memory cache for subscription status
+  const subscriptionCache = new Map();
+  const SUBSCRIPTION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+  // Get current subscription status with caching
   app.get('/api/subscription/status', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
+      const cacheKey = `sub_${userId}`;
+      const now = Date.now();
+      
+      // Check cache first
+      const cached = subscriptionCache.get(cacheKey);
+      if (cached && (now - cached.timestamp) < SUBSCRIPTION_CACHE_TTL) {
+        return res.json(cached.data);
+      }
+      
       const user = await storage.getUser(userId);
       
       if (!user?.stripeSubscriptionId || !stripe) {
-        return res.json({
+        const responseData = {
           tier: user?.subscriptionTier || 'free',
           status: user?.subscriptionStatus || 'inactive',
           canCancel: false
+        };
+        
+        // Cache free tier response
+        subscriptionCache.set(cacheKey, {
+          data: responseData,
+          timestamp: now
         });
+        
+        return res.json(responseData);
       }
 
       const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
       
-      res.json({
+      const responseData = {
         tier: user.subscriptionTier,
         status: subscription.status,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
         currentPeriodEnd: subscription.current_period_end,
         canCancel: ['active', 'trialing'].includes(subscription.status)
+      };
+      
+      // Cache the response
+      subscriptionCache.set(cacheKey, {
+        data: responseData,
+        timestamp: now
       });
+      
+      res.json(responseData);
     } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch subscription status" });
     }

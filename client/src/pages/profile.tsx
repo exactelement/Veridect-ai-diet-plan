@@ -207,11 +207,12 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Fetch real-time subscription status from Stripe
+  // Fetch subscription status with optimized polling
   const { data: subscriptionStatus } = useQuery({
     queryKey: ["/api/subscription/status"],
     enabled: !!user && user.subscriptionTier === 'pro',
-    refetchInterval: 30000, // Refresh every 30 seconds for real-time status
+    refetchInterval: 300000, // Refresh every 5 minutes instead of 30 seconds
+    staleTime: 240000, // Consider data fresh for 4 minutes
   });
   const userTier = user?.subscriptionTier || 'free';
   const hasProAccess = checkTierAccess(userTier, 'pro', user?.email);
