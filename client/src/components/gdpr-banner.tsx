@@ -69,13 +69,28 @@ export default function GDPRBanner() {
       // Save preferences to localStorage as backup
       localStorage.setItem('gdpr-consents', JSON.stringify(consentData));
       
+      // Check if user was planning to upgrade to Pro
+      const pendingUpgrade = localStorage.getItem('pending-pro-upgrade');
+      
       // Animate out
       const banner = document.getElementById('gdpr-banner');
       if (banner) {
         banner.classList.add('animate-slide-down');
-        setTimeout(() => setIsVisible(false), 300);
+        setTimeout(() => {
+          setIsVisible(false);
+          // After GDPR completion, redirect to subscription if Pro upgrade was pending
+          if (pendingUpgrade === 'true') {
+            localStorage.removeItem('pending-pro-upgrade');
+            window.location.href = '/subscription';
+          }
+        }, 300);
       } else {
         setIsVisible(false);
+        // After GDPR completion, redirect to subscription if Pro upgrade was pending
+        if (pendingUpgrade === 'true') {
+          localStorage.removeItem('pending-pro-upgrade');
+          window.location.href = '/subscription';
+        }
       }
     } catch (error) {
       console.error('Error saving privacy preferences:', error);
