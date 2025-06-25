@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { User, Settings, History, ChevronDown, ChevronRight, Heart, Monitor, Calendar, Edit, Lock, AlertCircle, XCircle, Loader2, Crown, Mail } from "lucide-react";
@@ -55,127 +55,7 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
 
-// Email Preferences Component
-function EmailPreferencesSection({ user }: { user: any }) {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [preferences, setPreferences] = useState({
-    nutritionInsightsEmails: user.gdprConsent?.nutritionInsightsEmails || false,
-    improveAIRecommendations: user.gdprConsent?.improveAIRecommendations || false,
-    anonymousUsageAnalytics: user.gdprConsent?.anonymousUsageAnalytics || false,
-  });
 
-  const updateEmailPreferences = useMutation({
-    mutationFn: async (newPreferences: any) => {
-      return await apiRequest("POST", "/api/user/gdpr-consent", {
-        gdprConsent: {
-          ...newPreferences,
-          timestamp: new Date().toISOString(),
-          version: "1.0",
-        },
-        hasSeenPrivacyBanner: true
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Email Preferences Updated",
-        description: "Your email preferences have been saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Update Failed",
-        description: error.message || "Failed to update email preferences.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handlePreferenceChange = (key: string, value: boolean) => {
-    const newPreferences = { ...preferences, [key]: value };
-    setPreferences(newPreferences);
-    updateEmailPreferences.mutate(newPreferences);
-  };
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Mail className="w-5 h-5" />
-          <span>Email Preferences</span>
-        </CardTitle>
-        <CardDescription>
-          Manage your email subscriptions and communication preferences
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="flex-1">
-              <h3 className="font-medium text-ios-text">Weekly Nutrition Insights</h3>
-              <p className="text-sm text-ios-secondary mt-1">
-                Receive weekly progress summaries, nutrition tips, and personalized insights based on your food analysis
-              </p>
-            </div>
-            <Switch
-              checked={preferences.nutritionInsightsEmails}
-              onCheckedChange={(checked) => handlePreferenceChange('nutritionInsightsEmails', checked)}
-              disabled={updateEmailPreferences.isPending}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="flex-1">
-              <h3 className="font-medium text-ios-text">AI Improvement Participation</h3>
-              <p className="text-sm text-ios-secondary mt-1">
-                Help improve our AI by sharing anonymized food analysis data to enhance accuracy for everyone
-              </p>
-            </div>
-            <Switch
-              checked={preferences.improveAIRecommendations}
-              onCheckedChange={(checked) => handlePreferenceChange('improveAIRecommendations', checked)}
-              disabled={updateEmailPreferences.isPending}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div className="flex-1">
-              <h3 className="font-medium text-ios-text">Usage Analytics</h3>
-              <p className="text-sm text-ios-secondary mt-1">
-                Allow anonymous usage data collection to help us improve app performance and user experience
-              </p>
-            </div>
-            <Switch
-              checked={preferences.anonymousUsageAnalytics}
-              onCheckedChange={(checked) => handlePreferenceChange('anonymousUsageAnalytics', checked)}
-              disabled={updateEmailPreferences.isPending}
-            />
-          </div>
-        </div>
-
-        <div className="bg-ios-gray-50 p-4 rounded-lg">
-          <h4 className="font-medium text-ios-text mb-2">Email Unsubscribe Options</h4>
-          <div className="text-sm text-ios-secondary space-y-2">
-            <p>• Toggle any preference above to instantly update your email settings</p>
-            <p>• All preference changes take effect immediately</p>
-            <p>• You can re-enable emails anytime by returning to this page</p>
-            <p>• For email support, contact: <span className="text-ios-blue">support@veridect.com</span></p>
-          </div>
-        </div>
-
-        {updateEmailPreferences.isPending && (
-          <div className="text-center">
-            <div className="inline-flex items-center space-x-2 text-ios-secondary">
-              <div className="animate-spin w-4 h-4 border-2 border-ios-blue border-t-transparent rounded-full" />
-              <span>Updating preferences...</span>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function Profile() {
   const { user } = useAuth();
