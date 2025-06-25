@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
 import { useLocation } from "wouter";
+import SimpleGDPRBanner from "@/components/simple-gdpr-banner";
 
 interface AnalysisResult {
   foodName: string;
@@ -30,11 +31,25 @@ export default function FoodAnalysis() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [showGdprBanner, setShowGdprBanner] = useState(false);
 
   // Always scroll to top when component mounts or refreshes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Check if GDPR banner should be shown
+  useEffect(() => {
+    if (user && !(user as any)?.hasSeenGdprBanner) {
+      const timer = setTimeout(() => setShowGdprBanner(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
+
+  const handleGdprComplete = () => {
+    setShowGdprBanner(false);
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -625,6 +640,8 @@ export default function FoodAnalysis() {
           </CardContent>
         </Card>
       </div>
+      
+      {showGdprBanner && <SimpleGDPRBanner onComplete={handleGdprComplete} />}
     </div>
   );
 }
