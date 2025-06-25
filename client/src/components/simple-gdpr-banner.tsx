@@ -56,8 +56,8 @@ export default function SimpleGDPRBanner({ onComplete }: SimpleGDPRBannerProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50 p-4">
-      <Card className="w-full max-w-md bg-white shadow-xl">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+      <Card className="w-full max-w-md bg-white shadow-xl mb-20">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-2">
