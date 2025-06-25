@@ -186,11 +186,14 @@ export default function AdminEmailPreferences() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge variant={user.gdprConsent?.improveAIRecommendations ? "default" : "secondary"}>
-                        AI: {user.gdprConsent?.improveAIRecommendations ? 'Yes' : 'No'}
+                      <Badge variant={user.gdprConsent?.aiImprovement ? "default" : "secondary"}>
+                        AI: {user.gdprConsent?.aiImprovement ? 'Yes' : 'No'}
                       </Badge>
-                      <Badge variant={user.gdprConsent?.anonymousUsageAnalytics ? "default" : "secondary"}>
-                        Analytics: {user.gdprConsent?.anonymousUsageAnalytics ? 'Yes' : 'No'}
+                      <Badge variant={user.gdprConsent?.analytics ? "default" : "secondary"}>
+                        Analytics: {user.gdprConsent?.analytics ? 'Yes' : 'No'}
+                      </Badge>
+                      <Badge variant={user.gdprConsent?.marketing ? "default" : "secondary"}>
+                        Marketing: {user.gdprConsent?.marketing ? 'Yes' : 'No'}
                       </Badge>
                       <span className="text-xs text-ios-secondary">
                         {new Date(user.createdAt).toLocaleDateString()}
@@ -234,18 +237,25 @@ export default function AdminEmailPreferences() {
                       <span className="text-xs">Email</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      {user.gdprConsent?.improveAIRecommendations ? 
+                      {user.gdprConsent?.aiImprovement ? 
                         <Check className="w-4 h-4 text-green-500" /> : 
                         <X className="w-4 h-4 text-red-500" />
                       }
                       <span className="text-xs">AI</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      {user.gdprConsent?.anonymousUsageAnalytics ? 
+                      {user.gdprConsent?.analytics ? 
                         <Check className="w-4 h-4 text-green-500" /> : 
                         <X className="w-4 h-4 text-red-500" />
                       }
                       <span className="text-xs">Analytics</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {user.gdprConsent?.marketing ? 
+                        <Check className="w-4 h-4 text-green-500" /> : 
+                        <X className="w-4 h-4 text-red-500" />
+                      }
+                      <span className="text-xs">Marketing</span>
                     </div>
                     <span className="text-xs text-ios-secondary ml-3">
                       {new Date(user.createdAt).toLocaleDateString()}

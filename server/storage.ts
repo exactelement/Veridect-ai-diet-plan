@@ -26,6 +26,7 @@ export interface IStorage {
   // Profile operations
   updateUserProfile(id: string, profile: UpdateUserProfile): Promise<User>;
   completeOnboarding(id: string): Promise<User>;
+  updateGdprConsent(userId: string, consent: any): Promise<User>;
   
   // Gamification operations
   updateUserPoints(userId: string, pointsToAdd: number): Promise<User>;
@@ -149,6 +150,19 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateGdprConsent(userId: string, consentData: any): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        gdprConsent: consentData,
+        hasSeenGdprBanner: true,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }

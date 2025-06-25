@@ -167,12 +167,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Streamlined Onboarding & GDPR Removal (June 25, 2025)
-- **GDPR System Removed**: Completely removed GDPR banner, consent tracking, and related database columns
-- **Simplified Onboarding**: Clean 3-step process: Goals, Health preferences, Diet/Allergies, then subscription choice
-- **Direct Subscription Flow**: Step 4 offers Free vs Pro choice with immediate redirect to appropriate destination
-- **Database Cleanup**: Removed gdpr_consent, gdpr_banner_shown, has_seen_privacy_banner columns
-- **Code Cleanup**: Eliminated GDPR banner component, consent endpoints, and related storage methods
+### GDPR Compliance System (June 25, 2025)
+- **Post-Registration GDPR Banner**: Shows after Gmail/Apple/Email registration, before onboarding starts
+- **Lifetime Banner Control**: Banner appears only once per user - never shows again after consent given
+- **Comprehensive Consent Options**: Essential, Analytics, AI Improvement, Nutrition Emails, Marketing preferences
+- **Profile Integration**: Full GDPR consent history and preferences visible in user profile privacy tab
+- **Admin Dashboard Integration**: Updated admin panel to show new GDPR consent structure
+- **Database Schema**: Added gdprConsent (JSONB) and hasSeenGdprBanner (boolean) columns
+- **Strict One-Time Policy**: Server-side validation prevents multiple consent recordings
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

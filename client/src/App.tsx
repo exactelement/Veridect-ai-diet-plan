@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
@@ -30,10 +31,26 @@ import TopHeader from "@/components/top-header";
 
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TranslationProvider, TranslationWidget } from "@/components/translation-widget";
+import GDPRConsentBanner from "@/components/gdpr-consent-banner";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [location] = useLocation();
+  const [showGdprBanner, setShowGdprBanner] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Check if GDPR banner should be shown
+  useEffect(() => {
+    if (isAuthenticated && user && !user.hasSeenGdprBanner && !user.onboardingCompleted) {
+      setShowGdprBanner(true);
+    }
+  }, [isAuthenticated, user]);
+
+  const handleGdprComplete = () => {
+    setShowGdprBanner(false);
+    // Refresh user data to get updated GDPR status
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+  };
 
 
 
@@ -87,7 +104,7 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      
+      {showGdprBanner && <GDPRConsentBanner onComplete={handleGdprComplete} />}
 
     </div>
   );

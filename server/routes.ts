@@ -212,11 +212,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub || req.user?.id;
-      const consentData = req.body;
+      const { gdprConsent } = req.body;
       
-      const updatedUser = await storage.updateGdprConsent(userId, consentData);
+      // Ensure user hasn't already given consent (lifetime check)
+      const user = await storage.getUser(userId);
+      if (user?.hasSeenGdprBanner) {
+        return res.status(400).json({ 
+          message: "GDPR consent already recorded for this user" 
+        });
+      }
+      
+      const updatedUser = await storage.updateGdprConsent(userId, gdprConsent);
       res.json({ success: true, user: updatedUser });
     } catch (error: any) {
+      console.error("GDPR consent error:", error);
       res.status(500).json({ message: "Failed to update consent preferences" });
     }
   });
