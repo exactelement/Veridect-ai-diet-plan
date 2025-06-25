@@ -3,7 +3,7 @@ import { AlertTriangle, Scale, Shield, FileText } from "lucide-react";
 
 export default function Terms() {
   return (
-    <div className="pt-20 pb-8 container-padding">
+    <div className="pt-20 pb-32 container-padding">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -43,7 +43,7 @@ export default function Terms() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-ios-secondary">
-              By accessing or using YesNoApp ("the Service"), you agree to be bound by these Terms of Service 
+              By accessing or using Veridect ("the Service"), you agree to be bound by these Terms of Service 
               ("Terms"). If you disagree with any part of these terms, you may not access the Service.
             </p>
             <ul className="space-y-2 text-sm text-ios-secondary">
@@ -62,7 +62,7 @@ export default function Terms() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-ios-secondary">
-              YesNoApp is an AI-powered nutrition analysis platform that provides food health verdicts, 
+              Veridect is an AI-powered nutrition analysis platform that provides food health verdicts, 
               nutritional information, and personalized recommendations to help users make informed dietary choices.
             </p>
             
@@ -353,9 +353,9 @@ export default function Terms() {
               If you have questions about these Terms, please contact us:
             </p>
             <div className="space-y-2 text-sm">
-              <p><strong>Email:</strong> legal@yesnoapp.com</p>
-              <p><strong>Support:</strong> support@yesnoapp.com</p>
-              <p><strong>Address:</strong> YesNoApp, Inc. Legal Department, [Address]</p>
+              <p><strong>Email:</strong> info@veridect.com</p>
+              <p><strong>Support:</strong> info@veridect.com</p>
+              <p><strong>Address:</strong> Veridect Legal Department, [Address]</p>
             </div>
           </CardContent>
         </Card>
