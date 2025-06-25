@@ -135,7 +135,9 @@ export default function GDPRBanner() {
   };
 
   // Only render when we have determined the banner should be visible
-  if (!shouldShowBanner || !isVisible) return null;
+  if (!shouldShowBanner || !isVisible) {
+    return null;
+  }
 
   return (
     <div
