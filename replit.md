@@ -173,7 +173,7 @@ Preferred communication style: Simple, everyday language.
 - **GDPR Banner Complete Rewrite**: Created gdpr-banner-new.tsx with simple, reliable logic that works correctly
 - **Essential Data Collection**: Added mandatory essential data toggle (always ON) with clear legal compliance messaging  
 - **Lifetime Banner Protection**: Banner shows only once per user lifetime, never appears again after any interaction
-- **Universal Redirect**: All users redirect to `/analyze` tab after GDPR consent completion regardless of onboarding choice
+- **Smart Redirect Flow**: Free tier users → `/` (food analysis), Pro upgrade users → `/subscription` page after GDPR consent
 - **Authentication System**: Fixed 401 error handling in useAuth hook to prevent excessive API retries
 - **API Endpoint**: Consolidated to single /api/user/gdpr-consent endpoint with proper lifetime protection
 - **Stable Rendering**: Eliminated all flashing behavior with memoized banner logic and proper loading states

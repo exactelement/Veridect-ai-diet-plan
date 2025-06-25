@@ -61,14 +61,20 @@ export default function GDPRBannerNew() {
         description: "Taking you to your personalized experience...",
       });
 
-      // Always redirect to analyze tab after GDPR consent
+      // Handle redirects based on onboarding choice
       setTimeout(() => {
-        // Clean up any pending redirects
-        localStorage.removeItem('pending-pro-upgrade');
-        localStorage.removeItem('pending-free-tier');
+        const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
+        const pendingFreeTier = localStorage.getItem('pending-free-tier');
         
-        // Always go to food analysis tab after GDPR consent - this is the main app experience
-        window.location.href = '/';
+        if (pendingProUpgrade === 'true') {
+          // User chose "Upgrade to Pro" in onboarding step 4
+          localStorage.removeItem('pending-pro-upgrade');
+          window.location.href = '/subscription';
+        } else {
+          // User chose "Free Plan" in onboarding step 4 OR any other case
+          localStorage.removeItem('pending-free-tier');
+          window.location.href = '/';
+        }
       }, 1000);
       
     } catch (error) {
