@@ -120,7 +120,7 @@ export default function Privacy() {
               <p className="text-ios-secondary">
                 For privacy-related questions or to exercise your rights, contact us at:
                 <br />
-                <strong>privacy@veridect.com</strong>
+                <strong>info@veridect.com</strong>
               </p>
             </CardContent>
           </Card>
