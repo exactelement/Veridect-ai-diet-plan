@@ -170,10 +170,12 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 ### Fixed GDPR Banner and Onboarding Flow (June 25, 2025)
-- **GDPR Banner Flash Fix**: Completely rewrote GDPR banner with stable authentication handling and proper render conditions
+- **GDPR Banner Complete Rewrite**: Created gdpr-banner-new.tsx with simple, reliable logic that works correctly
+- **Essential Data Collection**: Added mandatory essential data toggle (always ON) with clear legal compliance messaging  
+- **Lifetime Banner Protection**: Banner shows only once per user lifetime, never appears again after any interaction
+- **Universal Redirect**: All users redirect to `/analyze` tab after GDPR consent completion regardless of onboarding choice
 - **Authentication System**: Fixed 401 error handling in useAuth hook to prevent excessive API retries
-- **Onboarding Navigation**: Free users: Onboarding → GDPR Banner → Analyze Tab; Pro users: Onboarding → GDPR Banner → Subscription
-- **Redirect Paths**: Fixed free tier users redirecting to `/analyze` instead of home page after GDPR completion
+- **API Endpoint**: Consolidated to single /api/user/gdpr-consent endpoint with proper lifetime protection
 - **Stable Rendering**: Eliminated all flashing behavior with memoized banner logic and proper loading states
 
 ### Multilingual Translation System (June 25, 2025)

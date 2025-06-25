@@ -210,9 +210,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (user?.hasSeenPrivacyBanner && hasSeenPrivacyBanner) {
         console.log('GDPR consent already submitted for user:', userId);
-        return res.status(400).json({ 
+        return res.status(200).json({ 
+          success: true,
           message: "GDPR consent already recorded for this user",
-          alreadyRecorded: true
+          alreadyRecorded: true,
+          user: user
         });
       }
       

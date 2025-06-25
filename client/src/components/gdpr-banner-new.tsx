@@ -61,20 +61,14 @@ export default function GDPRBannerNew() {
         description: "Taking you to your personalized experience...",
       });
 
-      // Handle redirects based on onboarding choice
+      // Always redirect to analyze tab after GDPR consent
       setTimeout(() => {
-        const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
-        const pendingFreeTier = localStorage.getItem('pending-free-tier');
+        // Clean up any pending redirects
+        localStorage.removeItem('pending-pro-upgrade');
+        localStorage.removeItem('pending-free-tier');
         
-        if (pendingProUpgrade === 'true') {
-          localStorage.removeItem('pending-pro-upgrade');
-          window.location.href = '/subscription';
-        } else if (pendingFreeTier === 'true') {
-          localStorage.removeItem('pending-free-tier');
-          window.location.href = '/analyze';
-        } else {
-          window.location.href = '/analyze';
-        }
+        // Always go to analyze tab after GDPR consent - this is the main app experience
+        window.location.href = '/analyze';
       }, 1000);
       
     } catch (error) {
