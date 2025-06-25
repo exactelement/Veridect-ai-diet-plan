@@ -360,8 +360,8 @@ export default function Profile() {
     },
     onSuccess: () => {
       toast({
-        title: "Subscription Cancelled",
-        description: "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
+        title: "Cancellation Scheduled",
+        description: "Your subscription will be cancelled at the end of your billing period. You'll retain Pro access until then.",
       });
       // Force refetch user data to get updated subscription status
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -437,8 +437,9 @@ export default function Profile() {
                               size="sm"
                               onClick={() => setShowCancelDialog(true)}
                               className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 h-8"
+                              disabled={(user as any).subscriptionStatus === 'cancelling'}
                             >
-                              Cancel Subscription
+                              {(user as any).subscriptionStatus === 'cancelling' ? 'Cancellation Scheduled' : 'Cancel Subscription'}
                             </Button>
                           )}
                         </div>
@@ -1003,7 +1004,7 @@ export default function Profile() {
                     Cancelling...
                   </>
                 ) : (
-                  'Schedule Cancellation'
+                  'Confirm Cancellation'
                 )}
               </Button>
             </DialogFooter>
