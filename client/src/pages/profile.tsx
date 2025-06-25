@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,7 +68,7 @@ function EmailPreferencesSection({ user }: { user: any }) {
   }));
 
   // Update local state when user data changes
-  React.useEffect(() => {
+  useEffect(() => {
     setPreferences({
       nutritionInsightsEmails: user.gdprConsent?.nutritionEmails || user.gdprConsent?.nutritionInsightsEmails || false,
       improveAIRecommendations: user.gdprConsent?.aiImprovement || user.gdprConsent?.improveAIRecommendations || false,
