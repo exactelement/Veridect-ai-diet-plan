@@ -150,7 +150,7 @@ function EmailPreferencesSection({ user }: { user: any }) {
             <p>• Toggle any preference above to instantly update your email settings</p>
             <p>• All preference changes take effect immediately</p>
             <p>• You can re-enable emails anytime by returning to this page</p>
-            <p>• For email support, contact: <span className="text-ios-blue">support@veridect.com</span></p>
+            <p>• For email support, contact: <span className="text-ios-blue">info@veridect.com</span></p>
             <p>• Available to all users regardless of subscription tier</p>
           </div>
         </div>

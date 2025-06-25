@@ -228,7 +228,7 @@ export default function Unsubscribe() {
           </div>
 
           <div className="text-xs text-ios-secondary text-center space-y-1">
-            <p>Having trouble? Contact us at support@veridect.com</p>
+            <p>Having trouble? Contact us at info@veridect.com</p>
             <p>This unsubscribe link is unique to your email address.</p>
           </div>
         </CardContent>
