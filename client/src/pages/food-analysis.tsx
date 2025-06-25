@@ -474,6 +474,21 @@ export default function FoodAnalysis() {
           </p>
         </div>
 
+        {/* Pro Tip */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-3">
+              <div className="text-blue-500 text-xl">💡</div>
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-2">Pro Tip</h3>
+                <p className="text-blue-700">
+                  For better accuracy, ensure good lighting and capture the entire Food. Or describe including any sauces or dressings!
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Analysis Interface */}
         <Card>
           <CardContent className="p-8">
