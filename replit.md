@@ -16,6 +16,7 @@ Veridect is a live revenue-generating AI-powered nutrition analysis platform bri
 - **Form Handling**: React Hook Form with Zod validation
 - **Translation System**: Custom in-app translation with MyMemory API integration
 - **Internationalization**: 20+ languages with real-time text replacement and persistence
+- **Translation Widget**: Floating bottom-right widget with minimize/maximize functionality
 
 ### Backend Architecture
 - **Runtime**: Node.js 20 with Express.js framework
@@ -165,6 +166,14 @@ Preferred communication style: Simple, everyday language.
 - **Content Accuracy**: Free tier properly limited, Advanced tier naming consistent
 
 ## Recent Changes
+
+### Multilingual Translation System (June 25, 2025)
+- **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support
+- **Real-time Translation**: In-app text replacement using MyMemory API with intelligent caching
+- **Language Persistence**: User language preferences saved across sessions and pages
+- **Smart DOM Translation**: Automatic text node detection with exclusion of scripts and non-translatable content
+- **Performance Optimization**: Batch processing, rate limiting, and localStorage caching for smooth experience
+- **Supported Languages**: English, Spanish, French, German, Italian, Portuguese, Russian, Japanese, Korean, Chinese, Arabic, Hindi, Dutch, Polish, Swedish, Danish, Norwegian, Finnish, Turkish, Greek
 
 ### Platform Content Updates (June 25, 2025)
 - **Free Tier Clarification**: Updated all pages to consistently show free tier includes only: 5 analyses per day, basic nutritional info, simple yes/no verdicts (removed community features)
