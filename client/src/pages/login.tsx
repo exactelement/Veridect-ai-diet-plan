@@ -200,7 +200,7 @@ export default function Login() {
           description: "You've been signed in successfully.",
         });
         
-        // Smooth transition instead of hard reload
+        // Smooth transition - let App.tsx routing handle this
         setTimeout(() => {
           window.location.href = "/";
         }, 500);
@@ -240,9 +240,9 @@ export default function Login() {
           duration: 3000,
         });
         
-        // Smooth transition to onboarding
+        // Smooth transition - let App.tsx routing handle this
         setTimeout(() => {
-          window.location.href = "/onboarding";
+          window.location.href = "/";
         }, 800);
       } else {
         const error = await response.json();

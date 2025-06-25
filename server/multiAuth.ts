@@ -150,22 +150,42 @@ export async function setupMultiAuth(app: Express) {
 
   // Passport serialization
   passport.serializeUser((user: any, done) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Serializing user:', user.id, user.email);
+    }
     done(null, user.id);
   });
 
   passport.deserializeUser(async (id: string, done) => {
     try {
       if (!id) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('No user ID to deserialize');
+        }
         return done(null, false);
+      }
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Deserializing user ID:', id);
       }
       
       const user = await storage.getUser(id);
       if (!user) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('User not found for ID:', id);
+        }
         return done(null, false);
       }
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('User deserialized:', user.email, 'onboarding:', user.onboardingCompleted);
+      }
+      
       done(null, user);
     } catch (error) {
-      // Silently handle deserialization errors to avoid log spam
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Deserialize error:', error);
+      }
       done(null, false);
     }
   });
@@ -600,8 +620,21 @@ async function verifyAppleIdToken(identityToken: string): Promise<any> {
 
 // Authentication middleware
 export function isAuthenticated(req: any, res: any, next: any) {
-  if (req.isAuthenticated && req.isAuthenticated()) {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Auth check - isAuthenticated():', req.isAuthenticated?.(), 'user exists:', !!req.user, 'user email:', req.user?.email);
+  }
+  
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
     return next();
   }
+  
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.status(401).json({ message: "User not properly authenticated" });
+  }
+  
+  if (!req.user) {
+    return res.status(401).json({ message: "User session invalid" });
+  }
+  
   res.status(401).json({ message: "Unauthorized" });
 }
