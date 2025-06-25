@@ -122,9 +122,13 @@ function CheckoutForm({ tier, onBack }: { tier: SubscriptionTier; onBack: () => 
     if (error) {
       toast({
         title: "Payment Failed",
-        description: error.message,
+        description: "No worries! You can still enjoy 5 free analyses daily.",
         variant: "destructive",
       });
+      // Redirect to food analysis tab even on payment failure
+      setTimeout(() => {
+        window.location.href = '/food-analysis?subscription=failed';
+      }, 2000);
     } else {
       toast({
         title: "Payment Successful",
