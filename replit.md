@@ -170,13 +170,12 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 ### Moved Privacy Consent to Beginning of Onboarding (June 25, 2025)
-- **Privacy-First Onboarding**: Created privacy-consent-step.tsx as step 0 of onboarding flow
-- **Essential Data Collection**: Users see privacy preferences before any profile setup
-- **Integrated Flow**: Privacy consent → profile setup (steps 1-4) → subscription choice → completion
-- **Smart Redirect**: After onboarding completion, redirect based on subscription choice made in step 4
-- **Database Integration**: Privacy preferences saved during onboarding completion, not as separate banner
-- **Disabled Banner**: Old privacy banner component disabled since privacy is now handled in onboarding
-- **Clean UX**: No popup banners after onboarding, privacy handled upfront transparently
+- **Privacy-First Onboarding**: Privacy consent is now step 0 of onboarding flow before any profile setup
+- **Integrated Flow**: Privacy → profile setup (steps 1-3) → subscription choice → completion
+- **Database Integration**: Privacy preferences saved during onboarding completion and mapped to profile settings
+- **Clean UX**: No popup banners, privacy handled upfront in onboarding
+- **Progress Tracking**: Privacy step doesn't count in progress bar, starts from actual profile steps
+- **Smart Redirect**: After completion, redirect based on subscription choice with privacy already saved
 
 ### Multilingual Translation System (June 25, 2025)
 - **Translation Widget**: Implemented floating bottom-right translation widget with 20+ language support

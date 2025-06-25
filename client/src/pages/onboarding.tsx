@@ -13,6 +13,7 @@ import { Heart, Target, ShieldCheck, Star, Zap, Crown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import PrivacyConsentStep from "@/components/privacy-consent-step";
 
 const onboardingSchema = z.object({
   calorieGoal: z.number().min(800, "Minimum 800 calories").max(5000, "Maximum 5000 calories").default(2000),
@@ -38,10 +39,11 @@ const COMMON_ALLERGIES = [
 ];
 
 export default function Onboarding() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for privacy step
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [privacyPreferences, setPrivacyPreferences] = useState(null);
 
   const form = useForm<OnboardingForm>({
     resolver: zodResolver(onboardingSchema),
@@ -83,15 +85,37 @@ export default function Onboarding() {
 
   const completeOnboardingMutation = useMutation({
     mutationFn: async () => {
+      // Save privacy preferences first if they exist
+      if (privacyPreferences) {
+        await apiRequest("PUT", "/api/user/gdpr-consent", {
+          gdprConsent: privacyPreferences,
+          hasSeenPrivacyBanner: true
+        });
+      }
+      
       await apiRequest("POST", "/api/user/complete-onboarding", {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Setup Complete!",
-        description: "Please review your privacy preferences to continue.",
+        description: "Welcome to Veridect!",
       });
-      // User stays here until GDPR banner interaction completes
+      
+      // Handle redirects based on subscription choice
+      setTimeout(() => {
+        const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
+        
+        if (pendingProUpgrade === 'true') {
+          localStorage.removeItem('pending-pro-upgrade');
+          localStorage.removeItem('pending-free-tier');
+          window.location.href = '/subscription';
+        } else {
+          localStorage.removeItem('pending-free-tier');
+          localStorage.removeItem('pending-pro-upgrade');
+          window.location.href = '/';
+        }
+      }, 1000);
     },
     onError: (error: Error) => {
       toast({
@@ -102,6 +126,12 @@ export default function Onboarding() {
       });
     },
   });
+
+  const handlePrivacyComplete = (preferences: any) => {
+    console.log("Privacy preferences completed:", preferences);
+    setPrivacyPreferences(preferences);
+    setStep(1); // Move to first profile step
+  };
 
   const onSubmit = (data: OnboardingForm) => {
     if (step < 3) {
@@ -124,7 +154,7 @@ export default function Onboarding() {
     }
   };
 
-  const progress = (step / 4) * 100;
+  const progress = step === 0 ? 0 : ((step - 1) / 3) * 100; // Don't count privacy step in progress
 
   return (
     <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
@@ -147,16 +177,22 @@ export default function Onboarding() {
             </div>
             <div className="w-20"></div> {/* Spacer for centering */}
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome to YesNoApp</CardTitle>
-          <p className="text-ios-secondary">Let's personalize your nutrition journey</p>
-          <Progress value={progress} className="mt-4" />
-          <p className="text-sm text-ios-secondary">Step {step} of 4</p>
+          <CardTitle className="text-3xl font-bold">Welcome to Veridect</CardTitle>
+          <p className="text-ios-secondary">{step === 0 ? "First, let's set your privacy preferences" : "Let's personalize your nutrition journey"}</p>
+          {step > 0 && <Progress value={progress} className="mt-4" />}
+          {step > 0 && <p className="text-sm text-ios-secondary">Step {step} of 3</p>}
         </CardHeader>
 
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {step === 1 && (
+          {step === 0 ? (
+            <PrivacyConsentStep 
+              onComplete={handlePrivacyComplete}
+              isSubmitting={false}
+            />
+          ) : (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {step === 1 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
                     <Heart className="w-12 h-12 text-ios-blue mx-auto mb-4" />
@@ -433,6 +469,7 @@ export default function Onboarding() {
               </div>
             </form>
           </Form>
+          )}
         </CardContent>
       </Card>
     </div>
