@@ -396,8 +396,11 @@ export default function Home() {
                         </div>
                       </div>
                       <Badge 
-                        variant={log.verdict === 'YES' ? 'default' : log.verdict === 'OK' ? 'secondary' : 'destructive'}
-                        className="font-medium"
+                        className={
+                          log.verdict === "YES" ? "bg-health-green text-white font-medium" :
+                          log.verdict === "OK" ? "bg-warning-orange text-white font-medium" :
+                          "bg-danger-red text-white font-medium"
+                        }
                       >
                         {log.verdict}
                       </Badge>
