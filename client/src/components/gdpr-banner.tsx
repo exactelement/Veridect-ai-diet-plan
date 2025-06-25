@@ -28,16 +28,27 @@ export default function GDPRBanner() {
     // Prioritize database state over localStorage to handle edge cases
     const hasSeenBefore = localStorage.getItem('gdpr-banner-shown');
     
+    console.log('GDPR Banner Debug:', {
+      user: !!user,
+      userKeys: user ? Object.keys(user) : 'no user',
+      hasSeenPrivacyBanner: user?.hasSeenPrivacyBanner,
+      onboardingCompleted: user?.onboardingCompleted,
+      allFields: user
+    });
+    
     // Check both camelCase and snake_case field names
     const hasSeenBanner = user?.hasSeenPrivacyBanner || user?.has_seen_privacy_banner;
     const onboardingDone = user?.onboardingCompleted || user?.onboarding_completed;
     
     if (user && !hasSeenBanner && onboardingDone) {
+      console.log('GDPR Banner: Showing banner for user', user.email);
       // If database says user hasn't seen banner, clear localStorage and show banner
       if (hasSeenBefore) {
         localStorage.removeItem('gdpr-banner-shown');
       }
       setIsVisible(true);
+    } else {
+      console.log('GDPR Banner: Not showing', { hasSeenBanner, onboardingDone });
     }
     
     // Mark that we've checked the user to prevent re-checking
