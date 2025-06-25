@@ -143,11 +143,9 @@ export default function Onboarding() {
 
   const handleSubscriptionChoice = (tier: string) => {
     if (tier === 'pro') {
-      // Set flag to redirect to subscription after completion
       localStorage.setItem('pending-pro-upgrade', 'true');
       completeOnboardingMutation.mutate();
     } else {
-      // Set flag for free tier to redirect to food analysis
       localStorage.setItem('pending-free-tier', 'true');
       completeOnboardingMutation.mutate();
     }
@@ -417,10 +415,7 @@ export default function Onboarding() {
                         <Button 
                           type="button"
                           className="w-full mt-4 bg-ios-blue hover:bg-blue-600"
-                          onClick={() => {
-                            localStorage.setItem('pending-pro-upgrade', 'true');
-                            completeOnboardingMutation.mutate();
-                          }}
+                          onClick={() => handleSubscriptionChoice('pro')}
                           disabled={completeOnboardingMutation.isPending}
                         >
                           {completeOnboardingMutation.isPending ? "Setting up..." : "Upgrade to Pro"}
@@ -433,11 +428,7 @@ export default function Onboarding() {
                     <button 
                       type="button"
                       className="text-sm text-gray-500 underline"
-                      onClick={() => {
-                        // Set free tier choice for GDPR redirect
-                        localStorage.setItem('pending-free-tier', 'true');
-                        completeOnboardingMutation.mutate();
-                      }}
+                      onClick={() => handleSubscriptionChoice('free')}
                       disabled={completeOnboardingMutation.isPending}
                     >
                       Continue with Free
