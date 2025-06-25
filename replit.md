@@ -170,7 +170,7 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 ### UI Enhancement & Production Polish (June 25, 2025)
-- **Pro Tip Optimization**: Moved Pro Tip from intrusive top position to bottom tips section with enhanced responsive styling for all devices
+- **Pro Tip Refinement**: Replaced detailed tips list with concise Pro Tip focused on lighting and complete meal capture for better AI accuracy
 - **Accessibility Fixes**: Added proper DialogDescription components to all dialog content, eliminating browser accessibility warnings
 - **File Organization**: Moved all non-essential documentation to info-files/ directory for cleaner structure
 - **Production Logging**: Secured all console.log statements with NODE_ENV guards to prevent information disclosure
