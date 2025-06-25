@@ -68,6 +68,9 @@ export interface IStorage {
   // User count
   getUserCount(): Promise<number>;
   
+  // Challenge operations
+  getAllCompletedChallenges(userId: string): Promise<FoodLog[]>;
+  
   // Email preferences for admin
   getEmailPreferences(): Promise<Array<{
     id: string;
@@ -739,6 +742,22 @@ export class DatabaseStorage implements IStorage {
     // Get current time in Madrid timezone using built-in methods
     const now = new Date();
     return new Date(now.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+  }
+
+  // Get all completed challenges for badge counting (all-time)
+  async getAllCompletedChallenges(userId: string): Promise<FoodLog[]> {
+    const challenges = await db
+      .select()
+      .from(foodLogs)
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          sql`${foodLogs.foodName} LIKE 'BONUS_%'`
+        )
+      )
+      .orderBy(desc(foodLogs.createdAt));
+      
+    return challenges;
   }
 }
 

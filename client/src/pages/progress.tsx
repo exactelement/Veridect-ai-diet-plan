@@ -68,6 +68,13 @@ export default function Progress() {
   });
 
   // Get weekly score data for bonus points calculation
+  // Get all-time challenge completions for badge counting
+  const { data: allChallenges = [] } = useQuery<FoodLog[]>({
+    queryKey: ["/api/challenges/completed"],
+    enabled: !!user,
+  });
+  
+  // Get weekly score data for bonus points calculation
   const { data: myWeeklyScore } = useQuery({
     queryKey: ['/api/leaderboard/my-score'],
   });
@@ -518,16 +525,15 @@ export default function Progress() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-700">
                       {(() => {
-                        // Calculate badges from actual bonus points (automatic from database)
-                        if (!myWeeklyScore) return 0;
+                        // Count completed challenges from database (each challenge = 1 badge)
+                        if (!allChallenges || !Array.isArray(allChallenges)) return 0;
                         
-                        const foodPoints = (myWeeklyScore.yesCount || 0) * 10 + 
-                                         (myWeeklyScore.okCount || 0) * 5 + 
-                                         (myWeeklyScore.noCount || 0) * 2;
-                        const bonusPoints = Math.max(0, (myWeeklyScore.weeklyPoints || 0) - foodPoints);
+                        // Count BONUS_ entries (each represents a completed challenge)
+                        const badges = allChallenges.filter((food: any) => 
+                          food.foodName && food.foodName.startsWith('BONUS_')
+                        ).length;
                         
-                        // Each 25-point bonus = 1 badge (automatic calculation)
-                        return Math.floor(bonusPoints / 25);
+                        return badges;
                       })()}
                     </div>
                     <div className="text-sm text-purple-600">Badges Earned</div>

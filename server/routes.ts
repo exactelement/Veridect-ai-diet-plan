@@ -450,6 +450,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all completed challenges for badge counting
+  app.get('/api/challenges/completed', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub || req.user?.id;
+      const challenges = await storage.getAllCompletedChallenges(userId);
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching completed challenges:", error);
+      res.status(500).json({ message: "Failed to fetch completed challenges" });
+    }
+  });
+
   // Leaderboard routes - require Pro tier
   app.get('/api/leaderboard/weekly', isAuthenticated, async (req: any, res) => {
     const userId = req.user?.claims?.sub || req.user?.id;
