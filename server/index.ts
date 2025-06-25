@@ -13,16 +13,55 @@ validateEnvironment();
 
 const app = express();
 
-// Security headers - configured to allow essential services like Stripe
+// Security headers - properly configured for production with payment processing
 app.use(helmet({
-  contentSecurityPolicy: false, // Disable CSP temporarily to ensure Stripe works
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "https://js.stripe.com",
+        "https://www.googletagmanager.com", 
+        "https://appleid.cdn-apple.com",
+        "blob:", // Allow blob URLs for dynamic scripts
+      ],
+      styleSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: [
+        "'self'", 
+        "https://api.stripe.com",
+        "https://hooks.stripe.com",
+        "https://api.openai.com", 
+        "https://generativelanguage.googleapis.com", 
+        "https://mymemory.translated.net",
+        "wss:", // WebSocket connections
+      ],
+      frameSrc: [
+        "'self'", 
+        "https://js.stripe.com", 
+        "https://hooks.stripe.com", 
+        "https://appleid.cdn-apple.com"
+      ],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'", "https://api.stripe.com"],
+      ...(process.env.NODE_ENV === 'production' && { upgradeInsecureRequests: [] }),
+    },
+  },
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   },
   noSniff: true,
-  frameguard: { action: 'deny' },
+  frameguard: { action: 'sameorigin' }, // Allow same-origin frames for Stripe
   crossOriginEmbedderPolicy: false,
 }));
 
