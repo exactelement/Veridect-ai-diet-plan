@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { X, Shield, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -12,11 +12,10 @@ export default function GDPRBanner() {
   const { toast } = useToast();
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [consents, setConsents] = useState({
-    essential: true, // Always required
-    analytics: false,
-    marketing: false,
-    research: false,
+  const [preferences, setPreferences] = useState({
+    improveAIRecommendations: true,
+    nutritionInsightsEmails: true,
+    anonymousUsageAnalytics: true,
   });
 
   useEffect(() => {
@@ -31,42 +30,44 @@ export default function GDPRBanner() {
   }, [user]);
 
   const handleAcceptAll = () => {
-    setConsents({
-      essential: true,
-      analytics: true,
-      marketing: true,
-      research: true,
-    });
-    savePrefencesAndDismiss();
+    const allConsent = {
+      improveAIRecommendations: true,
+      nutritionInsightsEmails: true,
+      anonymousUsageAnalytics: true,
+    };
+    savePrefencesAndDismiss(allConsent);
   };
 
-  const handleAcceptSelected = () => {
-    savePrefencesAndDismiss();
+  const handleSavePreferences = () => {
+    savePrefencesAndDismiss(preferences);
   };
 
   const handleDeclineOptional = () => {
-    setConsents({
-      essential: true,
-      analytics: false,
-      marketing: false,
-      research: false,
-    });
-    savePrefencesAndDismiss();
+    const minimalConsent = {
+      improveAIRecommendations: false,
+      nutritionInsightsEmails: false,
+      anonymousUsageAnalytics: false,
+    };
+    savePrefencesAndDismiss(minimalConsent);
   };
 
-  const savePrefencesAndDismiss = async () => {
+  const savePrefencesAndDismiss = async (consentData: any) => {
     try {
       // Mark as shown immediately to prevent multiple submissions
       localStorage.setItem('gdpr-banner-shown', 'true');
       
       // Save GDPR consent to server and mark banner as seen
       const response = await apiRequest("POST", "/api/user/gdpr-consent", {
-        gdprConsent: consents,
+        gdprConsent: {
+          ...consentData,
+          timestamp: new Date().toISOString(),
+          version: "1.0",
+        },
         hasSeenPrivacyBanner: true
       });
 
       // Save preferences to localStorage as backup
-      localStorage.setItem('gdpr-consents', JSON.stringify(consents));
+      localStorage.setItem('gdpr-consents', JSON.stringify(consentData));
       
       // Animate out
       const banner = document.getElementById('gdpr-banner');
@@ -95,152 +96,118 @@ export default function GDPRBanner() {
   return (
     <div
       id="gdpr-banner"
-      className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slide-up"
-      style={{
-        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(45, 45, 45, 0.95) 100%)',
-        backdropFilter: 'blur(10px)',
-      }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
     >
-      <Card className="max-w-6xl mx-auto bg-white/95 backdrop-blur-sm border border-gray-200">
+      <Card className="w-full max-w-2xl bg-white border-2 border-ios-blue shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <Shield className="w-6 h-6 text-ios-blue flex-shrink-0" />
+              <div className="w-12 h-12 bg-ios-blue/10 rounded-full flex items-center justify-center">
+                <Shield className="w-6 h-6 text-ios-blue" />
+              </div>
               <div>
-                <h3 className="font-semibold text-lg">Your Privacy Matters</h3>
-                <p className="text-sm text-ios-secondary">
-                  We use cookies and similar technologies to enhance your experience and improve our services.
-                </p>
+                <h2 className="text-xl font-bold text-ios-text">Privacy & Data Consent</h2>
+                <p className="text-sm text-ios-secondary">Required for app usage</p>
               </div>
             </div>
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => setIsVisible(false)}
-              className="text-gray-400 hover:text-gray-600"
+              size="sm"
+              onClick={handleDeclineOptional}
+              className="text-ios-secondary hover:text-ios-text"
             >
               <X className="w-5 h-5" />
             </Button>
           </div>
 
-          {!showDetails ? (
-            <div className="space-y-4">
-              <p className="text-sm text-ios-text">
-                We respect your privacy and are committed to protecting your personal data. 
-                You can choose which types of cookies and data processing you're comfortable with.
-              </p>
+          <div className="space-y-1 mb-6">
+            <h3 className="font-semibold text-ios-text">Data Collection Preferences</h3>
+            <p className="text-sm text-ios-secondary">
+              Essential data is required for app functionality. Optional settings can be changed anytime in your profile.
+            </p>
+
+            <div className="space-y-0.5">
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50/50 rounded-lg border-2 border-ios-gray-200">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text/70">Essential App Data Collection</h4>
+                  <p className="text-sm text-ios-secondary/70">
+                    Required for app functionality
+                  </p>
+                </div>
+                <Switch
+                  checked={true}
+                  disabled={true}
+                  className="opacity-50"
+                />
+              </div>
               
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={handleAcceptAll}
-                  className="bg-ios-blue text-white hover:bg-ios-blue/90"
-                >
-                  Accept All
-                </Button>
-                <Button
-                  onClick={handleDeclineOptional}
-                  variant="outline"
-                  className="border-ios-blue text-ios-blue hover:bg-ios-blue/5"
-                >
-                  Essential Only
-                </Button>
-                <Button
-                  onClick={() => setShowDetails(true)}
-                  variant="ghost"
-                  className="text-ios-secondary hover:text-ios-text"
-                >
-                  <Info className="w-4 h-4 mr-2" />
-                  Customize Settings
-                </Button>
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text">Improve AI Food Analysis</h4>
+                  <p className="text-sm text-ios-secondary">
+                    Share anonymized data to improve AI verdicts
+                  </p>
+                </div>
+                <Switch
+                  checked={preferences.improveAIRecommendations}
+                  onCheckedChange={(checked) =>
+                    setPreferences(prev => ({ ...prev, improveAIRecommendations: checked }))
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text">Weekly Nutrition Insights</h4>
+                  <p className="text-sm text-ios-secondary">
+                    Weekly progress emails and nutrition tips
+                  </p>
+                </div>
+                <Switch
+                  checked={preferences.nutritionInsightsEmails}
+                  onCheckedChange={(checked) =>
+                    setPreferences(prev => ({ ...prev, nutritionInsightsEmails: checked }))
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-2 bg-ios-gray-50 rounded-lg">
+                <div className="flex-1">
+                  <h4 className="font-medium text-ios-text">Anonymous Usage Analytics</h4>
+                  <p className="text-sm text-ios-secondary">
+                    Help improve app experience with usage data
+                  </p>
+                </div>
+                <Switch
+                  checked={preferences.anonymousUsageAnalytics}
+                  onCheckedChange={(checked) =>
+                    setPreferences(prev => ({ ...prev, anonymousUsageAnalytics: checked }))
+                  }
+                />
               </div>
             </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between p-4 border rounded-lg bg-gray-50">
-                  <div className="flex-1">
-                    <h4 className="font-medium mb-1">Essential Cookies</h4>
-                    <p className="text-sm text-ios-secondary">
-                      Required for basic site functionality, security, and user authentication. These cannot be disabled.
-                    </p>
-                  </div>
-                  <Checkbox checked={true} disabled className="mt-1" />
-                </div>
+          </div>
 
-                <div className="flex items-start justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium mb-1">Analytics & Performance</h4>
-                    <p className="text-sm text-ios-secondary">
-                      Help us understand how you use the app to improve performance and user experience.
-                    </p>
-                  </div>
-                  <Checkbox
-                    checked={consents.analytics}
-                    onCheckedChange={(checked) => 
-                      setConsents(prev => ({ ...prev, analytics: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              onClick={handleAcceptAll}
+              className="flex-1 bg-ios-blue hover:bg-ios-blue/90 text-white"
+            >
+              Accept All
+            </Button>
+            <Button
+              onClick={handleSavePreferences}
+              variant="outline"
+              className="flex-1"
+            >
+              Save My Preferences
+            </Button>
+          </div>
 
-                <div className="flex items-start justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium mb-1">Marketing & Communications</h4>
-                    <p className="text-sm text-ios-secondary">
-                      Personalized content, recommendations, and communication about new features.
-                    </p>
-                  </div>
-                  <Checkbox
-                    checked={consents.marketing}
-                    onCheckedChange={(checked) => 
-                      setConsents(prev => ({ ...prev, marketing: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                </div>
-
-                <div className="flex items-start justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium mb-1">Research & Development</h4>
-                    <p className="text-sm text-ios-secondary">
-                      Anonymous data to improve our AI and contribute to nutrition research (helps everyone!).
-                    </p>
-                  </div>
-                  <Checkbox
-                    checked={consents.research}
-                    onCheckedChange={(checked) => 
-                      setConsents(prev => ({ ...prev, research: checked as boolean }))
-                    }
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t">
-                <Button
-                  onClick={handleAcceptSelected}
-                  className="bg-ios-blue text-white hover:bg-ios-blue/90"
-                >
-                  Save Preferences
-                </Button>
-                <Button
-                  onClick={() => setShowDetails(false)}
-                  variant="outline"
-                >
-                  Back
-                </Button>
-              </div>
-
-              <p className="text-xs text-ios-secondary">
-                You can change these preferences anytime in your account settings. 
-                For more information, see our{" "}
-                <a href="/privacy" className="text-ios-blue hover:underline">
-                  Privacy Policy
-                </a>
-                .
-              </p>
-            </div>
-          )}
+          <p className="text-xs text-ios-secondary mt-4 text-center">
+            You can update these preferences anytime in your profile settings. 
+            View our full <a href="/privacy" className="text-ios-blue hover:underline">Privacy Policy</a> for details.
+          </p>
         </CardContent>
       </Card>
     </div>

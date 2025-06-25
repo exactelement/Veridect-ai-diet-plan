@@ -25,20 +25,11 @@ import Disclaimer from "@/pages/disclaimer";
 import Navigation from "@/components/navigation";
 import TopHeader from "@/components/top-header";
 import GDPRBanner from "@/components/gdpr-banner";
-import GDPRInitialBanner from "@/components/gdpr-initial-banner";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [showGDPRInitialBanner, setShowGDPRInitialBanner] = useState(false);
   const [location] = useLocation();
-
-  // Show GDPR banner only once after first login post-registration
-  useEffect(() => {
-    if (user && isAuthenticated && (user as any).onboardingCompleted && !(user as any).gdprBannerShown) {
-      setShowGDPRInitialBanner(true);
-    }
-  }, [user, isAuthenticated]);
 
 
 
@@ -90,9 +81,6 @@ function Router() {
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
       {isAuthenticated && <GDPRBanner />}
-      {showGDPRInitialBanner && (
-        <GDPRInitialBanner onDismiss={() => setShowGDPRInitialBanner(false)} />
-      )}
       
 
     </div>
