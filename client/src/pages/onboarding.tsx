@@ -89,10 +89,10 @@ export default function Onboarding() {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Welcome to Veridect!",
-        description: "Your profile has been set up successfully.",
+        description: "Please review your privacy preferences below.",
       });
-      // Stay on current page for both free and Pro users to show GDPR banner first
-      // Navigation will happen after GDPR banner completion
+      // CRITICAL: Stay on onboarding page until GDPR banner interaction
+      // User will NOT be redirected until they complete GDPR consent
     },
     onError: (error: Error) => {
       toast({

@@ -12,7 +12,7 @@ export default function GDPRBanner() {
   const { toast } = useToast();
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const mountedRef = useRef(false);
+  const mountedRef = useRef(true);
   const [preferences, setPreferences] = useState({
     improveAIRecommendations: true,
     nutritionInsightsEmails: true,
@@ -22,30 +22,20 @@ export default function GDPRBanner() {
   // Determine if banner should show - LIFETIME ONCE ONLY
   const shouldShowBanner = useMemo(() => {
     if (authLoading || !user) {
-      console.log('GDPR shouldShow: false (loading or no user)', { authLoading, user: !!user });
       return false;
     }
     
     // CRITICAL: Banner shows only if user has NEVER seen it AND completed onboarding
     const hasSeenBanner = user.hasSeenPrivacyBanner;
     const onboardingDone = user.onboardingCompleted;
-    const shouldShow = !hasSeenBanner && onboardingDone;
     
-    console.log('GDPR shouldShow decision:', {
-      userId: user.id,
-      email: user.email,
-      hasSeenPrivacyBanner: hasSeenBanner,
-      onboardingCompleted: onboardingDone,
-      shouldShow
-    });
-    
-    // Extra protection: check localStorage as backup
+    // Check localStorage first to prevent flashing
     const localStorageCheck = localStorage.getItem('gdpr-banner-shown');
-    console.log('localStorage check:', { localStorageCheck, hasSeenBanner });
     if (localStorageCheck === 'true') {
-      console.log('GDPR blocked by localStorage - banner was already shown');
       return false;
     }
+    
+    const shouldShow = !hasSeenBanner && onboardingDone;
     
     return shouldShow;
   }, [user?.hasSeenPrivacyBanner, user?.onboardingCompleted, authLoading]);
@@ -113,10 +103,10 @@ export default function GDPRBanner() {
       
       toast({
         title: "Privacy Preferences Saved",
-        description: "Your privacy preferences have been updated successfully.",
+        description: "Taking you to your personalized experience...",
       });
 
-      // Get redirect paths
+      // Get redirect paths set during onboarding
       const pendingProUpgrade = localStorage.getItem('pending-pro-upgrade');
       const pendingFreeTier = localStorage.getItem('pending-free-tier');
 
@@ -164,26 +154,15 @@ export default function GDPRBanner() {
     }
   };
 
-  // Only render when we have determined the banner should be visible
-  console.log('GDPR Render check:', { shouldShowBanner, isVisible, user: user ? { id: user.id, onboardingCompleted: user.onboardingCompleted, hasSeenPrivacyBanner: user.hasSeenPrivacyBanner } : null });
-  
-  if (!shouldShowBanner) {
-    console.log('GDPR Banner NOT rendering - shouldShowBanner is false');
+  // Simplified render logic - render when should show banner
+  if (!shouldShowBanner || !isVisible) {
     return null;
   }
-  
-  if (!isVisible) {
-    console.log('GDPR Banner NOT rendering - isVisible is false');
-    return null;
-  }
-  
-  console.log('GDPR Banner RENDERING!!! - All conditions met');
 
-  // Force render with emergency inline styles
   return (
     <div
       id="gdpr-banner"
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
       style={{ 
         position: 'fixed',
         top: 0,
@@ -191,11 +170,13 @@ export default function GDPRBanner() {
         right: 0,
         bottom: 0,
         zIndex: 99999,
-        display: 'flex',
+        display: 'flex !important',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        backdropFilter: 'blur(4px)'
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(4px)',
+        visibility: 'visible',
+        opacity: 1
       }}
     >
       <Card className="w-full max-w-2xl bg-white dark:bg-gray-900 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
