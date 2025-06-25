@@ -67,8 +67,8 @@ export default function GDPRBannerNew() {
         localStorage.removeItem('pending-pro-upgrade');
         localStorage.removeItem('pending-free-tier');
         
-        // Always go to analyze tab after GDPR consent - this is the main app experience
-        window.location.href = '/analyze';
+        // Always go to food analysis tab after GDPR consent - this is the main app experience
+        window.location.href = '/';
       }, 1000);
       
     } catch (error) {

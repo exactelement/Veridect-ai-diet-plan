@@ -64,6 +64,7 @@ function Router() {
         ) : user && user.onboardingCompleted ? (
           <>
             <Route path="/" component={FoodAnalysis} />
+            <Route path="/analyze" component={FoodAnalysis} />
             <Route path="/home" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />
             <Route path="/progress" component={Progress} />
