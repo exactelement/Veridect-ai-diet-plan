@@ -39,11 +39,13 @@ function Router() {
   const [showGdprBanner, setShowGdprBanner] = useState(false);
   const queryClient = useQueryClient();
 
-  // Check if GDPR banner should be shown
+  // Check if GDPR banner should be shown - TEMPORARILY DISABLED
   useEffect(() => {
-    if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && !(user as any).onboardingCompleted) {
-      setShowGdprBanner(true);
-    }
+    // GDPR banner temporarily disabled
+    setShowGdprBanner(false);
+    // if (isAuthenticated && user && !(user as any).hasSeenGdprBanner && !(user as any).onboardingCompleted) {
+    //   setShowGdprBanner(true);
+    // }
   }, [isAuthenticated, user]);
 
   const handleGdprComplete = () => {
@@ -107,7 +109,8 @@ function Router() {
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
-      {showGdprBanner && <GDPRConsentBanner onComplete={handleGdprComplete} />}
+      {/* GDPR Banner temporarily disabled */}
+      {/* {showGdprBanner && <GDPRConsentBanner onComplete={handleGdprComplete} />} */}
 
     </div>
   );
