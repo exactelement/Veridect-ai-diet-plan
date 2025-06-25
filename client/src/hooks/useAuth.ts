@@ -4,10 +4,11 @@ export function useAuth() {
   const { data: user, isLoading, isError } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
-    staleTime: 2 * 60 * 1000, // 2 minutes - good balance
-    gcTime: 5 * 60 * 1000, // 5 minutes cache
-    refetchOnMount: false, // Don't always refetch - use cache when possible
+    staleTime: 10 * 60 * 1000, // 10 minutes - stop excessive requests
+    gcTime: 15 * 60 * 1000, // 15 minutes cache
+    refetchOnMount: false, // Don't refetch on mount
     refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchInterval: false, // No polling
   });
 
   return {
