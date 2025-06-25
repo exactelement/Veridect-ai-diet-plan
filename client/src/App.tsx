@@ -83,7 +83,7 @@ function Router() {
         ) : (
           <Route path="*" component={Onboarding} />
         )}
-        <Route component={NotFound} />
+        <Route path="*" component={NotFound} />
       </Switch>
       
       {isAuthenticated && user && (user as any).onboardingCompleted && <Navigation />}
