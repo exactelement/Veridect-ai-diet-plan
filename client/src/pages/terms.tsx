@@ -70,9 +70,9 @@ export default function Terms() {
               <div className="border rounded-lg p-4">
                 <h4 className="font-semibold mb-2">Free Tier</h4>
                 <ul className="text-sm text-ios-secondary space-y-1">
-                  <li>• Basic food analysis</li>
-                  <li>• Limited daily usage</li>
-                  <li>• Community features</li>
+                  <li>• 5 analyses per day</li>
+                  <li>• Basic nutritional info</li>
+                  <li>• Simple yes/no verdicts</li>
                 </ul>
               </div>
               <div className="border rounded-lg p-4">
@@ -84,10 +84,10 @@ export default function Terms() {
                 </ul>
               </div>
               <div className="border rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Medical Tier</h4>
+                <h4 className="font-semibold mb-2">Advanced Tier</h4>
                 <ul className="text-sm text-ios-secondary space-y-1">
-                  <li>• Medical-grade analysis</li>
-                  <li>• Professional consultations</li>
+                  <li>• Professional-grade analysis</li>
+                  <li>• Advanced nutrition metrics</li>
                   <li>• Healthcare integration</li>
                 </ul>
               </div>
@@ -212,7 +212,7 @@ export default function Terms() {
                 <li>• We process your data to provide and improve the Service</li>
                 <li>• Anonymized data may be used for research purposes</li>
                 <li>• You can opt out of research data sharing</li>
-                <li>• Medical tier data is subject to additional protections</li>
+                <li>• Advanced tier data is subject to additional protections</li>
               </ul>
             </div>
           </CardContent>

@@ -27,10 +27,8 @@ const TIERS: SubscriptionTier[] = [
     description: "Perfect for getting started",
     features: [
       "5 food analyses per day",
-      "Basic Yes/No verdicts",
-      "Simple explanations",
-      "Community access",
-      "Basic nutrition info"
+      "Basic nutritional info",
+      "Simple yes/no verdicts"
     ],
     icon: <Zap className="w-6 h-6" />,
     color: "gray"
@@ -44,7 +42,7 @@ const TIERS: SubscriptionTier[] = [
       "Unlimited analyses",
       "Food logging & progress tracking",
       "Challenges and bonus points",
-      "Leaderboard & community access",
+      "Leaderboard access",
       "Food history",
       "Personalised AI analysis",
       "Priority support",

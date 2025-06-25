@@ -73,9 +73,8 @@ export default function RefundPolicy() {
                   <h3 className="font-medium text-green-800 mb-2">Free Tier Includes:</h3>
                   <ul className="text-sm text-green-700 space-y-1">
                     <li>• 5 food analyses per day</li>
-                    <li>• AI-powered nutrition guidance</li>
-                    <li>• Basic gamification features</li>
-                    <li>• Community leaderboard access</li>
+                    <li>• Basic nutritional info</li>
+                    <li>• Simple yes/no verdicts</li>
                   </ul>
                 </div>
                 <div className="bg-ios-blue/5 border border-ios-blue/20 rounded-lg p-4">

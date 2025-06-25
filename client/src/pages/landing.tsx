@@ -383,7 +383,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />
-                  <span className="text-gray-800">Leaderboard & community access</span>
+                  <span className="text-gray-800">Leaderboard access</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Check className="w-5 h-5 text-health-green" />

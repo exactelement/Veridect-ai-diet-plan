@@ -64,7 +64,7 @@ const subscriptionTiers: SubscriptionTier[] = [
       "Unlimited analyses",
       "Food logging & progress tracking",
       "Challenges and bonus points",
-      "Leaderboard & community access",
+      "Leaderboard access",
       "Food history",
       "Personalised AI analysis",
       "Priority support",

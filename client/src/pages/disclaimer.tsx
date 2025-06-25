@@ -90,7 +90,7 @@ export default function Disclaimer() {
             <CardContent className="space-y-4">
               <p className="text-ios-text">
                 For professional nutritionist guidance and personalized dietary advice, consider upgrading to our 
-                <strong> Medical Tier</strong> which connects you with certified professionals.
+                <strong> Advanced Tier</strong> which connects you with certified professionals.
               </p>
               
               <div className="bg-white/50 p-4 rounded-lg">

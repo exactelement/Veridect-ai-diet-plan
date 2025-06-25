@@ -151,10 +151,8 @@ const TIER_FEATURES = [
     color: "gray",
     features: [
       "5 food analyses per day",
-      "Basic YES/NO/OK verdicts",
-      "Simple explanations",
-      "Community leaderboard",
-      "Basic nutrition information"
+      "Basic nutritional info",
+      "Simple yes/no verdicts"
     ]
   },
   {
