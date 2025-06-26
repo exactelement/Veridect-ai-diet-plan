@@ -131,10 +131,11 @@ export default function Home() {
   // Weekly points from the weekly score API (same calculation as lifetime points)
   const weeklyPoints = (weeklyScore as any)?.weeklyPoints || 0;
 
-  // User interface preferences from profile settings
-  const showCalorieCounter = (user as any)?.showCalorieCounter !== false;
-  const participateInWeeklyChallenge = (user as any)?.participateInWeeklyChallenge !== false;
-  const showFoodStats = (user as any)?.showFoodStats !== false;
+  // User interface preferences from profile settings (stored in privacySettings)
+  const privacySettings = (user as any)?.privacySettings || {};
+  const showCalorieCounter = privacySettings.showCalorieCounter !== false; // Default to true
+  const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false; // Default to true
+  const showFoodStats = privacySettings.showFoodStats !== false; // Default to true
 
 
 
