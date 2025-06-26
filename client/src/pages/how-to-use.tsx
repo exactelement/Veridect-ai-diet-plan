@@ -225,7 +225,7 @@ export default function HowToUse() {
 
           {/* Back to Home Button */}
           <div className="text-center">
-            <Link href="/" onClick={scrollToTop}>
+            <Link href="/login" onClick={scrollToTop}>
               <Button className="bg-ios-blue text-white px-8 py-3">
                 Start Analyzing Food
               </Button>

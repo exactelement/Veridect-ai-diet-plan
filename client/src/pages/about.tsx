@@ -426,9 +426,11 @@ export default function About() {
             <p className="mb-6 text-white">
               Join thousands of users who are already making smarter food choices with Veridect.
             </p>
-            <Button className="bg-white text-ios-blue hover:bg-gray-100 px-8 py-3 text-lg">
-              Get Started Today
-            </Button>
+            <Link href="/login" onClick={scrollToTop}>
+              <Button className="bg-white text-ios-blue hover:bg-gray-100 px-8 py-3 text-lg">
+                Get Started Today
+              </Button>
+            </Link>
           </CardContent>
         </Card>
           {/* Back to Home Button */}
