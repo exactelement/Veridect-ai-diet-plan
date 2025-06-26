@@ -106,7 +106,7 @@ export default function About() {
               <Link href="/how-to-use" onClick={scrollToTop}>
                 <Button variant="ghost">How to Use</Button>
               </Link>
-              <Link href="/" onClick={scrollToTop}>
+              <Link href="/login" onClick={scrollToTop}>
                 <Button>Log In</Button>
               </Link>
             </div>
