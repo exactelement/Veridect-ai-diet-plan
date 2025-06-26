@@ -1,14 +1,43 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useLocation } from "wouter";
+import { Link } from "wouter";
 import { ArrowLeft, Euro, Users, Clock } from "lucide-react";
 
 export default function RefundPolicy() {
-  const [, setLocation] = useLocation();
+  // Scroll to top when navigating
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <div className="min-h-screen bg-ios-bg p-4 pb-32 pt-20">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-ios-bg">
+      {/* Top Navigation */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" onClick={scrollToTop}>
+              <Button variant="ghost" className="flex items-center space-x-2">
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Home</span>
+              </Button>
+            </Link>
+            <div className="flex items-center space-x-6">
+              <Link href="/privacy" onClick={scrollToTop}>
+                <Button variant="ghost">Privacy</Button>
+              </Link>
+              <Link href="/about" onClick={scrollToTop}>
+                <Button variant="ghost">About</Button>
+              </Link>
+              <Link href="/how-to-use" onClick={scrollToTop}>
+                <Button variant="ghost">How to Use</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-4 pt-8 pb-24">
+        <div className="max-w-4xl mx-auto">
 
         {/* Main Policy Content */}
         <Card>
@@ -135,6 +164,7 @@ export default function RefundPolicy() {
 
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
