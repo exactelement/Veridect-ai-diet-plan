@@ -40,7 +40,11 @@ const COMMON_ALLERGIES = [
 const personalInfoSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email format"),
+});
+
+const emailChangeSchema = z.object({
+  newEmail: z.string().email("Invalid email format"),
+  currentPassword: z.string().min(1, "Current password is required to change email"),
 });
 
 const passwordChangeSchema = z.object({
@@ -55,6 +59,7 @@ const passwordChangeSchema = z.object({
 });
 
 type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
+type EmailChangeForm = z.infer<typeof emailChangeSchema>;
 type PasswordChangeForm = z.infer<typeof passwordChangeSchema>;
 
 // Email Preferences Component
@@ -244,13 +249,21 @@ export default function Profile() {
     queryKey: ["/api/food/logs"],
   });
 
-  // Personal information form (name and email only)
+  // Personal information form (name only)
   const personalForm = useForm<PersonalInfoForm>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      email: user?.email || "",
+    },
+  });
+
+  // Email change form (separate)
+  const emailForm = useForm<EmailChangeForm>({
+    resolver: zodResolver(emailChangeSchema),
+    defaultValues: {
+      newEmail: user?.email || "",
+      currentPassword: "",
     },
   });
 
@@ -279,20 +292,10 @@ export default function Profile() {
 
   const updatePersonalMutation = useMutation({
     mutationFn: async (data: PersonalInfoForm) => {
-      // Update basic info only
       await apiRequest("PUT", "/api/user/profile", {
         firstName: data.firstName,
         lastName: data.lastName,
       });
-      
-      // Update email if changed (future feature)
-      if (data.email !== user?.email) {
-        // This would trigger email verification in real implementation
-        toast({
-          title: "Email Change Requested",
-          description: "Email verification feature coming soon",
-        });
-      }
     },
     onSuccess: () => {
       toast({
@@ -300,11 +303,34 @@ export default function Profile() {
         description: "Your changes have been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      // Don't reset form to preserve user input
     },
     onError: (error: Error) => {
       toast({
         title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changeEmailMutation = useMutation({
+    mutationFn: async (data: EmailChangeForm) => {
+      await apiRequest("POST", "/api/auth/change-email", {
+        newEmail: data.newEmail,
+        currentPassword: data.currentPassword,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email Changed Successfully",
+        description: "Your email address has been updated.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      emailForm.reset({ newEmail: user?.email || "", currentPassword: "" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Email Change Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -579,22 +605,7 @@ export default function Profile() {
                         />
                       </div>
                       
-                      <FormField
-                        control={personalForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} type="email" />
-                            </FormControl>
-                            <FormMessage />
-                            <p className="text-sm text-ios-secondary">
-                              Email verification will be required for changes
-                            </p>
-                          </FormItem>
-                        )}
-                      />
+
 
                       <div className="space-y-3">
                         <Button
@@ -617,6 +628,74 @@ export default function Profile() {
                           </Button>
                         </div>
                       </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Email Change Section */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={emailOpen} onOpenChange={setEmailOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-5 h-5 text-ios-blue" />
+                      <span>Change Email Address</span>
+                    </div>
+                    {emailOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                  <div className="text-sm text-ios-secondary mt-1">
+                    Current: {user?.email}
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <Form {...emailForm}>
+                    <form onSubmit={emailForm.handleSubmit((data) => changeEmailMutation.mutate(data))} className="space-y-4">
+                      <FormField
+                        control={emailForm.control}
+                        name="newEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Email Address</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="email" placeholder="Enter new email address" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={emailForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="password" placeholder="Enter current password to verify" />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-sm text-ios-secondary">
+                              Current password required for security verification
+                            </p>
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="submit"
+                        className="w-full bg-ios-blue hover:bg-blue-700 text-white"
+                        disabled={changeEmailMutation.isPending}
+                      >
+                        {changeEmailMutation.isPending ? "Changing Email..." : "Change Email Address"}
+                      </Button>
                     </form>
                   </Form>
                 </CardContent>
