@@ -243,24 +243,24 @@ export default function Progress() {
           </CardContent>
         </Card>
 
-        {/* Achievement Challenge Section */}
+        {/* Challenges & Rewards Section */}
         <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
           <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Daily Challenges & Rewards</h2>
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Challenges & Rewards</h2>
             
             <div className="space-y-4">
-              {/* YES Streak Challenges - Most Addictive */}
+              {/* YES Streak Challenges (Automated) */}
               <div className="bg-gradient-to-r from-green-50 to-emerald-100 rounded-lg p-4 shadow-sm border border-green-200">
                 <h3 className="font-semibold text-lg mb-3 text-green-800">🔥 YES Streak Challenges</h3>
                 <div className="space-y-3">
-                  {/* 3 YES in a row */}
+                  {/* 3 YES Streak: 50 bonus points */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-green-700 font-medium">3 YES foods in a row</span>
+                      <span className="text-green-700 font-medium">3 YES Streak: 50 bonus points</span>
                       {consecutiveYesStreak >= 3 ? (
                         <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{consecutiveYesStreak}/3</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{Math.min(consecutiveYesStreak, 3)}/3</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -274,12 +274,14 @@ export default function Progress() {
                     </div>
                   </div>
                   
-                  {/* 5 YES streak */}
+                  {/* 5 YES Streak: 100 bonus points */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-green-700 font-medium">5 YES streak (Health Champion)</span>
-                      {consecutiveYesStreak >= 5 && (
-                        <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-full">GOLD BADGE!</span>
+                      <span className="text-green-700 font-medium">5 YES Streak: 100 bonus points</span>
+                      {consecutiveYesStreak >= 5 ? (
+                        <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{Math.min(consecutiveYesStreak, 5)}/5</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -293,12 +295,14 @@ export default function Progress() {
                     </div>
                   </div>
 
-                  {/* 10 YES perfectionist */}
+                  {/* 10 YES Streak: 200 bonus points */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-green-700 font-medium">10 YES perfectionist streak</span>
-                      {consecutiveYesStreak >= 10 && (
-                        <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">DIAMOND LEVEL!</span>
+                      <span className="text-green-700 font-medium">10 YES Streak: 200 bonus points</span>
+                      {consecutiveYesStreak >= 10 ? (
+                        <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{Math.min(consecutiveYesStreak, 10)}/10</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -314,116 +318,9 @@ export default function Progress() {
                 </div>
               </div>
 
-              {/* Daily Power Challenges */}
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-100 rounded-lg p-4 shadow-sm border border-blue-200">
-                <h3 className="font-semibold text-lg mb-3 text-blue-800">⚡ Daily Power Challenges</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-700 font-medium">Analyze 5 foods today</span>
-                      {todaysStats.total >= 5 ? (
-                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
-                      ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/5</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 bg-blue-200 rounded-full h-3">
-                        <div 
-                          className="bg-blue-500 h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min((todaysStats.total / 5) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-semibold text-blue-700">{Math.min(todaysStats.total, 5)}/5</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-indigo-700 font-medium">Analyze 10 foods today</span>
-                      {todaysStats.total >= 10 ? (
-                        <span className="text-xs bg-indigo-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
-                      ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/10</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 bg-indigo-200 rounded-full h-3">
-                        <div 
-                          className="bg-indigo-500 h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min((todaysStats.total / 10) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-semibold text-indigo-700">{Math.min(todaysStats.total, 10)}/10</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-700 font-medium">Zero BAD foods today</span>
-                      {todaysStats.no === 0 && todaysStats.total > 0 && (
-                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">PERFECT DAY!</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full ${todaysStats.no === 0 && todaysStats.total > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                      <span className="text-sm font-semibold text-blue-700">
-                        {todaysStats.no === 0 && todaysStats.total > 0 ? '✓' : '✗'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Competitive Challenges */}
-              <div className="bg-gradient-to-r from-orange-50 to-red-100 rounded-lg p-4 shadow-sm border border-orange-200">
-                <h3 className="font-semibold text-lg mb-3 text-orange-800">🏆 Weekly Competitions</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-orange-700 font-medium">15 YES foods this week</span>
-                      {weeklyStats.yes >= 15 && (
-                        <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded-full">WEEKLY CHAMPION!</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 bg-orange-200 rounded-full h-3">
-                        <div 
-                          className="bg-orange-500 h-3 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min((weeklyStats.yes / 15) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-semibold text-orange-700">{Math.min(weeklyStats.yes, 15)}/15</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-orange-700 font-medium">90% YES+OK ratio this week</span>
-                      {weeklyStats.total > 0 && ((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) >= 0.9 && (
-                        <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">ELITE STATUS!</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 bg-orange-200 rounded-full h-3">
-                        <div 
-                          className="bg-gradient-to-r from-orange-500 to-purple-500 h-3 rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${weeklyStats.total > 0 ? Math.min(((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) * 111, 100) : 0}%` 
-                          }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-semibold text-orange-700">
-                        {weeklyStats.total > 0 ? Math.round(((weeklyStats.yes + weeklyStats.ok) / weeklyStats.total) * 100) : 0}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Exclusive Milestone Rewards */}
+              {/* Milestone Rewards (Manual UI Display Only) */}
               <div className="bg-gradient-to-r from-yellow-50 to-amber-100 rounded-lg p-4 shadow-sm border border-yellow-200">
-                <h3 className="font-semibold text-lg mb-3 text-yellow-800">🎖️ Exclusive Milestone Rewards</h3>
+                <h3 className="font-semibold text-lg mb-3 text-yellow-800">🎖️ Milestone Rewards</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className={`p-3 rounded-lg border-2 transition-all duration-300 ${
                     weeklyStats.yes >= 5 ? 'bg-green-50 border-green-300 shadow-md' : 'bg-gray-50 border-gray-200'
@@ -460,45 +357,73 @@ export default function Progress() {
                         <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/15</span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">15 YES foods</div>
+                    <div className="text-xs text-gray-500 mt-1">15 YES foods (visual only)</div>
                   </div>
-                  
-                  <div className={`p-3 rounded-lg border-2 transition-all duration-300 ${
-                    totalStats.yes >= 30 ? 'bg-purple-50 border-purple-300 shadow-md' : 'bg-gray-50 border-gray-200'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full ${totalStats.yes >= 30 ? 'bg-purple-500' : 'bg-gray-300'}`}></div>
-                        <span className={`text-sm font-medium ${totalStats.yes >= 30 ? 'text-purple-700' : 'text-gray-600'}`}>
-                          Health Master
-                        </span>
-                      </div>
-                      {totalStats.yes >= 30 ? (
-                        <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded">+500 pts</span>
+                </div>
+              </div>
+
+              {/* Analysis Challenges (Automated) */}
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-100 rounded-lg p-4 shadow-sm border border-blue-200">
+                <h3 className="font-semibold text-lg mb-3 text-blue-800">⚡ Analysis Challenges</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-700 font-medium">5 YES foods today: 100 bonus points</span>
+                      {todaysStats.yes >= 5 ? (
+                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/30</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.yes}/5</span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">30 YES foods</div>
-                  </div>
-                  
-                  <div className={`p-3 rounded-lg border-2 transition-all duration-300 ${
-                    totalStats.yes >= 50 ? 'bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-300 shadow-lg' : 'bg-gray-50 border-gray-200'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full ${totalStats.yes >= 50 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gray-300'}`}></div>
-                        <span className={`text-sm font-medium ${totalStats.yes >= 50 ? 'text-orange-700' : 'text-gray-600'}`}>
-                          Health Legend
-                        </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-blue-200 rounded-full h-3">
+                        <div 
+                          className="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((todaysStats.yes / 5) * 100, 100)}%` }}
+                        ></div>
                       </div>
-                      {totalStats.yes >= 50 ? (
-                        <span className="text-xs bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded">✓ Earned</span>
+                      <span className="text-sm font-semibold text-blue-700">{Math.min(todaysStats.yes, 5)}/5</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-700 font-medium">5 analyses per day: 25 bonus points</span>
+                      {todaysStats.total >= 5 ? (
+                        <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
                       ) : (
-                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded">{totalStats.yes}/50</span>
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/5</span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">50 YES foods (Ultimate)</div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-blue-200 rounded-full h-3">
+                        <div 
+                          className="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((todaysStats.total / 5) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-semibold text-blue-700">{Math.min(todaysStats.total, 5)}/5</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-indigo-700 font-medium">10 analyses per day: 50 bonus points</span>
+                      {todaysStats.total >= 10 ? (
+                        <span className="text-xs bg-indigo-500 text-white px-2 py-1 rounded-full">✓ Completed</span>
+                      ) : (
+                        <span className="text-xs bg-gray-300 text-gray-600 px-2 py-1 rounded-full">{todaysStats.total}/10</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-indigo-200 rounded-full h-3">
+                        <div 
+                          className="bg-indigo-500 h-3 rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min((todaysStats.total / 10) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-semibold text-indigo-700">{Math.min(todaysStats.total, 10)}/10</span>
+                    </div>
                   </div>
                 </div>
               </div>
