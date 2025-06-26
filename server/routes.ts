@@ -118,6 +118,53 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
         await storage.markBonusAwarded(userId, '5_yes_today');
       }
     }
+    
+    // Check milestone rewards based on total YES foods this week
+    const weeklyYesFoods = sortedLogs.filter(log => log.verdict === 'YES').length;
+    console.log(`[Milestone Check] User ${userId}: ${weeklyYesFoods} YES foods this week`);
+    
+    // Health Expert: 15 YES foods (+250 points)
+    if (weeklyYesFoods >= 15) {
+      const expertBonusAwarded = await storage.wasBonusAwardedToday(userId, 'health_expert_milestone');
+      console.log(`[Health Expert Milestone] User ${userId}: ${weeklyYesFoods} YES foods, bonus already awarded: ${expertBonusAwarded}`);
+      
+      if (!expertBonusAwarded) {
+        console.log(`[AWARDING] Health Expert Milestone: 250 bonus points to user ${userId}`);
+        await storage.updateUserPoints(userId, 250);
+        await storage.addBonusToWeeklyScore(userId, 250);
+        await storage.markBonusAwarded(userId, 'health_expert_milestone');
+        console.log(`[SUCCESS] Health Expert milestone bonus awarded: 250 points`);
+      }
+    }
+    
+    // Health Master: 30 YES foods (+500 points)
+    if (weeklyYesFoods >= 30) {
+      const masterBonusAwarded = await storage.wasBonusAwardedToday(userId, 'health_master_milestone');
+      console.log(`[Health Master Milestone] User ${userId}: ${weeklyYesFoods} YES foods, bonus already awarded: ${masterBonusAwarded}`);
+      
+      if (!masterBonusAwarded) {
+        console.log(`[AWARDING] Health Master Milestone: 500 bonus points to user ${userId}`);
+        await storage.updateUserPoints(userId, 500);
+        await storage.addBonusToWeeklyScore(userId, 500);
+        await storage.markBonusAwarded(userId, 'health_master_milestone');
+        console.log(`[SUCCESS] Health Master milestone bonus awarded: 500 points`);
+      }
+    }
+    
+    // Health Legend: 50 YES foods (+1000 points)
+    if (weeklyYesFoods >= 50) {
+      const legendBonusAwarded = await storage.wasBonusAwardedToday(userId, 'health_legend_milestone');
+      console.log(`[Health Legend Milestone] User ${userId}: ${weeklyYesFoods} YES foods, bonus already awarded: ${legendBonusAwarded}`);
+      
+      if (!legendBonusAwarded) {
+        console.log(`[AWARDING] Health Legend Milestone: 1000 bonus points to user ${userId}`);
+        await storage.updateUserPoints(userId, 1000);
+        await storage.addBonusToWeeklyScore(userId, 1000);
+        await storage.markBonusAwarded(userId, 'health_legend_milestone');
+        console.log(`[SUCCESS] Health Legend milestone bonus awarded: 1000 points`);
+      }
+    }
+    
   } catch (error) {
     // Food logging challenge error handling - non-critical
   }
