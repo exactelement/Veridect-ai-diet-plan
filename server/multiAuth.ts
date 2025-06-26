@@ -593,6 +593,60 @@ export async function setupMultiAuth(app: Express) {
     }
   });
 
+  // Email change verification endpoint
+  app.post('/api/auth/change-email', isAuthenticated, async (req: any, res) => {
+    try {
+      const { newEmail, currentPassword } = req.body;
+      const userId = req.user?.claims?.sub;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
+
+      if (!newEmail || !currentPassword) {
+        return res.status(400).json({ message: "New email and current password are required" });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(newEmail)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+
+      // Get user and verify current password
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      if (!user.passwordHash) {
+        return res.status(400).json({ message: "Password verification not available for this account. This account may use Google/Apple sign-in." });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Check if new email is already in use
+      const existingUser = await storage.getUserByEmail(newEmail);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email address is already in use" });
+      }
+
+      // Update email in database
+      await storage.updateUserProfile(user.id, { email: newEmail });
+
+      res.json({ message: "Email address changed successfully" });
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Change email error:", error);
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Password reset
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
