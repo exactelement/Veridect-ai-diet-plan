@@ -222,6 +222,8 @@ export default function FoodAnalysis() {
     // Reset file inputs
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (cameraInputRef.current) cameraInputRef.current.value = "";
+    // Scroll to top of the page for better user experience
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const [isLogging, setIsLogging] = useState(false);
