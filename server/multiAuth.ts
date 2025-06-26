@@ -548,14 +548,34 @@ export async function setupMultiAuth(app: Express) {
 
       // Get user and verify current password
       const user = await storage.getUser(userId);
-      if (!user || !user.passwordHash) {
-        return res.status(400).json({ message: "Password authentication not available for this account" });
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      if (!user.passwordHash) {
+        return res.status(400).json({ message: "Password authentication not available for this account. This account may use Google/Apple sign-in." });
+      }
+
+      // Debug logging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Password change attempt:", {
+          userId,
+          hasPasswordHash: !!user.passwordHash,
+          currentPasswordLength: currentPassword?.length
+        });
       }
 
       // Verify current password
       const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!isCurrentPasswordValid) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Password verification failed - current password is incorrect");
+        }
         return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Password verification successful");
       }
 
       // Hash new password
