@@ -624,7 +624,7 @@ export default function Landing() {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><Link href="/how-to-use" className="hover:text-white transition-colors">How to Use</Link></li>
+                <li><Link href="/how-to-use" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-white transition-colors">How to Use</Link></li>
               </ul>
             </div>
             
