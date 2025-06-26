@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown, X } from "lucide-react";
+import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -36,6 +37,8 @@ export default function Landing() {
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
     { label: "How It Works", href: "#how-it-works" },
+    { label: "How to Use", href: "/how-to-use" },
+    { label: "Privacy", href: "/privacy" },
   ];
 
   const handleLogin = async (email: string, password: string) => {
