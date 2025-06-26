@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Target, Users, Globe, Award, Lightbulb, Mail, MapPin, Calendar } from "lucide-react";
-import TopHeader from "@/components/top-header";
+import { Link } from "wouter";
 
 const TEAM_MEMBERS = [
   {
@@ -83,8 +83,7 @@ const VALUES = [
 
 export default function About() {
   return (
-    <>
-      <TopHeader />
+    <div className="min-h-screen bg-ios-bg">
       <div className="pt-20 pb-24 container-padding">
         <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
@@ -402,8 +401,16 @@ export default function About() {
             </Button>
           </CardContent>
         </Card>
+          {/* Back to Home Button */}
+          <div className="text-center mt-8">
+            <Link href="/">
+              <Button>
+                Back to Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,21 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Navigation from "@/components/navigation";
-import TopHeader from "@/components/top-header";
-import { useAuth } from "@/hooks/useAuth";
 import { Shield, Eye, Lock, UserCheck, FileText, Mail } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Privacy() {
-  const { isAuthenticated } = useAuth();
-
-  // Show content regardless of auth status to fix blank page
-  const isLoggedIn = isAuthenticated;
+  // Render content without any auth dependencies
 
 
 
   return (
     <div className="min-h-screen bg-ios-bg">
-      {isLoggedIn && <TopHeader />}
       <div className="container mx-auto px-4 pt-20 pb-24">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -125,17 +119,16 @@ export default function Privacy() {
             </CardContent>
           </Card>
 
-          {!isLoggedIn && (
-            <div className="text-center mt-8">
-              <Button onClick={() => window.location.href = "/"}>
+          <div className="text-center mt-8">
+            <Link href="/">
+              <Button>
                 Back to Home
               </Button>
-            </div>
-          )}
+            </Link>
+          </div>
 
         </div>
       </div>
-      {isLoggedIn && <Navigation />}
     </div>
   );
 }
