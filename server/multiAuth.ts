@@ -528,6 +528,51 @@ export async function setupMultiAuth(app: Express) {
     }
   });
 
+  // Password change (requires current password verification)
+  app.post('/api/auth/change-password', isAuthenticated, async (req: any, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const userId = req.user?.claims?.sub;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
+
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters long" });
+      }
+
+      // Get user and verify current password
+      const user = await storage.getUser(userId);
+      if (!user || !user.passwordHash) {
+        return res.status(400).json({ message: "Password authentication not available for this account" });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+      // Update password in database
+      await storage.updatePassword(user.id, newPasswordHash);
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Change password error:", error);
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Password reset
   app.post('/api/auth/reset-password', async (req, res) => {
     try {
