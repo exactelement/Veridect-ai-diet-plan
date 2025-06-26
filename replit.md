@@ -169,6 +169,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Point System Architecture Audit & Fix (June 26, 2025)
+- **Critical Fix Implemented**: Eliminated double-counting bug in `updateUserPoints()` function for first-week users
+- **Simplified Point Logic**: Removed complex first-week synchronization logic that caused bonus points to be counted twice in lifetime totals
+- **Consistent Dual System**: Both weekly points (reset Monday) and lifetime points (never reset) now receive identical point amounts each week
+- **Verified Point Flow**: Food logging (2/5/10 points) and challenge bonuses (25/50/100 points) properly added to both counters
+- **Mathematical Accuracy**: Weekly points track current week progress, lifetime points accumulate forever - same inputs, different reset schedules
+- **Architecture Confirmed**: `updateWeeklyScore()` handles food points, dual calls (`updateUserPoints()` + `addBonusToWeeklyScore()`) handle challenge bonuses
+
 ### Comprehensive Timezone Audit & Madrid Consistency (June 25, 2025)
 - **Complete Timezone Audit**: Systematically audited and fixed all timezone calculations across frontend and backend
 - **Frontend Timezone Fixes**: Updated home.tsx and progress.tsx weekly stats calculations from UTC+1 to UTC+2 Madrid timezone
