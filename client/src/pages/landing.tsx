@@ -38,6 +38,7 @@ export default function Landing() {
     { label: "Pricing", href: "#pricing" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "How to Use", href: "/how-to-use" },
+    { label: "About", href: "/about" },
     { label: "Privacy", href: "/privacy" },
   ];
 

@@ -188,6 +188,12 @@ Preferred communication style: Simple, everyday language.
 - **Daily Challenge Counter**: Fixed to accurately display analyzed foods count using proper Madrid timezone conversion
 - **Bonus Points Card**: Removed "Today's" from card title for cleaner presentation
 
+### Navigation Enhancement & Page Accessibility (June 26, 2025)
+- **How to Use Page Navigation**: Added complete top navigation header with "Back to Home" and "Log In" buttons for better user experience
+- **Landing Page Navigation**: Enhanced navigation menu to include How to Use, About, and Privacy page links accessible to non-logged-in users
+- **Public Page Access**: Confirmed App.tsx routing supports privacy, about, and how-to-use pages for visitors without accounts
+- **User Experience**: Visitors can now explore all informational content before deciding to register for the platform
+
 ### UI Enhancement & Production Polish (June 25, 2025)
 - **Pro Tip Refinement**: Replaced detailed tips list with concise Pro Tip focused on lighting and complete meal capture for better AI accuracy
 - **Accessibility Fixes**: Added proper DialogDescription components to all dialog content, eliminating browser accessibility warnings
