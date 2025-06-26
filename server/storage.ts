@@ -490,7 +490,11 @@ export class DatabaseStorage implements IStorage {
   async wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean> {
     // Use Madrid timezone for consistent daily tracking
     const madridToday = this.getMadridTime();
-    const dateAwarded = madridToday.toISOString().split('T')[0]; // YYYY-MM-DD format in Madrid timezone
+    // Fix: Convert Madrid date to proper YYYY-MM-DD format (not UTC)
+    const year = madridToday.getFullYear();
+    const month = String(madridToday.getMonth() + 1).padStart(2, '0');
+    const day = String(madridToday.getDate()).padStart(2, '0');
+    const dateAwarded = `${year}-${month}-${day}`;
 
     const [result] = await db
       .select()
@@ -512,7 +516,11 @@ export class DatabaseStorage implements IStorage {
   async markBonusAwarded(userId: string, bonusType: string): Promise<void> {
     // Track daily bonus awards using proper table and Madrid timezone (daily reset)
     const madridToday = this.getMadridTime();
-    const dateAwarded = madridToday.toISOString().split('T')[0]; // YYYY-MM-DD format in Madrid timezone
+    // Fix: Convert Madrid date to proper YYYY-MM-DD format (not UTC)
+    const year = madridToday.getFullYear();
+    const month = String(madridToday.getMonth() + 1).padStart(2, '0');
+    const day = String(madridToday.getDate()).padStart(2, '0');
+    const dateAwarded = `${year}-${month}-${day}`;
     
     // Determine bonus points based on challenge type
     const bonusPoints = {
@@ -520,6 +528,8 @@ export class DatabaseStorage implements IStorage {
       '5_analyses': 25,
       '10_analyses': 50,
       '3_yes_streak': 50,
+      '5_yes_streak': 100,
+      '10_yes_streak': 200,
       '5_yes_today': 100
     }[bonusType] || 25;
     

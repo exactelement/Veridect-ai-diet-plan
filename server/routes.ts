@@ -119,7 +119,7 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
       }
     }
   } catch (error) {
-    // Food logging challenge error handling - non-critical
+    console.error(`[Food Logging Challenges] Error for user ${userId}:`, error);
   }
 }
 
