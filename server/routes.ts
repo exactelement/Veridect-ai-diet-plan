@@ -118,57 +118,8 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
         await storage.markBonusAwarded(userId, '5_yes_today');
       }
     }
-
-    // 🏆 Weekly Competition Challenges
-    const weeklyYesCount = await storage.getThisWeeksYesCount(userId);
-    console.log(`[Weekly Challenges] User ${userId}: Found ${weeklyYesCount} YES foods this week`);
-
-    // 🏆 Weekly Challenge 1: 15 YES foods this week (75 points)
-    if (weeklyYesCount >= 15) {
-      const bonusAlreadyAwarded = await storage.wasBonusAwardedThisWeek(userId, '15_yes_week');
-      if (!bonusAlreadyAwarded) {
-        await storage.updateUserPoints(userId, 75);
-        await storage.addBonusToWeeklyScore(userId, 75);
-        await storage.markBonusAwarded(userId, '15_yes_week');
-        console.log(`[15 YES Week] User ${userId}: ${weeklyYesCount} YES foods this week, awarded 75 bonus points`);
-      }
-    }
-
-    // 🏆 Weekly Challenge 2: 25 YES foods this week (150 points)
-    if (weeklyYesCount >= 25) {
-      const bonusAlreadyAwarded = await storage.wasBonusAwardedThisWeek(userId, '25_yes_week');
-      if (!bonusAlreadyAwarded) {
-        await storage.updateUserPoints(userId, 150);
-        await storage.addBonusToWeeklyScore(userId, 150);
-        await storage.markBonusAwarded(userId, '25_yes_week');
-        console.log(`[25 YES Week] User ${userId}: ${weeklyYesCount} YES foods this week, awarded 150 bonus points`);
-      }
-    }
-
-    // 🏆 Weekly Challenge 3: 35 YES foods this week (250 points)
-    if (weeklyYesCount >= 35) {
-      const bonusAlreadyAwarded = await storage.wasBonusAwardedThisWeek(userId, '35_yes_week');
-      if (!bonusAlreadyAwarded) {
-        await storage.updateUserPoints(userId, 250);
-        await storage.addBonusToWeeklyScore(userId, 250);
-        await storage.markBonusAwarded(userId, '35_yes_week');
-        console.log(`[35 YES Week] User ${userId}: ${weeklyYesCount} YES foods this week, awarded 250 bonus points`);
-      }
-    }
-
-    // 🎖️ Milestone Rewards - Enhanced with actual point awards
-    // Health Expert: 15 YES foods this week (250 bonus points - milestone reward)
-    if (weeklyYesCount >= 15) {
-      const milestoneAwarded = await storage.wasBonusAwardedThisWeek(userId, 'health_expert_milestone');
-      if (!milestoneAwarded) {
-        await storage.updateUserPoints(userId, 250);
-        await storage.addBonusToWeeklyScore(userId, 250);
-        await storage.markBonusAwarded(userId, 'health_expert_milestone');
-        console.log(`[🎖️ Health Expert] User ${userId}: Milestone reached with ${weeklyYesCount} YES foods, awarded 250 bonus points`);
-      }
-    }
   } catch (error) {
-    console.error(`[Food Logging Challenges] Error for user ${userId}:`, error);
+    // Food logging challenge error handling - non-critical
   }
 }
 
@@ -611,22 +562,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching completed challenges:", error);
       res.status(500).json({ message: "Failed to fetch completed challenges" });
-    }
-  });
-
-  // Get this week's YES food count for weekly challenges
-  app.get("/api/food/weekly-yes-count", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user?.claims?.sub;
-      if (!userId) {
-        return res.status(401).json({ message: "User not properly authenticated" });
-      }
-
-      const weeklyYesCount = await storage.getThisWeeksYesCount(userId);
-      res.json({ weeklyYesCount });
-    } catch (error) {
-      console.error("Error fetching weekly YES count:", error);
-      res.status(500).json({ message: "Failed to fetch weekly YES count" });
     }
   });
 
