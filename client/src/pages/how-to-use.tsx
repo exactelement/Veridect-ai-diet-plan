@@ -220,14 +220,7 @@ export default function HowToUse() {
             </CardContent>
           </Card>
 
-          {/* Back to Home Button */}
-          <div className="text-center">
-            <Link href="/login" onClick={scrollToTop}>
-              <Button className="bg-ios-blue text-white px-8 py-3">
-                Start Analyzing Food
-              </Button>
-            </Link>
-          </div>
+
         </div>
       </div>
     </div>

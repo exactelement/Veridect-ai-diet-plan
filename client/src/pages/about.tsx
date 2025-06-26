@@ -417,19 +417,7 @@ export default function About() {
         </Card>
 
         {/* CTA */}
-        <Card className="bg-ios-blue">
-          <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4 text-white">Ready to Transform Your Health?</h3>
-            <p className="mb-6 text-white">
-              Join thousands of users who are already making smarter food choices with Veridect.
-            </p>
-            <Link href="/login" onClick={scrollToTop}>
-              <Button className="bg-white text-ios-blue hover:bg-gray-100 px-8 py-3 text-lg">
-                Get Started Today
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+
           {/* Back to Home Button */}
           <div className="text-center mt-8">
             <Link href="/" onClick={scrollToTop}>
