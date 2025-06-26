@@ -19,6 +19,105 @@ export interface FoodAnalysisResult extends GeminiAnalysisResult {
 // Smart cache for consistent verdicts per user profile
 const analysisCache = new Map<string, FoodAnalysisResult>();
 
+// Food aliases for consistent naming
+const FOOD_ALIASES: Record<string, string> = {
+  'apples': 'apple',
+  'an apple': 'apple',
+  'oranges': 'orange', 
+  'bananas': 'banana',
+  'soda': 'soft drink',
+  'cola': 'soft drink',
+  'coke': 'soft drink',
+  'pepsi': 'soft drink',
+  'bread slice': 'bread',
+  'slice of bread': 'bread',
+  'chicken breast': 'chicken',
+  'chicken leg': 'chicken',
+  'beef steak': 'beef',
+  'ground beef': 'beef',
+  'white rice': 'rice',
+  'brown rice': 'rice',
+  'pasta': 'spaghetti',
+  'noodles': 'spaghetti'
+};
+
+// Normalize food name for consistent caching
+function normalizeFoodName(foodName: string): string {
+  if (!foodName) return '';
+  
+  // Clean and normalize
+  let normalized = foodName
+    .toLowerCase()
+    .trim()
+    .replace(/\b(a|an|the|some|1|one|two|three)\b/g, '') // Remove articles and numbers
+    .replace(/\s+/g, ' ') // Collapse whitespace
+    .trim();
+  
+  // Apply aliases
+  return FOOD_ALIASES[normalized] || normalized;
+}
+
+// Calorie consistency and post-processing functions
+function standardizeCalories(calories: number, foodName: string = ''): number {
+  // Round to nearest 5 for consistency
+  let rounded = Math.round(calories / 5) * 5;
+  
+  // Validate against reasonable ranges for common foods
+  const normalizedName = normalizeFoodName(foodName);
+  const calorieRanges: Record<string, [number, number]> = {
+    'apple': [80, 95],
+    'banana': [105, 120],
+    'orange': [60, 80],
+    'bread': [75, 90],
+    'rice': [130, 150], // per 100g cooked
+    'chicken': [165, 185], // per 100g
+    'beef': [250, 300],
+    'salad': [20, 50],
+    'pizza': [250, 350], // per slice
+    'soft drink': [140, 160], // per can
+    'avocado': [160, 180], // per half
+  };
+  
+  if (calorieRanges[normalizedName]) {
+    const [min, max] = calorieRanges[normalizedName];
+    // If outside range, adjust to nearest boundary
+    if (rounded < min) rounded = min;
+    if (rounded > max) rounded = max;
+  }
+  
+  return rounded;
+}
+
+function validateNutritionValues(result: FoodAnalysisResult): FoodAnalysisResult {
+  // Ensure calories are consistent and rounded
+  if (result.calories) {
+    result.calories = standardizeCalories(result.calories, result.foodName || '');
+  }
+  
+  // Round other values for consistency
+  if (result.protein) result.protein = Math.round(result.protein);
+  if (result.carbohydrates) result.carbohydrates = Math.round(result.carbohydrates);
+  if (result.fat) result.fat = Math.round(result.fat);
+  if (result.fiber) result.fiber = Math.round(result.fiber);
+  if (result.sugar) result.sugar = Math.round(result.sugar);
+  if (result.sodium) result.sodium = Math.round(result.sodium / 5) * 5; // Round sodium to nearest 5mg
+  
+  // Also apply to nutritionFacts if present
+  if (result.nutritionFacts) {
+    if (result.nutritionFacts.calories) {
+      result.nutritionFacts.calories = standardizeCalories(result.nutritionFacts.calories, result.foodName || '');
+    }
+    if (result.nutritionFacts.protein) result.nutritionFacts.protein = Math.round(result.nutritionFacts.protein);
+    if (result.nutritionFacts.carbohydrates) result.nutritionFacts.carbohydrates = Math.round(result.nutritionFacts.carbohydrates);
+    if (result.nutritionFacts.fat) result.nutritionFacts.fat = Math.round(result.nutritionFacts.fat);
+    if (result.nutritionFacts.fiber) result.nutritionFacts.fiber = Math.round(result.nutritionFacts.fiber);
+    if (result.nutritionFacts.sugar) result.nutritionFacts.sugar = Math.round(result.nutritionFacts.sugar);
+    if (result.nutritionFacts.sodium) result.nutritionFacts.sodium = Math.round(result.nutritionFacts.sodium / 5) * 5;
+  }
+  
+  return result;
+}
+
 // Generate cache key from food content AND user profile for consistency
 function getCacheKey(foodName?: string, imageData?: string, userProfile?: any): string {
   let foodKey = "";
@@ -34,8 +133,9 @@ function getCacheKey(foodName?: string, imageData?: string, userProfile?: any): 
     ].join('');
     foodKey = `img:${imageFingerprint}`;
   } else if (foodName) {
-    // For text, use normalized food name
-    foodKey = `text:${foodName.toLowerCase().trim()}`;
+    // For text, use normalized food name for better cache hits
+    const normalized = normalizeFoodName(foodName);
+    foodKey = `text:${normalized}`;
   }
   
   if (!foodKey) return "";
@@ -428,24 +528,30 @@ export async function analyzeFoodWithGemini(
       sodium: aiResult.sodium || 0,
     };
 
-    const result = {
+    const result: FoodAnalysisResult = {
       ...aiResult,
-      method: "ai",
+      method: "ai" as const,
       nutritionFacts,
       alternatives: generateAlternatives(aiResult.verdict, aiResult.foodName, effectiveProfile),
     };
 
+    // Apply post-processing for calorie consistency
+    const processedResult = validateNutritionValues(result);
+
     // Cache result for consistency (with user profile fingerprint)
     if (cacheKey) {
-      analysisCache.set(cacheKey, result);
+      analysisCache.set(cacheKey, processedResult);
       // Limit cache size to prevent memory issues
       if (analysisCache.size > 500) {
-        const firstKey = analysisCache.keys().next().value;
-        analysisCache.delete(firstKey);
+        const iterator = analysisCache.keys();
+        const firstEntry = iterator.next();
+        if (!firstEntry.done && firstEntry.value !== undefined) {
+          analysisCache.delete(firstEntry.value);
+        }
       }
     }
 
-    return result;
+    return processedResult;
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.warn("AI analysis failed, using fallback:", error);
@@ -464,23 +570,29 @@ export async function analyzeFoodWithGemini(
       sodium: fallbackResult.sodium || 0,
     };
 
-    const result = {
+    const result: FoodAnalysisResult = {
       ...fallbackResult,
-      method: "fallback",
+      method: "fallback" as const,
       nutritionFacts,
       alternatives: generateAlternatives(fallbackResult.verdict, fallbackResult.foodName, userProfile),
     };
 
+    // Apply post-processing for calorie consistency
+    const processedResult = validateNutritionValues(result);
+
     // Cache fallback result for consistency
     if (cacheKey) {
-      analysisCache.set(cacheKey, result);
+      analysisCache.set(cacheKey, processedResult);
       // Limit cache size to prevent memory issues  
       if (analysisCache.size > 500) {
-        const firstKey = analysisCache.keys().next().value;
-        analysisCache.delete(firstKey);
+        const iterator = analysisCache.keys();
+        const firstEntry = iterator.next();
+        if (!firstEntry.done && firstEntry.value !== undefined) {
+          analysisCache.delete(firstEntry.value);
+        }
       }
     }
     
-    return result;
+    return processedResult;
   }
 }

@@ -146,8 +146,8 @@ export default function Landing() {
               ))}
               <Button 
                 onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setTimeout(() => window.location.href = "/login", 100);
                 }} 
                 className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
@@ -160,8 +160,8 @@ export default function Landing() {
               {/* Login button - always visible */}
               <Button 
                 onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setTimeout(() => window.location.href = "/login", 100);
                 }} 
                 className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
               >
@@ -459,8 +459,8 @@ export default function Landing() {
               </ul>
               <Button 
                 onClick={() => {
-                  if (window.fastNavigate) window.fastNavigate("/login");
-                  else window.location.href = "/login";
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setTimeout(() => window.location.href = "/login", 100);
                 }} 
                 className="w-full bg-gray-100 text-ios-text py-3 rounded-xl font-medium ios-button hover:bg-gray-200 transition-all"
               >
@@ -575,8 +575,8 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Button 
               onClick={() => {
-                if (window.fastNavigate) window.fastNavigate("/login");
-                else window.location.href = "/login";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => window.location.href = "/login", 100);
               }} 
               className="bg-white text-ios-blue px-8 py-4 rounded-full text-lg font-medium hover:bg-gray-100 transition-all"
             >
