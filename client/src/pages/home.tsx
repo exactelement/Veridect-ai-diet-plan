@@ -34,17 +34,18 @@ interface SubscriptionTier {
   icon: React.ReactNode;
   popular?: boolean;
   color: string;
+  comingSoon?: boolean;
 }
 
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
-  const userTier = user?.subscriptionTier || 'free';
+  const userTier = (user as any)?.subscriptionTier || 'free';
   
 
 
   // Only fetch data if user has Pro or Advanced tier access (including admin override)
-  const hasProAccess = checkTierAccess(userTier, 'pro', user?.email);
+  const hasProAccess = checkTierAccess(userTier, 'pro', (user as any)?.email);
   
 
 
@@ -128,7 +129,7 @@ export default function Home() {
   const levelProgress = Math.min(100, ((totalLifetimePoints % 1000) / 1000) * 100);
 
   // Weekly points from the weekly score API (same calculation as lifetime points)
-  const weeklyPoints = weeklyScore?.weeklyPoints || 0;
+  const weeklyPoints = (weeklyScore as any)?.weeklyPoints || 0;
 
   // User interface preferences
   const privacySettings = (user as any)?.privacySettings || {};
@@ -564,7 +565,7 @@ export default function Home() {
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-gray-600">Weekly Rank</span>
                       <span className="text-sm font-bold text-gray-800">
-                        #{leaderboard.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
+                        #{(leaderboard as any)?.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
                       </span>
                     </div>
                     

@@ -224,6 +224,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete user account
+  app.delete('/api/user/account', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
+      
+      await storage.deleteUserAccount(userId);
+      
+      // Log out the user by destroying the session
+      req.logout(() => {
+        res.json({ message: "Account deleted successfully" });
+      });
+    } catch (error: any) {
+      console.error("Delete account error:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   // GDPR Consent route - handles both initial banner and profile updates
   app.post('/api/user/gdpr-consent', isAuthenticated, async (req: any, res) => {
     try {

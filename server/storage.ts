@@ -2,12 +2,15 @@ import {
   users,
   foodLogs,
   weeklyScores,
+  dailyBonuses,
   failedWebhooks,
   type User,
   type UpsertUser,
   type InsertFoodLog,
   type FoodLog,
   type WeeklyScore,
+  type DailyBonus,
+  type InsertDailyBonus,
   type UpdateUserProfile,
   type FailedWebhook,
   type InsertFailedWebhook,
@@ -38,6 +41,9 @@ export interface IStorage {
   // Password management
   updatePasswordResetToken(userId: string, token: string, expires: Date): Promise<User>;
   updatePassword(userId: string, passwordHash: string): Promise<User>;
+  
+  // Account management
+  deleteUserAccount(userId: string): Promise<void>;
   
   // Stripe operations
   updateStripeCustomerId(userId: string, customerId: string): Promise<User>;
@@ -70,6 +76,11 @@ export interface IStorage {
   
   // Challenge operations
   getAllCompletedChallenges(userId: string): Promise<FoodLog[]>;
+  
+  // Daily bonus operations
+  wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean>;
+  markBonusAwarded(userId: string, bonusType: string): Promise<void>;
+  addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void>;
   
   // Email preferences for admin
   getEmailPreferences(): Promise<Array<{
@@ -406,10 +417,10 @@ export class DatabaseStorage implements IStorage {
         await db
           .update(weeklyScores)
           .set({
-            yesCount: verdict === "YES" ? existing.yesCount + 1 : existing.yesCount,
-            noCount: verdict === "NO" ? existing.noCount + 1 : existing.noCount,
-            okCount: verdict === "OK" ? existing.okCount + 1 : existing.okCount,
-            weeklyPoints: existing.weeklyPoints + verdictPoints,
+            yesCount: verdict === "YES" ? (existing.yesCount || 0) + 1 : (existing.yesCount || 0),
+            noCount: verdict === "NO" ? (existing.noCount || 0) + 1 : (existing.noCount || 0),
+            okCount: verdict === "OK" ? (existing.okCount || 0) + 1 : (existing.okCount || 0),
+            weeklyPoints: (existing.weeklyPoints || 0) + verdictPoints,
           })
           .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
       } else {
@@ -454,7 +465,7 @@ export class DatabaseStorage implements IStorage {
         await db
           .update(weeklyScores)
           .set({
-            weeklyPoints: existing.weeklyPoints + bonusPoints,
+            weeklyPoints: (existing.weeklyPoints || 0) + bonusPoints,
           })
           .where(and(eq(weeklyScores.userId, userId), eq(weeklyScores.weekStart, weekStart)));
       } else {
@@ -475,32 +486,20 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Prevent duplicate bonus awards (Madrid timezone)
+  // Prevent duplicate bonus awards (Madrid timezone - daily bonuses only)
   async wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean> {
-    // Use Madrid timezone for consistent daily reset behavior
-    const madridNow = this.getMadridTime();
-    
-    // Get Madrid day boundaries (midnight to midnight in Madrid time)
-    const madridTodayStart = new Date(madridNow);
-    madridTodayStart.setHours(0, 0, 0, 0);
-    
-    const madridTomorrowStart = new Date(madridTodayStart);
-    madridTomorrowStart.setDate(madridTomorrowStart.getDate() + 1);
-    
-    // Convert Madrid boundaries to UTC for database query
-    // Madrid is UTC+1 in winter, UTC+2 in summer (currently summer, so UTC+2)
-    const utcTodayStart = new Date(madridTodayStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
-    const utcTomorrowStart = new Date(madridTomorrowStart.getTime() - (2 * 60 * 60 * 1000)); // Subtract 2 hours
+    // Use Madrid timezone for consistent daily tracking
+    const madridToday = this.getMadridTime();
+    const dateAwarded = madridToday.toISOString().split('T')[0]; // YYYY-MM-DD format in Madrid timezone
 
     const [result] = await db
       .select()
-      .from(foodLogs)
+      .from(dailyBonuses)
       .where(
         and(
-          eq(foodLogs.userId, userId),
-          eq(foodLogs.foodName, `BONUS_${bonusType}`),
-          gte(foodLogs.createdAt, utcTodayStart),
-          lt(foodLogs.createdAt, utcTomorrowStart)
+          eq(dailyBonuses.userId, userId),
+          eq(dailyBonuses.bonusType, bonusType),
+          eq(dailyBonuses.dateAwarded, dateAwarded)
         )
       )
       .limit(1);
@@ -509,19 +508,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async markBonusAwarded(userId: string, bonusType: string): Promise<void> {
-    // Create a special entry to track bonus awards
+    // Track daily bonus awards using proper table and Madrid timezone (daily reset)
+    const madridToday = this.getMadridTime();
+    const dateAwarded = madridToday.toISOString().split('T')[0]; // YYYY-MM-DD format in Madrid timezone
+    
+    // Determine bonus points based on challenge type
+    const bonusPoints = {
+      'first_analysis': 25,
+      '5_analyses': 25,
+      '10_analyses': 50,
+      '3_yes_streak': 50,
+      '5_yes_today': 100
+    }[bonusType] || 25;
+    
     await db
-      .insert(foodLogs)
+      .insert(dailyBonuses)
       .values({
         userId,
-        foodName: `BONUS_${bonusType}`,
-        verdict: "YES",
-        explanation: "Bonus points tracker",
-        calories: 0,
-        protein: 0,
-        confidence: 100,
-        analysisMethod: "system",
-        isLogged: false,
+        bonusType,
+        points: bonusPoints,
+        dateAwarded,
       });
   }
 
@@ -640,7 +646,7 @@ export class DatabaseStorage implements IStorage {
     weekStart.setHours(0, 0, 0, 0);
     
     // Check if user was created after current week start
-    const userCreated = new Date(user.createdAt);
+    const userCreated = new Date(user.createdAt || new Date());
     const isInFirstWeek = userCreated >= weekStart;
     
     let newTotalPoints;
@@ -765,14 +771,18 @@ export class DatabaseStorage implements IStorage {
       firstName: users.firstName,
       lastName: users.lastName,
       gdprConsent: users.gdprConsent,
-      hasSeenPrivacyBanner: users.hasSeenPrivacyBanner,
+      hasSeenPrivacyBanner: users.hasSeenGdprBanner,
       createdAt: users.createdAt,
     }).from(users)
-    .where(eq(users.hasSeenPrivacyBanner, true))
+    .where(eq(users.hasSeenGdprBanner, true))
     .orderBy(desc(users.createdAt));
     
     return result.map(user => ({
       ...user,
+      email: user.email || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      hasSeenPrivacyBanner: user.hasSeenPrivacyBanner || false,
       createdAt: user.createdAt || new Date(),
     }));
   }
@@ -814,6 +824,45 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(foodLogs.createdAt));
       
     return challenges;
+  }
+
+  // Delete user account and all associated data
+  async deleteUserAccount(userId: string): Promise<void> {
+    // Delete user's food logs
+    await db.delete(foodLogs).where(eq(foodLogs.userId, userId));
+    
+    // Delete user's weekly scores
+    await db.delete(weeklyScores).where(eq(weeklyScores.userId, userId));
+    
+    // Delete user's daily bonuses
+    await db.delete(dailyBonuses).where(eq(dailyBonuses.userId, userId));
+    
+    // Finally delete the user record
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  // Failed webhook operations
+  async createFailedWebhook(webhook: InsertFailedWebhook): Promise<FailedWebhook> {
+    const [created] = await db
+      .insert(failedWebhooks)
+      .values(webhook)
+      .returning();
+    return created;
+  }
+
+  async getFailedWebhooks(): Promise<FailedWebhook[]> {
+    return await db
+      .select()
+      .from(failedWebhooks)
+      .where(eq(failedWebhooks.resolved, false))
+      .orderBy(desc(failedWebhooks.createdAt));
+  }
+
+  async markWebhookResolved(id: number): Promise<void> {
+    await db
+      .update(failedWebhooks)
+      .set({ resolved: true })
+      .where(eq(failedWebhooks.id, id));
   }
 }
 

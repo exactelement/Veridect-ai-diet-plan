@@ -20,6 +20,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
+import { isUnauthorizedError } from "@/lib/authUtils";
 import { z } from "zod";
 
 const DIETARY_PREFERENCES = [
@@ -231,6 +232,7 @@ export default function Profile() {
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // App interface preferences - derive directly from user data instead of local state
   const privacySettings = (user as any)?.privacySettings;
@@ -326,6 +328,29 @@ export default function Profile() {
     onError: (error: Error) => {
       toast({
         title: "Password Change Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", "/api/user/account", {});
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      // Redirect to home page after successful deletion
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -571,13 +596,27 @@ export default function Profile() {
                         )}
                       />
 
-                      <Button
-                        type="submit"
-                        className="w-full bg-ios-blue hover:bg-ios-blue-dark text-white"
-                        disabled={updatePersonalMutation.isPending}
-                      >
-                        {updatePersonalMutation.isPending ? "Updating..." : "Update Personal Info"}
-                      </Button>
+                      <div className="space-y-3">
+                        <Button
+                          type="submit"
+                          className="w-full bg-ios-blue hover:bg-ios-blue-dark text-white"
+                          disabled={updatePersonalMutation.isPending}
+                        >
+                          {updatePersonalMutation.isPending ? "Updating..." : "Update Personal Info"}
+                        </Button>
+                        
+                        <div className="border-t pt-4">
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                            onClick={() => setShowDeleteDialog(true)}
+                            disabled={deleteAccountMutation.isPending}
+                          >
+                            Delete Account
+                          </Button>
+                        </div>
+                      </div>
                     </form>
                   </Form>
                 </CardContent>
@@ -1071,6 +1110,57 @@ export default function Profile() {
                   </>
                 ) : (
                   'Confirm Cancellation'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Account Confirmation Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-600">Delete Account</DialogTitle>
+              <DialogDescription>
+                Are you absolutely sure you want to delete your account? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800">
+                  <strong>This will permanently:</strong>
+                </p>
+                <ul className="text-sm text-red-700 mt-2 space-y-1">
+                  <li>• Delete all your food analysis history</li>
+                  <li>• Remove your profile and preferences</li>
+                  <li>• Cancel any active subscriptions</li>
+                  <li>• Delete all your account data</li>
+                </ul>
+              </div>
+            </div>
+
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+                disabled={deleteAccountMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => deleteAccountMutation.mutate()}
+                disabled={deleteAccountMutation.isPending}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleteAccountMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Permanently Delete Account'
                 )}
               </Button>
             </DialogFooter>

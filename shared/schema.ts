@@ -126,15 +126,47 @@ export const weeklyScores = pgTable("weekly_scores", {
   index("idx_weekly_scores_week_start").on(table.weekStart)
 ]);
 
+// Daily bonuses - tracks completed challenges to prevent duplicates
+export const dailyBonuses = pgTable("daily_bonuses", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  bonusType: varchar("bonus_type").notNull(), // "first_analysis", "5_analyses", "10_analyses", "3_yes_streak", "5_yes_today"
+  points: integer("points").notNull(),
+  awardedAt: timestamp("awarded_at").defaultNow(),
+  dateAwarded: varchar("date_awarded").notNull(), // YYYY-MM-DD in Madrid timezone
+}, (table) => [
+  index("idx_daily_bonuses_user_date").on(table.userId, table.dateAwarded),
+  index("idx_daily_bonuses_user_type_date").on(table.userId, table.bonusType, table.dateAwarded)
+]);
+
+// Failed webhooks tracking
+export const failedWebhooks = pgTable("failed_webhooks", {
+  id: serial("id").primaryKey(),
+  eventType: varchar("event_type").notNull(),
+  eventId: varchar("event_id").notNull(),
+  errorMessage: text("error_message").notNull(),
+  eventData: jsonb("event_data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  resolved: boolean("resolved").default(false),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   foodLogs: many(foodLogs),
   weeklyScores: many(weeklyScores),
+  dailyBonuses: many(dailyBonuses),
 }));
 
 export const foodLogsRelations = relations(foodLogs, ({ one }) => ({
   user: one(users, {
     fields: [foodLogs.userId],
+    references: [users.id],
+  }),
+}));
+
+export const dailyBonusesRelations = relations(dailyBonuses, ({ one }) => ({
+  user: one(users, {
+    fields: [dailyBonuses.userId],
     references: [users.id],
   }),
 }));
@@ -155,6 +187,11 @@ export const upsertUserSchema = createInsertSchema(users).omit({
 export const insertFoodLogSchema = createInsertSchema(foodLogs).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertDailyBonusSchema = createInsertSchema(dailyBonuses).omit({
+  id: true,
+  awardedAt: true,
 });
 
 export const updateUserProfileSchema = z.object({
@@ -185,6 +222,8 @@ export type User = typeof users.$inferSelect;
 export type InsertFoodLog = z.infer<typeof insertFoodLogSchema>;
 export type FoodLog = typeof foodLogs.$inferSelect;
 export type WeeklyScore = typeof weeklyScores.$inferSelect;
+export type DailyBonus = typeof dailyBonuses.$inferSelect;
+export type InsertDailyBonus = z.infer<typeof insertDailyBonusSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type FailedWebhook = typeof failedWebhooks.$inferSelect;
 export type InsertFailedWebhook = typeof failedWebhooks.$inferInsert;

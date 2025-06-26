@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { FoodLog } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
 import { SubscriptionCheck, checkTierAccess } from "@/components/subscription-check";
@@ -9,8 +10,8 @@ import { useLocation } from "wouter";
 export default function Progress() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
-  const userTier = user?.subscriptionTier || 'free';
-  const hasAccess = checkTierAccess(userTier, 'pro', user?.email);
+  const userTier = (user as any)?.subscriptionTier || 'free';
+  const hasAccess = checkTierAccess(userTier, 'pro', (user as any)?.email);
 
   // Scroll to top when navigating to progress
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function Progress() {
   const { data: yesStreakData } = useQuery({
     queryKey: ['/api/food/yes-streak'],
   });
-  const consecutiveYesStreak = yesStreakData?.consecutiveYesStreak || 0;
+  const consecutiveYesStreak = (yesStreakData as any)?.consecutiveYesStreak || 0;
 
   // Calculate TODAY'S LOGGED stats for the progress wheel (resets daily at Madrid midnight)
   const todaysLoggedStats = todaysLoggedFoods.reduce(
@@ -129,7 +130,7 @@ export default function Progress() {
     currentWeekStart.setHours(0, 0, 0, 0);
 
     return allLogs
-      .filter(log => new Date(log.createdAt) >= currentWeekStart)
+      .filter(log => new Date(log.createdAt || new Date()) >= currentWeekStart)
       .reduce(
         (acc: any, log: FoodLog) => {
           acc[log.verdict.toLowerCase()]++;
@@ -512,10 +513,10 @@ export default function Progress() {
                         // Show actual bonus points from database (weekly_points - food_points)
                         if (!myWeeklyScore) return 0;
                         
-                        const foodPoints = (myWeeklyScore.yesCount || 0) * 10 + 
-                                         (myWeeklyScore.okCount || 0) * 5 + 
-                                         (myWeeklyScore.noCount || 0) * 2;
-                        const bonusPoints = (myWeeklyScore.weeklyPoints || 0) - foodPoints;
+                        const foodPoints = ((myWeeklyScore as any)?.yesCount || 0) * 10 + 
+                                         ((myWeeklyScore as any)?.okCount || 0) * 5 + 
+                                         ((myWeeklyScore as any)?.noCount || 0) * 2;
+                        const bonusPoints = ((myWeeklyScore as any)?.weeklyPoints || 0) - foodPoints;
                         
                         return Math.max(0, bonusPoints);
                       })()}

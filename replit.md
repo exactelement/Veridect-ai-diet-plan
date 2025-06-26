@@ -207,6 +207,16 @@ Preferred communication style: Simple, everyday language.
 - **UI Improvements**: Fixed blank page issues, added proper spacing (pt-20 pb-24), updated contact email to info@veridect.com
 - **User Experience**: Single unified privacy page accessible to both logged-in and anonymous users
 
+### Daily Bonuses System Implementation (June 26, 2025)
+- **Complete Daily/Weekly Separation**: Implemented proper distinction between daily bonus tracking and weekly challenge resets
+- **Madrid Timezone Consistency**: All daily bonuses, streaks, and challenges now use consistent Madrid timezone (UTC+2) for date boundaries
+- **Proper Daily Bonus Table**: Migrated from foodLogs tracking to dedicated dailyBonuses table with dateAwarded field in YYYY-MM-DD format
+- **Weekly vs Daily Logic**: Weekly challenges (leaderboard, weekly points) reset Monday midnight, daily bonuses (streaks, challenges) reset daily midnight
+- **Challenge Point Structure**: 5 analyses (25pts), 10 analyses (50pts), 3 YES streak (50pts), 5 YES today (100pts), first analysis (25pts)
+- **TypeScript Error Resolution**: Fixed extensive type compatibility issues across storage layer, frontend components, and schema definitions
+- **Bonus Point Integration**: All bonus points properly added to both lifetime points (level progression) and weekly points (competition)
+- **Database Schema Optimization**: Updated dailyBonuses table for proper challenge tracking with Madrid timezone date handling
+
 ### Comprehensive Security & Data Handling Audit (June 25, 2025)
 - **CRITICAL SECURITY FIX**: Eliminated dangerous authentication fallback patterns across 22+ endpoints that allowed user data access confusion
 - **SECURITY REGRESSION FIXED**: Immediately reverted dangerous fallback user ID pattern that could have allowed cross-user data access
