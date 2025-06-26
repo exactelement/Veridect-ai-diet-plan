@@ -49,13 +49,21 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
   try {
     const todaysLogs = await storage.getTodaysFoodLogs(userId);
     
-    // Check for 3 YES foods in a row (consecutive from start of day)
+    // Check for consecutive YES foods from the most recent foods backwards
     let consecutiveYes = 0;
-    for (const log of todaysLogs) {
+    // Sort by creation time descending (most recent first)
+    const sortedLogs = todaysLogs.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    });
+    
+    // Count consecutive YES foods from the most recent entry
+    for (const log of sortedLogs) {
       if (log.verdict === "YES") {
         consecutiveYes++;
       } else {
-        consecutiveYes = 0; // Reset on any non-YES food
+        break; // Stop counting when we hit a non-YES food
       }
     }
     
@@ -504,13 +512,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const todaysLogs = await storage.getTodaysFoodLogs(userId);
       
-      // Calculate consecutive YES streak (resets on any NO/OK food)
+      // Calculate consecutive YES streak from the most recent foods backwards
       let consecutiveYes = 0;
-      for (const log of todaysLogs) {
+      // Sort by creation time descending (most recent first)
+      const sortedLogs = todaysLogs.sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      });
+      
+      // Count consecutive YES foods from the most recent entry
+      for (const log of sortedLogs) {
         if (log.verdict === "YES") {
           consecutiveYes++;
         } else {
-          consecutiveYes = 0; // Reset on any non-YES food
+          break; // Stop counting when we hit a non-YES food
         }
       }
       
