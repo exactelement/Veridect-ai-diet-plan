@@ -49,7 +49,8 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
   try {
     const todaysLogs = await storage.getTodaysFoodLogs(userId);
     
-    // Check for consecutive YES foods from the most recent foods backwards
+    // Calculate consecutive YES streak from the most recent foods backwards
+    // Use the same logic as the /api/food/yes-streak endpoint
     let consecutiveYes = 0;
     // Sort by creation time descending (most recent first)
     const sortedLogs = todaysLogs.sort((a, b) => {
@@ -67,24 +68,31 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
       }
     }
     
+    console.log(`[Food Logging Challenges] User ${userId}: Found ${consecutiveYes} consecutive YES foods from ${sortedLogs.length} total logged foods`);
+    
     if (consecutiveYes >= 3) {
+      console.log(`[Streak Challenge] Checking 3+ YES streak bonuses for user ${userId}`);
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '3_yes_streak');
+      console.log(`[3 YES Streak] User ${userId}: ${consecutiveYes} consecutive YES, bonus already awarded: ${bonusAlreadyAwarded}`);
       if (!bonusAlreadyAwarded) {
         // 50 bonus points to BOTH lifetime and weekly points
         await storage.updateUserPoints(userId, 50);
         await storage.addBonusToWeeklyScore(userId, 50);
         await storage.markBonusAwarded(userId, '3_yes_streak');
+        console.log(`[3 YES Streak] User ${userId}: Awarded 50 bonus points for 3 consecutive YES foods`);
       }
     }
     
     // Check for 5 YES foods in a row (Health Champion)
     if (consecutiveYes >= 5) {
       const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_streak');
+      console.log(`[5 YES Streak] User ${userId}: ${consecutiveYes} consecutive YES, bonus already awarded: ${bonusAlreadyAwarded}`);
       if (!bonusAlreadyAwarded) {
         // 100 bonus points to BOTH lifetime and weekly points
         await storage.updateUserPoints(userId, 100);
         await storage.addBonusToWeeklyScore(userId, 100);
         await storage.markBonusAwarded(userId, '5_yes_streak');
+        console.log(`[5 YES Streak] User ${userId}: Awarded 100 bonus points for 5 consecutive YES foods`);
       }
     }
     
@@ -528,6 +536,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           break; // Stop counting when we hit a non-YES food
         }
+      }
+      
+      // Trigger challenge check when streak is calculated to catch missed bonuses
+      if (consecutiveYes >= 3) {
+        await checkAndAwardFoodLoggingChallenges(userId);
       }
       
       res.json({ consecutiveYesStreak: consecutiveYes });

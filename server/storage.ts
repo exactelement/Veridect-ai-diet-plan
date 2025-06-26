@@ -504,7 +504,9 @@ export class DatabaseStorage implements IStorage {
       )
       .limit(1);
       
-    return !!result;
+    const wasAwarded = !!result;
+    console.log(`[Bonus Check] User ${userId}, Type: ${bonusType}, Date: ${dateAwarded}, Already awarded: ${wasAwarded}`);
+    return wasAwarded;
   }
 
   async markBonusAwarded(userId: string, bonusType: string): Promise<void> {
