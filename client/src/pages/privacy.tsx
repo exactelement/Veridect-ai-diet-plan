@@ -146,7 +146,7 @@ export default function Privacy() {
           </Card>
 
           <div className="text-center mt-8">
-            <Link href="/">
+            <Link href="/" onClick={scrollToTop}>
               <Button>
                 Back to Home
               </Button>

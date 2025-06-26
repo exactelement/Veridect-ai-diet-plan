@@ -433,7 +433,7 @@ export default function About() {
         </Card>
           {/* Back to Home Button */}
           <div className="text-center mt-8">
-            <Link href="/">
+            <Link href="/" onClick={scrollToTop}>
               <Button>
                 Back to Home
               </Button>
