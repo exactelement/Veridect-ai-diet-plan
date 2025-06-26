@@ -79,8 +79,12 @@ export interface IStorage {
   
   // Daily bonus operations
   wasBonusAwardedToday(userId: string, bonusType: string): Promise<boolean>;
+  wasBonusAwardedThisWeek(userId: string, bonusType: string): Promise<boolean>;
   markBonusAwarded(userId: string, bonusType: string): Promise<void>;
   addBonusToWeeklyScore(userId: string, bonusPoints: number): Promise<void>;
+  
+  // Weekly challenge operations
+  getThisWeeksYesCount(userId: string): Promise<number>;
   
   // Email preferences for admin
   getEmailPreferences(): Promise<Array<{
@@ -484,6 +488,57 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       // Error adding bonus to weekly score
     }
+  }
+
+  // Get this week's YES food count for weekly challenges
+  async getThisWeeksYesCount(userId: string): Promise<number> {
+    const madridNow = this.getMadridTime();
+    const currentWeekStart = new Date(madridNow);
+    currentWeekStart.setDate(madridNow.getDate() - madridNow.getDay() + 1); // Monday
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    const weeklyYesLogs = await db
+      .select()
+      .from(foodLogs)
+      .where(
+        and(
+          eq(foodLogs.userId, userId),
+          eq(foodLogs.verdict, "YES"),
+          eq(foodLogs.isLogged, true),
+          gte(foodLogs.createdAt, currentWeekStart)
+        )
+      );
+
+    return weeklyYesLogs.length;
+  }
+
+  // Check for weekly bonus awards (Madrid timezone - weekly bonuses)
+  async wasBonusAwardedThisWeek(userId: string, bonusType: string): Promise<boolean> {
+    const madridNow = this.getMadridTime();
+    const currentWeekStart = new Date(madridNow);
+    currentWeekStart.setDate(madridNow.getDate() - madridNow.getDay() + 1); // Monday
+    currentWeekStart.setHours(0, 0, 0, 0);
+    
+    const year = currentWeekStart.getFullYear();
+    const month = String(currentWeekStart.getMonth() + 1).padStart(2, '0');
+    const day = String(currentWeekStart.getDate()).padStart(2, '0');
+    const weekStart = `${year}-${month}-${day}`;
+
+    const [result] = await db
+      .select()
+      .from(dailyBonuses)
+      .where(
+        and(
+          eq(dailyBonuses.userId, userId),
+          eq(dailyBonuses.bonusType, bonusType),
+          gte(dailyBonuses.dateAwarded, weekStart)
+        )
+      )
+      .limit(1);
+      
+    const wasAwarded = !!result;
+    console.log(`[Weekly Bonus Check] User ${userId}, Type: ${bonusType}, Week: ${weekStart}, Already awarded: ${wasAwarded}`);
+    return wasAwarded;
   }
 
   // Prevent duplicate bonus awards (Madrid timezone - daily bonuses only)
