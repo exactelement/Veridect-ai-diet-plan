@@ -40,20 +40,21 @@ const personalInfoSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email format"),
-  currentPassword: z.string().optional(),
-  newPassword: z.string().min(8, "Password must be at least 8 characters").optional(),
-  confirmPassword: z.string().optional(),
+});
+
+const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your new password"),
 }).refine((data) => {
-  if (data.newPassword && data.newPassword !== data.confirmPassword) {
-    return false;
-  }
-  return true;
+  return data.newPassword === data.confirmPassword;
 }, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
 type PersonalInfoForm = z.infer<typeof personalInfoSchema>;
+type PasswordChangeForm = z.infer<typeof passwordChangeSchema>;
 
 // Email Preferences Component
 function EmailPreferencesSection({ user }: { user: any }) {
@@ -224,6 +225,7 @@ export default function Profile() {
   
   // Collapsible section states
   const [personalOpen, setPersonalOpen] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const [personalizationOpen, setPersonalizationOpen] = useState(false);
   const [interfaceOpen, setInterfaceOpen] = useState(false);
@@ -240,13 +242,20 @@ export default function Profile() {
     queryKey: ["/api/food/logs"],
   });
 
-  // Personal information form
+  // Personal information form (name and email only)
   const personalForm = useForm<PersonalInfoForm>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
+    },
+  });
+
+  // Password change form (separate)
+  const passwordForm = useForm<PasswordChangeForm>({
+    resolver: zodResolver(passwordChangeSchema),
+    defaultValues: {
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
@@ -268,19 +277,11 @@ export default function Profile() {
 
   const updatePersonalMutation = useMutation({
     mutationFn: async (data: PersonalInfoForm) => {
-      // Update basic info
+      // Update basic info only
       await apiRequest("PUT", "/api/user/profile", {
         firstName: data.firstName,
         lastName: data.lastName,
       });
-      
-      // Change password if provided
-      if (data.newPassword && data.currentPassword) {
-        await apiRequest("POST", "/api/auth/change-password", {
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        });
-      }
       
       // Update email if changed (future feature)
       if (data.email !== user?.email) {
@@ -297,11 +298,34 @@ export default function Profile() {
         description: "Your changes have been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      personalForm.reset();
+      // Don't reset form to preserve user input
     },
     onError: (error: Error) => {
       toast({
         title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: PasswordChangeForm) => {
+      await apiRequest("POST", "/api/auth/change-password", {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Changed",
+        description: "Your password has been updated successfully.",
+      });
+      passwordForm.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Password Change Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -390,6 +414,10 @@ export default function Profile() {
 
   const onPersonalSubmit = (data: PersonalInfoForm) => {
     updatePersonalMutation.mutate(data);
+  };
+
+  const onPasswordSubmit = (data: PasswordChangeForm) => {
+    changePasswordMutation.mutate(data);
   };
 
   const onPersonalizationSubmit = (data: UpdateUserProfile) => {
@@ -543,62 +571,90 @@ export default function Profile() {
                         )}
                       />
 
-                      <div className="border-t pt-4 mt-6">
-                        <h3 className="text-lg font-semibold mb-4 flex items-center">
-                          <Lock className="w-4 h-4 mr-2" />
-                          Change Password
-                        </h3>
-                        <div className="space-y-4">
-                          <FormField
-                            control={personalForm.control}
-                            name="currentPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Current Password</FormLabel>
-                                <FormControl>
-                                  <Input {...field} type="password" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={personalForm.control}
-                              name="newPassword"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>New Password</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} type="password" />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={personalForm.control}
-                              name="confirmPassword"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Confirm New Password</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} type="password" />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
+                      <Button
+                        type="submit"
+                        className="w-full bg-ios-blue hover:bg-ios-blue-dark text-white"
+                        disabled={updatePersonalMutation.isPending}
+                      >
+                        {updatePersonalMutation.isPending ? "Updating..." : "Update Personal Info"}
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+
+          {/* Password Change Section (Separate Form) */}
+          <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
+            <Collapsible open={passwordOpen} onOpenChange={setPasswordOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Lock className="w-5 h-5 text-ios-blue" />
+                      <span>Change Password</span>
+                    </div>
+                    {passwordOpen ? (
+                      <ChevronDown className="w-5 h-5 text-ios-secondary" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 text-ios-secondary" />
+                    )}
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="pt-0">
+                  <Form {...passwordForm}>
+                    <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+                      <FormField
+                        control={passwordForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                              <Input {...field} type="password" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={passwordForm.control}
+                          name="newPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>New Password</FormLabel>
+                              <FormControl>
+                                <Input {...field} type="password" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={passwordForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm New Password</FormLabel>
+                              <FormControl>
+                                <Input {...field} type="password" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-ios-blue hover:bg-ios-blue/90"
-                        disabled={updatePersonalMutation.isPending}
+                        className="w-full bg-ios-blue hover:bg-ios-blue-dark text-white"
+                        disabled={changePasswordMutation.isPending}
                       >
-                        {updatePersonalMutation.isPending ? "Saving..." : "Save Changes"}
+                        {changePasswordMutation.isPending ? "Changing Password..." : "Change Password"}
                       </Button>
                     </form>
                   </Form>
