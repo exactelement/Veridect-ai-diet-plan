@@ -29,9 +29,6 @@ export default function HowToUse() {
               <Link href="/about" onClick={scrollToTop}>
                 <Button variant="ghost">About</Button>
               </Link>
-              <Link href="/login" onClick={scrollToTop}>
-                <Button>Log In</Button>
-              </Link>
             </div>
           </div>
         </div>
