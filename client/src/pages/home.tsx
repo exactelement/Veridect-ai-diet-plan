@@ -131,11 +131,10 @@ export default function Home() {
   // Weekly points from the weekly score API (same calculation as lifetime points)
   const weeklyPoints = (weeklyScore as any)?.weeklyPoints || 0;
 
-  // User interface preferences
-  const privacySettings = (user as any)?.privacySettings || {};
-  const showCalorieCounter = privacySettings.showCalorieCounter !== false;
-  const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false;
-  const showFoodStats = privacySettings.showFoodStats !== false;
+  // User interface preferences from profile settings
+  const showCalorieCounter = (user as any)?.showCalorieCounter !== false;
+  const participateInWeeklyChallenge = (user as any)?.participateInWeeklyChallenge !== false;
+  const showFoodStats = (user as any)?.showFoodStats !== false;
 
 
 
@@ -235,8 +234,8 @@ export default function Home() {
               <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
-            {/* Calorie Counter Bar - Only for Pro users */}
-            {hasProAccess && (
+            {/* Calorie Counter Bar - Only for Pro users with calorie counter enabled */}
+            {hasProAccess && showCalorieCounter && (
               <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
