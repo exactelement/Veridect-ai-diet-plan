@@ -69,6 +69,28 @@ async function checkAndAwardFoodLoggingChallenges(userId: string) {
       }
     }
     
+    // Check for 5 YES foods in a row (Health Champion)
+    if (consecutiveYes >= 5) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '5_yes_streak');
+      if (!bonusAlreadyAwarded) {
+        // 100 bonus points to BOTH lifetime and weekly points
+        await storage.updateUserPoints(userId, 100);
+        await storage.addBonusToWeeklyScore(userId, 100);
+        await storage.markBonusAwarded(userId, '5_yes_streak');
+      }
+    }
+    
+    // Check for 10 YES foods in a row (Perfectionist)
+    if (consecutiveYes >= 10) {
+      const bonusAlreadyAwarded = await storage.wasBonusAwardedToday(userId, '10_yes_streak');
+      if (!bonusAlreadyAwarded) {
+        // 200 bonus points to BOTH lifetime and weekly points
+        await storage.updateUserPoints(userId, 200);
+        await storage.addBonusToWeeklyScore(userId, 200);
+        await storage.markBonusAwarded(userId, '10_yes_streak');
+      }
+    }
+    
     // Check for 5 YES foods today (logged foods only)
     const yesCount = todaysLogs.filter(log => log.verdict === "YES").length;
     if (yesCount === 5) {
