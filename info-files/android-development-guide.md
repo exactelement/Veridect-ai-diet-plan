@@ -1,40 +1,53 @@
-# Veridect Android Development Guide
+# Veridect Android Development Guide (Updated June 26, 2025)
 
 ## Overview
 
-This guide will help you build a complete native Android app for Veridect with Google Fit integration, camera-based food analysis, personalized AI verdicts, position-ranked weekly leaderboards, level progression, and full feature parity with the web application.
+This guide will help you build a complete native Android app for Veridect with Google Fit integration, camera-based food analysis, personalized AI verdicts, position-ranked weekly leaderboards, level progression, and full feature parity with the web application. Veridect is a live revenue-generating platform with patent-pending AI technology currently serving paying customers.
 
 ## Prerequisites
 
-- Android Studio (latest version)
-- Android SDK API 24+ (Android 7.0+)
-- Google Play Services
-- Basic Kotlin knowledge
+- Android Studio Hedgehog (latest version)
+- Android SDK API 26+ (Android 8.0+) - updated for modern features
+- Google Play Services and Google Play Billing
+- Kotlin 1.9+ and Jetpack Compose knowledge
 - Google Cloud Platform account (for APIs)
-- Veridect backend API running
+- Veridect backend API running on production servers
 - Multi-provider authentication system (Email/Password, Google, Apple)
-- Understanding of Material Design gamification patterns
-- Stripe Android SDK for subscription management
+- Understanding of Material Design 3 gamification patterns
+- Google Play Billing for subscription management
 - Google Gemini AI API access for food analysis
 
-## Current Subscription Tiers (2025)
+## Current Production Subscription Tiers (2025)
 
-The Android app must implement the following subscription tiers:
+The Android app must implement the following live subscription tiers:
 
-- **Free Tier** (€0): 5 daily food analyses, basic features
-- **Pro Tier** (€1/month - promotional pricing, normally €10/month): Unlimited analyses, food logging, leaderboards, progress tracking
+- **Free Tier** (€0): 5 daily food analyses, basic nutritional info, simple verdicts
+- **Pro Tier** (€12/year - yearly billing): Unlimited analyses, food logging, leaderboards, progress tracking, community features
 - **Advanced Tier** (€50/month - coming soon): Medical features, priority support, advanced analytics
+
+Note: Pro tier is billed yearly in advance (€12/year) not monthly. This is a key business model difference from other apps.
 
 ## Key Features to Implement
 
 ### Core Features
 - Multi-provider authentication (Email/Password, Google, Apple ID via web view)
 - Camera-based food analysis with Google Gemini AI
-- Real-time food verdicts (YES/NO/OK) with explanations
+- Real-time food verdicts (YES/NO/OK) with explanations and calorie estimates
 - Dual point system (lifetime points for levels, weekly points for leaderboards)
 - Position-ranked weekly leaderboards (#1, #2, #3, etc.)
-- Daily challenges and streak tracking
+- Daily challenges and streak tracking with bonus point awards
+- Comprehensive gamification with milestone rewards (Health Expert/Master/Legend)
+- Interface preference toggles (calorie counter, food statistics visibility)
+- GDPR compliance with consent management
 - Spanish contact information (info@veridect.com, +34 672 810 584)
+
+### Advanced Features (Pro/Advanced Tiers)
+- Food logging history with "Yum/Nah" tracking
+- Weekly challenge participation with opt-out capability
+- Progress tracking with level progression (1000 points per level)
+- Community leaderboards with real-time rank updates
+- Personalized AI analysis based on health goals and dietary preferences
+- Nutritional insights and detailed food analysis reports
 
 ## Authentication Integration
 
@@ -84,20 +97,142 @@ fun AuthErrorDialog(error: AuthError, onDismiss: () -> Unit) {
    - **Minimum SDK**: API 24 (Android 7.0)
    - **Build configuration language**: Kotlin DSL
 
+## Dual Point System Architecture
+
+Veridect implements a sophisticated dual point tracking system that the Android app must replicate exactly:
+
+### Point System Components
+- **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression (1000 points per level)
+- **Weekly Points**: RESET every Monday midnight Madrid time - used for leaderboard competition
+- **Point Synchronization**: Both systems receive identical point amounts each week
+- **Consistent Scoring**: YES=10, OK=5, NO=2 points plus bonus points from challenges
+
+### Point Sources
+1. **Food Logging**: Points awarded when user clicks "Yum" button after analysis
+2. **Bonus Challenges**: 
+   - 3 consecutive YES foods: +50 points
+   - 5 analyses in one day: +25 points  
+   - 10 analyses in one day: +50 points
+   - 5 YES foods in one day: +100 points
+   - First analysis of the day: +25 points
+3. **Milestone Rewards**:
+   - Health Expert (15 YES foods): +250 points
+   - Health Master (30 YES foods): +500 points
+   - Health Legend (50 YES foods): +1000 points
+
+### Implementation Requirements
+```kotlin
+data class PointSystem(
+    private val apiService: ApiService
+) {
+    // Dual tracking - both counters must be updated simultaneously
+    suspend fun awardFoodPoints(verdict: String, userId: String) {
+        val points = getPointsForVerdict(verdict) // YES=10, OK=5, NO=2
+        apiService.updateLifetimePoints(userId, points)
+        apiService.updateWeeklyPoints(userId, points)
+    }
+    
+    suspend fun awardBonusPoints(bonusType: String, points: Int, userId: String) {
+        apiService.updateLifetimePoints(userId, points)
+        apiService.updateWeeklyPoints(userId, points)
+        apiService.markBonusAwarded(userId, bonusType)
+    }
+}
+```
+
+## Interface Preference System
+
+The app must implement user-configurable interface toggles (Pro tier only):
+
+### Toggle Controls
+- **Show Calorie Counter**: Controls visibility of daily calorie tracking cards
+- **Show Food Statistics**: Controls visibility of Yes/OK/No verdict statistics
+- **Weekly Challenge Participation**: Allows users to opt out of leaderboard competition
+
+### Implementation
+```kotlin
+data class InterfacePreferences(
+    val showCalorieCounter: Boolean = true,
+    val showFoodStats: Boolean = true,
+    val participateInWeeklyChallenge: Boolean = true
+)
+
+@Composable
+fun HomeScreen(user: User) {
+    val preferences = user.privacySettings
+    
+    if (preferences?.showCalorieCounter == true && user.subscriptionTier == "pro") {
+        CalorieDashboardCard()
+    }
+    
+    if (preferences?.showFoodStats == true && user.subscriptionTier == "pro") {
+        FoodStatsCard()
+    }
+}
+```
+
+## Calorie Consistency System
+
+The Android app must implement the comprehensive calorie consistency system for accurate food analysis:
+
+### Key Components
+- **Food Name Normalization**: Standardize food names for cache lookup consistency
+- **Calorie Reference Ranges**: Use established calorie ranges for validation
+- **Post-Processing Validation**: Apply nutritional value validation after AI analysis
+- **Intelligent Caching**: Cache results by normalized food name and user profile
+
+### Implementation Requirements
+```kotlin
+class CalorieConsistencyManager {
+    fun normalizeFoodName(foodName: String): String {
+        return foodName.lowercase()
+            .replace(Regex("\\s+"), " ")
+            .trim()
+    }
+    
+    fun validateCalories(calories: Int, foodName: String): Int {
+        val referenceRanges = mapOf(
+            "apple" to 80..120,
+            "banana" to 90..140,
+            "chicken breast" to 150..200,
+            // Add comprehensive food database
+        )
+        
+        val normalizedName = normalizeFoodName(foodName)
+        referenceRanges[normalizedName]?.let { range ->
+            if (calories !in range) {
+                return range.first + (range.last - range.first) / 2
+            }
+        }
+        return calories
+    }
+}
+```
+
 ### 2. Project Structure
 
 ```
 app/
-├── src/main/java/com/yesnoapp/android/
+├── src/main/java/com/veridect/android/
 │   ├── MainActivity.kt
 │   ├── ui/
 │   │   ├── auth/
 │   │   ├── camera/
 │   │   ├── profile/
 │   │   ├── leaderboard/
+│   │   ├── progress/
+│   │   ├── challenges/
+│   │   ├── subscription/
 │   │   └── theme/
 │   ├── data/
 │   │   ├── api/
+│   │   ├── repository/
+│   │   ├── local/
+│   │   └── models/
+│   ├── domain/
+│   │   ├── usecase/
+│   │   └── repository/
+│   └── di/
 │   │   ├── database/
 │   │   └── repositories/
 │   ├── domain/

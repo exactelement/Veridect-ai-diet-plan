@@ -1,39 +1,52 @@
-# Veridect iOS Development Guide
+# Veridect iOS Development Guide (Updated June 26, 2025)
 
 ## Overview
 
-This guide will help you build a complete native iOS app for Veridect with Apple HealthKit integration, camera-based food analysis, personalized AI verdicts, position-ranked weekly leaderboards, level progression, and full feature parity with the web application.
+This guide will help you build a complete native iOS app for Veridect with Apple HealthKit integration, camera-based food analysis, personalized AI verdicts, position-ranked weekly leaderboards, level progression, and full feature parity with the web application. Veridect is a live revenue-generating platform with patent-pending AI technology currently serving paying customers.
 
 ## Prerequisites
 
 - Xcode 15+ (latest version)
-- iOS 16.0+ deployment target
+- iOS 17.0+ deployment target (updated for latest features)
 - Apple Developer Account ($99/year)
-- Basic Swift and SwiftUI knowledge
-- Veridect backend API running
+- Swift 5.9+ and SwiftUI knowledge
+- Veridect backend API running on production servers
 - Multi-provider authentication system (Email/Password, Google, Apple)
-- Understanding of gamification UI patterns
+- Understanding of gamification UI patterns and dual point systems
 - Stripe iOS SDK for subscription management
 - Google Gemini AI API access for food analysis
 
-## Current Subscription Tiers (2025)
+## Current Production Subscription Tiers (2025)
 
-The iOS app must implement the following subscription tiers:
+The iOS app must implement the following live subscription tiers:
 
-- **Free Tier** (€0): 5 daily food analyses, basic features
-- **Pro Tier** (€1/month - promotional pricing, normally €10/month): Unlimited analyses, food logging, leaderboards, progress tracking
+- **Free Tier** (€0): 5 daily food analyses, basic nutritional info, simple verdicts
+- **Pro Tier** (€12/year - yearly billing): Unlimited analyses, food logging, leaderboards, progress tracking, community features
 - **Advanced Tier** (€50/month - coming soon): Medical features, priority support, advanced analytics
+
+Note: Pro tier is billed yearly in advance (€12/year) not monthly. This is a key business model difference from other apps.
 
 ## Key Features to Implement
 
 ### Core Features
 - Multi-provider authentication (Email/Password, Google, Apple ID)
 - Camera-based food analysis with Google Gemini AI
-- Real-time food verdicts (YES/NO/OK) with explanations
+- Real-time food verdicts (YES/NO/OK) with explanations and calorie estimates
 - Dual point system (lifetime points for levels, weekly points for leaderboards)
 - Position-ranked weekly leaderboards (#1, #2, #3, etc.)
-- Daily challenges and streak tracking
+- Daily challenges and streak tracking with bonus point awards
+- Comprehensive gamification with milestone rewards (Health Expert/Master/Legend)
+- Interface preference toggles (calorie counter, food statistics visibility)
+- GDPR compliance with consent management
 - Spanish contact information (info@veridect.com, +34 672 810 584)
+
+### Advanced Features (Pro/Advanced Tiers)
+- Food logging history with "Yum/Nah" tracking
+- Weekly challenge participation with opt-out capability
+- Progress tracking with level progression (1000 points per level)
+- Community leaderboards with real-time rank updates
+- Personalized AI analysis based on health goals and dietary preferences
+- Nutritional insights and detailed food analysis reports
 
 ## Authentication Integration
 
@@ -96,6 +109,106 @@ Add these packages via Swift Package Manager (File → Add Package Dependencies)
    ```
    https://github.com/evgenyneu/keychain-swift
    ```
+
+## Dual Point System Architecture
+
+Veridect implements a sophisticated dual point tracking system that the mobile app must replicate exactly:
+
+### Point System Components
+- **Lifetime Points (totalPoints)**: NEVER RESET - accumulate forever for level progression (1000 points per level)
+- **Weekly Points**: RESET every Monday midnight Madrid time - used for leaderboard competition
+- **Point Synchronization**: Both systems receive identical point amounts each week
+- **Consistent Scoring**: YES=10, OK=5, NO=2 points plus bonus points from challenges
+
+### Point Sources
+1. **Food Logging**: Points awarded when user clicks "Yum" button after analysis
+2. **Bonus Challenges**: 
+   - 3 consecutive YES foods: +50 points
+   - 5 analyses in one day: +25 points  
+   - 10 analyses in one day: +50 points
+   - 5 YES foods in one day: +100 points
+   - First analysis of the day: +25 points
+3. **Milestone Rewards**:
+   - Health Expert (15 YES foods): +250 points
+   - Health Master (30 YES foods): +500 points
+   - Health Legend (50 YES foods): +1000 points
+
+### Implementation Requirements
+```swift
+struct PointSystem {
+    // Dual tracking - both counters must be updated simultaneously
+    func awardFoodPoints(verdict: String, userId: String) async {
+        let points = getPointsForVerdict(verdict) // YES=10, OK=5, NO=2
+        await updateLifetimePoints(userId: userId, points: points)
+        await updateWeeklyPoints(userId: userId, points: points)
+    }
+    
+    func awardBonusPoints(bonusType: String, points: Int, userId: String) async {
+        await updateLifetimePoints(userId: userId, points: points)
+        await updateWeeklyPoints(userId: userId, points: points)
+        await markBonusAwarded(userId: userId, bonusType: bonusType)
+    }
+}
+```
+
+## Interface Preference System
+
+The app must implement user-configurable interface toggles (Pro tier only):
+
+### Toggle Controls
+- **Show Calorie Counter**: Controls visibility of daily calorie tracking cards
+- **Show Food Statistics**: Controls visibility of Yes/OK/No verdict statistics
+- **Weekly Challenge Participation**: Allows users to opt out of leaderboard competition
+
+### Implementation
+```swift
+struct InterfacePreferences: Codable {
+    let showCalorieCounter: Bool
+    let showFoodStats: Bool
+    let participateInWeeklyChallenge: Bool
+}
+
+// Usage in UI
+if user.privacySettings?.showCalorieCounter == true && user.subscriptionTier == "pro" {
+    CalorieDashboardCard()
+}
+```
+
+## Calorie Consistency System
+
+The mobile app must implement the comprehensive calorie consistency system for accurate food analysis:
+
+### Key Components
+- **Food Name Normalization**: Standardize food names for cache lookup consistency
+- **Calorie Reference Ranges**: Use established calorie ranges for validation
+- **Post-Processing Validation**: Apply nutritional value validation after AI analysis
+- **Intelligent Caching**: Cache results by normalized food name and user profile
+
+### Implementation Requirements
+```swift
+struct CalorieConsistencyManager {
+    func normalizeFoodName(_ foodName: String) -> String {
+        return foodName.lowercased()
+            .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    func validateCalories(_ calories: Int, for foodName: String) -> Int {
+        let referenceRanges = [
+            "apple": 80...120,
+            "banana": 90...140,
+            "chicken breast": 150...200,
+            // Add comprehensive food database
+        ]
+        
+        let normalizedName = normalizeFoodName(foodName)
+        if let range = referenceRanges[normalizedName], !range.contains(calories) {
+            return range.lowerBound + (range.upperBound - range.lowerBound) / 2
+        }
+        return calories
+    }
+}
+```
 
 ### 3. Project Structure
 
