@@ -65,6 +65,8 @@ export const users = pgTable("users", {
   // GDPR and Privacy
   gdprConsent: jsonb("gdpr_consent"),
   hasSeenGdprBanner: boolean("has_seen_gdpr_banner").default(false),
+  hasAcceptedTerms: boolean("has_accepted_terms").default(false),
+  termsAcceptedAt: timestamp("terms_accepted_at"),
   privacySettings: jsonb("privacy_settings").default({
     showCalorieCounter: true,
     participateInWeeklyChallenge: true,
@@ -194,6 +196,16 @@ export const insertDailyBonusSchema = createInsertSchema(dailyBonuses).omit({
   awardedAt: true,
 });
 
+export const registrationSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  hasAcceptedTerms: z.boolean().refine(value => value === true, {
+    message: "You must accept the Privacy Policy and Terms of Service to continue"
+  }),
+});
+
 export const updateUserProfileSchema = z.object({
   firstName: z.string().min(1, "First name is required").optional(),
   lastName: z.string().min(1, "Last name is required").optional(),
@@ -224,6 +236,7 @@ export type FoodLog = typeof foodLogs.$inferSelect;
 export type WeeklyScore = typeof weeklyScores.$inferSelect;
 export type DailyBonus = typeof dailyBonuses.$inferSelect;
 export type InsertDailyBonus = z.infer<typeof insertDailyBonusSchema>;
+export type RegistrationData = z.infer<typeof registrationSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type FailedWebhook = typeof failedWebhooks.$inferSelect;
 export type InsertFailedWebhook = typeof failedWebhooks.$inferInsert;

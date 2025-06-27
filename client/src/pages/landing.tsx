@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown, X } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -78,14 +79,14 @@ export default function Landing() {
     }
   };
 
-  const handleRegister = async (email: string, password: string, firstName: string, lastName: string) => {
+  const handleRegister = async (email: string, password: string, firstName: string, lastName: string, hasAcceptedTerms: boolean) => {
     try {
       setIsRegistering(true);
       
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, firstName, lastName })
+        body: JSON.stringify({ email, password, firstName, lastName, hasAcceptedTerms })
       });
 
       const data = await response.json();
@@ -754,11 +755,23 @@ export default function Landing() {
           <form onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
+            const hasAcceptedTerms = formData.get('hasAcceptedTerms') === 'on';
+            
+            if (!hasAcceptedTerms) {
+              toast({
+                title: "Terms Required",
+                description: "You must accept the Privacy Policy and Terms of Service to continue",
+                variant: "destructive",
+              });
+              return;
+            }
+            
             handleRegister(
               formData.get('email') as string,
               formData.get('password') as string,
               formData.get('firstName') as string,
-              formData.get('lastName') as string
+              formData.get('lastName') as string,
+              hasAcceptedTerms
             );
           }} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -804,6 +817,32 @@ export default function Landing() {
                 required
                 disabled={isRegistering}
               />
+            </div>
+            <div className="flex items-start space-x-3">
+              <Checkbox 
+                id="register-terms" 
+                name="hasAcceptedTerms"
+                required
+                disabled={isRegistering}
+              />
+              <Label htmlFor="register-terms" className="text-sm leading-none">
+                I agree to the{' '}
+                <a 
+                  href="/privacy" 
+                  target="_blank"
+                  className="text-ios-blue hover:underline"
+                >
+                  Privacy Policy
+                </a>
+                {' '}and{' '}
+                <a 
+                  href="/terms" 
+                  target="_blank"
+                  className="text-ios-blue hover:underline"
+                >
+                  Terms of Service
+                </a>
+              </Label>
             </div>
             <div className="flex gap-3">
               <Button

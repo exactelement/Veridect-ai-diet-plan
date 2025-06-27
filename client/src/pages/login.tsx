@@ -33,6 +33,9 @@ const registerSchema = z.object({
   lastName: z.string()
     .min(1, "Last name is required")
     .transform((name) => name.trim()),
+  hasAcceptedTerms: z.boolean().refine(value => value === true, {
+    message: "You must accept the Privacy Policy and Terms of Service to continue"
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -166,7 +169,7 @@ export default function Login() {
 
   const registerForm = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", confirmPassword: "", firstName: "", lastName: "" },
+    defaultValues: { email: "", password: "", confirmPassword: "", firstName: "", lastName: "", hasAcceptedTerms: false },
   });
 
   const forgotForm = useForm<ForgotPasswordForm>({
@@ -778,6 +781,42 @@ export default function Login() {
                         </div>
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="hasAcceptedTerms"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-normal">
+                          I agree to the{' '}
+                          <a 
+                            href="/privacy" 
+                            target="_blank"
+                            className="text-ios-blue hover:underline"
+                          >
+                            Privacy Policy
+                          </a>
+                          {' '}and{' '}
+                          <a 
+                            href="/terms" 
+                            target="_blank"
+                            className="text-ios-blue hover:underline"
+                          >
+                            Terms of Service
+                          </a>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />

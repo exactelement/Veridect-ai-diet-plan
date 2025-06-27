@@ -351,7 +351,7 @@ export async function setupMultiAuth(app: Express) {
   // Email/Password registration
   app.post('/api/auth/register', async (req, res) => {
     try {
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, hasAcceptedTerms } = req.body;
 
       if (!email || !password) {
         return res.status(400).json({ message: "Email and password are required" });
@@ -369,6 +369,10 @@ export async function setupMultiAuth(app: Express) {
 
       if (password.length < 8) {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      if (!hasAcceptedTerms) {
+        return res.status(400).json({ message: "You must accept the Privacy Policy and Terms of Service to continue" });
       }
 
       // Check if user already exists across ALL authentication providers
@@ -399,7 +403,7 @@ export async function setupMultiAuth(app: Express) {
       // Hash password
       const passwordHash = await bcrypt.hash(password, 12);
       
-      // Create user with explicit free tier
+      // Create user with explicit free tier and terms acceptance
       const user = await storage.upsertUser({
         id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         email: email.toLowerCase().trim(),
@@ -409,6 +413,8 @@ export async function setupMultiAuth(app: Express) {
         authProvider: "email",
         subscriptionTier: "free",
         subscriptionStatus: "inactive",
+        hasAcceptedTerms: true,
+        termsAcceptedAt: new Date(),
       });
 
       // Create session-compatible user object and log them in
