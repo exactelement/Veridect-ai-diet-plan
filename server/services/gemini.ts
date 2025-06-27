@@ -93,12 +93,13 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- Set explanation to a WITTY, HUMOROUS rejection message. Be creative and original! Think of funny, entertaining ways to tell them this isn't food. Use humor styles like:
-  * Tech/digital puns ("Error 404: Food not found!", "This doesn't compute as edible!")
-  * Playful confusion ("Plot twist!", "Well, this is awkward...")
-  * Food-related wordplay ("I analyze what goes in your belly, not your pocket!")
-  * Sarcastic observations ("I'm a nutrition guru, not tech support!")
-  * Create your own unique, witty response that's funny and memorable!
+- Set explanation to a WITTY, HUMOROUS rejection message. Be creative and original! Avoid repetitive phrases like "plot twist!" - instead create varied, entertaining responses such as:
+  * Tech/digital puns ("Error 404: Food not found!", "This doesn't compute as edible!", "Nice try, but I don't do tech support!")
+  * Playful confusion ("Well, this is awkward...", "Houston, we have a problem!", "Hmm, this isn't what I ordered...")
+  * Food-related wordplay ("I analyze what goes in your belly, not your pocket!", "My expertise is calories, not cables!", "I'm more of a kitchen consultant than tech support!")
+  * Sarcastic observations ("I'm a nutrition guru, not a repair manual!", "Wrong kind of byte!", "This won't fill your stomach!")
+  * Creative rejections ("Spotted something sus here...", "This ain't it, chief!", "My food radar is coming up empty!")
+  * Be original and avoid repeating the same opening phrases - surprise users with fresh, witty responses every time!
 - Set all nutrition values to 0
 - Set confidence to 99
 
