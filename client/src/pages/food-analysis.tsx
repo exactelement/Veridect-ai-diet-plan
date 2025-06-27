@@ -468,10 +468,10 @@ export default function FoodAnalysis() {
     <div className="pt-20 pb-24 container-padding">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">
-            {timeGreeting}, {(activeUser as any)?.firstName || 'there'}!
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            {timeGreeting}, {((activeUser as any)?.firstName || 'there').trim()}!
           </h1>
-          <p className="text-xl text-ios-secondary">
+          <p className="text-gray-600">
             Ready to analyze your food? Get instant health verdicts on your choices
           </p>
         </div>
