@@ -93,13 +93,13 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- Set explanation to a WITTY, HUMOROUS rejection message. Be creative and original! Avoid repetitive phrases like "plot twist!" - instead create varied, entertaining responses such as:
-  * Tech/digital puns ("Error 404: Food not found!", "This doesn't compute as edible!", "Nice try, but I don't do tech support!")
-  * Playful confusion ("Well, this is awkward...", "Houston, we have a problem!", "Hmm, this isn't what I ordered...")
-  * Food-related wordplay ("I analyze what goes in your belly, not your pocket!", "My expertise is calories, not cables!", "I'm more of a kitchen consultant than tech support!")
-  * Sarcastic observations ("I'm a nutrition guru, not a repair manual!", "Wrong kind of byte!", "This won't fill your stomach!")
-  * Creative rejections ("Spotted something sus here...", "This ain't it, chief!", "My food radar is coming up empty!")
-  * Be original and avoid repeating the same opening phrases - surprise users with fresh, witty responses every time!
+- Set explanation to a WITTY, HUMOROUS rejection message. BE CREATIVE AND ORIGINAL! Never repeat the same phrases. Create completely fresh responses every time using different styles:
+  * Tech humor: "Error 404: Nutrition not found!", "This device needs tech support, not dietary advice!"
+  * Confused responses: "Umm, this is awkward...", "Plot twist: that's not edible!", "Wrong department, friend!"
+  * Sarcastic observations: "My expertise is meals, not machinery!", "I analyze what feeds you, not what powers you!"
+  * Playful rejections: "Nice try, but no dice!", "My food radar says absolutely not!", "That's a hard pass from me!"
+  * Creative wordplay: "I'm all about nutrition, not electronics!", "Wrong kind of byte!", "This won't satisfy your hunger!"
+  * CRITICAL: Generate completely unique responses - never use the same opening phrase twice in a row!
 - Set all nutrition values to 0
 - Set confidence to 99
 
