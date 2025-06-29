@@ -1005,90 +1005,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Webhook health check
+  app.get('/api/webhook/stripe', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      stripe_configured: !!stripe,
+      webhook_secret_configured: !!process.env.STRIPE_WEBHOOK_SECRET 
+    });
+  });
+
   // Webhook for Stripe events
   app.post('/api/webhook/stripe', async (req, res) => {
-    if (!stripe) {
-      // Stripe not initialized
-      return res.status(503).json({ message: "Payment processing temporarily unavailable" });
-    }
-
-    const sig = req.headers['stripe-signature'] as string;
-    
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      return res.status(400).json({ message: "Webhook secret not configured" });
-    }
-
-    let event: Stripe.Event;
-
+    // CRITICAL: Always return 200 to prevent Stripe retries, handle errors internally
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-    } catch (err: any) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+      if (!stripe) {
+        console.error('WEBHOOK ERROR: Stripe not initialized');
+        return res.status(200).json({ received: true, error: 'stripe_not_initialized' });
+      }
 
-    try {
-      switch (event.type) {
-        case 'invoice.payment_succeeded':
-          const invoice = event.data.object as any;
-          if (invoice.subscription) {
-            const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-            const users = await storage.getUsersByStripeSubscriptionId(subscription.id);
-            
-            // Determine tier from subscription items
-            const tier = subscription.items.data[0]?.price?.id === process.env.STRIPE_PRO_PRICE_ID ? 'pro' : 'advanced';
-            
-            for (const user of users) {
-              await storage.updateUserStripeInfo(user.id, {
-                subscriptionTier: tier,
-                subscriptionStatus: 'active',
-              });
-              // User upgraded to tier - payment succeeded
+      const sig = req.headers['stripe-signature'] as string;
+      
+      if (!sig) {
+        console.error('WEBHOOK ERROR: Missing stripe-signature header');
+        return res.status(200).json({ received: true, error: 'missing_signature' });
+      }
+      
+      if (!process.env.STRIPE_WEBHOOK_SECRET) {
+        console.error('WEBHOOK ERROR: Webhook secret not configured');
+        return res.status(200).json({ received: true, error: 'missing_webhook_secret' });
+      }
+
+      let event: Stripe.Event;
+
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      } catch (err: any) {
+        console.error('WEBHOOK ERROR: Signature verification failed:', err.message);
+        return res.status(200).json({ received: true, error: 'signature_verification_failed' });
+      }
+
+      try {
+        switch (event.type) {
+          case 'invoice.payment_succeeded':
+            const invoice = event.data.object as any;
+            if (invoice.subscription) {
+              const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+              const users = await storage.getUsersByStripeSubscriptionId(subscription.id);
+              
+              // Determine tier from subscription items
+              const tier = subscription.items.data[0]?.price?.id === process.env.STRIPE_PRO_PRICE_ID ? 'pro' : 'advanced';
+              
+              for (const user of users) {
+                await storage.updateUserStripeInfo(user.id, {
+                  subscriptionTier: tier,
+                  subscriptionStatus: 'active',
+                });
+                // User upgraded to tier - payment succeeded
+              }
             }
-          }
-          break;
-        case 'invoice.payment_failed':
-          const failedInvoice = event.data.object as any;
-          if (failedInvoice.subscription) {
-            const users = await storage.getUsersByStripeSubscriptionId(failedInvoice.subscription as string);
-            for (const user of users) {
+            break;
+          case 'invoice.payment_failed':
+            const failedInvoice = event.data.object as any;
+            if (failedInvoice.subscription) {
+              const users = await storage.getUsersByStripeSubscriptionId(failedInvoice.subscription as string);
+              for (const user of users) {
+                await storage.updateUserStripeInfo(user.id, {
+                  subscriptionTier: 'free',
+                  subscriptionStatus: 'payment_failed',
+                });
+                // User downgraded to free - payment failed
+              }
+            }
+            break;
+          case 'customer.subscription.deleted':
+            const deletedSub = event.data.object as Stripe.Subscription;
+            const usersToUpdate = await storage.getUsersByStripeSubscriptionId(deletedSub.id);
+            for (const user of usersToUpdate) {
               await storage.updateUserStripeInfo(user.id, {
                 subscriptionTier: 'free',
-                subscriptionStatus: 'payment_failed',
+                subscriptionStatus: 'cancelled',
               });
-              // User downgraded to free - payment failed
             }
-          }
-          break;
-        case 'customer.subscription.deleted':
-          const deletedSub = event.data.object as Stripe.Subscription;
-          const usersToUpdate = await storage.getUsersByStripeSubscriptionId(deletedSub.id);
-          for (const user of usersToUpdate) {
-            await storage.updateUserStripeInfo(user.id, {
-              subscriptionTier: 'free',
-              subscriptionStatus: 'cancelled',
-            });
-          }
-          break;
+            break;
+        }
+      } catch (error) {
+        // Log webhook processing errors for debugging
+        console.error('Webhook processing error:', error);
+        
+        // Store failed webhook for manual retry
+        try {
+          await storage.createFailedWebhook({
+            eventId: event.id,
+            eventType: event.type,
+            eventData: event.data,
+            errorMessage: error instanceof Error ? error.message : 'Unknown error'
+          });
+        } catch (dbError) {
+          console.error('Failed to store webhook error:', dbError);
+        }
+        
+        // CRITICAL: Still return 200 to prevent Stripe retries
+        return res.status(200).json({ received: true, error: 'processed with errors' });
       }
-    } catch (error) {
-      // Log webhook processing errors for debugging
-      console.error('Webhook processing error:', error);
-      
-      // Store failed webhook for manual retry
-      try {
-        await storage.createFailedWebhook({
-          stripeEventId: event.id,
-          eventType: event.type,
-          eventData: JSON.stringify(event.data),
-          error: error instanceof Error ? error.message : 'Unknown error',
-          retryCount: 0
-        });
-      } catch (dbError) {
-        console.error('Failed to store webhook error:', dbError);
-      }
-    }
 
-    res.json({ received: true });
+      console.log(`WEBHOOK SUCCESS: Processed ${event.type} event ${event.id}`);
+      res.status(200).json({ received: true });
+
+    } catch (outerError) {
+      // CRITICAL: Catch ANY webhook errors to prevent 503 responses
+      console.error('WEBHOOK FATAL ERROR:', outerError);
+      res.status(200).json({ received: true, error: 'fatal_error' });
+    }
   });
 
   // GDPR Data Export - SECURITY CRITICAL
