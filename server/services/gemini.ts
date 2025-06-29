@@ -97,25 +97,18 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- CRITICAL: Use style ${randomStyle} and create a COMPLETELY UNIQUE response. NEVER repeat any opening phrase. Here are style guidelines:
+- MANDATORY: Create a completely original, never-before-used explanation. Use the random number ${randomElement} as inspiration to generate something 100% unique. Choose one theme and be creative:
   
-  Style 0 - Tech Error Messages: Start with unique error codes like "Error 204:", "Warning 301:", "System Alert:", "Debug Mode:", "Malfunction detected:", "Boot sequence failed:", "Network timeout:", etc.
+  • Tech/Computer humor (but create your own phrases)
+  • Robot/AI confusion (but invent original responses) 
+  • Sarcastic expert commentary (but use fresh language)
+  • Detective/mystery style (but craft new observations)
+  • Dramatic/theatrical tone (but write original drama)
+  • Sci-fi/space themes (but create unique content)
+  • Philosophical musings (but develop fresh thoughts)
+  • Pop culture references (but make new jokes)
   
-  Style 1 - Confused Robot: Start with "Calculating...", "Processing input...", "Systems confused by...", "Database query failed...", "Logic circuits puzzled...", "Memory banks report...", "Sensors indicate...", etc.
-  
-  Style 2 - Sarcastic Expert: Start with "Excuse me but...", "I hate to break it to you...", "Not to be that AI but...", "Here's the thing...", "Let me stop you right there...", "Interesting choice but...", "Bold move but...", etc.
-  
-  Style 3 - Detective Mystery: Start with "Upon investigation...", "Evidence suggests...", "My analysis reveals...", "Case closed:", "Investigation complete:", "The verdict is in:", "After careful examination...", etc.
-  
-  Style 4 - Theatrical Drama: Start with "Lo and behold!", "Witness this tragedy!", "Marvel at this mystery!", "Observe this curious case!", "Behold this puzzling predicament!", "What sorcery is this?", "By the powers vested in me...", etc.
-  
-  Style 5 - Sci-Fi Adventure: Start with "Scanning complete:", "Alien technology detected:", "Unknown specimen identified:", "Space analysis confirms:", "Galactic database shows:", "Starship sensors report:", "Interstellar scan reveals:", etc.
-  
-  Style 6 - Philosophical Musings: Start with "In the realm of existence...", "One must ponder...", "Consider the nature of...", "The universe whispers...", "Ancient wisdom tells us...", "Life's great mysteries include...", "Philosophers would argue...", etc.
-  
-  Style 7 - Pop Culture References: Start with "Breaking news:", "In today's episode of...", "This just in:", "According to legend...", "Sources confirm:", "Rumors suggest:", "Industry insiders report:", etc.
-  
-  ABSOLUTE REQUIREMENT: Use random element ${randomElement} to ensure your opening is 100% unique and has NEVER been used before. No repeating phrases allowed!
+  CRITICAL RULE: Write a completely original explanation from scratch. Do NOT use any phrases, sentence starters, or expressions that have been used before. Every word must be fresh and unique. Use random element ${randomElement} to inspire completely new content that has never existed before.
 - Set all nutrition values to 0
 - Set confidence to 99
 
