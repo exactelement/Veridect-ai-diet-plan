@@ -169,6 +169,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### GDPR Cookie Banner Implementation (June 29, 2025)
+- **Landing Page Compliance**: Added simple GDPR cookie banner to landing page for EU compliance
+- **localStorage Persistence**: User cookie preferences saved locally to prevent repeated banner displays
+- **Professional Design**: Clean banner with accept/reject options and privacy policy link
+- **Responsive Layout**: Mobile-friendly design that stacks buttons vertically on small screens
+- **Brand Consistency**: Uses Veridect green for accept button and matches iOS-inspired design system
+
 ### Repository Organization & AI Response Enhancement (June 29, 2025)
 - **Repository Cleanup**: Moved all non-essential files to info-files folder for cleaner project structure
 - **Core Files Only**: Root directory now contains only essential project files (package.json, configs, core source folders)

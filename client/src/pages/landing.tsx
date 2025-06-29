@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown, X } from "lucide-react";
+import { Camera, Check, Heart, Shield, Zap, Users, Menu, ChevronDown, X, Cookie } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,8 +31,27 @@ export default function Landing() {
   const [showRegister, setShowRegister] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Check if cookie banner should be shown
+  useEffect(() => {
+    const hasAcceptedCookies = localStorage.getItem('veridect-cookies-accepted');
+    if (!hasAcceptedCookies) {
+      setShowCookieBanner(true);
+    }
+  }, []);
+
+  const acceptCookies = () => {
+    localStorage.setItem('veridect-cookies-accepted', 'true');
+    setShowCookieBanner(false);
+  };
+
+  const rejectCookies = () => {
+    localStorage.setItem('veridect-cookies-accepted', 'false');
+    setShowCookieBanner(false);
+  };
 
   const navigationItems = [
     { label: "Features", href: "#features" },
@@ -886,6 +905,46 @@ export default function Landing() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* GDPR Cookie Banner */}
+      {showCookieBanner && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
+          <div className="container-padding py-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1">
+                <Cookie className="w-5 h-5 text-health-green mt-1 flex-shrink-0" />
+                <div className="text-sm text-gray-700">
+                  <p className="font-medium mb-1">We use cookies to enhance your experience</p>
+                  <p>
+                    We use essential cookies for site functionality and optional analytics cookies to improve our service. 
+                    You can manage your preferences or learn more in our{' '}
+                    <Link href="/privacy" className="text-ios-blue hover:underline">
+                      Privacy Policy
+                    </Link>.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 flex-shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={rejectCookies}
+                  className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={acceptCookies}
+                  className="bg-health-green hover:bg-health-green/90 text-white"
+                >
+                  Accept All
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
