@@ -19,6 +19,11 @@ export interface FoodAnalysisResult extends GeminiAnalysisResult {
 // Smart cache for consistent verdicts per user profile
 const analysisCache = new Map<string, FoodAnalysisResult>();
 
+// Clear cache function for development/updates
+export function clearAnalysisCache(): void {
+  analysisCache.clear();
+}
+
 // Food aliases for consistent naming
 const FOOD_ALIASES: Record<string, string> = {
   'apples': 'apple',

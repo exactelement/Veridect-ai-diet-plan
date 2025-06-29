@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { setupMultiAuth, isAuthenticated } from "./multiAuth";
 import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
-import { analyzeFoodWithGemini } from "./services/foodAnalysis";
+import { analyzeFoodWithGemini, clearAnalysisCache } from "./services/foodAnalysis";
 import { checkSubscriptionLimits, TIER_PRICES } from "./services/subscriptionLimits";
 import { rateLimit } from "./middleware/validation";
 import { HealthCheckService } from "./services/healthChecks";
