@@ -509,15 +509,16 @@ export async function analyzeFoodWithGemini(
       allergies: userProfile.allergies || [], // Keep allergies for safety
     };
   }
-  // Check smart cache for consistent verdicts per user profile
+  
+  // Check cache for actual food items only
   const cacheKey = getCacheKey(foodName, imageData, effectiveProfile);
   if (cacheKey && analysisCache.has(cacheKey)) {
-    // Returning cached analysis for consistency
-    return analysisCache.get(cacheKey)!;
+    const cachedResult = analysisCache.get(cacheKey)!;
+    // Only return cached result if it's actual food (not non-food items for variety)
+    if (cachedResult.foodName !== "Non-Food Item") {
+      return cachedResult;
+    }
   }
-  
-  // Processing fresh analysis
-  // Don't clear cache - maintain consistency
 
   try {
     // Try AI analysis first with effective profile for personalization
@@ -543,8 +544,8 @@ export async function analyzeFoodWithGemini(
     // Apply post-processing for calorie consistency
     const processedResult = validateNutritionValues(result);
 
-    // Cache result for consistency (with user profile fingerprint)
-    if (cacheKey) {
+    // Cache result for consistency (only for actual food items, not non-food for variety)
+    if (cacheKey && processedResult.foodName !== "Non-Food Item") {
       analysisCache.set(cacheKey, processedResult);
       // Limit cache size to prevent memory issues
       if (analysisCache.size > 500) {
@@ -585,8 +586,8 @@ export async function analyzeFoodWithGemini(
     // Apply post-processing for calorie consistency
     const processedResult = validateNutritionValues(result);
 
-    // Cache fallback result for consistency
-    if (cacheKey) {
+    // Cache fallback result for consistency (only for actual food items, not non-food for variety)
+    if (cacheKey && processedResult.foodName !== "Non-Food Item") {
       analysisCache.set(cacheKey, processedResult);
       // Limit cache size to prevent memory issues  
       if (analysisCache.size > 500) {
