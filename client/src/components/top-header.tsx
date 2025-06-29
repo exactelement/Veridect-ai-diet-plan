@@ -52,6 +52,7 @@ export default function TopHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   className={`text-sm font-medium transition-colors ${
                     isActive 
                       ? 'text-ios-blue' 
@@ -110,7 +111,7 @@ export default function TopHeader() {
                     const Icon = item.icon;
                     return (
                       <DropdownMenuItem key={item.href} asChild>
-                        <Link href={item.href} className="flex items-center space-x-2 w-full">
+                        <Link href={item.href} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center space-x-2 w-full">
                           <Icon className="w-4 h-4" />
                           <span>{item.label}</span>
                         </Link>
@@ -174,7 +175,10 @@ export default function TopHeader() {
                           <Link
                             key={item.href}
                             href={item.href}
-                            onClick={() => setIsMenuOpen(false)}
+                            onClick={() => {
+                              setIsMenuOpen(false);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
                             className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                               isActive 
                                 ? 'bg-ios-blue/10 text-ios-blue' 
