@@ -16,7 +16,7 @@ import {
   type InsertFailedWebhook,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte, lt, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, lt, sql, between } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
