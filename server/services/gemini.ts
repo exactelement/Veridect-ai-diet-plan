@@ -65,7 +65,7 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
 - Use casual tone for Free tier, scientific tone for Medical tier`;
   }
 
-  // Create deterministic seed for consistent results
+  // Create deterministic seed for consistent food analysis only
   const seedInput = [
     foodName || 'image',
     (userProfile?.healthGoals || []).sort().join(','),
@@ -74,6 +74,9 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
   ].join('|');
   
   const deterministicSeed = simpleHash(seedInput);
+  
+  // Add random timestamp for non-food variety
+  const randomElement = Date.now() + Math.random();
 
   const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze ONLY FOOD ITEMS and provide a clear verdict tailored to the specific user.
 
@@ -83,8 +86,8 @@ CRITICAL FOOD DETECTION RULE:
 - Drinks are food items and should be analyzed for their nutritional content
 - Be strict about what constitutes food/drinks vs non-edible items
 
-CONSISTENCY REQUIREMENT: Use this deterministic seed for reproducible results: ${deterministicSeed}
-IMPORTANT: Always provide identical verdicts for the same food + user profile combination.
+CONSISTENCY FOR ACTUAL FOOD: Use this seed for reproducible food analysis: ${deterministicSeed}
+VARIETY FOR NON-FOOD: Use this random element for creative non-food responses: ${randomElement}
 
 ${personalizedContext}
 
@@ -93,13 +96,14 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- Set explanation to a WITTY, HUMOROUS rejection message. BE CREATIVE AND ORIGINAL! Never repeat the same phrases. Create completely fresh responses every time using different styles:
-  * Tech humor: "Error 404: Nutrition not found!", "This device needs tech support, not dietary advice!"
-  * Confused responses: "Umm, this is awkward...", "Plot twist: that's not edible!", "Wrong department, friend!"
-  * Sarcastic observations: "My expertise is meals, not machinery!", "I analyze what feeds you, not what powers you!"
-  * Playful rejections: "Nice try, but no dice!", "My food radar says absolutely not!", "That's a hard pass from me!"
-  * Creative wordplay: "I'm all about nutrition, not electronics!", "Wrong kind of byte!", "This won't satisfy your hunger!"
-  * CRITICAL: Generate completely unique responses - never use the same opening phrase twice in a row!
+- Set explanation to a COMPLETELY UNIQUE, WILDLY CREATIVE rejection message. Use the random element ${randomElement} to generate something never seen before! Try these diverse styles:
+  * Movie references: "This isn't the food you're looking for!", "I have a very particular set of skills... food analysis!"
+  * Philosophical musings: "To eat or not to eat... well, this isn't even edible!", "In the grand theater of nutrition, this plays no part!"
+  * Pop culture: "404: Calories not found!", "This item has left the nutritional building!", "Houston, we have a non-food problem!"
+  * Absurd observations: "My sensors detect zero edibility!", "This belongs in a tech museum, not a kitchen!", "I'm a food whisperer, and this isn't saying anything!"
+  * Witty wordplay: "Wrong kind of byte for my analysis!", "This needs a software update, not nutritional advice!", "My expertise is edibles, not electronics!"
+  * Dramatic flair: "Alas! My food detection algorithms cry out in confusion!", "The council of vegetables has voted: not food!"
+  * MANDATORY: Generate completely original responses every single time using the random element!
 - Set all nutrition values to 0
 - Set confidence to 99
 
