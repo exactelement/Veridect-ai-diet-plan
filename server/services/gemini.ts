@@ -97,18 +97,11 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- MANDATORY: Create a completely original, never-before-used explanation. Use the random number ${randomElement} as inspiration to generate something 100% unique. Choose one theme and be creative:
+- MANDATORY: Write a SHORT, witty rejection message (MAX 40 WORDS). Create something completely original using random element ${randomElement}. Never repeat any phrases like "circuits", "buzzing", "Houston", "plot twist", or any previously used expressions.
   
-  • Tech/Computer humor (but create your own phrases)
-  • Robot/AI confusion (but invent original responses) 
-  • Sarcastic expert commentary (but use fresh language)
-  • Detective/mystery style (but craft new observations)
-  • Dramatic/theatrical tone (but write original drama)
-  • Sci-fi/space themes (but create unique content)
-  • Philosophical musings (but develop fresh thoughts)
-  • Pop culture references (but make new jokes)
+  FORBIDDEN PHRASES (never use): circuits, buzzing, Houston, plot twist, food radar, beep boop, error 404, malfunction, sensors, database, tech support, awkward, investigation, tragedy, mystery, scanning, universe, breaking news, etc.
   
-  CRITICAL RULE: Write a completely original explanation from scratch. Do NOT use any phrases, sentence starters, or expressions that have been used before. Every word must be fresh and unique. Use random element ${randomElement} to inspire completely new content that has never existed before.
+  REQUIREMENT: Invent completely new vocabulary and concepts. Use random number ${randomElement} to create something never written before. Be witty but brief (under 40 words).
 - Set all nutrition values to 0
 - Set confidence to 99
 
