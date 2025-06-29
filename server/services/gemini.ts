@@ -97,18 +97,25 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- CRITICAL: Use style ${randomStyle} to select ONE of these 8 completely different response types:
+- CRITICAL: Use style ${randomStyle} and create a COMPLETELY UNIQUE response. NEVER repeat any opening phrase. Here are style guidelines:
   
-  Style 0 - Tech Humor: "Error 404: Edibility not found! My circuits are confused by this non-nutritional specimen."
-  Style 1 - Confused AI: "Beep boop... my food sensors are malfunctioning! This item doesn't register in my edible database."
-  Style 2 - Sarcastic Chef: "Well, this is awkward... I'm a nutrition expert, not a tech support specialist!"
-  Style 3 - Detective Mode: "The case of the missing calories! My investigation reveals zero edible evidence."
-  Style 4 - Dramatic Theater: "Alas! In the grand banquet of life, this plays no culinary role whatsoever!"
-  Style 5 - Sci-Fi References: "Captain, my tricorder detects no life-sustaining nutrients in this specimen!"
-  Style 6 - Philosophy: "If a tree falls in a forest and nobody eats it... wait, this isn't even a tree!"
-  Style 7 - Pop Culture: "I came here to analyze food and chew bubblegum... and this isn't either!"
+  Style 0 - Tech Error Messages: Start with unique error codes like "Error 204:", "Warning 301:", "System Alert:", "Debug Mode:", "Malfunction detected:", "Boot sequence failed:", "Network timeout:", etc.
   
-  MANDATORY: Use ONLY the style corresponding to number ${randomStyle}. Generate a completely fresh response in that style.
+  Style 1 - Confused Robot: Start with "Calculating...", "Processing input...", "Systems confused by...", "Database query failed...", "Logic circuits puzzled...", "Memory banks report...", "Sensors indicate...", etc.
+  
+  Style 2 - Sarcastic Expert: Start with "Excuse me but...", "I hate to break it to you...", "Not to be that AI but...", "Here's the thing...", "Let me stop you right there...", "Interesting choice but...", "Bold move but...", etc.
+  
+  Style 3 - Detective Mystery: Start with "Upon investigation...", "Evidence suggests...", "My analysis reveals...", "Case closed:", "Investigation complete:", "The verdict is in:", "After careful examination...", etc.
+  
+  Style 4 - Theatrical Drama: Start with "Lo and behold!", "Witness this tragedy!", "Marvel at this mystery!", "Observe this curious case!", "Behold this puzzling predicament!", "What sorcery is this?", "By the powers vested in me...", etc.
+  
+  Style 5 - Sci-Fi Adventure: Start with "Scanning complete:", "Alien technology detected:", "Unknown specimen identified:", "Space analysis confirms:", "Galactic database shows:", "Starship sensors report:", "Interstellar scan reveals:", etc.
+  
+  Style 6 - Philosophical Musings: Start with "In the realm of existence...", "One must ponder...", "Consider the nature of...", "The universe whispers...", "Ancient wisdom tells us...", "Life's great mysteries include...", "Philosophers would argue...", etc.
+  
+  Style 7 - Pop Culture References: Start with "Breaking news:", "In today's episode of...", "This just in:", "According to legend...", "Sources confirm:", "Rumors suggest:", "Industry insiders report:", etc.
+  
+  ABSOLUTE REQUIREMENT: Use random element ${randomElement} to ensure your opening is 100% unique and has NEVER been used before. No repeating phrases allowed!
 - Set all nutrition values to 0
 - Set confidence to 99
 
