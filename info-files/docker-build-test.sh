@@ -1,36 +1,28 @@
 #!/bin/bash
 
-# Local Docker build and test script for Veridect
-echo "🐳 Building Veridect Docker container locally..."
+# Local Docker Build Test Script for Veridect
+# This script builds the Docker image locally for testing before Cloud Run deployment
+
+set -e
+
+IMAGE_NAME="veridect-app"
+TAG="latest"
+
+echo "Building Veridect Docker image locally..."
+echo "Image: $IMAGE_NAME:$TAG"
 
 # Build the Docker image
-docker build -t veridect:latest . --no-cache
+docker build -t $IMAGE_NAME:$TAG .
 
-echo "✅ Docker build completed"
+echo "Docker image built successfully!"
+echo "Image size:"
+docker images $IMAGE_NAME:$TAG
 
-# Test the container locally
-echo "🧪 Testing container locally on port 8080..."
-docker run -d \
-    --name veridect-test \
-    -p 8080:8080 \
-    -e NODE_ENV=production \
-    -e PORT=8080 \
-    veridect:latest
-
-echo "⏳ Waiting for container to start..."
-sleep 5
-
-# Check if container is running
-if docker ps | grep -q veridect-test; then
-    echo "✅ Container is running successfully"
-    echo "🌐 Test the app at: http://localhost:8080"
-    echo ""
-    echo "📋 To view logs: docker logs veridect-test"
-    echo "🛑 To stop container: docker stop veridect-test && docker rm veridect-test"
-else
-    echo "❌ Container failed to start"
-    echo "📋 Checking logs:"
-    docker logs veridect-test
-    docker rm veridect-test
-    exit 1
-fi
+echo ""
+echo "To test the image locally, run:"
+echo "docker run -p 8080:8080 --env-file .env $IMAGE_NAME:$TAG"
+echo ""
+echo "To push to Google Container Registry for Cloud Run deployment:"
+echo "1. Tag the image: docker tag $IMAGE_NAME:$TAG gcr.io/YOUR_PROJECT_ID/$IMAGE_NAME:$TAG"
+echo "2. Push the image: docker push gcr.io/YOUR_PROJECT_ID/$IMAGE_NAME:$TAG"
+echo "3. Or use the automated deployment: ./deploy-cloudrun.sh"

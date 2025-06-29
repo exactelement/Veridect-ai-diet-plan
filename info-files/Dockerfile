@@ -49,7 +49,7 @@ RUN mkdir -p /app/logs && chown veridect:nodejs /app/logs
 # Switch to non-root user
 USER veridect
 
-# Expose port
+# Expose port (Cloud Run uses PORT environment variable, defaulting to 8080)
 EXPOSE 8080
 
 # Health check
