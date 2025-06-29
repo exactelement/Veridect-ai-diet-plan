@@ -75,8 +75,9 @@ IMPORTANT: Analyze this food specifically for THIS USER's goals, preferences, an
   
   const deterministicSeed = simpleHash(seedInput);
   
-  // Add random timestamp for non-food variety
-  const randomElement = Date.now() + Math.random();
+  // Add strong randomization for non-food variety
+  const randomElement = Date.now() + Math.random() * 1000000;
+  const randomStyle = Math.floor(Math.random() * 8); // 0-7 for 8 different styles
 
   const prompt = `You are YesOrNo, a brutally honest AI health assistant specializing in personalized food analysis based on scientific research. Your task is to analyze ONLY FOOD ITEMS and provide a clear verdict tailored to the specific user.
 
@@ -87,7 +88,7 @@ CRITICAL FOOD DETECTION RULE:
 - Be strict about what constitutes food/drinks vs non-edible items
 
 CONSISTENCY FOR ACTUAL FOOD: Use this seed for reproducible food analysis: ${deterministicSeed}
-VARIETY FOR NON-FOOD: Use this random element for creative non-food responses: ${randomElement}
+VARIETY FOR NON-FOOD: Random style selector: ${randomStyle}, Random element: ${randomElement}
 
 ${personalizedContext}
 
@@ -96,14 +97,18 @@ For the given ${imageData ? ' image' : `food/drink: "${foodName}"`}, first deter
 IF NOT FOOD OR DRINK (digital screens, electronics, text, objects, etc.):
 - Set verdict to "NO"
 - Set foodName to "Non-Food Item"
-- Set explanation to a COMPLETELY UNIQUE, WILDLY CREATIVE rejection message. Use the random element ${randomElement} to generate something never seen before! Try these diverse styles:
-  * Movie references: "This isn't the food you're looking for!", "I have a very particular set of skills... food analysis!"
-  * Philosophical musings: "To eat or not to eat... well, this isn't even edible!", "In the grand theater of nutrition, this plays no part!"
-  * Pop culture: "404: Calories not found!", "This item has left the nutritional building!", "Houston, we have a non-food problem!"
-  * Absurd observations: "My sensors detect zero edibility!", "This belongs in a tech museum, not a kitchen!", "I'm a food whisperer, and this isn't saying anything!"
-  * Witty wordplay: "Wrong kind of byte for my analysis!", "This needs a software update, not nutritional advice!", "My expertise is edibles, not electronics!"
-  * Dramatic flair: "Alas! My food detection algorithms cry out in confusion!", "The council of vegetables has voted: not food!"
-  * MANDATORY: Generate completely original responses every single time using the random element!
+- CRITICAL: Use style ${randomStyle} to select ONE of these 8 completely different response types:
+  
+  Style 0 - Tech Humor: "Error 404: Edibility not found! My circuits are confused by this non-nutritional specimen."
+  Style 1 - Confused AI: "Beep boop... my food sensors are malfunctioning! This item doesn't register in my edible database."
+  Style 2 - Sarcastic Chef: "Well, this is awkward... I'm a nutrition expert, not a tech support specialist!"
+  Style 3 - Detective Mode: "The case of the missing calories! My investigation reveals zero edible evidence."
+  Style 4 - Dramatic Theater: "Alas! In the grand banquet of life, this plays no culinary role whatsoever!"
+  Style 5 - Sci-Fi References: "Captain, my tricorder detects no life-sustaining nutrients in this specimen!"
+  Style 6 - Philosophy: "If a tree falls in a forest and nobody eats it... wait, this isn't even a tree!"
+  Style 7 - Pop Culture: "I came here to analyze food and chew bubblegum... and this isn't either!"
+  
+  MANDATORY: Use ONLY the style corresponding to number ${randomStyle}. Generate a completely fresh response in that style.
 - Set all nutrition values to 0
 - Set confidence to 99
 
