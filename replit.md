@@ -169,13 +169,6 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### Critical Stripe Webhook Fix (June 29, 2025)
-- **Payment Processing Restored**: Fixed 35 failed webhook attempts causing subscription failures
-- **HTTP 200 Responses**: All webhook errors now return 200 status to prevent Stripe retries
-- **Raw Body Middleware**: Added proper Stripe signature verification with raw request body parsing
-- **Comprehensive Error Handling**: Added detailed logging and failed webhook storage for debugging
-- **Live Revenue Protection**: Ensured Pro subscription payments process correctly for existing customers
-
 ### GDPR Cookie Banner Implementation (June 29, 2025)
 - **Landing Page Compliance**: Added simple GDPR cookie banner to landing page for EU compliance
 - **localStorage Persistence**: User cookie preferences saved locally to prevent repeated banner displays

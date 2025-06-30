@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
 import { useLocation } from "wouter";
 import SimpleGDPRBanner from "@/components/simple-gdpr-banner";
+import { ShareCard } from "@/components/ShareCard";
 
 interface AnalysisResult {
   foodName: string;
@@ -414,6 +415,17 @@ export default function FoodAnalysis() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Share Card Component */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">Share Your Result</h3>
+                <ShareCard
+                  foodName={analysisResult.foodName}
+                  verdict={analysisResult.verdict}
+                  explanation={analysisResult.explanation}
+                  calories={analysisResult.calories ? `${analysisResult.calories} cal` : undefined}
+                />
+              </div>
 
               <div className="flex justify-center space-x-4">
                 {analysisResult.foodName === "Non-Food Item" ? (
