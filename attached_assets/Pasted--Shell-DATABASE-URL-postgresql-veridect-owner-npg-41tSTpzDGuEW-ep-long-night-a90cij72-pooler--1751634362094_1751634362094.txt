@@ -1,0 +1,57 @@
+│ ✔  Shell DATABASE_URL='postgresql://veridect_owner:npg_41tSTpzDGuEW@ep-long-night-a90cij72-pooler.gwc.azure.neon.tech/veridect?sslmode=require' npm run db:push (Running database schema migra…  │
+ │                                                                                                                                                                                                  │
+ │                                                                                                                                                                                                  │
+ │    > rest-express@1.0.0 db:push                                                                                                                                                                  │
+ │    > drizzle-kit push                                                                                                                                                                            │
+ │                                                                                                                                                                                                  │
+ │    No config path provided, using default 'drizzle.config.ts'                                                                                                                                    │
+ │    Reading config file '/Users/10xr/drizzle.config.ts'                                                                                                                                           │
+ │    Using 'pg' driver for database querying                                                                                                                                                       │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [⡿] Pulling schema from database...                                                                                                                                                           │
+ │    [⢿] Pulling schema from database...                                                                                                                                                           │
+ │    [⣻] Pulling schema from database...                                                                                                                                                           │
+ │    [⣽] Pulling schema from database...                                                                                                                                                           │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [⡿] Pulling schema from database...                                                                                                                                                           │
+ │    [⢿] Pulling schema from database...                                                                                                                                                           │
+ │    [⣻] Pulling schema from database...                                                                                                                                                           │
+ │    [⣽] Pulling schema from database...                                                                                                                                                           │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [⡿] Pulling schema from database...                                                                                                                                                           │
+ │    [⢿] Pulling schema from database...                                                                                                                                                           │
+ │    [⣻] Pulling schema from database...                                                                                                                                                           │
+ │    [⣽] Pulling schema from database...                                                                                                                                                           │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [⡿] Pulling schema from database...                                                                                                                                                           │
+ │    [⢿] Pulling schema from database...                                                                                                                                                           │
+ │    [⣻] Pulling schema from database...                                                                                                                                                           │
+ │    [✓] Pulling schema from database...                                                                                                                                                           │
+ │                                                                                                                                                                                                  │
+ │    Is challenges table created or renamed from another table?                                                                                                                                    │
+ │    ❯ + challenges                      create table                                                                                                                                              │
+ │      ~ sessions › challenges           rename table                                                                                                                                              │
+ │      ~ food_logs › challenges          rename table                                                                                                                                              │
+ │      ~ weekly_scores › challenges      rename table                                                                                                                                              │
+ │      ~ failed_webhooks › challenges    rename table                                                                                                                                              │
+ │      ~ security_incidents › challenges rename table                                                                                                                                              │
+ │      ~ playing_with_neon › challenges  rename table                                                                                                                                              │
+ │      ~ daily_bonuses › challenges      rename table                                                                                                                                              │
+ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+✦ The db:push command is asking for clarification on the challenges table.
+
+
+  Do you intend to:
+   1. Create a new `challenges` table?
+   2. Rename an existing table to `challenges`? If so, which table should be renamed (e.g., sessions, food_logs, weekly_scores, etc.)?
+
+⠧ Determining User Intent (esc to cancel, 102s)
+
