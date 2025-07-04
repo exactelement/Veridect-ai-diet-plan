@@ -1,0 +1,26 @@
+│ ✔  Shell DATABASE_URL='postgresql://neondb_owner:npg_qBcJa57HTflS@ep-nameless-poetry-a25jo8h4-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require' npm run db:pus…  │
+ │                                                                                                                                                                                                  │
+ │                                                                                                                                                                                                  │
+ │    > rest-express@1.0.0 db:push                                                                                                                                                                  │
+ │    > drizzle-kit push                                                                                                                                                                            │
+ │                                                                                                                                                                                                  │
+ │    No config path provided, using default 'drizzle.config.ts'                                                                                                                                    │
+ │    Reading config file '/Users/10xr/Desktop/DocumentNavigator (69) share fix/drizzle.config.ts'                                                                                                  │
+ │    Using 'pg' driver for database querying                                                                                                                                                       │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [⡿] Pulling schema from database...                                                                                                                                                           │
+ │    [⢿] Pulling schema from database...                                                                                                                                                           │
+ │    [⣻] Pulling schema from database...                                                                                                                                                           │
+ │    [⣽] Pulling schema from database...                                                                                                                                                           │
+ │    [⣷] Pulling schema from database...                                                                                                                                                           │
+ │    [⣯] Pulling schema from database...                                                                                                                                                           │
+ │    [⣟] Pulling schema from database...                                                                                                                                                           │
+ │    [✓] Pulling schema from database...                                                                                                                                                           │
+ │                                                                                                                                                                                                  │
+ │    Is daily_bonuses table created or renamed from another table?                                                                                                                                 │
+ │    ❯ + daily_bonuses                   create table                                                                                                                                              │
+ │      ~ challenges › daily_bonuses      rename table                                                                                                                                              │
+ │      ~ food_entries › daily_bonuses    rename table                                                                                                                                              │
+ │      ~ user_challenges › daily_bonuses rename table 
