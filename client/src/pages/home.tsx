@@ -41,15 +41,34 @@ export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
   const userTier = (user as any)?.subscriptionTier || 'free';
-  
+  const [timeGreeting, setTimeGreeting] = useState(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      return "Good morning";
+    } else if (hour < 18) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  });
 
+  // Update greeting every time user opens the app/page
+  useEffect(() => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    const newGreeting = currentHour < 12 
+      ? "Good morning" 
+      : currentHour < 18 
+      ? "Good afternoon" 
+      : "Good evening";
+    
+    setTimeGreeting(newGreeting);
+  }, []);
 
   // Only fetch data if user has Pro or Advanced tier access (including admin override)
   const hasProAccess = checkTierAccess(userTier, 'pro', (user as any)?.email);
   
-
-
-
   const { data: todaysLogs = [] } = useQuery<FoodLog[]>({
     queryKey: ["/api/food/logs/today"],
     enabled: hasProAccess,
@@ -136,36 +155,6 @@ export default function Home() {
   const showCalorieCounter = privacySettings.showCalorieCounter !== false; // Default to true
   const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false; // Default to true
   const showFoodStats = privacySettings.showFoodStats !== false; // Default to true
-
-
-
-  // Dynamic greeting based on user's local device time - updates on every page load/visit
-  const [timeGreeting, setTimeGreeting] = useState(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    
-    if (currentHour < 12) {
-      return "Good morning";
-    } else if (currentHour < 18) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
-    }
-  });
-
-  // Update greeting every time the user visits/opens the home page
-  useEffect(() => {
-    const now = new Date();
-    const currentHour = now.getHours();
-    
-    const newGreeting = currentHour < 12 
-      ? "Good morning" 
-      : currentHour < 18 
-      ? "Good afternoon" 
-      : "Good evening";
-    
-    setTimeGreeting(newGreeting);
-  }, []); // Runs once when component mounts (user opens/visits the page)
 
   // Subscription tiers
   const subscriptionTiers: SubscriptionTier[] = [
@@ -269,118 +258,173 @@ export default function Home() {
               <p className="text-veridect-text-muted">Ready to make healthy food choices today?</p>
             </div>
 
-            {/* Calorie Counter Bar - Only for Pro users with calorie counter enabled */}
-            {hasProAccess && showCalorieCounter && (
-              <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Target className="w-6 h-6 text-orange-600" />
-                      <span className="text-lg font-semibold text-gray-800">Daily Calories</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-orange-700">
-                        {totalCalories} / {calorieGoal}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {isOverGoal 
-                          ? `${Math.round((totalCalories - calorieGoal))} over goal` 
-                          : `${Math.round(calorieGoal - totalCalories)} remaining`
-                        }
+            {/* Today's Progress Card - Presentation Style */}
+            {hasProAccess && (
+              <div className="veridect-card p-8 mb-8">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Today's Progress</h3>
+                
+                {/* Calorie Progress Ring */}
+                {showCalorieCounter && (
+                  <div className="mb-6">
+                    <div className="flex justify-center mb-4">
+                      <div className="relative w-32 h-32">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke="#f3f4f6"
+                            strokeWidth="12"
+                            fill="none"
+                          />
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke={isOverGoal ? "#ef4444" : "#10b981"}
+                            strokeWidth="12"
+                            fill="none"
+                            strokeDasharray={`${Math.min(calorieProgress, 100) * 3.51} 351.86`}
+                            className="transition-all duration-500"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-gray-800">{totalCalories}</div>
+                            <div className="text-xs text-gray-500">/ {calorieGoal} cal</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <Progress 
-                    value={Math.min(calorieProgress, 100)} 
-                    className={`h-3 ${isOverGoal ? 'bg-red-100' : 'bg-orange-100'}`}
-                  />
-                  <div className="flex justify-between mt-2 text-sm text-gray-600">
-                    <span>0</span>
-                    <span className={isOverGoal ? 'text-red-600 font-semibold' : 'text-orange-600'}>
-                      {Math.round(calorieProgress)}% {isOverGoal ? '(Over Goal)' : 'of goal'}
-                    </span>
-                    <span>{calorieGoal}</span>
+                )}
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600">{todaysStats.yes}</div>
+                    <div className="text-sm text-gray-600">✅ Yes</div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-yellow-600">{todaysStats.ok}</div>
+                    <div className="text-sm text-gray-600">⚠️ OK</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-red-600">{todaysStats.no}</div>
+                    <div className="text-sm text-gray-600">❌ No</div>
+                  </div>
+                </div>
 
-            {/* Daily Stats Cards - Only for Pro users */}
-            {hasProAccess && showFoodStats && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                  <CardContent className="p-4 text-center">
-                    <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-green-700">{todaysStats.yes}</div>
-                    <div className="text-sm text-green-600">Yes Foods</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-                  <CardContent className="p-4 text-center">
-                    <AlertCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-yellow-700">{todaysStats.ok}</div>
-                    <div className="text-sm text-yellow-600">OK Foods</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-                  <CardContent className="p-4 text-center">
-                    <XCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-red-700">{todaysStats.no}</div>
-                    <div className="text-sm text-red-600">No Foods</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                  <CardContent className="p-4 text-center">
-                    <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-700">{weeklyHealthScore}%</div>
-                    <div className="text-sm text-blue-600">Health Score</div>
-                  </CardContent>
-                </Card>
+                {/* Current Streak */}
+                <div className="bg-purple-50 rounded-xl p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Award className="w-5 h-5 text-purple-600" />
+                    <span className="text-sm font-medium text-purple-600">Current Streak</span>
+                  </div>
+                  <div className="text-2xl font-bold text-purple-700">{currentStreak} days</div>
+                  <div className="text-xs text-purple-600">without "No" foods</div>
+                </div>
               </div>
             )}
 
-            {/* Streak & Level Cards - Only for Pro users */}
-            {hasProAccess && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <Card className="bg-gradient-to-br from-purple-50 to-indigo-100 border-purple-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Award className="w-8 h-8 text-purple-600" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">Day Streak</h3>
-                      <p className="text-sm text-gray-600">Days without "No" foods</p>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-purple-700 mb-2">{currentStreak}</div>
-                    <div className="text-sm text-purple-600">
-                      {currentStreak === 0 ? 'Start your streak today!' : `${currentStreak} day${currentStreak > 1 ? 's' : ''} strong!`}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
 
-              <Card className="bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Star className="w-8 h-8 text-amber-600" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">Level {currentLevel}</h3>
-                      <p className="text-sm text-gray-600">{totalLifetimePoints} total points</p>
+
+            {/* Enhanced Gamification Section - Presentation Style */}
+            {hasProAccess && (
+              <div className="space-y-6 mb-8">
+                {/* Weekly Progress Overview */}
+                <div className="veridect-card p-8">
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Weekly Progress</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Streak Achievement */}
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-800">Day Streak</h4>
+                          <p className="text-sm text-gray-600">Without "No" foods</p>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-purple-700 mb-2">{currentStreak}</div>
+                        <div className="text-sm text-purple-600">
+                          {currentStreak === 0 ? 'Start your streak today!' : `Keep going! 🔥`}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Level Progress */}
+                    <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center">
+                          <Star className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-800">Level {currentLevel}</h4>
+                          <p className="text-sm text-gray-600">{totalLifetimePoints} total points</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>Progress to Level {currentLevel + 1}</span>
+                          <span>{pointsToNextLevel > 0 ? pointsToNextLevel : 0} points to go</span>
+                        </div>
+                        <Progress value={levelProgress} className="h-2 bg-amber-100" />
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Progress to Level {currentLevel + 1}</span>
-                      <span>{pointsToNextLevel > 0 ? pointsToNextLevel : 0} points to go</span>
+                </div>
+                {/* Weekly Challenges */}
+                {participateInWeeklyChallenge && (
+                  <div className="veridect-card p-8 mt-6">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Weekly Challenges</h3>
+                    
+                    <div className="space-y-4">
+                      {/* Active Challenge */}
+                      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-lg">Green Week Challenge</h4>
+                          <Trophy className="w-6 h-6" />
+                        </div>
+                        <p className="text-sm mb-4 opacity-90">Get 20 "YES" verdicts this week</p>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Progress</span>
+                            <span>{weeklyStats.yes}/20</span>
+                          </div>
+                          <Progress value={(weeklyStats.yes / 20) * 100} className="h-2 bg-white/20" />
+                        </div>
+                        <div className="mt-3 text-sm opacity-80">
+                          Reward: 500 bonus points + achievement badge
+                        </div>
+                      </div>
+
+                      {/* Weekly Leaderboard Position */}
+                      {weeklyScore && (
+                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h5 className="font-medium text-gray-800">Your Weekly Rank</h5>
+                              <p className="text-2xl font-bold text-purple-700">#{weeklyScore.rank}</p>
+                              <p className="text-sm text-gray-600">{weeklyPoints} points this week</p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate('/leaderboard')}
+                              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                            >
+                              View Leaderboard
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <Progress value={levelProgress} className="h-2 bg-amber-100" />
                   </div>
-                </CardContent>
-              </Card>
+                )}
               </div>
             )}
 
@@ -398,21 +442,20 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Today's Food Logs - Only for Pro users */}
+      {/* Today's Food Logs - Presentation Style */}
       {hasProAccess && (
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-ios-blue" />
-                Today's Food Log
-                <Badge variant="secondary" className="ml-auto">
+            <div className="veridect-card p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-purple-600" />
+                  Today's Food Log
+                </h3>
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
                   {todaysLogs.length} {todaysLogs.length === 1 ? 'item' : 'items'}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+                </span>
+              </div>
               {todaysLogs.length > 0 ? (
                 <div className="space-y-3">
                   {todaysLogs.slice(0, 5).map((log: FoodLog) => (
@@ -463,10 +506,9 @@ export default function Home() {
                   </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
-      </div>
       )}
 
       {/* Free tier features section - only show for free tier users */}

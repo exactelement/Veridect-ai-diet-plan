@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
-import { useLocation } from "wouter";
+import { useLocation, useRoute } from "wouter";
 import SimpleGDPRBanner from "@/components/simple-gdpr-banner";
 import { ShareCard } from "@/components/ShareCard";
 
@@ -24,6 +24,7 @@ interface AnalysisResult {
   portion?: string;
   nutritionFacts?: any;
   alternatives?: string[];
+  method?: string;
 }
 
 export default function FoodAnalysis() {
@@ -39,6 +40,7 @@ export default function FoodAnalysis() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [, navigate] = useLocation();
 
   // Always scroll to top when component mounts or refreshes
   useEffect(() => {
@@ -57,8 +59,8 @@ export default function FoodAnalysis() {
     setShowGdprBanner(false);
     queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
   };
-  const userTier = user?.subscriptionTier || 'free';
-  const canLogFood = checkTierAccess(userTier, 'pro', user?.email);
+  const userTier = (user as any)?.subscriptionTier || 'free';
+  const canLogFood = checkTierAccess(userTier, 'pro', (user as any)?.email);
 
   // Dynamic greeting based on device time - updates on each app visit
   const [timeGreeting, setTimeGreeting] = useState(() => {
@@ -322,99 +324,122 @@ export default function FoodAnalysis() {
     }
   };
 
+  const [expandNutrition, setExpandNutrition] = useState(false);
+
   if (analysisResult) {
     return (
-      <div className="pt-20 pb-32 container-padding">
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader className="text-center">
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${getVerdictColor(analysisResult.verdict)}`}>
-                {getVerdictIcon(analysisResult.verdict)}
-              </div>
-              <CardTitle className={`text-4xl font-bold ${getVerdictColor(analysisResult.verdict)}`}>
-                {analysisResult.verdict}
-              </CardTitle>
-              <p className="text-xl text-ios-secondary">{analysisResult.foodName}</p>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              {imagePreview && (
-                <div className="flex justify-center">
-                  <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
-                    <img 
-                      src={imagePreview} 
-                      alt="Analyzed food" 
-                      className="w-full h-48 object-cover"
-                    />
+      <div className="min-h-screen veridect-gradient-bg pt-20 pb-32">
+        <div className="container-padding">
+          <div className="max-w-4xl mx-auto">
+            {/* Main Result Card with presentation style */}
+            <div className="veridect-card">
+              <div className="text-center p-8">
+                <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                  analysisResult.verdict === "YES" ? "bg-health-green/10" :
+                  analysisResult.verdict === "NO" ? "bg-danger-red/10" :
+                  "bg-warning-orange/10"
+                }`}>
+                  <div className={getVerdictColor(analysisResult.verdict)}>
+                    {getVerdictIcon(analysisResult.verdict)}
                   </div>
                 </div>
-              )}
+                <h1 className={`text-5xl font-bold mb-2 ${getVerdictColor(analysisResult.verdict)}`}>
+                  {analysisResult.verdict}
+                </h1>
+                <p className="text-2xl text-gray-700 font-medium">{analysisResult.foodName}</p>
+              </div>
 
-              <Card className={`border-2 ${
-                analysisResult.verdict === "YES" ? "border-health-green bg-health-green/5" :
-                analysisResult.verdict === "NO" ? "border-danger-red bg-danger-red/5" :
-                "border-warning-orange bg-warning-orange/5"
-              }`}>
-                <CardContent className="p-6">
-                  <p className="text-ios-text leading-relaxed">{analysisResult.explanation}</p>
+              <div className="p-8 space-y-6">
+                {imagePreview && (
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-md overflow-hidden rounded-xl shadow-lg">
+                      <img 
+                        src={imagePreview} 
+                        alt="Analyzed food" 
+                        className="w-full h-64 object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Explanation Card with verdict-based styling */}
+                <div className={`rounded-xl p-6 ${
+                  analysisResult.verdict === "YES" ? "bg-health-green/5 border border-health-green/20" :
+                  analysisResult.verdict === "NO" ? "bg-danger-red/5 border border-danger-red/20" :
+                  "bg-warning-orange/5 border border-warning-orange/20"
+                }`}>
+                  <p className="text-gray-700 leading-relaxed text-lg">{analysisResult.explanation}</p>
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-xs text-ios-secondary italic">
+                    <p className="text-xs text-gray-500 italic">
                       Estimates are approximations based on analysis by AI
                     </p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Nutritional details - only show if user hasn't disabled them */}
-              {showNutritionDetails && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-ios-blue">
-                        {analysisResult.calories && analysisResult.calories > 0 ? analysisResult.calories : "N/A"}
-                      </div>
-                      <div className="text-sm text-ios-secondary">Calories</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-health-green">
-                        {analysisResult.protein && analysisResult.protein > 0 ? `${analysisResult.protein}g` : "N/A"}
-                      </div>
-                      <div className="text-sm text-ios-secondary">Protein</div>
-                    </CardContent>
-                  </Card>
-                  {analysisResult.portion && (
-                    <Card>
-                      <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-warning-orange">{analysisResult.portion}</div>
-                        <div className="text-sm text-ios-secondary">Portion</div>
-                      </CardContent>
-                    </Card>
-                  )}
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-ios-secondary">{analysisResult.confidence}%</div>
-                      <div className="text-sm text-ios-secondary">Confidence</div>
-                    </CardContent>
-                  </Card>
                 </div>
-              )}
 
-              {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-3">Healthier Alternatives</h3>
+                {/* Expandable Nutritional Details */}
+                {showNutritionDetails && (
+                  <div className="space-y-4">
+                    <button
+                      onClick={() => setExpandNutrition(!expandNutrition)}
+                      className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <span className="font-semibold text-gray-700">Nutritional Details</span>
+                      <svg
+                        className={`w-5 h-5 text-gray-500 transition-transform ${
+                          expandNutrition ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {expandNutrition && (
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-100">
+                          <div className="text-3xl font-bold text-purple-600">
+                            {analysisResult.calories && analysisResult.calories > 0 ? analysisResult.calories : "N/A"}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">Calories</div>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-100">
+                          <div className="text-3xl font-bold text-health-green">
+                            {analysisResult.protein && analysisResult.protein > 0 ? `${analysisResult.protein}g` : "N/A"}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">Protein</div>
+                        </div>
+                        {analysisResult.portion && (
+                          <div className="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-100">
+                            <div className="text-3xl font-bold text-warning-orange">{analysisResult.portion}</div>
+                            <div className="text-sm text-gray-500 mt-1">Portion</div>
+                          </div>
+                        )}
+                        <div className="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-100">
+                          <div className="text-3xl font-bold text-gray-600">{analysisResult.confidence}%</div>
+                          <div className="text-sm text-gray-500 mt-1">Confidence</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
+                  <div className="bg-health-green/5 rounded-xl p-6 border border-health-green/20">
+                    <h3 className="font-semibold text-gray-700 mb-3">Healthier Alternatives</h3>
                     <div className="flex flex-wrap gap-2">
                       {analysisResult.alternatives.map((alternative, index) => (
-                        <Badge key={index} variant="secondary" className="bg-health-green/10 text-health-green">
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-health-green/20 text-health-green rounded-full text-sm font-medium"
+                        >
                           {alternative}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  </div>
+                )}
 
               {/* Share Card Component */}
               <div className="bg-gray-50 rounded-lg p-4">
@@ -469,28 +494,66 @@ export default function FoodAnalysis() {
                   Back to Dashboard
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pt-20 pb-24 container-padding">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {timeGreeting}, {((activeUser as any)?.firstName || 'there').trim()}!
-          </h1>
-          <p className="text-gray-600">
-            Ready to analyze your food? Get instant health verdicts on your choices
-          </p>
-        </div>
+    <div className="min-h-screen veridect-gradient-bg pt-20 pb-24">
+      <div className="container-padding">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Veridect Header */}
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-veridect-text-light mb-2">
+              {timeGreeting}, {((activeUser as any)?.firstName || 'there').trim()}!
+            </h1>
+            <p className="text-veridect-text-muted">
+              Ready to analyze your food? Get instant health verdicts on your choices
+            </p>
+          </div>
 
-        {/* Analysis Interface */}
-        <Card>
-          <CardContent className="p-8">
+          {/* Unified Smart Input Interface */}
+          <div className="veridect-card p-8">
+            {/* Mode Selection Icons - Always visible at top */}
+            <div className="flex justify-center gap-4 mb-6">
+              <button
+                onClick={() => setAnalysisMode("camera")}
+                className={`p-3 rounded-lg transition-all ${
+                  analysisMode === "camera" 
+                    ? "bg-health-green text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+                title="Take Photo"
+              >
+                <Camera className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setAnalysisMode("upload")}
+                className={`p-3 rounded-lg transition-all ${
+                  analysisMode === "upload" 
+                    ? "bg-health-green text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+                title="Upload Image"
+              >
+                <Upload className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setAnalysisMode("text")}
+                className={`p-3 rounded-lg transition-all ${
+                  analysisMode === "text" 
+                    ? "bg-health-green text-white" 
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+                title="Describe Food"
+              >
+                <Type className="w-6 h-6" />
+              </button>
+            </div>
             {analysisMode === "camera" && (
               <div className="text-center space-y-4">
                 <input
@@ -604,58 +667,21 @@ export default function FoodAnalysis() {
                 )}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Analysis Mode Selection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How would you like to analyze your food?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button
-                variant={analysisMode === "camera" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("camera")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Camera className="w-6 h-6" />
-                <span>Take Photo</span>
-              </Button>
-              <Button
-                variant={analysisMode === "upload" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("upload")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Upload className="w-6 h-6" />
-                <span>Upload Image</span>
-              </Button>
-              <Button
-                variant={analysisMode === "text" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("text")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Type className="w-6 h-6" />
-                <span>Describe Food</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Pro Tip */}
-        <Card className="bg-blue-50 border-blue-200 shadow-sm">
-          <CardContent className="p-4 sm:p-6">
+          {/* Pro Tip */}
+          <div className="veridect-tip-card">
             <div className="flex items-start space-x-3">
-              <div className="text-blue-500 text-xl">💡</div>
+              <div className="text-health-green text-xl">💡</div>
               <div>
-                <h3 className="font-semibold text-blue-800 mb-2 text-base sm:text-lg">Pro Tip</h3>
-                <p className="text-blue-700 text-sm sm:text-base">
+                <h3 className="font-semibold text-gray-800 mb-2 text-base sm:text-lg">Pro Tip</h3>
+                <p className="text-gray-600 text-sm sm:text-base">
                   For better accuracy, ensure good lighting and capture the entire meal. Or describe including any sauces or dressings!
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
       
       {showGdprBanner && <SimpleGDPRBanner onComplete={handleGdprComplete} />}
