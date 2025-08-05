@@ -135,9 +135,9 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-ios-bg text-ios-text">
+    <div className="min-h-screen gradient-bg-subtle text-ios-text">
       {/* Responsive Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
+      <nav className="fixed top-0 left-0 right-0 z-50 glassmorphism backdrop-blur-premium border-b border-neutral-200/50">
         <div className="page-container">
           <div className="flex justify-between items-center h-16">
             {/* Logo/Brand - Always visible */}
@@ -169,7 +169,7 @@ export default function Landing() {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                   setTimeout(() => window.location.href = "/login", 100);
                 }} 
-                className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
+                className="bg-ios-blue text-white px-6 py-2 rounded-full ios-button premium-shadow hover:bg-ios-blue/90 transition-all"
               >
                 Get Started
               </Button>
@@ -183,7 +183,7 @@ export default function Landing() {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                   setTimeout(() => window.location.href = "/login", 100);
                 }} 
-                className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button ios-shadow hover:bg-ios-blue/90 transition-all"
+                className="bg-ios-blue text-white px-4 py-2 rounded-full ios-button premium-shadow hover:bg-ios-blue/90 transition-all"
               >
                 Login
               </Button>

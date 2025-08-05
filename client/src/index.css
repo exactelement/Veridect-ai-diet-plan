@@ -38,14 +38,25 @@
   --ring: hsl(207, 90%, 54%);
   --radius: 0.5rem;
   
-  /* Custom Veridect colors */
-  --ios-blue: hsl(207, 100%, 50%);
-  --health-green: hsl(134, 61%, 51%);
-  --warning-orange: hsl(35, 100%, 50%);
-  --danger-red: hsl(2, 100%, 59%);
-  --ios-bg: hsl(240, 25%, 97%);
-  --ios-text: hsl(216, 12%, 8%);
-  --ios-secondary: hsl(0, 0%, 56%);
+  /* Custom Veridect colors - Professional palette */
+  --ios-blue: hsl(217, 89%, 61%);
+  --health-green: hsl(142, 69%, 58%);
+  --warning-orange: hsl(38, 92%, 50%);
+  --danger-red: hsl(0, 72%, 51%);
+  --ios-bg: hsl(210, 20%, 98%);
+  --ios-text: hsl(222, 84%, 5%);
+  --ios-secondary: hsl(215, 16%, 47%);
+  --success-green: hsl(142, 76%, 36%);
+  --neutral-50: hsl(210, 20%, 98%);
+  --neutral-100: hsl(220, 14%, 96%);
+  --neutral-200: hsl(220, 13%, 91%);
+  --neutral-300: hsl(216, 12%, 84%);
+  --neutral-400: hsl(218, 11%, 65%);
+  --neutral-500: hsl(220, 9%, 46%);
+  --neutral-600: hsl(215, 14%, 34%);
+  --neutral-700: hsl(217, 19%, 27%);
+  --neutral-800: hsl(215, 28%, 17%);
+  --neutral-900: hsl(221, 39%, 11%);
 }
 
 .dark {
@@ -88,53 +99,80 @@
 
 @layer utilities {
   .glassmorphism {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
   
   .gradient-text {
-    background: linear-gradient(90deg, var(--ios-blue), var(--health-green));
+    background: linear-gradient(135deg, var(--ios-blue), var(--health-green));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
-  .ios-shadow {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  .premium-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
   
-  .ios-button {
-    transition: all 0.2s ease;
+  .premium-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
   
-  .ios-button:active {
-    transform: scale(0.98);
-  }
-  
-  .tier-card {
-    transition: all 0.3s ease;
-  }
-  
-  .tier-card:hover {
-    transform: translateY(-8px);
+  .premium-shadow-xl {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
   
-  .app-interface {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  .ios-button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .ios-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ios-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tier-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .tier-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(217, 89%, 61%) 0%, hsl(142, 69%, 58%) 100%);
+  }
+  
+  .gradient-bg-subtle {
+    background: linear-gradient(135deg, var(--neutral-50) 0%, white 100%);
   }
   
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    animation: fadeIn 0.6s ease-out;
   }
   
   .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.5s ease-out;
   }
   
   .animate-bounce-subtle {
-    animation: bounceSubtle 2s infinite;
+    animation: bounceSubtle 2s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .backdrop-blur-premium {
+    backdrop-filter: blur(16px) saturate(180%);
   }
 }
 
@@ -167,6 +205,11 @@
 .text-ios-bg { color: var(--ios-bg); }
 .text-ios-text { color: var(--ios-text); }
 .text-ios-secondary { color: var(--ios-secondary); }
+.text-success-green { color: var(--success-green); }
+.text-neutral-400 { color: var(--neutral-400); }
+.text-neutral-500 { color: var(--neutral-500); }
+.text-neutral-600 { color: var(--neutral-600); }
+.text-neutral-700 { color: var(--neutral-700); }
 
 .bg-ios-blue { background-color: var(--ios-blue); }
 .bg-health-green { background-color: var(--health-green); }
@@ -175,11 +218,17 @@
 .bg-ios-bg { background-color: var(--ios-bg); }
 .bg-ios-text { background-color: var(--ios-text); }
 .bg-ios-secondary { background-color: var(--ios-secondary); }
+.bg-success-green { background-color: var(--success-green); }
+.bg-neutral-50 { background-color: var(--neutral-50); }
+.bg-neutral-100 { background-color: var(--neutral-100); }
+.bg-neutral-200 { background-color: var(--neutral-200); }
 
 .border-ios-blue { border-color: var(--ios-blue); }
 .border-health-green { border-color: var(--health-green); }
 .border-warning-orange { border-color: var(--warning-orange); }
 .border-danger-red { border-color: var(--danger-red); }
+.border-neutral-100 { border-color: var(--neutral-100); }
+.border-neutral-200 { border-color: var(--neutral-200); }
 
 /* Responsive design utilities */
 .container-padding {
@@ -196,16 +245,24 @@
 }
 
 .form-button {
-  @apply w-full bg-primary text-white p-3 rounded-xl font-medium ios-button ios-shadow hover:bg-opacity-90;
+  @apply w-full bg-primary text-white p-3 rounded-xl font-medium ios-button premium-shadow hover:bg-opacity-90;
 }
 
 /* Card styling */
 .app-card {
-  @apply bg-white rounded-2xl p-6 ios-shadow;
+  @apply bg-white rounded-2xl p-6 premium-shadow border border-neutral-100;
 }
 
 .metric-card {
-  @apply bg-white/10 rounded-xl p-4 backdrop-blur-sm;
+  @apply bg-white/90 rounded-xl p-6 backdrop-blur-premium border border-white/20 premium-shadow;
+}
+
+.premium-card {
+  @apply bg-white rounded-3xl p-8 premium-shadow-xl border border-neutral-100 backdrop-blur-premium;
+}
+
+.gradient-card {
+  @apply bg-gradient-to-br from-white to-neutral-50 rounded-2xl p-6 premium-shadow border border-neutral-200;
 }
 
 /* Animation delays for staggered effects */

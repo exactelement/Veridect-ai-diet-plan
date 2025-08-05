@@ -1,18 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Camera, Upload, Type, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
 import { useLocation } from "wouter";
-import SimpleGDPRBanner from "@/components/simple-gdpr-banner";
 import { ShareCard } from "@/components/ShareCard";
+import SimpleGDPRBanner from "@/components/simple-gdpr-banner";
 
 interface AnalysisResult {
   foodName: string;
@@ -33,12 +32,17 @@ export default function FoodAnalysis() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [showGdprBanner, setShowGdprBanner] = useState(false);
+  const [isLogging, setIsLogging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const userTier = (user as any)?.subscriptionTier || 'free';
+  const canLogFood = checkTierAccess(userTier, 'pro', (user as any)?.email);
 
   // Always scroll to top when component mounts or refreshes
   useEffect(() => {
@@ -57,8 +61,6 @@ export default function FoodAnalysis() {
     setShowGdprBanner(false);
     queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
   };
-  const userTier = user?.subscriptionTier || 'free';
-  const canLogFood = checkTierAccess(userTier, 'pro', user?.email);
 
   // Dynamic greeting based on device time - updates on each app visit
   const [timeGreeting, setTimeGreeting] = useState(() => {
@@ -99,28 +101,23 @@ export default function FoodAnalysis() {
   const showNutritionDetails = privacySettings.showNutritionDetails !== false;
 
   const analyzeMutation = useMutation({
-    mutationFn: async (data: { foodName?: string; imageData?: string }) => {
-      const response = await apiRequest("POST", "/api/food/analyze", data);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setAnalysisResult(data.analysis);
+    mutationFn: ({ foodName, imageData }: { foodName?: string; imageData?: string }) =>
+      apiRequest("POST", "/api/food/analyze", { foodName, imageData }),
+    onSuccess: (result) => {
+      setAnalysisResult(result);
       // Invalidate ALL relevant caches so progress page updates immediately
       queryClient.invalidateQueries({ queryKey: ["/api/food/logs/today"] });
       queryClient.invalidateQueries({ queryKey: ["/api/food/analyzed/today"] });
       queryClient.invalidateQueries({ queryKey: ["/api/leaderboard/my-score"] });
-      toast({
-        title: "Analysis Complete!",
-        description: `Food analyzed: ${data.analysis.foodName}`,
-        duration: 3000,
-      });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      console.error("Analysis error:", error);
+      const errorMessage = error?.message || "Analysis failed. Please try again.";
       toast({
         title: "Analysis Failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
-        duration: 4000,
+        duration: 5000,
       });
     },
   });
@@ -227,9 +224,6 @@ export default function FoodAnalysis() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const [isLogging, setIsLogging] = useState(false);
-  const [, setLocation] = useLocation();
-
   const handleYum = async () => {
     if (!analysisResult || isLogging) return;
     
@@ -262,7 +256,7 @@ export default function FoodAnalysis() {
         protein: currentAnalysis.protein,
         confidence: currentAnalysis.confidence,
         portion: currentAnalysis.portion,
-        analysisMethod: currentAnalysis.method || "ai",
+        analysisMethod: "ai",
         action: "yum",
         points: points
       });
@@ -324,338 +318,335 @@ export default function FoodAnalysis() {
 
   if (analysisResult) {
     return (
-      <div className="pt-20 pb-32 container-padding">
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader className="text-center">
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${getVerdictColor(analysisResult.verdict)}`}>
-                {getVerdictIcon(analysisResult.verdict)}
-              </div>
-              <CardTitle className={`text-4xl font-bold ${getVerdictColor(analysisResult.verdict)}`}>
-                {analysisResult.verdict}
-              </CardTitle>
-              <p className="text-xl text-ios-secondary">{analysisResult.foodName}</p>
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-              {imagePreview && (
-                <div className="flex justify-center">
-                  <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
-                    <img 
-                      src={imagePreview} 
-                      alt="Analyzed food" 
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
+      <div className="min-h-screen gradient-bg-subtle pb-24">
+        <div className="pt-20 pb-8 container-padding">
+          <div className="max-w-4xl mx-auto">
+            <Card className="premium-card animate-fade-in">
+              <CardHeader className="text-center">
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${getVerdictColor(analysisResult.verdict)}`}>
+                  {getVerdictIcon(analysisResult.verdict)}
                 </div>
-              )}
+                <CardTitle className={`text-4xl font-bold ${getVerdictColor(analysisResult.verdict)}`}>
+                  {analysisResult.verdict}
+                </CardTitle>
+                <p className="text-xl text-neutral-600">{analysisResult.foodName}</p>
+              </CardHeader>
 
-              <Card className={`border-2 ${
-                analysisResult.verdict === "YES" ? "border-health-green bg-health-green/5" :
-                analysisResult.verdict === "NO" ? "border-danger-red bg-danger-red/5" :
-                "border-warning-orange bg-warning-orange/5"
-              }`}>
-                <CardContent className="p-6">
-                  <p className="text-ios-text leading-relaxed">{analysisResult.explanation}</p>
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-xs text-ios-secondary italic">
-                      Estimates are approximations based on analysis by AI
-                    </p>
+              <CardContent className="space-y-6">
+                {imagePreview && (
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-xs overflow-hidden rounded-lg premium-shadow">
+                      <img 
+                        src={imagePreview} 
+                        alt="Analyzed food" 
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
 
-              {/* Nutritional details - only show if user hasn't disabled them */}
-              {showNutritionDetails && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-ios-blue">
-                        {analysisResult.calories && analysisResult.calories > 0 ? analysisResult.calories : "N/A"}
-                      </div>
-                      <div className="text-sm text-ios-secondary">Calories</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-health-green">
-                        {analysisResult.protein && analysisResult.protein > 0 ? `${analysisResult.protein}g` : "N/A"}
-                      </div>
-                      <div className="text-sm text-ios-secondary">Protein</div>
-                    </CardContent>
-                  </Card>
-                  {analysisResult.portion && (
-                    <Card>
-                      <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-warning-orange">{analysisResult.portion}</div>
-                        <div className="text-sm text-ios-secondary">Portion</div>
-                      </CardContent>
-                    </Card>
-                  )}
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-ios-secondary">{analysisResult.confidence}%</div>
-                      <div className="text-sm text-ios-secondary">Confidence</div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
-                <Card>
+                <Card className={`border-2 premium-shadow ${
+                  analysisResult.verdict === "YES" ? "border-health-green bg-health-green/5" :
+                  analysisResult.verdict === "NO" ? "border-danger-red bg-danger-red/5" :
+                  "border-warning-orange bg-warning-orange/5"
+                }`}>
                   <CardContent className="p-6">
-                    <h3 className="font-semibold mb-3">Healthier Alternatives</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {analysisResult.alternatives.map((alternative, index) => (
-                        <Badge key={index} variant="secondary" className="bg-health-green/10 text-health-green">
-                          {alternative}
-                        </Badge>
-                      ))}
+                    <p className="text-neutral-700 leading-relaxed">{analysisResult.explanation}</p>
+                    <div className="mt-4 pt-4 border-t border-neutral-200">
+                      <p className="text-xs text-neutral-500 italic">
+                        Estimates are approximations based on analysis by AI
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
-              )}
 
-              {/* Share Card Component */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">Share Your Result</h3>
-                <ShareCard
-                  foodName={analysisResult.foodName}
-                  verdict={analysisResult.verdict}
-                  explanation={analysisResult.explanation}
-                  calories={analysisResult.calories ? `${analysisResult.calories} cal` : undefined}
-                />
-              </div>
+                {/* Nutritional details - only show if user hasn't disabled them */}
+                {showNutritionDetails && (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="premium-card">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-ios-blue">
+                          {analysisResult.calories && analysisResult.calories > 0 ? analysisResult.calories : "N/A"}
+                        </div>
+                        <div className="text-sm text-neutral-600">Calories</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="premium-card">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-success-green">
+                          {analysisResult.protein && analysisResult.protein > 0 ? `${analysisResult.protein}g` : "N/A"}
+                        </div>
+                        <div className="text-sm text-neutral-600">Protein</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="premium-card">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-warning-orange">
+                          {analysisResult.portion || "N/A"}
+                        </div>
+                        <div className="text-sm text-neutral-600">Portion</div>
+                      </CardContent>
+                    </Card>
+                    <Card className="premium-card">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-neutral-600">
+                          {Math.round(analysisResult.confidence * 100)}%
+                        </div>
+                        <div className="text-sm text-neutral-600">Confidence</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
 
-              <div className="flex justify-center space-x-4">
-                {analysisResult.foodName === "Non-Food Item" ? (
-                  <Button 
-                    onClick={handleNah}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 text-lg font-semibold"
-                  >
-                    Try Again with Food
-                  </Button>
-                ) : (
-                  <>
-                    <Button 
-                      onClick={canLogFood ? handleYum : () => navigate('/subscription')}
-                      disabled={isLogging || !canLogFood}
-                      className={`px-8 py-3 text-lg font-semibold ${
-                        canLogFood 
-                          ? "bg-health-green hover:bg-health-green/90 text-white disabled:opacity-50"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
-                      title={!canLogFood ? "Upgrade to Pro to log food" : ""}
-                    >
-                      {!canLogFood ? "🔒 Yum (Pro)" : isLogging ? "Logging..." : "😋 Yum"}
-                    </Button>
+                {/* Alternatives */}
+                {analysisResult.alternatives && analysisResult.alternatives.length > 0 && (
+                  <Card className="premium-card">
+                    <CardContent className="p-6">
+                      <h3 className="font-semibold mb-3">Healthier Alternatives</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {analysisResult.alternatives.map((alternative, index) => (
+                          <Badge key={index} variant="secondary" className="bg-health-green/10 text-health-green">
+                            {alternative}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Share Card Component */}
+                <div className="bg-neutral-50 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-neutral-700 mb-3 text-center">Share Your Result</h3>
+                  <ShareCard
+                    foodName={analysisResult.foodName}
+                    verdict={analysisResult.verdict}
+                    explanation={analysisResult.explanation}
+                    calories={analysisResult.calories ? `${analysisResult.calories} cal` : undefined}
+                  />
+                </div>
+
+                <div className="flex justify-center space-x-4">
+                  {analysisResult.foodName === "Non-Food Item" ? (
                     <Button 
                       onClick={handleNah}
-                      disabled={isLogging}
-                      variant="outline"
-                      className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold"
+                      className="bg-neutral-500 hover:bg-neutral-600 text-white px-8 py-3 text-lg font-semibold ios-button"
                     >
-                      😝 Nah
+                      Try Again with Food
                     </Button>
-                  </>
-                )}
-              </div>
-              
-              <div className="flex justify-center space-x-4 pt-4 pb-8">
-                <Button onClick={resetAnalysis} variant="outline" size="sm">
-                  Ask Veri Again
-                </Button>
-                <Button onClick={() => window.history.back()} variant="ghost" size="sm">
-                  Back to Dashboard
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  ) : (
+                    <>
+                      <Button 
+                        onClick={canLogFood ? handleYum : () => setLocation('/subscription')}
+                        disabled={isLogging || !canLogFood}
+                        className={`px-8 py-3 text-lg font-semibold ios-button ${
+                          canLogFood 
+                            ? "bg-health-green hover:bg-health-green/90 text-white disabled:opacity-50"
+                            : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                        }`}
+                        title={!canLogFood ? "Upgrade to Pro to log food" : ""}
+                      >
+                        {!canLogFood ? "🔒 Yum (Pro)" : isLogging ? "Logging..." : "😋 Yum"}
+                      </Button>
+                      <Button 
+                        onClick={handleNah}
+                        disabled={isLogging}
+                        variant="outline"
+                        className="border-danger-red text-danger-red hover:bg-danger-red hover:text-white px-8 py-3 text-lg font-semibold ios-button"
+                      >
+                        😝 Nah
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex justify-center space-x-4 pt-4 pb-8">
+                  <Button onClick={resetAnalysis} variant="outline" size="sm" className="ios-button">
+                    Ask Veri Again
+                  </Button>
+                  <Button onClick={() => window.history.back()} variant="ghost" size="sm" className="ios-button">
+                    Back to Dashboard
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pt-20 pb-24 container-padding">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {timeGreeting}, {((activeUser as any)?.firstName || 'there').trim()}!
-          </h1>
-          <p className="text-gray-600">
-            Ready to analyze your food? Get instant health verdicts on your choices
-          </p>
-        </div>
+    <div className="min-h-screen gradient-bg-subtle pb-24">
+      <div className="pt-20 pb-8 container-padding">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center animate-fade-in">
+            <h1 className="text-4xl font-bold gradient-text mb-3">
+              {timeGreeting}, {((activeUser as any)?.firstName || 'there').trim()}!
+            </h1>
+            <p className="text-xl text-neutral-600">
+              Ready to analyze your food? Get instant health verdicts on your choices
+            </p>
+          </div>
 
-        {/* Analysis Interface */}
-        <Card>
-          <CardContent className="p-8">
-            {analysisMode === "camera" && (
-              <div className="text-center space-y-4">
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                {imagePreview ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-center">
-                      <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
-                        <img 
-                          src={imagePreview} 
-                          alt="Captured food" 
-                          className="w-full h-48 object-cover"
-                        />
+          {/* Analysis Interface */}
+          <Card className="premium-card animate-slide-up">
+            <CardContent className="p-8">
+              {analysisMode === "camera" && (
+                <div className="text-center space-y-4">
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  {imagePreview ? (
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="w-full max-w-xs overflow-hidden rounded-lg premium-shadow">
+                          <img 
+                            src={imagePreview} 
+                            alt="Captured food" 
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
                       </div>
+                      <Button
+                        onClick={() => cameraInputRef.current?.click()}
+                        variant="outline"
+                        className="ios-button"
+                      >
+                        Take Another Photo
+                      </Button>
                     </div>
-                    <Button
+                  ) : (
+                    <div
                       onClick={() => cameraInputRef.current?.click()}
-                      variant="outline"
+                      className="border-2 border-dashed border-neutral-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
                     >
-                      Take Another Photo
-                    </Button>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => cameraInputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
-                  >
-                    <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-ios-secondary">Tap to take a photo of your food</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {analysisMode === "upload" && (
-              <div className="text-center space-y-4">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                {imagePreview ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-center">
-                      <div className="w-full max-w-xs overflow-hidden rounded-lg shadow-lg">
-                        <img 
-                          src={imagePreview} 
-                          alt="Uploaded food" 
-                          className="w-full h-48 object-cover"
-                        />
-                      </div>
+                      <Camera className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                      <p className="text-neutral-600">Tap to take a photo of your food</p>
                     </div>
-                    <Button
+                  )}
+                </div>
+              )}
+
+              {analysisMode === "upload" && (
+                <div className="text-center space-y-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  {imagePreview ? (
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="w-full max-w-xs overflow-hidden rounded-lg premium-shadow">
+                          <img 
+                            src={imagePreview} 
+                            alt="Uploaded food" 
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        variant="outline"
+                        className="ios-button"
+                      >
+                        Select Different Photo
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
                       onClick={() => fileInputRef.current?.click()}
-                      variant="outline"
+                      className="border-2 border-dashed border-neutral-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
                     >
-                      Choose Different Image
-                    </Button>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-12 cursor-pointer hover:border-ios-blue transition-colors"
-                  >
-                    <Upload className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-700">Click to upload an image of your food</p>
-                  </div>
-                )}
-              </div>
-            )}
+                      <Upload className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                      <p className="text-neutral-600">Click to upload a photo of your food</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {analysisMode === "text" && (
-              <div className="space-y-4">
-                <label className="block text-sm font-medium text-ios-text">
-                  Describe your food
-                </label>
-                <Textarea
-                  placeholder="E.g., Grilled chicken breast with steamed broccoli and brown rice"
-                  value={foodDescription}
-                  onChange={(e) => setFoodDescription(e.target.value)}
-                  rows={4}
-                  className="w-full"
-                />
-                <p className="text-sm text-ios-secondary">
-                  Be as specific as possible for the most accurate analysis
-                </p>
-              </div>
-            )}
+              {analysisMode === "text" && (
+                <div className="space-y-4">
+                  <Textarea
+                    placeholder="Describe what you're eating... (e.g., 'chicken Caesar salad with croutons')"
+                    value={foodDescription}
+                    onChange={(e) => setFoodDescription(e.target.value)}
+                    className="min-h-32 resize-none"
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            <div className="mt-8 text-center">
+          {/* Mode Selection */}
+          <Card className="premium-card">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-3 gap-4">
+                <Button
+                  variant={analysisMode === "camera" ? "default" : "outline"}
+                  onClick={() => setAnalysisMode("camera")}
+                  className="h-20 flex flex-col space-y-2 ios-button"
+                >
+                  <Camera className="w-6 h-6" />
+                  <span>Take Photo</span>
+                </Button>
+                <Button
+                  variant={analysisMode === "upload" ? "default" : "outline"}
+                  onClick={() => setAnalysisMode("upload")}
+                  className="h-20 flex flex-col space-y-2 ios-button"
+                >
+                  <Upload className="w-6 h-6" />
+                  <span>Upload Image</span>
+                </Button>
+                <Button
+                  variant={analysisMode === "text" ? "default" : "outline"}
+                  onClick={() => setAnalysisMode("text")}
+                  className="h-20 flex flex-col space-y-2 ios-button"
+                >
+                  <Type className="w-6 h-6" />
+                  <span>Describe Food</span>
+                </Button>
+              </div>
+              
               <Button
                 onClick={handleAnalyze}
                 disabled={analyzeMutation.isPending}
-                className="bg-ios-blue text-white px-8 py-3 text-lg font-medium"
+                className="w-full bg-ios-blue text-white font-semibold py-4 px-8 rounded-xl hover:bg-ios-blue/90 transition-colors disabled:opacity-50 ios-button mt-6"
               >
                 {analyzeMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Asking Veri...
-                  </>
+                  <span className="flex items-center justify-center">
+                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                    Analyzing...
+                  </span>
                 ) : (
-                  "Ask Veri"
+                  "🔍 Analyze Food"
                 )}
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Analysis Mode Selection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How would you like to analyze your food?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button
-                variant={analysisMode === "camera" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("camera")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Camera className="w-6 h-6" />
-                <span>Take Photo</span>
-              </Button>
-              <Button
-                variant={analysisMode === "upload" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("upload")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Upload className="w-6 h-6" />
-                <span>Upload Image</span>
-              </Button>
-              <Button
-                variant={analysisMode === "text" ? "default" : "outline"}
-                onClick={() => setAnalysisMode("text")}
-                className="h-20 flex flex-col space-y-2"
-              >
-                <Type className="w-6 h-6" />
-                <span>Describe Food</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Pro Tip */}
-        <Card className="bg-blue-50 border-blue-200 shadow-sm">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-start space-x-3">
-              <div className="text-blue-500 text-xl">💡</div>
-              <div>
-                <h3 className="font-semibold text-blue-800 mb-2 text-base sm:text-lg">Pro Tip</h3>
-                <p className="text-blue-700 text-sm sm:text-base">
-                  For better accuracy, ensure good lighting and capture the entire meal. Or describe including any sauces or dressings!
-                </p>
+          {/* Pro Tip */}
+          <Card className="bg-blue-50 border-blue-200 premium-shadow animate-slide-up">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start space-x-3">
+                <div className="text-blue-500 text-xl">💡</div>
+                <div>
+                  <h3 className="font-semibold text-blue-800 mb-2 text-base sm:text-lg">Pro Tip</h3>
+                  <p className="text-blue-700 text-sm sm:text-base">
+                    For better accuracy, ensure good lighting and capture the entire meal. Or describe including any sauces or dressings!
+                  </p>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
       
       {showGdprBanner && <SimpleGDPRBanner onComplete={handleGdprComplete} />}
