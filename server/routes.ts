@@ -309,6 +309,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save onboarding data including suitability score and personalization
+  app.post('/api/user/onboarding', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
+      
+      const { suitabilityScore, healthGoals, dietaryRestrictions, fitnessLevel, completedOnboarding } = req.body;
+      
+      // Update user profile with onboarding data
+      const profileData = {
+        healthGoals: healthGoals || [],
+        dietaryPreferences: dietaryRestrictions || [],
+        fitnessLevel: fitnessLevel || 'beginner',
+        onboardingSuitabilityScore: suitabilityScore || 0,
+        hasCompletedOnboarding: completedOnboarding || false
+      };
+      
+      const updatedUser = await storage.updateUserProfile(userId, profileData);
+      
+      if (completedOnboarding) {
+        await storage.completeOnboarding(userId);
+      }
+      
+      res.json(updatedUser);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to save onboarding data" });
+    }
+  });
+
   // Delete user account
   app.delete('/api/user/account', isAuthenticated, async (req: any, res) => {
     try {

@@ -1,0 +1,151 @@
+Veridect: Consolidación y Organización de Funcionalidades y Flujos
+
+
+I. Flujo de Onboarding y Personalización
+
+Esta sección describe el proceso inicial que el usuario experimenta al interactuar por primera vez con Veridect, desde el registro hasta la personalización inicial.
+
+1. Banner de Consentimiento GDPR: Un banner visible para el consentimiento GDPR, incluyendo un descargo de responsabilidad y un enlace a la política de privacidad.
+2. Página de Aterrizaje (Landing Page): Debe incluir una explicación básica y mínima de la aplicación, con una opción para saltar directamente al inicio de sesión.
+3. Quiz de Adecuación Inicial:
+    * Un quiz corto pero efectivo para evaluar la adecuación del usuario a Veridect.
+    * Después del resultado, mostrar la opción de proceder si es adecuado, o una opción para proceder de todos modos si no lo es, con una explicación clara.
+4. Opciones de Inicio de Sesión/Registro:
+    * Permitir inicio de sesión/registro con Google, Apple y correo electrónico.
+    * Incluir un descargo de responsabilidad y una casilla de política de privacidad.
+    * Considerar la gestión de nombres inapropiados en el leaderboard.
+5. Onboarding Post-Login (Una Sola Vez):
+    * Incluir un quiz de personalización básica.
+    * Ofrecer la opción de realizar un quiz de personalización avanzada en ese momento o posponerlo.
+    * Paywall: Antes de la personalización completa, listar los beneficios de la versión de pago frente a la competencia. Si se elimina la oferta, ofrecer continuar con una versión gratuita limitada.
+    * Ofrecer un tour por la aplicación.
+6. Confirmación de Personalización Completa: Una vez finalizado el onboarding y la personalización.
+
+Mejoras Propuestas para Onboarding (Máxima Retención):
+
+* “Aha!” Moment en 90 Segundos: El objetivo es que el usuario sienta que la app lo entiende y vea su valor central de inmediato.
+    * Interactivo, No Interrogativo: Enmarcar el onboarding como una "Configuración de Perfil Impulsada por IA" con UI conversacional (ej. "Para darte el mejor consejo, necesito aprender un poco sobre ti. ¿Listo?").
+    * Permisos "Just-in-Time": Solicitar permisos (cámara, notificaciones, datos de salud) contextualmente, no todos a la vez (ej. cámara al tocar "Analizar", HealthKit/Google Fit al visitar "Progreso").
+    * El Primer Análisis es el Tutorial: Guiar al usuario a realizar su primer análisis como paso final del onboarding, usando tooltips y resaltados (ej. "Toca aquí para tomar una foto de tu snack.").
+    * Checklist de Onboarding Gamificado: Mostrar un checklist pequeño y descartable para nuevos usuarios (ej. "Completa tu perfil", "Registra tu primera comida"), con pequeños bonos de puntos al completarlos.
+⸻
+II. Funcionalidades Centrales de Análisis y Registro
+
+Esta sección detalla las capacidades principales de Veridect para analizar alimentos y registrar la ingesta del usuario.
+
+1. Página de Análisis (4 Métodos):
+    * Botón "Ask Veri": Punto de entrada principal.
+    * Tomar una Foto: Incluye la opción de escanear código de barras (si es posible, si no, por separado).
+    * Subir Foto: Desde la galería del dispositivo.
+    * Entrada de Texto: Para describir el alimento.
+2. Tarjeta de Resultado de Análisis:
+    * Foto: Incluir la foto del usuario o una foto de internet del alimento reconocido (si es por texto/código de barras).
+    * Veredicto: Basado en las preferencias del usuario (del quiz de onboarding) y el soporte científico, con una descripción ingeniosa de la IA y un descargo de responsabilidad de la IA.
+    * Lista de Alimentos/Ingredientes Detectados: Un párrafo con todos los alimentos e ingredientes detectados, separados por comas.
+    * Lista de Nutrientes/Micronutrientes: Otra lista con nombres y estimaciones/gramos (si es posible detectar/estimar).
+    * Botones de Acción: "Compartir", "Ask Veri de nuevo", "Registrar" o "Descartar". Cada uno debe mostrar mensajes de confirmación/fallo apropiados.
+3. Edición de Resultados: Toda la sección de salida de resultados debe ser editable con un toque antes de registrar o reanalizar. La IA utilizará esta entrada editada para el veredicto y la descripción.
+4. Recomendación de Mejora: Indicar que se obtienen mejores resultados a través de la entrada de texto.
+
+Mejoras Propuestas para el Bucle Central (Análisis y Acción):
+
+* Campo de Entrada Unificado "Smart Input": Un solo botón principal "Analizar" que abre una interfaz unificada con vista de cámara por defecto e iconos intuitivos para cambiar a texto, código de barras o galería. Reduce la carga cognitiva.
+* "AI Autofill" para Entrada de Texto: Sugerencias de la IA al escribir (ej. "Pechuga de pollo con ensalada de vinagreta").
+* Feedback Instantáneo en Tarjetas de Resultado:
+    * Animación de Veredicto: "Sí", "OK" o "Precaución" con animación y sonido satisfactorios y no críticos.
+    * Botón "¿Por qué?": Expande la tarjeta para mostrar la justificación científica y el desglose nutricional detallado.
+    * Lista de Nutrientes Interactiva: Los nutrientes son tocables; al tocar, muestra un pop-up con más detalles (ej. "Azúcar: 15g" -> "Esto es el 60% de tu límite diario recomendado. La mayor parte proviene de la manzana.").
+⸻
+III. Seguimiento de Progreso y Gamificación
+
+Esta sección aborda cómo Veridect motiva al usuario a mantener sus hábitos y fomenta la interacción a través de elementos de juego y comunidad.
+
+1. Página de Análisis Detallado y Alimentos Registrados: Mostrar resultados detallados de análisis y alimentos registrados.
+2. Gamificación: Incluir rachas (streaks) y desafíos con puntos asignados y insignias.
+3. Leaderboard: Clasificaciones por "hoy", "esta semana" y "todo el tiempo".
+4. Sistema de Puntos y Recompensas: Los desafíos otorgan puntos que pueden canjearse por regalos reales (potencialmente de mayor valor que el gasto del usuario). Explicación clara de cómo funcionan los puntos.
+
+Mejoras Propuestas para Gamificación y Social (Compromiso Significativo):
+
+* Desafíos Basados en Equipos: Además de los leaderboards individuales, introducir desafíos en equipo (ej. "Tu oficina vs. otra"). Fomenta la colaboración y la presión positiva entre pares.
+* "Kudos" y Reacciones: En el feed social, ofrecer reacciones más allá del "me gusta" (ej. "¡Kudos!", "¡Se ve saludable!", "¡Inspirador!"). Hace las interacciones más significativas.
+* Compartir No Competitivo: Crear funciones como "Intercambio de Recetas" o "Hallazgo Saludable" para compartir descubrimientos sin vincularlos al registro de análisis. Fomenta la interacción comunitaria positiva y sin juicios.
+* Recompensas Significativas: Además de regalos tangibles, ofrecer recompensas in-app que mejoren la experiencia del usuario (ej. sesión de 15 minutos "Pregúntame lo que quieras" con un nutricionista, informes avanzados de análisis de IA, temas/iconos únicos para la app).
+⸻
+IV. Planificación de Dieta y Gestión de Comidas
+
+Esta sección se centra en las herramientas de Veridect para ayudar a los usuarios a planificar y gestionar su alimentación de manera proactiva.
+
+1. Página de Plan de Dieta:
+    * Chat de IA: Una burbuja de chat de IA para crear planes de dieta, teniendo en cuenta las necesidades del usuario (del quiz de onboarding) y respaldado por la ciencia.
+    * Plan Recomendado y Editable: La dieta recomendada por la IA debe ser construible y aceptable por el usuario, y editable con un toque.
+    * Seguimiento de Comidas: Casillas de verificación para indicar si se comió o no.
+    * Preparación de Próxima Comida: Mostrar ingredientes en la parte superior.
+    * Plan Semanal Completo: Un plan semanal para una dieta equilibrada.
+    * Nudges y Nags de IA: La IA debe enviar "nudges" y "nags" para equilibrar la dieta basándose en la regimentación diaria de macro y micronutrientes.
+    * Registro de Peso: Una sección para introducir el último peso medido.
+    * Pestañas de Comidas: Pestañas para batidos, desayuno, almuerzo, merienda.
+2. Lista de Compras:
+    * Los elementos favoritos van a la lista de compras.
+    * La lista debe ser editable con botones de más/menos.
+    * Opción de pedir y recibir a domicilio.
+    * Considerar un slider vs. una lista tradicional.
+
+Mejoras Propuestas para Dieta y Progreso (Guía Inteligente):
+
+* La Pestaña "Progreso" se Convierte en "Hoy": Esta es la nueva pantalla de inicio, respondiendo a "¿Cómo me va ahora mismo?". Incluirá:
+    1. Un visual dinámico de "Balance Diario" (macros/micros).
+    2. La racha actual del usuario.
+    3. Una tarjeta "¿Qué Sigue?" sugiriendo la próxima comida del plan de dieta.
+    4. Un CTA prominente "Analizar Comida".
+* Co-creación de Plan de Dieta con IA: La IA propone un plan semanal completo instantáneamente después de un breve chat. El usuario puede pedir cambios (ej. "Cambia el almuerzo del miércoles", "No me gusta el pescado") y la IA regenera esa parte al instante. Se siente colaborativo.
+* Lista de Compras "Inteligente": Agrupar elementos por pasillo de la tienda (Producción, Lácteos, etc.). Permitir marcar elementos al comprar. Incluir un botón "¿Qué puedo hacer?" que sugiera recetas basadas en los artículos de la lista.
+⸻
+V. Perfil de Usuario y Configuraciones
+
+Esta sección detalla la información del usuario y las opciones de configuración de la aplicación.
+
+1. Página de Perfil:
+    * Imagen de Perfil: Tocable para editar.
+    * Nombre, Apellido y Correo Electrónico.
+    * Plan Actual: Tocable para cambiar.
+2. Secciones Editables (Acordeón):
+    * Cambiar nombre y apellido.
+    * Cambiar correo electrónico (requiere contraseña actual para verificar).
+    * Cambiar contraseña (contraseña actual, y dos veces la nueva).
+    * Preferencias de Privacidad: Mejoras de IA, análisis de uso, comunicaciones de marketing, etc. Mensaje para reactivar o contactar soporte.
+3. Personalización Detallada: Opciones para una personalización más profunda.
+4. Interfaz de la App: Mostrar u ocultar funciones.
+5. Historial de Alimentos: Todos los alimentos registrados con fecha, perfil fisiológico básico y veredicto.
+⸻
+VI. Consideraciones Estratégicas y de Diseño (Verdicto "Sí/Ok/No")
+
+Esta sección aborda la evolución del sistema de veredicto de Veridect y su impacto en la arquitectura y el marketing.
+
+1. Marco Superior "Sí / Ok / No":
+    * Claridad y Decisión: La estructura "Sí / Ok / No" es inequívoca, respondiendo directamente a la pregunta central del usuario ("¿Debo comer esto?").
+    * Propuesta de Valor Mejorada: La introducción de la categoría "Tóxico / Inseguro" eleva la app a una herramienta de seguridad, abordando preocupaciones sobre aditivos, aceites de semillas y alimentos ultraprocesados.
+    * Lenguaje Orientado a la Acción: Descripciones concisas, educativas y que indican al usuario qué hacer.
+    * Emojis Psicológicamente Resonantes: Los símbolos ✅, ⚠️, y ❌ son universalmente entendidos y proporcionan señales visuales instantáneas.
+2. Impacto en el Blueprint de YesNoApp: Este sistema de veredicto se propagará a través de:
+    * Capítulo 5 (Arquitectura del Proyecto): El campo verdict en el esquema de la base de datos se actualizará a yes | ok | no.
+    * Capítulo 6 y 15 (Implementación UI/UX): El diseño de la tarjeta de resultado se centrará en estos tres veredictos, usando los emojis, colores (verde/amarillo/rojo) y etiquetas especificados.
+    * Capítulo 7 (Backend & IA): Los prompts para el motor de análisis de IA se re-diseñarán para clasificar alimentos en estas tres categorías y generar explicaciones que coincidan con el tono y contenido.
+    * Capítulo 10 (Marketing): Los materiales de marketing se actualizarán para destacar esta característica clara, decisiva y orientada a la seguridad como una ventaja competitiva clave.
+⸻
+VII. Principios de Diseño para Máxima Retención
+
+Esta sección resume los principios clave para mejorar la experiencia del usuario y maximizar la retención, construyendo sobre la base existente.
+
+1. Reducción de Fricción: Simplificar la entrada de análisis y el onboarding para facilitar el inicio y el uso diario de la app.
+2. Aumento del Deleite: Pequeñas animaciones, sugerencias inteligentes y elementos interactivos para que la app se sienta receptiva y agradable.
+3. Empoderamiento del Usuario: Funciones como resultados editables y co-creación con IA para dar al usuario una sensación de control y asociación, no solo de ser instruido.
+4. Valor Contextual: Solicitar permisos y proporcionar información "justo a tiempo" para que cada acción se sienta relevante y útil.
+⸻
+VIII. Movimiento de Elementos de UI/UX
+
+Esta sección detalla los cambios específicos en la ubicación de elementos dentro de la interfaz de usuario.
+
+1. Mover la pestaña de progreso a la pestaña de inicio.
+2. Mover el plan de dieta a la pestaña de progreso.
+⸻

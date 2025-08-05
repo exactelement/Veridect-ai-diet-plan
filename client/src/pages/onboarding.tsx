@@ -1,98 +1,78 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Heart, Target, ShieldCheck, Star, Zap, Crown } from "lucide-react";
+import { CheckCircle, ChevronRight, Sparkles, Shield, Brain, Heart } from "lucide-react";
+import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
 
-const onboardingSchema = z.object({
-  calorieGoal: z.number().min(800, "Minimum 800 calories").max(5000, "Maximum 5000 calories").default(2000),
-  dietaryPreferences: z.array(z.string()).default([]),
-  healthGoals: z.array(z.string()).default([]),
-  allergies: z.array(z.string()).default([]),
-});
+interface OnboardingStep {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
 
-type OnboardingForm = z.infer<typeof onboardingSchema>;
-
-const DIETARY_PREFERENCES = [
-  "Vegetarian", "Vegan", "Keto", "Paleo", "Mediterranean", 
-  "Low-carb", "Low-fat", "Gluten-free", "Dairy-free"
-];
-
-const HEALTH_GOALS = [
-  "Weight loss", "Weight gain", "Muscle building", "Heart health",
-  "Diabetes management", "Lower cholesterol", "More energy", "Better sleep"
-];
-
-const COMMON_ALLERGIES = [
-  "Nuts", "Shellfish", "Dairy", "Eggs", "Soy", "Gluten", "Fish"
+const onboardingSteps: OnboardingStep[] = [
+  {
+    id: "welcome",
+    title: "Welcome to Veridect",
+    description: "Your AI-powered nutrition companion",
+    icon: <Sparkles className="w-8 h-8" />
+  },
+  {
+    id: "suitability",
+    title: "Is Veridect Right for You?",
+    description: "Let's find out with a quick quiz",
+    icon: <Brain className="w-8 h-8" />
+  },
+  {
+    id: "personalization",
+    title: "Personalize Your Experience",
+    description: "Tell us about your health goals",
+    icon: <Heart className="w-8 h-8" />
+  },
+  {
+    id: "features",
+    title: "Unlock Premium Features",
+    description: "See what Pro can do for you",
+    icon: <Shield className="w-8 h-8" />
+  }
 ];
 
 export default function Onboarding() {
-  const [step, setStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [suitabilityScore, setSuitabilityScore] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({});
+  const [personalizationData, setPersonalizationData] = useState({
+    healthGoals: [] as string[],
+    dietaryRestrictions: [] as string[],
+    fitnessLevel: "",
+    age: "",
+    weight: "",
+    height: ""
+  });
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const form = useForm<OnboardingForm>({
-    resolver: zodResolver(onboardingSchema),
-    defaultValues: {
-      calorieGoal: 2000,
-      dietaryPreferences: [],
-      healthGoals: [],
-      allergies: [],
-    },
-  });
-
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: OnboardingForm) => {
-      await apiRequest("PUT", "/api/user/profile", {
-        ...data,
-        dietaryPreferences: data.dietaryPreferences,
-        healthGoals: data.healthGoals,
-        allergies: data.allergies,
-
-      });
+  const saveMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/user/onboarding", data);
+      return response.json();
     },
     onSuccess: () => {
-      // Move to subscription step after profile update
-      setStep(4);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error updating profile",
-        description: error.message,
-        variant: "destructive",
-        duration: 4000,
-      });
-    },
-  });
-
-  const completeOnboardingMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/user/complete-onboarding", {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Welcome to Veridect!",
         description: "Your profile has been set up successfully.",
+        duration: 3000,
       });
-      // Redirect to main app - GDPR banner will show there after onboarding completion
       navigate("/");
     },
     onError: (error: Error) => {
       toast({
-        title: "Error completing onboarding",
+        title: "Setup Error",
         description: error.message,
         variant: "destructive",
         duration: 4000,
@@ -100,332 +80,373 @@ export default function Onboarding() {
     },
   });
 
-  const onSubmit = (data: OnboardingForm) => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else if (step === 3) {
-      updateProfileMutation.mutate(data);
+  const handleSuitabilityQuiz = (question: string, answer: string) => {
+    const newAnswers = { ...quizAnswers, [question]: answer };
+    setQuizAnswers(newAnswers);
+    
+    // Simple scoring logic
+    let score = 0;
+    if (newAnswers.healthConscious === "yes") score += 25;
+    if (newAnswers.trackFood === "yes") score += 25;
+    if (newAnswers.dietGoals === "yes") score += 25;
+    if (newAnswers.techComfortable === "yes") score += 25;
+    
+    setSuitabilityScore(score);
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0: // Welcome
+        return (
+          <div className="text-center space-y-6">
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto flex items-center justify-center">
+              <Sparkles className="w-12 h-12 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800">Welcome to Veridect</h2>
+            <p className="text-lg text-gray-600 max-w-md mx-auto">
+              Your AI-powered nutrition companion that brings awareness to healthier eating, one photo at a time.
+            </p>
+            <div className="space-y-3 max-w-sm mx-auto">
+              <div className="flex items-center gap-3 text-left">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-gray-700">Instant food analysis with AI</span>
+              </div>
+              <div className="flex items-center gap-3 text-left">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-gray-700">Clear Yes/OK/No verdicts</span>
+              </div>
+              <div className="flex items-center gap-3 text-left">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-gray-700">Personalized recommendations</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 1: // Suitability Quiz
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Is Veridect Right for You?</h2>
+              <p className="text-gray-600">Answer a few quick questions to find out</p>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Question 1 */}
+              <div className="space-y-3">
+                <p className="font-medium text-gray-700">Are you interested in making healthier food choices?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant={quizAnswers.healthConscious === "yes" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("healthConscious", "yes")}
+                  >
+                    Yes, definitely!
+                  </Button>
+                  <Button
+                    variant={quizAnswers.healthConscious === "no" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("healthConscious", "no")}
+                  >
+                    Not really
+                  </Button>
+                </div>
+              </div>
+
+              {/* Question 2 */}
+              <div className="space-y-3">
+                <p className="font-medium text-gray-700">Do you currently track what you eat?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant={quizAnswers.trackFood === "yes" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("trackFood", "yes")}
+                  >
+                    Yes, I do
+                  </Button>
+                  <Button
+                    variant={quizAnswers.trackFood === "no" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("trackFood", "no")}
+                  >
+                    No, I don't
+                  </Button>
+                </div>
+              </div>
+
+              {/* Question 3 */}
+              <div className="space-y-3">
+                <p className="font-medium text-gray-700">Do you have specific dietary goals?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant={quizAnswers.dietGoals === "yes" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("dietGoals", "yes")}
+                  >
+                    Yes, I have goals
+                  </Button>
+                  <Button
+                    variant={quizAnswers.dietGoals === "no" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("dietGoals", "no")}
+                  >
+                    Just curious
+                  </Button>
+                </div>
+              </div>
+
+              {/* Question 4 */}
+              <div className="space-y-3">
+                <p className="font-medium text-gray-700">Are you comfortable using AI technology?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant={quizAnswers.techComfortable === "yes" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("techComfortable", "yes")}
+                  >
+                    Yes, love it!
+                  </Button>
+                  <Button
+                    variant={quizAnswers.techComfortable === "no" ? "default" : "outline"}
+                    onClick={() => handleSuitabilityQuiz("techComfortable", "no")}
+                  >
+                    Not really
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Results */}
+            {Object.keys(quizAnswers).length === 4 && (
+              <Card className={`mt-6 ${suitabilityScore >= 75 ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}>
+                <CardContent className="p-6 text-center">
+                  <h3 className="text-xl font-semibold mb-2">
+                    {suitabilityScore >= 75 ? "Perfect Match! 🎉" : "Let's Give It a Try! 🌟"}
+                  </h3>
+                  <p className="text-gray-700">
+                    {suitabilityScore >= 75 
+                      ? "Veridect is ideal for your health journey. You'll love the personalized insights!"
+                      : "While you might be new to health tracking, Veridect makes it easy and fun to start!"
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        );
+
+      case 2: // Basic Personalization
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Let's Personalize Your Experience</h2>
+              <p className="text-gray-600">Tell us about your health goals</p>
+            </div>
+
+            {/* Health Goals */}
+            <div className="space-y-3">
+              <p className="font-medium text-gray-700">What are your main health goals?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {["Lose weight", "Gain muscle", "Eat healthier", "More energy", "Better sleep", "Manage condition"].map((goal) => (
+                  <Button
+                    key={goal}
+                    variant={personalizationData.healthGoals.includes(goal) ? "default" : "outline"}
+                    onClick={() => {
+                      const goals = personalizationData.healthGoals.includes(goal)
+                        ? personalizationData.healthGoals.filter(g => g !== goal)
+                        : [...personalizationData.healthGoals, goal];
+                      setPersonalizationData({ ...personalizationData, healthGoals: goals });
+                    }}
+                    className="text-sm"
+                  >
+                    {goal}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Dietary Restrictions */}
+            <div className="space-y-3">
+              <p className="font-medium text-gray-700">Any dietary restrictions?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {["Vegetarian", "Vegan", "Gluten-free", "Dairy-free", "Keto", "None"].map((diet) => (
+                  <Button
+                    key={diet}
+                    variant={personalizationData.dietaryRestrictions.includes(diet) ? "default" : "outline"}
+                    onClick={() => {
+                      if (diet === "None") {
+                        setPersonalizationData({ ...personalizationData, dietaryRestrictions: [] });
+                      } else {
+                        const restrictions = personalizationData.dietaryRestrictions.includes(diet)
+                          ? personalizationData.dietaryRestrictions.filter(d => d !== diet)
+                          : [...personalizationData.dietaryRestrictions.filter(d => d !== "None"), diet];
+                        setPersonalizationData({ ...personalizationData, dietaryRestrictions: restrictions });
+                      }
+                    }}
+                    className="text-sm"
+                  >
+                    {diet}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Fitness Level */}
+            <div className="space-y-3">
+              <p className="font-medium text-gray-700">How would you describe your fitness level?</p>
+              <div className="grid grid-cols-3 gap-3">
+                {["Beginner", "Intermediate", "Advanced"].map((level) => (
+                  <Button
+                    key={level}
+                    variant={personalizationData.fitnessLevel === level ? "default" : "outline"}
+                    onClick={() => setPersonalizationData({ ...personalizationData, fitnessLevel: level })}
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3: // Pro Features
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Unlock Your Full Potential</h2>
+              <p className="text-gray-600">See what Veridect Pro can do for you</p>
+            </div>
+
+            <div className="space-y-4">
+              <Card className="border-purple-200 bg-purple-50">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-purple-800 mb-3">Veridect Pro Features</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-700">Unlimited food analyses per day</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-700">Personalized AI diet plans</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-700">Weekly challenges & leaderboard</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-700">Detailed nutrition tracking</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-700">Smart shopping lists</span>
+                    </div>
+                  </div>
+                  <div className="mt-6 text-center">
+                    <p className="text-2xl font-bold text-purple-800">€1/month</p>
+                    <p className="text-sm text-purple-600">Billed annually (€12/year)</p>
+                    <Button 
+                      className="w-full mt-4 bg-purple-600 hover:bg-purple-700"
+                      onClick={() => navigate("/subscription")}
+                    >
+                      Start Pro Trial
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Button 
+                variant="ghost" 
+                className="w-full"
+                onClick={() => handleComplete()}
+              >
+                Continue with Free Version
+              </Button>
+            </div>
+          </div>
+        );
     }
   };
 
-  const handleSubscriptionChoice = (tier: string) => {
-    if (tier === 'pro') {
-      // Complete onboarding first, then navigate to subscription
-      completeOnboardingMutation.mutate();
-      // Navigate to subscription after a brief delay to allow onboarding completion
-      setTimeout(() => {
-        navigate('/subscription');
-      }, 1000);
-    } else {
-      // Continue with free tier - complete onboarding and redirect to main app
-      completeOnboardingMutation.mutate();
+  const handleNext = () => {
+    if (currentStep < onboardingSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const progress = (step / 4) * 100;
+  const handleComplete = () => {
+    saveMutation.mutate({
+      suitabilityScore,
+      ...personalizationData,
+      completedOnboarding: true
+    });
+  };
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 0: return true;
+      case 1: return Object.keys(quizAnswers).length === 4;
+      case 2: return personalizationData.healthGoals.length > 0 && personalizationData.fitnessLevel;
+      case 3: return true;
+      default: return false;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-ios-bg flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                completeOnboardingMutation.mutate();
-              }}
-              disabled={completeOnboardingMutation.isPending}
-              className="text-ios-secondary hover:text-ios-primary"
-            >
-              {completeOnboardingMutation.isPending ? "..." : "← Skip for now"}
-            </Button>
-            <div className="w-16 h-16 bg-gradient-to-br from-ios-blue to-health-green rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">Y</span>
-            </div>
-            <div className="w-20"></div> {/* Spacer for centering */}
-          </div>
-          <CardTitle className="text-3xl font-bold">Welcome to Veridect</CardTitle>
-          <p className="text-ios-secondary">Let's personalize your nutrition journey</p>
-          <Progress value={progress} className="mt-4" />
-          <p className="text-sm text-ios-secondary">Step {step} of 4</p>
-        </CardHeader>
-
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Heart className="w-12 h-12 text-ios-blue mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">Tell us about yourself</h2>
-                    <p className="text-ios-secondary">This helps us provide personalized recommendations</p>
-                  </div>
-                  
-
-
-                  <FormField
-                    control={form.control}
-                    name="calorieGoal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Daily Calorie Goal</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="800"
-                            max="5000"
-                            step="50"
-                            placeholder="2000"
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 2000)}
-                          />
-                        </FormControl>
-                        <p className="text-sm text-ios-secondary">
-                          Set your daily calorie target based on your goals
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    <div className="min-h-screen veridect-gradient-bg flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        {/* Progress */}
+        <div className="mb-8">
+          <Progress value={(currentStep + 1) / onboardingSteps.length * 100} className="h-2" />
+          <div className="flex justify-between mt-4">
+            {onboardingSteps.map((step, index) => (
+              <div
+                key={step.id}
+                className={`flex flex-col items-center ${
+                  index <= currentStep ? "text-purple-600" : "text-gray-400"
+                }`}
+              >
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  index <= currentStep ? "bg-purple-600 text-white" : "bg-gray-200"
+                }`}>
+                  {step.icon}
                 </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Target className="w-12 h-12 text-health-green mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">What are your health goals?</h2>
-                    <p className="text-ios-secondary">Select all that apply to you</p>
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="healthGoals"
-                    render={() => (
-                      <FormItem>
-                        <div className="grid grid-cols-2 gap-4">
-                          {HEALTH_GOALS.map((goal) => (
-                            <FormField
-                              key={goal}
-                              control={form.control}
-                              name="healthGoals"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(goal)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...field.value, goal])
-                                          : field.onChange(field.value?.filter((value) => value !== goal));
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal cursor-pointer">
-                                    {goal}
-                                  </FormLabel>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <ShieldCheck className="w-12 h-12 text-warning-orange mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">Dietary preferences & allergies</h2>
-                    <p className="text-ios-secondary">Help us keep you safe and satisfied</p>
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold mb-4">Dietary Preferences</h3>
-                    <FormField
-                      control={form.control}
-                      name="dietaryPreferences"
-                      render={() => (
-                        <FormItem>
-                          <div className="grid grid-cols-2 gap-4">
-                            {DIETARY_PREFERENCES.map((pref) => (
-                              <FormField
-                                key={pref}
-                                control={form.control}
-                                name="dietaryPreferences"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(pref)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([...field.value, pref])
-                                            : field.onChange(field.value?.filter((value) => value !== pref));
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">
-                                      {pref}
-                                    </FormLabel>
-                                  </FormItem>
-                                )}
-                              />
-                            ))}
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold mb-4">Allergies</h3>
-                    <FormField
-                      control={form.control}
-                      name="allergies"
-                      render={() => (
-                        <FormItem>
-                          <div className="grid grid-cols-2 gap-4">
-                            {COMMON_ALLERGIES.map((allergy) => (
-                              <FormField
-                                key={allergy}
-                                control={form.control}
-                                name="allergies"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(allergy)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([...field.value, allergy])
-                                            : field.onChange(field.value?.filter((value) => value !== allergy));
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer">
-                                      {allergy}
-                                    </FormLabel>
-                                  </FormItem>
-                                )}
-                              />
-                            ))}
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <ShieldCheck className="w-12 h-12 text-ios-blue mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold mb-2">Unlock your full potential!</h2>
-                    <p className="text-ios-secondary">Choose the plan that fits your nutrition journey</p>
-                  </div>
-
-                  <div className="grid gap-4">
-                    {/* Free Plan */}
-                    <Card className="border-2 border-gray-200">
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="text-xl font-bold">Free Plan</h3>
-                            <p className="text-gray-600">Perfect to get started</p>
-                          </div>
-                          <div className="text-2xl font-bold">€0</div>
-                        </div>
-                        <ul className="space-y-2 text-sm">
-                          <li className="flex items-center"><span className="mr-2">✓</span>5 analyses per day</li>
-                          <li className="flex items-center"><span className="mr-2">✓</span>Basic nutritional info</li>
-                          <li className="flex items-center"><span className="mr-2">✓</span>Simple yes/no verdicts</li>
-                        </ul>
-                        <Button 
-                          type="button"
-                          variant="outline" 
-                          className="w-full mt-4"
-                          onClick={() => handleSubscriptionChoice('free')}
-                          disabled={completeOnboardingMutation.isPending}
-                        >
-                          Continue with Free
-                        </Button>
-                      </CardContent>
-                    </Card>
-
-                    {/* Pro Plan */}
-                    <Card className="border-2 border-ios-blue bg-blue-50">
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="text-xl font-bold text-ios-blue">Pro Plan</h3>
-                            <p className="text-blue-600">Most popular choice</p>
-                          </div>
-                          <div>
-                            <div className="text-2xl font-bold text-ios-blue">€1</div>
-                            <div className="text-xs text-blue-600">per month, billed annually</div>
-                          </div>
-                        </div>
-                        <ul className="space-y-2 text-sm">
-                          <li className="flex items-center"><span className="mr-2">✓</span>Unlimited analyses</li>
-                          <li className="flex items-center"><span className="mr-2">✓</span>Food logging & progress</li>
-                          <li className="flex items-center"><span className="mr-2">✓</span>Challenges & leaderboard</li>
-                          <li className="flex items-center"><span className="mr-2">✓</span>Personalized AI analysis</li>
-                        </ul>
-                        <Button 
-                          type="button"
-                          className="w-full mt-4 bg-ios-blue hover:bg-blue-600"
-                          onClick={() => handleSubscriptionChoice('pro')}
-                          disabled={completeOnboardingMutation.isPending}
-                        >
-                          {completeOnboardingMutation.isPending ? "Setting up..." : "Upgrade to Pro"}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  <div className="text-center">
-                    <button 
-                      type="button"
-                      className="text-sm text-gray-500 underline"
-                      onClick={() => completeOnboardingMutation.mutate()}
-                      disabled={completeOnboardingMutation.isPending}
-                    >
-                      I'll decide later
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-between">
-                {step > 1 && step < 4 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setStep(step - 1)}
-                  >
-                    Back
-                  </Button>
-                )}
-                {step < 4 && (
-                  <Button
-                    type="submit"
-                    className="ml-auto bg-ios-blue text-white"
-                    disabled={updateProfileMutation.isPending || completeOnboardingMutation.isPending}
-                  >
-                    {step === 3 ? "Continue" : "Continue"}
-                  </Button>
-                )}
+                <span className="text-xs mt-1 hidden sm:block">{step.title}</span>
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Content Card */}
+        <Card className="shadow-xl">
+          <CardContent className="p-8">
+            {renderStepContent()}
+            
+            {/* Navigation */}
+            <div className="flex justify-between mt-8">
+              <Button
+                variant="ghost"
+                onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                disabled={currentStep === 0}
+              >
+                Back
+              </Button>
+              {currentStep < onboardingSteps.length - 1 ? (
+                <Button
+                  onClick={handleNext}
+                  disabled={!canProceed() || saveMutation.isPending}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleComplete}
+                  disabled={saveMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {saveMutation.isPending ? "Setting up..." : "Get Started"}
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

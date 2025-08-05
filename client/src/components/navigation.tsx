@@ -1,4 +1,4 @@
-import { Home, Camera, TrendingUp, Trophy, User, Lock } from "lucide-react";
+import { Home, Camera, TrendingUp, Trophy, User, Lock, ChefHat } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTierAccess } from "@/components/subscription-check";
@@ -11,6 +11,7 @@ export default function Navigation() {
   const navItems = [
     { id: "home", icon: Home, label: "Home", path: "/home", requiredTier: "free" },
     { id: "analyse", icon: Camera, label: "Analyse", path: "/", requiredTier: "free" },
+    { id: "diet", icon: ChefHat, label: "Diet Plan", path: "/diet-plan", requiredTier: "pro" },
     { id: "progress", icon: TrendingUp, label: "Progress", path: "/progress", requiredTier: "pro" },
     { id: "leaderboard", icon: Trophy, label: "Leaderboard", path: "/leaderboard", requiredTier: "pro" },
     { id: "profile", icon: User, label: "Profile", path: "/profile", requiredTier: "free" },

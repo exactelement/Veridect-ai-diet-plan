@@ -19,6 +19,7 @@ import Subscription from "@/pages/subscription";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import HowToUse from "@/pages/how-to-use";
+import DietPlan from "@/pages/diet-plan";
 
 import About from "@/pages/about";
 import Investor from "@/pages/investor";
@@ -74,6 +75,7 @@ function Router() {
             <Route path="/" component={FoodAnalysis} />
             <Route path="/home" component={Home} />
             <Route path="/food-analysis" component={FoodAnalysis} />
+            <Route path="/diet-plan" component={DietPlan} />
             <Route path="/progress" component={Progress} />
             <Route path="/leaderboard" component={Leaderboard} />
             <Route path="/profile" component={Profile} />

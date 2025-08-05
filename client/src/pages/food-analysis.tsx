@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Camera, Upload, Type, Loader2, CheckCircle, XCircle, AlertTriangle, HelpCircle, Edit, Check } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -325,8 +325,12 @@ export default function FoodAnalysis() {
   };
 
   const [expandNutrition, setExpandNutrition] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editedResult, setEditedResult] = useState<AnalysisResult | null>(null);
+  const [showScientificInfo, setShowScientificInfo] = useState(false);
 
   if (analysisResult) {
+    const currentResult = editedResult || analysisResult;
     return (
       <div className="min-h-screen veridect-gradient-bg pt-20 pb-32">
         <div className="container-padding">
@@ -335,18 +339,32 @@ export default function FoodAnalysis() {
             <div className="veridect-card">
               <div className="text-center p-8">
                 <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                  analysisResult.verdict === "YES" ? "bg-health-green/10" :
-                  analysisResult.verdict === "NO" ? "bg-danger-red/10" :
+                  currentResult.verdict === "YES" ? "bg-health-green/10" :
+                  currentResult.verdict === "NO" ? "bg-danger-red/10" :
                   "bg-warning-orange/10"
                 }`}>
-                  <div className={getVerdictColor(analysisResult.verdict)}>
-                    {getVerdictIcon(analysisResult.verdict)}
+                  <div className={getVerdictColor(currentResult.verdict)}>
+                    {getVerdictIcon(currentResult.verdict)}
                   </div>
                 </div>
-                <h1 className={`text-5xl font-bold mb-2 ${getVerdictColor(analysisResult.verdict)}`}>
-                  {analysisResult.verdict}
+                <h1 className={`text-5xl font-bold mb-2 ${getVerdictColor(currentResult.verdict)} flex items-center justify-center gap-3`}>
+                  <span className="text-4xl">
+                    {currentResult.verdict === "YES" ? "✅" : 
+                     currentResult.verdict === "OK" ? "⚠️" : "❌"}
+                  </span>
+                  {currentResult.verdict}
                 </h1>
-                <p className="text-2xl text-gray-700 font-medium">{analysisResult.foodName}</p>
+                {/* Food Name - Editable */}
+                {editMode ? (
+                  <input
+                    type="text"
+                    value={editedResult?.foodName || currentResult.foodName}
+                    onChange={(e) => setEditedResult({ ...currentResult, foodName: e.target.value })}
+                    className="text-2xl font-medium text-gray-700 text-center w-full bg-transparent border-b-2 border-purple-300 focus:border-purple-500 outline-none"
+                  />
+                ) : (
+                  <p className="text-2xl text-gray-700 font-medium">{currentResult.foodName}</p>
+                )}
               </div>
 
               <div className="p-8 space-y-6">
@@ -362,19 +380,101 @@ export default function FoodAnalysis() {
                   </div>
                 )}
 
-                {/* Explanation Card with verdict-based styling */}
+                {/* Explanation Card with verdict-based styling - Editable */}
                 <div className={`rounded-xl p-6 ${
-                  analysisResult.verdict === "YES" ? "bg-health-green/5 border border-health-green/20" :
-                  analysisResult.verdict === "NO" ? "bg-danger-red/5 border border-danger-red/20" :
+                  currentResult.verdict === "YES" ? "bg-health-green/5 border border-health-green/20" :
+                  currentResult.verdict === "NO" ? "bg-danger-red/5 border border-danger-red/20" :
                   "bg-warning-orange/5 border border-warning-orange/20"
                 }`}>
-                  <p className="text-gray-700 leading-relaxed text-lg">{analysisResult.explanation}</p>
+                  {editMode ? (
+                    <textarea
+                      value={editedResult?.explanation || currentResult.explanation}
+                      onChange={(e) => setEditedResult({ ...currentResult, explanation: e.target.value })}
+                      className="w-full text-gray-700 leading-relaxed text-lg bg-transparent resize-none outline-none"
+                      rows={4}
+                    />
+                  ) : (
+                    <p className="text-gray-700 leading-relaxed text-lg">{currentResult.explanation}</p>
+                  )}
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <p className="text-xs text-gray-500 italic">
                       Estimates are approximations based on analysis by AI
                     </p>
                   </div>
                 </div>
+
+                {/* Edit/Save Buttons */}
+                <div className="flex justify-center gap-3">
+                  {editMode ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setEditMode(false);
+                          setAnalysisResult(editedResult || currentResult);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setEditMode(false);
+                          setEditedResult(null);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEditMode(true);
+                        setEditedResult(currentResult);
+                      }}
+                      className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Results
+                    </Button>
+                  )}
+                </div>
+
+                {/* Why? Button for Scientific Justification */}
+                <div className="flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowScientificInfo(!showScientificInfo)}
+                    className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                  >
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    Why? (Scientific Details)
+                  </Button>
+                </div>
+
+                {/* Scientific Justification - Expandable */}
+                {showScientificInfo && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-left space-y-4">
+                    <h4 className="font-semibold text-purple-800">Scientific Justification</h4>
+                    <div className="space-y-3 text-sm text-gray-700">
+                      <p>
+                        <strong>Nutritional Analysis:</strong> Based on comprehensive food database analysis, 
+                        this item contains approximately {currentResult.calories || "N/A"} calories and 
+                        {currentResult.protein ? ` ${currentResult.protein}g of protein` : " unmeasured protein content"}.
+                      </p>
+                      <p>
+                        <strong>Health Impact:</strong> The verdict is based on your personalized health goals, 
+                        dietary restrictions, and current nutritional science recommendations.
+                      </p>
+                      <p>
+                        <strong>AI Confidence:</strong> {currentResult.confidence}% confidence level based on 
+                        image clarity, food recognition accuracy, and database matching.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Expandable Nutritional Details */}
                 {showNutritionDetails && (
