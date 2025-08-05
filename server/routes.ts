@@ -6,7 +6,8 @@ import { setupMultiAuth, isAuthenticated } from "./multiAuth";
 import { insertFoodLogSchema, updateUserProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { analyzeFoodWithGemini, clearAnalysisCache } from "./services/foodAnalysis";
-import { checkSubscriptionLimits, TIER_PRICES } from "./services/subscriptionLimits";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { checkSubscriptionLimits, TIER_PRICES, canAccessFeature } from "./services/subscriptionLimits";
 import { rateLimit } from "./middleware/validation";
 import { HealthCheckService } from "./services/healthChecks";
 import { concurrencyProtection } from "./middleware/concurrencyProtection";
@@ -381,6 +382,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("GDPR consent error:", error);
       res.status(500).json({ message: "Failed to update consent preferences" });
+    }
+  });
+
+  // AI Diet Planning Endpoint
+  app.post("/api/diet/chat", isAuthenticated, async (req: any, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "User not properly authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Check subscription access for diet planning
+      const userTier = user.subscriptionTier || 'free';
+      const hasAccess = canAccessFeature(userTier, 'dietPlanning', user.email || undefined);
+      
+      if (!hasAccess) {
+        return res.status(403).json({ 
+          error: "Diet planning requires Pro subscription",
+          upgradeRequired: true 
+        });
+      }
+
+      // Initialize Gemini AI
+      if (!process.env.GOOGLE_GEMINI_API_KEY) {
+        throw new Error("GOOGLE_GEMINI_API_KEY environment variable is required");
+      }
+      
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      const userProfile = {
+        healthGoals: (user as any).healthGoals || [],
+        dietaryPreferences: (user as any).dietaryPreferences || [],
+        allergies: (user as any).allergies || [],
+        fitnessLevel: (user as any).fitnessLevel || 'moderate',
+        subscriptionTier: user.subscriptionTier || 'free'
+      };
+
+      const dietPlanningPrompt = `
+You are an expert AI nutrition assistant helping users with personalized diet planning and nutrition advice.
+
+USER PROFILE:
+- Health Goals: ${userProfile.healthGoals.join(', ') || 'General health'}
+- Dietary Preferences: ${userProfile.dietaryPreferences.join(', ') || 'No specific preferences'}
+- Allergies: ${userProfile.allergies.join(', ') || 'None'}
+- Fitness Level: ${userProfile.fitnessLevel}
+
+CONVERSATION CONTEXT: ${context || 'New conversation'}
+
+USER MESSAGE: ${message}
+
+Provide a helpful, personalized response as a nutrition expert. Consider:
+- User's specific health goals and dietary needs
+- Any allergies or restrictions they have
+- Their fitness level and lifestyle
+- Practical, actionable advice
+- If they ask for meal plans, provide specific meals with brief nutritional benefits
+- If they ask about specific foods, give verdict and alternatives
+- Keep responses conversational but informative
+- Limit responses to 2-3 paragraphs maximum
+
+Respond naturally as an AI nutrition assistant, not as a food analysis tool.`;
+
+      const result = await model.generateContent(dietPlanningPrompt);
+      const response = result.response;
+      const text = response.text();
+
+      res.json({
+        response: text,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error("Diet planning error:", error);
+      res.status(500).json({ 
+        error: "Failed to generate diet advice",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 

@@ -14,6 +14,7 @@ interface TierLimits {
   challengesAccess: boolean;
   progressTracking: boolean;
   bonusPoints: boolean;
+  dietPlanning: boolean;
 }
 
 const TIER_LIMITS: Record<string, TierLimits> = {
@@ -33,6 +34,7 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     challengesAccess: false,
     progressTracking: false,
     bonusPoints: false,
+    dietPlanning: false,
   },
   pro: {
     dailyAnalyses: -1, // unlimited
@@ -50,6 +52,7 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     challengesAccess: true,
     progressTracking: true,
     bonusPoints: true,
+    dietPlanning: true,
   },
   advanced: {
     dailyAnalyses: -1, // unlimited
@@ -67,6 +70,7 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     challengesAccess: true,
     progressTracking: true,
     bonusPoints: true,
+    dietPlanning: true,
   },
 };
 

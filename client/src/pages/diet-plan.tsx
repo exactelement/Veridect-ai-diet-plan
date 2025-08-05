@@ -107,29 +107,58 @@ export default function DietPlan() {
     setIsTyping(true);
 
     try {
-      // Simulate AI response with more realistic delay
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: generateAIResponse(inputMessage),
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
+      // Build conversation context from previous messages
+      const context = messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n');
+      
+      const response = await fetch('/api/diet/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          context: context
+        }),
+      });
 
-        // If AI suggests a meal plan, generate it
-        if (inputMessage.toLowerCase().includes("plan") || inputMessage.toLowerCase().includes("meal")) {
-          setTimeout(() => {
-            generateWeeklyPlan();
-          }, 500);
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 403 && errorData.upgradeRequired) {
+          toast({
+            title: "Pro Feature Required",
+            description: "Diet planning requires a Pro subscription. Upgrade to access AI nutrition assistance.",
+            variant: "destructive"
+          });
+          setIsTyping(false);
+          return;
         }
-      }, 800);
+        throw new Error(errorData.error || 'Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.response,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, aiResponse]);
+      setIsTyping(false);
+
+      // If AI suggests a meal plan, generate it
+      if (inputMessage.toLowerCase().includes("plan") || inputMessage.toLowerCase().includes("meal")) {
+        setTimeout(() => {
+          generateWeeklyPlan();
+        }, 500);
+      }
+      
     } catch (error) {
       setIsTyping(false);
       toast({
-        title: "Error", 
-        description: "Failed to get AI response",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to get AI response",
         variant: "destructive"
       });
     }
