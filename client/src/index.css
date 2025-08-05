@@ -38,9 +38,17 @@
   --ring: hsl(207, 90%, 54%);
   --radius: 0.5rem;
   
+  /* Veridect Presentation Style - Purple Gradient Theme */
+  --veridect-gradient-start: hsl(253, 87%, 66%);
+  --veridect-gradient-end: hsl(266, 85%, 58%);
+  --veridect-card-bg: hsl(0, 0%, 98%);
+  --veridect-card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --veridect-text-light: hsl(0, 0%, 100%);
+  --veridect-text-muted: hsla(0, 0%, 100%, 0.8);
+  
   /* Custom Veridect colors */
   --ios-blue: hsl(207, 100%, 50%);
-  --health-green: hsl(134, 61%, 51%);
+  --health-green: hsl(142, 76%, 36%);
   --warning-orange: hsl(35, 100%, 50%);
   --danger-red: hsl(2, 100%, 59%);
   --ios-bg: hsl(240, 25%, 97%);
@@ -123,6 +131,41 @@
   
   .app-interface {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  /* Veridect Presentation Style Classes */
+  .veridect-gradient-bg {
+    background: linear-gradient(135deg, var(--veridect-gradient-start) 0%, var(--veridect-gradient-end) 100%);
+  }
+  
+  .veridect-card {
+    background: var(--veridect-card-bg);
+    box-shadow: var(--veridect-card-shadow);
+    border-radius: 1.5rem;
+    border: none;
+  }
+  
+  .veridect-mobile-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: none;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .veridect-yes-badge {
+    background: var(--health-green);
+    color: white;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin: 0 auto;
   }
   
   .animate-fade-in {
