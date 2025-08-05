@@ -5,6 +5,7 @@ Veridect is a live revenue-generating AI-powered nutrition analysis platform des
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
+Documentation: User requests detailed technical documentation for Fiverr developers to build complete app with all features.
 
 ## System Architecture
 
