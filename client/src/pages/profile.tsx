@@ -233,6 +233,7 @@ export default function Profile() {
   const [personalOpen, setPersonalOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [personalizationOpen, setPersonalizationOpen] = useState(false);
   const [interfaceOpen, setInterfaceOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -781,17 +782,17 @@ export default function Profile() {
             </Collapsible>
           </Card>
 
-          {/* Email Preferences Dropdown - Available to All Users */}
+          {/* Privacy & Permissions Dropdown - Available to All Users */}
           <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator">
-            <Collapsible open={emailOpen} onOpenChange={setEmailOpen}>
+            <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen}>
               <CollapsibleTrigger asChild>
                 <CardHeader className="cursor-pointer hover:bg-ios-gray-50 transition-colors">
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Mail className="w-5 h-5 text-ios-blue" />
-                      <span>Email Preferences</span>
+                      <Shield className="w-5 h-5 text-ios-blue" />
+                      <span>Privacy & Permissions</span>
                     </div>
-                    {emailOpen ? (
+                    {privacyOpen ? (
                       <ChevronDown className="w-5 h-5 text-ios-secondary" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-ios-secondary" />
