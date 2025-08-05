@@ -25,18 +25,6 @@ interface WeeklyScore {
   weeklyChange: number;
 }
 
-interface SubscriptionTier {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  features: string[];
-  icon: React.ReactNode;
-  popular?: boolean;
-  color: string;
-  comingSoon?: boolean;
-}
-
 export default function Home() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
@@ -84,13 +72,6 @@ export default function Home() {
     queryKey: ["/api/leaderboard/my-score"],
     enabled: hasProAccess,
   });
-
-  const { data: leaderboard = [] } = useQuery({
-    queryKey: ["/api/leaderboard/weekly"],
-    enabled: hasProAccess,
-  });
-
-  // Remove duplicate user query - using user from useAuth hook
 
   // Calculate today's stats
   const todaysStats = todaysLogs.reduce(
@@ -156,629 +137,173 @@ export default function Home() {
   const participateInWeeklyChallenge = privacySettings.participateInWeeklyChallenge !== false; // Default to true
   const showFoodStats = privacySettings.showFoodStats !== false; // Default to true
 
-  // Subscription tiers
-  const subscriptionTiers: SubscriptionTier[] = [
-    {
-      id: "free",
-      name: "Free",
-      price: 0,
-      description: "Get started with basic food analysis",
-      features: [
-        "5 analyses per day",
-        "Basic nutritional info",
-        "Simple yes/no verdicts"
-      ],
-      icon: <Zap className="w-6 h-6" />,
-      color: "from-gray-400 to-gray-600"
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      price: 1,
-      description: "Billed annually (€12/year) - Limited offer! Normally €10/month",
-      features: [
-        "Unlimited analyses",
-        "Food logging & progress tracking",
-        "Challenges and bonus points",
-        "Leaderboard access",
-        "Food history",
-        "Personalised AI analysis",
-        "Priority support"
-      ],
-      icon: <Star className="w-6 h-6" />,
-      popular: true,
-      color: "from-blue-500 to-purple-600"
-    },
-    {
-      id: "advanced",
-      name: "Advanced",
-      price: 50,
-      description: "For professionals & advanced users",
-      features: [
-        "Everything in Pro",
-        "Professional-grade analysis",
-        "Advanced nutrition metrics",
-        "Clinical data integration",
-        "Team collaboration tools",
-        "API access",
-        "Access to professional nutritionist",
-        "Dedicated account manager"
-      ],
-      icon: <Shield className="w-6 h-6" />,
-      color: "from-emerald-500 to-teal-600",
-      comingSoon: true
-    }
-  ];
-
   return (
-    <div className="min-h-screen veridect-gradient-bg pb-24">
-      {/* Hero Section with Presentation Style */}
-      <div className="pt-20 pb-8">
-        <div className="container-padding">
-          <div className="max-w-6xl mx-auto">
-            {/* Veridect Platform Header - Presentation Style */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-veridect-text-light mb-3">
-                Veridect Platform
-              </h1>
-              <p className="text-veridect-text-muted text-lg mb-2">Bringing Awareness to Healthier Nutrition</p>
-              <p className="text-veridect-text-muted text-sm">Making healthy eating effortless, one photo at a time</p>
-            </div>
-
-            {/* Mobile Analysis Card - Presentation Style */}
-            <div className="mb-12 flex justify-center">
-              <div className="veridect-mobile-card p-8 text-center">
-                <div className="mb-6">
-                  <div className="w-12 h-12 bg-health-green rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <div className="w-3 h-3 bg-white rounded-full"></div>
-                  </div>
-                </div>
-                
-                <div className="veridect-yes-badge mb-4">
-                  YES
-                </div>
-                
-                <h3 className="font-semibold text-gray-800 mb-2">Healthy Choice!</h3>
-                <p className="text-sm text-gray-600 mb-6">This perfectly aligns with your daily nutrition goals.</p>
-                
-                <Button 
-                  onClick={() => navigate("/food-analysis")}
-                  className="w-full bg-health-green hover:bg-green-600 text-white rounded-xl py-3 font-semibold"
-                >
-                  Ask Veri
-                </Button>
-              </div>
-            </div>
-
-            {/* Personalized Greeting */}
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold text-veridect-text-light mb-2">
-                {timeGreeting}, {((user as any)?.firstName || 'there').trim()}!
-              </h2>
-              <p className="text-veridect-text-muted">Ready to make healthy food choices today?</p>
-            </div>
-
-            {/* Today's Progress Card - Presentation Style */}
-            {hasProAccess && (
-              <div className="veridect-card p-8 mb-8">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Today's Progress</h3>
-                
-                {/* Calorie Progress Ring */}
-                {showCalorieCounter && (
-                  <div className="mb-6">
-                    <div className="flex justify-center mb-4">
-                      <div className="relative w-32 h-32">
-                        <svg className="w-32 h-32 transform -rotate-90">
-                          <circle
-                            cx="64"
-                            cy="64"
-                            r="56"
-                            stroke="#f3f4f6"
-                            strokeWidth="12"
-                            fill="none"
-                          />
-                          <circle
-                            cx="64"
-                            cy="64"
-                            r="56"
-                            stroke={isOverGoal ? "#ef4444" : "#10b981"}
-                            strokeWidth="12"
-                            fill="none"
-                            strokeDasharray={`${Math.min(calorieProgress, 100) * 3.51} 351.86`}
-                            className="transition-all duration-500"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-800">{totalCalories}</div>
-                            <div className="text-xs text-gray-500">/ {calorieGoal} cal</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">{todaysStats.yes}</div>
-                    <div className="text-sm text-gray-600">✅ Yes</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-yellow-600">{todaysStats.ok}</div>
-                    <div className="text-sm text-gray-600">⚠️ OK</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-red-600">{todaysStats.no}</div>
-                    <div className="text-sm text-gray-600">❌ No</div>
-                  </div>
-                </div>
-
-                {/* Current Streak */}
-                <div className="bg-purple-50 rounded-xl p-4 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Award className="w-5 h-5 text-purple-600" />
-                    <span className="text-sm font-medium text-purple-600">Current Streak</span>
-                  </div>
-                  <div className="text-2xl font-bold text-purple-700">{currentStreak} days</div>
-                  <div className="text-xs text-purple-600">without "No" foods</div>
-                </div>
-              </div>
-            )}
-
-
-
-            {/* Enhanced Gamification Section - Presentation Style */}
-            {hasProAccess && (
-              <div className="space-y-6 mb-8">
-                {/* Weekly Progress Overview */}
-                <div className="veridect-card p-8">
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Weekly Progress</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Streak Achievement */}
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                          <Award className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-800">Day Streak</h4>
-                          <p className="text-sm text-gray-600">Without "No" foods</p>
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-5xl font-bold text-purple-700 mb-2">{currentStreak}</div>
-                        <div className="text-sm text-purple-600">
-                          {currentStreak === 0 ? 'Start your streak today!' : `Keep going! 🔥`}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Level Progress */}
-                    <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center">
-                          <Star className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-800">Level {currentLevel}</h4>
-                          <p className="text-sm text-gray-600">{totalLifetimePoints} total points</p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Progress to Level {currentLevel + 1}</span>
-                          <span>{pointsToNextLevel > 0 ? pointsToNextLevel : 0} points to go</span>
-                        </div>
-                        <Progress value={levelProgress} className="h-2 bg-amber-100" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Weekly Challenges */}
-                {participateInWeeklyChallenge && (
-                  <div className="veridect-card p-8 mt-6">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Weekly Challenges</h3>
-                    
-                    <div className="space-y-4">
-                      {/* Active Challenge */}
-                      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white">
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-semibold text-lg">Green Week Challenge</h4>
-                          <Trophy className="w-6 h-6" />
-                        </div>
-                        <p className="text-sm mb-4 opacity-90">Get 20 "YES" verdicts this week</p>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Progress</span>
-                            <span>{weeklyStats.yes}/20</span>
-                          </div>
-                          <Progress value={(weeklyStats.yes / 20) * 100} className="h-2 bg-white/20" />
-                        </div>
-                        <div className="mt-3 text-sm opacity-80">
-                          Reward: 500 bonus points + achievement badge
-                        </div>
-                      </div>
-
-                      {/* Weekly Leaderboard Position */}
-                      {weeklyScore && (
-                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h5 className="font-medium text-gray-800">Your Weekly Rank</h5>
-                              <p className="text-2xl font-bold text-purple-700">#{weeklyScore.rank}</p>
-                              <p className="text-sm text-gray-600">{weeklyPoints} points this week</p>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => navigate('/leaderboard')}
-                              className="border-purple-600 text-purple-600 hover:bg-purple-50"
-                            >
-                              View Leaderboard
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Quick Action Button */}
-            <div className="text-center mb-8">
-              <Button 
-                onClick={() => navigate('/food-analysis')}
-                className="bg-gradient-to-r from-ios-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                <Camera className="w-6 h-6 mr-2" />
-                Analyze Food Now
-              </Button>
-            </div>
+    <div className="min-h-screen bg-ios-bg pb-24">
+      <div className="pt-20 pb-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-ios-text mb-2">
+              {timeGreeting}, {(user as any)?.fullName || (user as any)?.email?.split('@')[0] || 'there'}! 👋
+            </h1>
+            <p className="text-ios-secondary">Ready to continue your healthy journey?</p>
           </div>
-        </div>
-      </div>
 
-      {/* Today's Food Logs - Presentation Style */}
-      {hasProAccess && (
-        <div className="container-padding mb-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="veridect-card p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-                  <Calendar className="w-6 h-6 text-purple-600" />
-                  Today's Food Log
-                </h3>
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                  {todaysLogs.length} {todaysLogs.length === 1 ? 'item' : 'items'}
-                </span>
-              </div>
-              {todaysLogs.length > 0 ? (
+          {/* Quick Action Button */}
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => navigate('/')}
+              className="bg-gradient-to-r from-ios-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <Camera className="w-6 h-6 mr-2" />
+              Analyze Food Now
+            </Button>
+          </div>
+
+          {/* Stats Cards */}
+          {hasProAccess ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {/* Today's Summary */}
+              {showFoodStats && (
+                <Card className="ios-shadow border-0">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg text-ios-text flex items-center gap-2">
+                      <Target className="w-5 h-5 text-ios-blue" />
+                      Today's Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary">Analyzed</span>
+                      <span className="font-semibold text-ios-text">{todaysLogs.length} items</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary flex items-center gap-1">
+                        <div className="w-3 h-3 bg-health-green rounded-full"></div>
+                        Good choices
+                      </span>
+                      <span className="font-semibold text-health-green">{todaysStats.yes}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary flex items-center gap-1">
+                        <div className="w-3 h-3 bg-warning-orange rounded-full"></div>
+                        Okay choices
+                      </span>
+                      <span className="font-semibold text-warning-orange">{todaysStats.ok}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary flex items-center gap-1">
+                        <div className="w-3 h-3 bg-danger-red rounded-full"></div>
+                        Poor choices
+                      </span>
+                      <span className="font-semibold text-danger-red">{todaysStats.no}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Calorie Counter */}
+              {showCalorieCounter && (
+                <Card className="ios-shadow border-0">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg text-ios-text flex items-center gap-2">
+                      <Target className="w-5 h-5 text-ios-blue" />
+                      Calorie Tracker
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary">Today</span>
+                      <span className={`font-semibold ${isOverGoal ? 'text-danger-red' : 'text-ios-text'}`}>
+                        {totalCalories} / {calorieGoal} cal
+                      </span>
+                    </div>
+                    <Progress 
+                      value={Math.min(calorieProgress, 100)} 
+                      className="h-2"
+                    />
+                    <p className="text-xs text-ios-secondary">
+                      {isOverGoal 
+                        ? `${totalCalories - calorieGoal} calories over goal` 
+                        : `${calorieGoal - totalCalories} calories remaining`
+                      }
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Weekly Progress */}
+              {participateInWeeklyChallenge && (
+                <Card className="ios-shadow border-0">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg text-ios-text flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-ios-blue" />
+                      Weekly Progress
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-ios-secondary">Health Score</span>
+                      <span className="font-semibold text-ios-text">{weeklyHealthScore}%</span>
+                    </div>
+                    <Progress value={weeklyHealthScore} className="h-2" />
+                    <div className="flex justify-between text-xs text-ios-secondary">
+                      <span>This week: {weeklyStats.total} items</span>
+                      <span>Rank: #{(weeklyScore as any)?.rank || 'N/A'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : (
+            /* Free tier upgrade prompt */
+            <div className="mb-8">
+              <SubscriptionCheck requiredTier="pro" showUpgrade={true}>
+                <div></div>
+              </SubscriptionCheck>
+            </div>
+          )}
+
+          {/* Recent Food Logs */}
+          {hasProAccess && todaysLogs.length > 0 && (
+            <Card className="ios-shadow border-0 mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg text-ios-text flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-ios-blue" />
+                  Recent Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-3">
-                  {todaysLogs.slice(0, 5).map((log: FoodLog) => (
-                    <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  {todaysLogs.slice(0, 3).map((log: FoodLog) => (
+                    <div key={log.id} className="flex items-center justify-between p-3 bg-ios-bg rounded-lg">
                       <div className="flex items-center gap-3">
-                        {log.verdict === 'YES' && <CheckCircle className="w-5 h-5 text-green-600" />}
-                        {log.verdict === 'OK' && <AlertCircle className="w-5 h-5 text-yellow-600" />}
-                        {log.verdict === 'NO' && <XCircle className="w-5 h-5 text-red-600" />}
+                        {log.verdict === 'YES' && <CheckCircle className="w-5 h-5 text-health-green" />}
+                        {log.verdict === 'OK' && <AlertCircle className="w-5 h-5 text-warning-orange" />}
+                        {log.verdict === 'NO' && <XCircle className="w-5 h-5 text-danger-red" />}
                         <div>
-                          <div className="font-medium text-gray-800">{log.foodName}</div>
-                          <div className="text-sm text-gray-600">
-                            {log.calories && log.calories > 0 ? `${log.calories} cal` : "N/A cal"}
+                          <div className="font-medium text-ios-text">{log.foodName}</div>
+                          <div className="text-sm text-ios-secondary">
+                            {log.calories ? `${log.calories} cal` : "N/A cal"}
                             {' • '}
-                            {log.protein && log.protein > 0 ? `${log.protein}g protein` : "N/A protein"}
+                            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                       </div>
                       <Badge 
                         className={
-                          log.verdict === "YES" ? "bg-health-green text-white font-medium" :
-                          log.verdict === "OK" ? "bg-warning-orange text-white font-medium" :
-                          "bg-danger-red text-white font-medium"
+                          log.verdict === "YES" ? "bg-health-green text-white" :
+                          log.verdict === "OK" ? "bg-warning-orange text-white" :
+                          "bg-danger-red text-white"
                         }
                       >
                         {log.verdict}
                       </Badge>
                     </div>
                   ))}
-                  {todaysLogs.length > 5 && (
-                    <Button 
-                      variant="outline" 
-                      onClick={() => navigate('/progress')}
-                      className="w-full mt-4"
-                    >
-                      View All {todaysLogs.length} Items
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">No food analyzed yet today</p>
-                  <Button 
-                    onClick={() => navigate('/food-analysis')}
-                    className="bg-ios-blue hover:bg-blue-600 text-white"
-                  >
-                    Start Analyzing
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Free tier features section - only show for free tier users */}
-      {!hasProAccess && (
-        <div className="container-padding mb-8">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-center mb-6">Free Tier Features</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-warning-orange" />
-                  5 Analyses Per Day
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Analyze up to 5 foods daily with our AI</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-ios-blue" />
-                  Basic Nutritional Info
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Get essential nutrition information for your food</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5 text-health-green" />
-                  Simple Yes/No Verdicts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-ios-secondary">Clear yes or no answers about your food choices</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Premium features - locked for free users */}
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
-              Premium Features (Upgrade Required)
-            </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50">
-                <Card className="bg-gray-100 border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>🎯</span> Personalization
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-xs text-gray-700">
-                    Custom AI based on your goals
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gray-100 border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>🏆</span> Leaderboard
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-xs text-gray-400">
-                    Compete with other users
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gray-100 border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>📊</span> Food History
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-xs text-gray-400">
-                    View your analysis history
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-gray-100 border-gray-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>📈</span> Weekly Progress
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-xs text-gray-400">
-                    Track your progress over time
-                  </CardContent>
-                </Card>
-              </div>
-              
-              <div className="text-center mt-6">
-                <Button 
-                  onClick={() => navigate('/subscription')}
-                  className="bg-ios-blue hover:bg-blue-600 text-white px-8 py-3"
-                >
-                  Upgrade to Pro - €1/month billed annually
-                </Button>
-              </div>
-          </div>
-          </div>
-        </div>
-      )}
-
-      {/* Weekly Progress - only for Pro and Advanced users */}
-      {hasProAccess && (
-        <div className="container-padding mb-8">
-          <div className="max-w-6xl mx-auto">
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-ios-blue" />
-                  Weekly Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-600">Weekly Health Score</span>
-                      <span className="text-sm font-bold text-gray-800">{weeklyHealthScore}%</span>
-                    </div>
-                    <Progress value={weeklyHealthScore} className="h-2 mb-4" />
-                    
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-600">Weekly Rank</span>
-                      <span className="text-sm font-bold text-gray-800">
-                        #{(leaderboard as any)?.findIndex((entry: any) => entry.userId === (user as any)?.id) + 1 || '-'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">Total Score</span>
-                      <span className="text-sm font-bold text-gray-800">{weeklyPoints} pts</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Award className="w-16 h-16 text-yellow-500 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-4">Keep going! You're making great progress.</p>
-                    <Button 
-                      variant="outline"
-                      onClick={() => navigate('/leaderboard')}
-                      className="w-full"
-                    >
-                      View Leaderboard
-                    </Button>
-                  </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Key Features */}
-      <div className="container-padding mb-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">Powerful Features</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6 text-center">
-                <Brain className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">AI-Powered Analysis</h3>
-                <p className="text-gray-600 text-sm">Advanced AI analyzes your food with medical-grade accuracy and personalized recommendations.</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6 text-center">
-                <Target className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Personalized Goals</h3>
-                <p className="text-gray-600 text-sm">Set and track your health goals with customized nutrition plans tailored to your lifestyle.</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-6 text-center">
-                <TrendingUp className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Progress Tracking</h3>
-                <p className="text-gray-600 text-sm">Monitor your nutrition journey with detailed analytics, trends, and achievement badges.</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-
-      {/* Subscription Tiers */}
-      <div className="container-padding mb-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Choose Your Plan</h2>
-            <p className="text-gray-600">Unlock advanced features to supercharge your nutrition journey</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {subscriptionTiers.map((tier) => (
-              <Card 
-                key={tier.id} 
-                className={`relative bg-white/80 backdrop-blur-sm border shadow-lg hover:shadow-xl transition-all duration-200 ${
-                  tier.popular ? 'border-blue-300 ring-2 ring-blue-200' : 'border-ios-separator'
-                } ${(user as any)?.subscriptionTier === tier.id ? 'ring-2 ring-green-200 border-green-300' : ''} ${
-                  tier.id === 'advanced' ? 'opacity-50' : ''
-                }`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white px-4 py-1">Most Popular</Badge>
-                  </div>
-                )}
-                
-                {tier.comingSoon && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gray-600 text-white px-3 py-1">Coming Soon</Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r ${tier.color} text-white mb-4 mx-auto`}>
-                    {tier.icon}
-                  </div>
-                  <CardTitle className="text-xl font-bold text-gray-900">{tier.name}</CardTitle>
-                  <div className="text-3xl font-bold text-gray-900">
-                    €{tier.price}
-                    <span className="text-base font-normal text-gray-700">/month</span>
-                  </div>
-                  <p className="text-sm text-gray-700 mt-2">{tier.description}</p>
-                </CardHeader>
-                
-                <CardContent className="pt-0">
-                  <ul className="space-y-3 mb-6">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-800">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    className={`w-full ${
-                      tier.comingSoon 
-                        ? 'bg-gray-600 hover:bg-gray-700 text-white'
-                        : (user as any)?.subscriptionTier === tier.id 
-                        ? 'bg-green-600 hover:bg-green-700 text-white' 
-                        : tier.popular 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                        : 'bg-gray-600 hover:bg-gray-700 text-white'
-                    }`}
-                    onClick={() => {
-                      if (tier.comingSoon) {
-                        return; // Do nothing for coming soon items
-                      }
-                      if ((user as any)?.subscriptionTier !== tier.id) {
-                        navigate('/subscription');
-                      }
-                    }}
-                    disabled={(user as any)?.subscriptionTier === tier.id || tier.comingSoon}
-                  >
-                    {tier.comingSoon ? 'Coming Soon' : (user as any)?.subscriptionTier === tier.id ? 'Current Plan' : tier.price === 0 ? 'Get Started' : 'Upgrade Now'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          )}
         </div>
       </div>
     </div>

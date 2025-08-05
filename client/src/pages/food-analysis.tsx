@@ -332,11 +332,11 @@ export default function FoodAnalysis() {
   if (analysisResult) {
     const currentResult = editedResult || analysisResult;
     return (
-      <div className="min-h-screen veridect-gradient-bg pt-20 pb-32">
-        <div className="container-padding">
+      <div className="min-h-screen bg-ios-bg pt-20 pb-32">
+        <div className="px-4">
           <div className="max-w-4xl mx-auto">
             {/* Main Result Card with presentation style */}
-            <div className="veridect-card">
+            <div className="bg-white rounded-2xl shadow-lg border-0">
               <div className="text-center p-8">
                 <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
                   currentResult.verdict === "YES" ? "bg-health-green/10" :

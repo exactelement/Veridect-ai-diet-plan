@@ -21,7 +21,8 @@ import {
   ShoppingCart,
   Edit,
   Check,
-  Sparkles
+  Sparkles,
+  HelpCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -216,13 +217,13 @@ export default function DietPlan() {
   };
 
   return (
-    <div className="min-h-screen veridect-gradient-bg pt-20 pb-24">
-      <div className="container-padding">
+    <div className="min-h-screen bg-ios-bg pt-20 pb-24">
+      <div className="px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-veridect-text-light">AI Diet Planning</h1>
-              <p className="text-veridect-text-muted mt-1">Create personalized meal plans with AI assistance</p>
+              <h1 className="text-3xl font-bold text-ios-text">AI Diet Planning</h1>
+              <p className="text-ios-secondary mt-1">Create personalized meal plans with AI assistance</p>
             </div>
             <Badge variant="secondary" className="bg-purple-100 text-purple-700">
               Pro Feature
@@ -231,7 +232,7 @@ export default function DietPlan() {
 
           <div className="grid lg:grid-cols-2 gap-6">
             {/* AI Chat Section */}
-            <div className="veridect-card">
+            <div className="bg-white rounded-2xl shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="w-5 h-5 text-purple-600" />
@@ -295,7 +296,7 @@ export default function DietPlan() {
             </div>
 
             {/* Weekly Meal Plan */}
-            <div className="veridect-card">
+            <div className="bg-white rounded-2xl shadow-lg border-0">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-purple-600" />
