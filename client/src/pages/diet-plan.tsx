@@ -64,7 +64,7 @@ export default function DietPlan() {
     {
       id: "1",
       role: "assistant",
-      content: "Hi! I'm your AI nutrition assistant. I can help you create personalized meal plans based on your health goals and preferences. What would you like to achieve with your diet?",
+      content: "Hi! I'm your AI nutrition assistant powered by science-backed recommendations. I can help you create personalized, healthy meal plans based on your health goals and preferences. Try asking me to 'update my breakfast with protein-rich foods' or 'create a weekly meal plan for weight loss'. What would you like to achieve with your diet?",
       timestamp: new Date()
     }
   ]);
@@ -147,8 +147,29 @@ export default function DietPlan() {
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
 
-      // If AI suggests a meal plan, generate it
-      if (inputMessage.toLowerCase().includes("plan") || inputMessage.toLowerCase().includes("meal")) {
+      // Only update meal plan when user explicitly asks for it
+      if ((inputMessage.toLowerCase().includes("update my") || 
+           inputMessage.toLowerCase().includes("change my") ||
+           inputMessage.toLowerCase().includes("modify my") ||
+           inputMessage.toLowerCase().includes("add to my")) &&
+          (data.response.includes("I'll update your") || 
+           data.response.includes("Here's your new") ||
+           data.response.includes("**"))) {
+        // Extract meal type and update relevant plan
+        const mealTypes = ["breakfast", "lunch", "dinner", "snack"];
+        const mentionedMealType = mealTypes.find(type => 
+          inputMessage.toLowerCase().includes(type) || data.response.toLowerCase().includes(type)
+        );
+        
+        if (mentionedMealType) {
+          setTimeout(() => {
+            updateMealPlanFromAI(data.response, mentionedMealType as "breakfast" | "lunch" | "dinner" | "snack");
+          }, 500);
+        }
+      }
+      
+      // If AI suggests a full meal plan, generate it
+      if (inputMessage.toLowerCase().includes("weekly plan") || inputMessage.toLowerCase().includes("meal plan")) {
         setTimeout(() => {
           generateWeeklyPlan();
         }, 500);
@@ -174,6 +195,79 @@ export default function DietPlan() {
       return "Perfect! I'll create a plant-based meal plan that ensures you get all essential nutrients, including adequate protein, B12, iron, and omega-3s. Your meals will be diverse and delicious. Generating your weekly plan now...";
     }
     return "I'll help you create a personalized meal plan. Could you tell me more about your dietary preferences, any restrictions, and your main health goals?";
+  };
+
+  // Update specific meal plan from AI response
+  const updateMealPlanFromAI = (aiResponse: string, mealType: "breakfast" | "lunch" | "dinner" | "snack") => {
+    // Extract meal information from AI response
+    const lines = aiResponse.split('\n');
+    let mealName = "";
+    let ingredients: string[] = [];
+    
+    // Look for meal name (usually in **bold** or after "Here's your new")
+    for (const line of lines) {
+      if (line.includes('**') && line.trim() !== '') {
+        mealName = line.replace(/\*\*/g, '').trim();
+        break;
+      }
+    }
+    
+    // Extract ingredients (lines that start with - or •)
+    for (const line of lines) {
+      if (line.trim().startsWith('-') || line.trim().startsWith('•')) {
+        const ingredient = line.replace(/^[-•]\s*/, '').split(' - ')[0].trim();
+        if (ingredient) {
+          ingredients.push(ingredient);
+        }
+      }
+    }
+    
+    // If we couldn't extract properly, use fallback
+    if (!mealName || ingredients.length === 0) {
+      mealName = `AI-Recommended ${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`;
+      ingredients = ["Check AI response above for details"];
+    }
+    
+    // Update the weekly plan
+    setWeeklyPlan(prev => {
+      if (prev.length === 0) {
+        // Initialize with basic plan if empty
+        const newPlan = Array.from({ length: 7 }, (_, i) => ({
+          day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i],
+          meals: {
+            breakfast: { name: 'Healthy Breakfast', ingredients: ['Oats', 'Berries', 'Nuts'] },
+            lunch: { name: 'Balanced Lunch', ingredients: ['Lean protein', 'Vegetables', 'Whole grains'] },
+            dinner: { name: 'Nutritious Dinner', ingredients: ['Fish/Chicken', 'Vegetables', 'Quinoa'] },
+            snack: { name: 'Healthy Snack', ingredients: ['Fruits', 'Nuts'] }
+          },
+          completed: { breakfast: false, lunch: false, dinner: false, snack: false }
+        }));
+        
+        // Update the specific meal type
+        return newPlan.map(day => ({
+          ...day,
+          meals: {
+            ...day.meals,
+            [mealType]: { name: mealName, ingredients }
+          }
+        }));
+      }
+      
+      // Update existing plan
+      return prev.map(day => ({
+        ...day,
+        meals: {
+          ...day.meals,
+          [mealType]: { name: mealName, ingredients }
+        }
+      }));
+    });
+    
+    // Show success toast
+    toast({
+      title: "Meal Plan Updated!",
+      description: `Your ${mealType} plan has been updated with AI recommendations.`,
+    });
   };
 
   const generateWeeklyPlan = () => {
@@ -313,7 +407,7 @@ export default function DietPlan() {
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && !isTyping && sendMessage()}
-                    placeholder="Ask about diet plans, nutrition, or recipes..."
+                    placeholder="Ask about meal plans, nutrition advice, or say 'update my breakfast' to modify meals..."
                     className="flex-1"
                     disabled={isTyping}
                   />
