@@ -222,17 +222,51 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pb-24">
-      {/* Hero Section */}
+    <div className="min-h-screen veridect-gradient-bg pb-24">
+      {/* Hero Section with Presentation Style */}
       <div className="pt-20 pb-8">
         <div className="container-padding">
           <div className="max-w-6xl mx-auto">
-            {/* Greeting Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {timeGreeting}, {((user as any)?.firstName || 'there').trim()}!
+            {/* Veridect Platform Header - Presentation Style */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl font-bold text-veridect-text-light mb-3">
+                Veridect Platform
               </h1>
-              <p className="text-gray-600">Ready to make healthy food choices today?</p>
+              <p className="text-veridect-text-muted text-lg mb-2">Bringing Awareness to Healthier Nutrition</p>
+              <p className="text-veridect-text-muted text-sm">Making healthy eating effortless, one photo at a time</p>
+            </div>
+
+            {/* Mobile Analysis Card - Presentation Style */}
+            <div className="mb-12 flex justify-center">
+              <div className="veridect-mobile-card p-8 text-center">
+                <div className="mb-6">
+                  <div className="w-12 h-12 bg-health-green rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <div className="w-3 h-3 bg-white rounded-full"></div>
+                  </div>
+                </div>
+                
+                <div className="veridect-yes-badge mb-4">
+                  YES
+                </div>
+                
+                <h3 className="font-semibold text-gray-800 mb-2">Healthy Choice!</h3>
+                <p className="text-sm text-gray-600 mb-6">This perfectly aligns with your daily nutrition goals.</p>
+                
+                <Button 
+                  onClick={() => navigate("/food-analysis")}
+                  className="w-full bg-health-green hover:bg-green-600 text-white rounded-xl py-3 font-semibold"
+                >
+                  Ask Veri
+                </Button>
+              </div>
+            </div>
+
+            {/* Personalized Greeting */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-semibold text-veridect-text-light mb-2">
+                {timeGreeting}, {((user as any)?.firstName || 'there').trim()}!
+              </h2>
+              <p className="text-veridect-text-muted">Ready to make healthy food choices today?</p>
             </div>
 
             {/* Calorie Counter Bar - Only for Pro users with calorie counter enabled */}
