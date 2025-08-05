@@ -222,23 +222,23 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen gradient-bg-subtle pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-ios-bg via-white to-ios-gray-50 pb-24">
       {/* Hero Section */}
       <div className="pt-20 pb-8">
         <div className="container-padding">
           <div className="max-w-6xl mx-auto">
             {/* Greeting Header */}
-            <div className="text-center mb-8 animate-fade-in">
-              <h1 className="text-4xl font-bold gradient-text mb-3">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 {timeGreeting}, {((user as any)?.firstName || 'there').trim()}!
               </h1>
-              <p className="text-xl text-neutral-600">Ready to make healthy food choices today?</p>
+              <p className="text-gray-600">Ready to make healthy food choices today?</p>
             </div>
 
             {/* Calorie Counter Bar - Only for Pro users with calorie counter enabled */}
             {hasProAccess && showCalorieCounter && (
-              <Card className="mb-8 premium-card bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 animate-slide-up">
-                <CardContent className="p-8">
+              <Card className="mb-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+                <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Target className="w-6 h-6 text-orange-600" />
@@ -273,33 +273,33 @@ export default function Home() {
 
             {/* Daily Stats Cards - Only for Pro users */}
             {hasProAccess && showFoodStats && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 animate-slide-up">
-                <Card className="premium-card bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:scale-105 transition-transform duration-200">
-                  <CardContent className="p-6 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                  <CardContent className="p-4 text-center">
                     <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-green-700">{todaysStats.yes}</div>
                     <div className="text-sm text-green-600">Yes Foods</div>
                   </CardContent>
                 </Card>
 
-                <Card className="premium-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:scale-105 transition-transform duration-200">
-                  <CardContent className="p-6 text-center">
+                <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+                  <CardContent className="p-4 text-center">
                     <AlertCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-yellow-700">{todaysStats.ok}</div>
                     <div className="text-sm text-yellow-600">OK Foods</div>
                   </CardContent>
                 </Card>
 
-                <Card className="premium-card bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:scale-105 transition-transform duration-200">
-                  <CardContent className="p-6 text-center">
+                <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+                  <CardContent className="p-4 text-center">
                     <XCircle className="w-8 h-8 text-red-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-red-700">{todaysStats.no}</div>
                     <div className="text-sm text-red-600">No Foods</div>
                   </CardContent>
                 </Card>
 
-                <Card className="premium-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:scale-105 transition-transform duration-200">
-                  <CardContent className="p-6 text-center">
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                  <CardContent className="p-4 text-center">
                     <Heart className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-blue-700">{weeklyHealthScore}%</div>
                     <div className="text-sm text-blue-600">Health Score</div>
@@ -350,39 +350,15 @@ export default function Home() {
               </div>
             )}
 
-            {/* Quick Action Buttons */}
-            <div className="grid gap-6 md:grid-cols-2 mb-8">
-              <Card className="premium-card bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:scale-105 transition-all duration-300 cursor-pointer">
-                <CardContent className="p-8">
-                  <Link to="/food-analysis">
-                    <div className="flex items-center space-x-4">
-                      <div className="bg-health-green text-white p-4 rounded-2xl premium-shadow">
-                        <Camera className="w-8 h-8" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-neutral-800 text-xl">Analyze Food</h3>
-                        <p className="text-neutral-600 mt-1">Get instant health verdicts with AI</p>
-                      </div>
-                    </div>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="premium-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:scale-105 transition-all duration-300 cursor-pointer">
-                <CardContent className="p-8">
-                  <Link to="/progress">
-                    <div className="flex items-center space-x-4">
-                      <div className="bg-ios-blue text-white p-4 rounded-2xl premium-shadow">
-                        <BarChart3 className="w-8 h-8" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-neutral-800 text-xl">View Progress</h3>
-                        <p className="text-neutral-600 mt-1">Track your health journey</p>
-                      </div>
-                    </div>
-                  </Link>
-                </CardContent>
-              </Card>
+            {/* Quick Action Button */}
+            <div className="text-center mb-8">
+              <Button 
+                onClick={() => navigate('/food-analysis')}
+                className="bg-gradient-to-r from-ios-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Camera className="w-6 h-6 mr-2" />
+                Analyze Food Now
+              </Button>
             </div>
           </div>
         </div>
@@ -392,7 +368,7 @@ export default function Home() {
       {hasProAccess && (
         <div className="container-padding mb-8">
           <div className="max-w-6xl mx-auto">
-            <Card className="premium-card backdrop-blur-premium border border-neutral-200 premium-shadow-lg">
+            <Card className="bg-white/80 backdrop-blur-sm border border-ios-separator shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-ios-blue" />
@@ -406,14 +382,14 @@ export default function Home() {
               {todaysLogs.length > 0 ? (
                 <div className="space-y-3">
                   {todaysLogs.slice(0, 5).map((log: FoodLog) => (
-                    <div key={log.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl premium-shadow hover:bg-neutral-100 transition-colors">
+                    <div key={log.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         {log.verdict === 'YES' && <CheckCircle className="w-5 h-5 text-green-600" />}
                         {log.verdict === 'OK' && <AlertCircle className="w-5 h-5 text-yellow-600" />}
                         {log.verdict === 'NO' && <XCircle className="w-5 h-5 text-red-600" />}
                         <div>
-                          <div className="font-semibold text-neutral-800">{log.foodName}</div>
-                          <div className="text-sm text-neutral-600">
+                          <div className="font-medium text-gray-800">{log.foodName}</div>
+                          <div className="text-sm text-gray-600">
                             {log.calories && log.calories > 0 ? `${log.calories} cal` : "N/A cal"}
                             {' • '}
                             {log.protein && log.protein > 0 ? `${log.protein}g protein` : "N/A protein"}
@@ -442,12 +418,12 @@ export default function Home() {
                   )}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Camera className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-                  <p className="text-neutral-600 mb-6 text-lg">No food analyzed yet today</p>
+                <div className="text-center py-8">
+                  <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-4">No food analyzed yet today</p>
                   <Button 
                     onClick={() => navigate('/food-analysis')}
-                    className="bg-ios-blue hover:bg-blue-600 text-white px-8 py-3 text-lg rounded-xl ios-button premium-shadow"
+                    className="bg-ios-blue hover:bg-blue-600 text-white"
                   >
                     Start Analyzing
                   </Button>
