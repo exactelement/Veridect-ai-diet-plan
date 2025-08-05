@@ -107,7 +107,7 @@ export default function DietPlan() {
     setIsTyping(true);
 
     try {
-      // Simulate AI response (replace with actual API call)
+      // Simulate AI response with more realistic delay
       setTimeout(() => {
         const aiResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -120,13 +120,15 @@ export default function DietPlan() {
 
         // If AI suggests a meal plan, generate it
         if (inputMessage.toLowerCase().includes("plan") || inputMessage.toLowerCase().includes("meal")) {
-          generateWeeklyPlan();
+          setTimeout(() => {
+            generateWeeklyPlan();
+          }, 500);
         }
-      }, 1500);
+      }, 800);
     } catch (error) {
       setIsTyping(false);
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Failed to get AI response",
         variant: "destructive"
       });
@@ -281,13 +283,15 @@ export default function DietPlan() {
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                    onKeyPress={(e) => e.key === "Enter" && !isTyping && sendMessage()}
                     placeholder="Ask about diet plans, nutrition, or recipes..."
                     className="flex-1"
+                    disabled={isTyping}
                   />
                   <Button 
                     onClick={sendMessage}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    disabled={isTyping || !inputMessage.trim()}
+                    className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
                   >
                     <Send className="w-4 h-4" />
                   </Button>

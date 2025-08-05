@@ -6,7 +6,7 @@ import { checkTierAccess } from "@/components/subscription-check";
 export default function Navigation() {
   const [location, navigate] = useLocation();
   const { user } = useAuth();
-  const userTier = user?.subscriptionTier || 'free';
+  const userTier = (user as any)?.subscriptionTier || 'free';
 
   const navItems = [
     { id: "home", icon: Home, label: "Home", path: "/home", requiredTier: "free" },
@@ -18,7 +18,7 @@ export default function Navigation() {
   ];
 
   const handleNavigation = (path: string, requiredTier: string) => {
-    const hasAccess = checkTierAccess(userTier, requiredTier, user?.email);
+    const hasAccess = checkTierAccess(userTier, requiredTier, (user as any)?.email);
     
 
     
@@ -48,7 +48,7 @@ export default function Navigation() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
-            const hasAccess = checkTierAccess(userTier, item.requiredTier, user?.email);
+            const hasAccess = checkTierAccess(userTier, item.requiredTier, (user as any)?.email);
             const isLocked = !hasAccess;
             const shouldGreyOut = !hasAccess;
             

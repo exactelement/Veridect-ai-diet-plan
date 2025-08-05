@@ -257,52 +257,144 @@ export default function Home() {
           ) : (
             /* Free tier upgrade prompt */
             <div className="mb-8">
-              <SubscriptionCheck requiredTier="pro" showUpgrade={true}>
-                <div></div>
-              </SubscriptionCheck>
+              {/* Free tier stats placeholder */}
+              <Card className="ios-shadow border-0">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-ios-text mb-2">Unlock Advanced Stats</h3>
+                  <p className="text-ios-secondary text-sm mb-4">
+                    Get detailed progress tracking, food logs, and weekly challenges with Pro
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/subscription')}
+                    className="bg-ios-blue hover:bg-blue-600 text-white"
+                  >
+                    Upgrade to Pro
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           )}
 
-          {/* Recent Food Logs */}
-          {hasProAccess && todaysLogs.length > 0 && (
+          {/* Today's Food Logs */}
+          {hasProAccess && (
             <Card className="ios-shadow border-0 mb-8">
               <CardHeader>
                 <CardTitle className="text-lg text-ios-text flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-ios-blue" />
-                  Recent Analysis
+                  Today's Food Log
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {todaysLogs.slice(0, 3).map((log: FoodLog) => (
-                    <div key={log.id} className="flex items-center justify-between p-3 bg-ios-bg rounded-lg">
-                      <div className="flex items-center gap-3">
-                        {log.verdict === 'YES' && <CheckCircle className="w-5 h-5 text-health-green" />}
-                        {log.verdict === 'OK' && <AlertCircle className="w-5 h-5 text-warning-orange" />}
-                        {log.verdict === 'NO' && <XCircle className="w-5 h-5 text-danger-red" />}
-                        <div>
-                          <div className="font-medium text-ios-text">{log.foodName}</div>
-                          <div className="text-sm text-ios-secondary">
-                            {log.calories ? `${log.calories} cal` : "N/A cal"}
-                            {' • '}
-                            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {todaysLogs.length > 0 ? (
+                  <div className="space-y-3">
+                    {todaysLogs.slice(0, 5).map((log: FoodLog) => (
+                      <div key={log.id} className="flex items-center justify-between p-3 bg-ios-bg rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {log.verdict === 'YES' && <CheckCircle className="w-5 h-5 text-health-green" />}
+                          {log.verdict === 'OK' && <AlertCircle className="w-5 h-5 text-warning-orange" />}
+                          {log.verdict === 'NO' && <XCircle className="w-5 h-5 text-danger-red" />}
+                          <div>
+                            <div className="font-medium text-ios-text">{log.foodName}</div>
+                            <div className="text-sm text-ios-secondary">
+                              {log.calories && log.calories > 0 ? `${log.calories} cal` : "N/A cal"}
+                              {' • '}
+                              {log.protein && log.protein > 0 ? `${log.protein}g protein` : "N/A protein"}
+                            </div>
                           </div>
                         </div>
+                        <Badge 
+                          className={
+                            log.verdict === "YES" ? "bg-health-green text-white font-medium" :
+                            log.verdict === "OK" ? "bg-warning-orange text-white font-medium" :
+                            "bg-danger-red text-white font-medium"
+                          }
+                        >
+                          {log.verdict}
+                        </Badge>
                       </div>
-                      <Badge 
-                        className={
-                          log.verdict === "YES" ? "bg-health-green text-white" :
-                          log.verdict === "OK" ? "bg-warning-orange text-white" :
-                          "bg-danger-red text-white"
-                        }
-                      >
-                        {log.verdict}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                    {todaysLogs.length > 5 && (
+                      <div className="text-center pt-3">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => navigate('/progress')}
+                          className="text-ios-blue hover:text-blue-700"
+                        >
+                          View all {todaysLogs.length} items →
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-ios-secondary">
+                    <Camera className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="mb-2">No food analyzed today</p>
+                    <Button 
+                      onClick={() => navigate('/')}
+                      size="sm"
+                      className="bg-ios-blue hover:bg-blue-600 text-white"
+                    >
+                      Start Analyzing
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
+          )}
+
+          {/* Subscription Tiers */}
+          {!hasProAccess && (
+            <div className="mb-8">
+              <Card className="ios-shadow border-0">
+                <CardHeader>
+                  <CardTitle className="text-lg text-ios-text flex items-center gap-2">
+                    <Star className="w-5 h-5 text-ios-blue" />
+                    Upgrade to Pro
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="p-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Zap className="w-4 h-4 text-gray-500" />
+                          <span className="font-medium text-gray-800">Free</span>
+                        </div>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• 5 analyses per day</li>
+                          <li>• Basic nutritional info</li>
+                          <li>• Simple yes/no verdicts</li>
+                        </ul>
+                      </div>
+                      <div className="p-4 border-2 border-ios-blue rounded-lg bg-blue-50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Star className="w-4 h-4 text-ios-blue" />
+                          <span className="font-medium text-ios-blue">Pro - €1/month</span>
+                          <Badge className="bg-ios-blue text-white text-xs">Popular</Badge>
+                        </div>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• Unlimited analyses</li>
+                          <li>• Food logging & progress tracking</li>
+                          <li>• Challenges and bonus points</li>
+                          <li>• Leaderboard access</li>
+                          <li>• Personalized AI analysis</li>
+                        </ul>
+                        <Button 
+                          onClick={() => navigate('/subscription')}
+                          className="w-full mt-3 bg-ios-blue hover:bg-blue-600 text-white"
+                        >
+                          Upgrade Now
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </div>
